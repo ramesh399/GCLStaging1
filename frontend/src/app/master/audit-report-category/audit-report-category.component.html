@@ -1,0 +1,174 @@
+<div class="row"  >
+    <div class="col-12">
+        <div class="card-box table-responsive">
+        	<div class="row col-12 m-b-5 pad-right">
+              	<div class="col-8 pad-left">
+                <h4 class="page-title"><i class="fa fa-list-ul"></i> {{title}}</h4>
+                <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+                
+              	</div>
+               
+            </div>
+        
+            <div class="row col-12 m-b-5 pad-right">
+                <div class="col-4 text-left pad-left">
+                    <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                        <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+                    </select>
+                </div>
+                <div class="col-4 text-right">
+                	<!--
+				    <ng-container >
+                	<select class="custom-select" style="width: auto; font-size:13px;" name="statusFilter" [(ngModel)]="service.statusFilter">
+                        <option value="">All</option>
+						<option  *ngFor="let item of statuslist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+                    </select>
+					</ng-container>
+					-->
+                </div>
+               	
+                <div class="col-4 text-right pad-right" >
+                    <input class="search-pad" type="text" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+                </div>
+            </div>
+
+
+
+            <div class="col-12 pad-left">
+                <table id="datatable" class="table table-bordered" >
+                    <thead>
+                    <tr>
+                        <th width="5%" scope="col" class="center">S.No</th>
+                        <th scope="col">Name</th>				
+						<th width="10%" scope="col" class="center">Created Date</th>						
+						<th width="10%" class="text-center" scope="col">Action</th>	
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let entry of categorys$ | async; let i=index;">
+                        <td scope="row" class="center">{{ 1+i+ service.pageNo }}</td>                       								
+						<td><ngb-highlight [result]="entry.name"  [term]="service.searchTerm"></ngb-highlight></td>											
+						<td class="center"><ngb-highlight [result]="entry.created_at"  [term]="service.searchTerm"></ngb-highlight></td>						
+						<td  width="8%" class="center">
+							<a href="javascript:void(0);" *ngIf="canEditData" (click)="editData(i,entry)" title="Edit" alt="Edit" > <i class="fa fa-edit"></i> </a>		
+							
+							<a href="javascript:void(0);" *ngIf="entry.status==0 && canDeactivateData" (click)="open(commonModel,'deactivate',entry.id)" class="pl-2" title="Active" alt="Active"><i class="fa fa-toggle-on text-success"></i></a>	
+							<a href="javascript:void(0);" *ngIf="entry.status==1 && canActivateData" (click)="open(commonModel,'activate',entry.id)" class="pl-2" title="In-active" alt="In-active"><i class="fa fa-toggle-off text-danger"></i></a>	
+						
+							<a href="javascript:void(0);" *ngIf="canDeleteData" (click)="open(commonModel,'delete',entry.id)" title="Delete" alt="Delete" class="pl-2"> <i class="fa fa-trash text-danger"></i> </a>
+						</td>
+                    </tr>
+                    <tr  *ngIf="(categorys$ | async)?.length==0" >
+                        <td colspan="4" class="center">{{ commontxt.norecords }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="row col-12 pad-left pad-right">
+				<div class="col-6">
+					<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+					<div *ngIf="!(service.loading$ | async)">
+					Displaying {{ (categorys$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (categorys$ | async).length }} of {{ (total$ | async) }} results.
+					</div>
+				</div>
+				<div class="col-6 pad-right text-right">						
+				<ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+					<ng-template ngbPaginationFirst>First</ng-template>
+					<ng-template ngbPaginationPrevious>Prev</ng-template>
+					<ng-template ngbPaginationNext>Next</ng-template>			  
+					<ng-template ngbPaginationLast>Last</ng-template>			  
+				</ngb-pagination>						
+				</div>
+			</div>
+   		</div>
+	</div>
+</div>
+
+
+
+
+<div class="row" *ngIf=" canAddData || (canEditData && curData)">
+    <div class="col-12">
+		<div class="col-12 pad-left">
+			<div class="add card-box table-responsive enq-view">
+						
+				<h3>{{title}}</h3>                              			
+					
+				<form  [formGroup]="form">
+
+					<div class="form-group row">
+					
+						<div class="col-12">
+							<label>Name <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Name" matTooltipClass="tooltip-text-size" aria-tooltip="Name" matTooltipPosition="right"></i>
+									
+							<textarea rows="3" formControlName="name" [class.is-invalid]="f.name.invalid && f.name.touched" placeholder="Name" class="form-control" ></textarea>
+							<div *ngIf="f.name.errors" class="invalid-feedback">
+								<div *ngIf="f.name.errors.required">Name cannot be blank.</div>
+								<div *ngIf="f.name.hasError('whitespace')">Invalid Name</div>
+							</div>
+						</div>
+													
+					</div>
+					
+									
+					
+					<div class="col-lg-12 text-center mt-4 mb-4">
+						<button [disabled]="loading['button']" (click)="addData()" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+							<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+							{{editStatus == 1 ? 'Update' : 'Save'}}		
+						</button>&nbsp;&nbsp;										
+						<button [disabled]="loading['button']" (click)="formReset()" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2" style="margin-left: 5px;">
+							<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+							Reset	
+						</button>
+												
+						<div class="clearfix"></div>
+							
+						<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+					</div>										
+				
+				</form>				
+				 
+			</div>
+		</div>	
+    </div>
+</div>
+
+<ng-template #commonModel let-modal>
+        
+	<div class="modal-header">
+				<h4 class="modal-title" id="modal-basic-title">Message</h4>
+				<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('close')">
+			<span class="c-icon" aria-hidden="true">&times;</span>
+				</button>
+		</div>
+	
+		<div class="modal-body text-center" style="font-size:16px;padding:5px;">
+		<div class="alert alert-info" *ngIf="alertInfoMessage">{{alertInfoMessage}}</div>
+		<div class="alert alert-success" *ngIf="alertSuccessMessage">{{alertSuccessMessage}}</div>
+		<div class="alert alert-danger" *ngIf="alertErrorMessage">{{alertErrorMessage}}</div>
+	</div>	
+	
+	<div class="modal-footer text-center">
+		<button type="button" class="btn btn-success" *ngIf="okBtn" (click)="commonModalAction();">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" *ngIf="cancelBtn" (click)="modal.dismiss('cancel')">Cancel</button>        
+	</div>
+	
+</ng-template>
+
+<ng-template #confirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to delete the data?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>

@@ -1,0 +1,64 @@
+<div class="col-12 m-t-15">
+    <form #checklistForm="ngForm"  (ngSubmit)="onSubmit(checklistForm)">
+        <div class="review-check" *ngFor="let requirement of interviewrequirements; index as i " >
+            <table class="table table-striped tempdrivenform">
+                <thead>
+                    <tr>
+                    <th>{{ requirement.categoryname }}</th>         
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let questiondata of requirement.questions; index as j "  >
+                        <td><p>{{ 1+j }}. {{ questiondata.name }} </p>
+                            <div class="ans-cmt col-12 row">    
+                                <div class="col-4" *ngIf="checklist_sufficient_access">     
+                                    <h4>Sufficient <span class="text-danger">*</span></h4>
+                                    <div class="row" >
+                                        <div class="col-10">
+                                            <ng-container *ngIf="cond_viewonly">{{ questiondata.answer[reviewcommentlist['qtd'+''+questiondata.id]] }}</ng-container>
+                                            <ng-container *ngIf="!cond_viewonly">
+                                                <select class="form-control" #qtdAnswer="ngModel" name="qtd{{questiondata.id}}"  [(ngModel)]="reviewcommentlist['qtd'+''+questiondata.id]"  required >
+                                                    <option value="">-- Answer --</option>
+                                                    <option *ngFor="let risk of questiondata.answer | keyvalue " value="{{risk.key}}" >{{ risk.value }}</option>
+                                                </select>
+                                                <div class="validationerror" *ngIf="!qtdAnswer.valid && qtdAnswer.touched">
+                                                    Please select the Answer
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div> 
+                                <div class="col-8">
+                                    <h4>Comment</h4>
+                                    <ng-container *ngIf="cond_viewonly">{{ reviewcommentlist['qtd_comments'+''+questiondata.id] }}</ng-container>
+                                    <ng-container *ngIf="!cond_viewonly">
+                                        <div class="md-form">
+                                                <!--[required]="(qtdAnswer.value !== undefined && qtdAnswer.value!='' && qtdAnswer.value!=1)?true:false"-->
+                                                <textarea type="text" #qtdComments="ngModel" required name="qtd_comments{{questiondata.id}}" [(ngModel)]="reviewcommentlist['qtd_comments'+''+questiondata.id]" class="md-textarea form-control" mdbInput style="height:50px"></textarea>
+                                        </div>
+                                        <div class="validationerror" *ngIf="!qtdComments.valid && qtdComments.touched">
+                                            Please enter the comment
+                                        </div>
+                                    </ng-container>
+                                </div>
+    
+                                
+                            </div>  
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        </div>
+        <ng-container *ngIf="!cond_viewonly">
+            <div class="col-lg-12 text-center mt-4 mb-4">
+                    
+                <button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10">
+                    <span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+                    {{ (reviewcomments.length>0 || datasaved) ?'Update':'Submit' }}
+                </button>
+            </div>
+        </ng-container>
+    </form>
+    <app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+</div>

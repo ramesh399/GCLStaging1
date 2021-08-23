@@ -1,0 +1,43 @@
+<div class="row" >
+    <div class="col-12">
+		<!--
+        <div class="add card-box table-responsive enq-view">  
+		-->		
+			<h3>{{editStatus == 1 ? 'Update' : 'Add'}} Quantity Balance Sheet (QBS)</h3>   
+			                          
+			<form  [formGroup]="form" (ngSubmit)="onSubmit()">
+				<div class="form-group row">					
+					<div class="col-12">
+						<label>Quantity Balance Sheet (QBS) <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Quantity Balance Sheet (QBS)" matTooltipClass="tooltip-text-size" aria-tooltip="Quantity Balance Sheet (QBS)" matTooltipPosition="right"></i>
+						
+						<div class="col-12" *ngIf="cond_viewonly && !dataloaded">
+							<span class="spinner-border spinner-border-sm mr-1"></span>
+						</div>
+						<div *ngIf="cond_viewonly && dataloaded" [innerHTML]="f.qbs_description.value" ></div>
+						<ng-container *ngIf="!cond_viewonly">
+							<textarea rows="5" formControlName="qbs_description" [class.is-invalid]="f.qbs_description.invalid && f.qbs_description.touched" placeholder="Quantity Balance Sheet (QBS)" class="form-control" ></textarea>
+							<div *ngIf="f.qbs_description.errors" class="invalid-feedback">
+								<div *ngIf="f.qbs_description.errors.required">Quantity Balance Sheet (QBS) cannot be blank.</div>
+								<div *ngIf="f.qbs_description.hasError('whitespace')">Invalid Quantity Balance Sheet (QBS)</div>
+							</div>
+						</ng-container>
+                    </div>				
+				</div> 											
+				
+				<ng-container *ngIf="!cond_viewonly">
+					<div class="col-lg-12 text-center mt-4 mb-4">
+						<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="addDescription()">
+							<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+							{{editStatus == 1 ? 'Update' : 'Save'}}	
+						</button>
+						<!--<button [disabled]="loading['button'] || buttonDisable" type="button" (click)="descriptionFormreset()"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Reset</button>-->
+						<div class="clearfix"></div>				
+					</div>
+				</ng-container>
+			</form>		
+		<!--		
+        </div>
+		-->
+    </div>
+</div>
+<app-usermessage [success]="success" [error]="error"  ></app-usermessage>

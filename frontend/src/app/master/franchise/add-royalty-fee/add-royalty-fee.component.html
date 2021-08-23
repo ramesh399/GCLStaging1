@@ -1,0 +1,25 @@
+<div class="row">
+    <div class="col-12">
+	
+		<div class="col-12 row pad-right">
+			<div class="col-11 pad-left pad-right">
+                <button type="button" *ngIf="found" (click)="changeAuditExecutionTab('standard')" class="btn btn-sm {{standard_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Standard Royalty Fee</button>
+				<button type="button" *ngIf="tcfound"  (click)="changeAuditExecutionTab('tc')" class="btn btn-sm {{tc_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">TC Royalty Fee</button>
+            </div>						
+			<div class="col-1 pad-left text-right pad-right">
+				<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/master/franchise/list']"><i class="fa fa-arrow-left text-white"></i> Back</a>
+			</div>		
+        </div>		
+        
+        <ng-container>
+            <div class="add card-box table-responsive enq-view" *ngIf="standard_status && found">			
+                <app-standard-royalty-fee></app-standard-royalty-fee> 
+            </div>
+           
+            <div class="add card-box table-responsive enq-view" *ngIf="tc_status && tcfound">			
+                <app-tc-royalty-fee></app-tc-royalty-fee> 
+            </div>
+            
+        </ng-container>
+    </div>
+</div>

@@ -1,0 +1,258 @@
+<div class="col-12 row enq-view pad-right">
+		<div class="col-8 text-primary" style="border-bottom: 1px solid #d7d7d7;font-size:16px;padding-left:0px;">
+			Living Wage Calculator
+		</div>
+		
+		<div class="col-4 text-right pad-right" style="border-bottom: 1px solid #d7d7d7;">
+			<ng-container *ngIf="!cond_viewonly && dataloaded">
+				<div class="radio" >
+					Is it applicable?&nbsp;&nbsp;&nbsp;						
+					<input type="radio" id="yes" [checked]="this.isItApplicable?true:false" value="1" (change)="isItApp(1)"><label for="yes">Yes</label>
+					&nbsp;&nbsp;&nbsp;
+					<input type="radio" id="no" [checked]="!this.isItApplicable?true:false" value="2" (change)="isItApp(2)"><label for="no">No</label>										
+				</div>
+			</ng-container>					
+		</div>
+		
+	</div>
+	<div class="col-12" *ngIf="!dataloaded">
+		<span class="spinner-border spinner-border-sm mr-1"></span>
+	</div>
+	
+	<div *ngIf="!isItApplicable && dataloaded" class="m-t-5">
+		<form  [formGroup]="remarkForm">
+			<div class="form-group row">					
+				<div class="col-12">
+					<label>Remarks <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Remarks" matTooltipClass="tooltip-text-size" aria-tooltip="Remarks" matTooltipPosition="right"></i>
+					<ng-container *ngIf="cond_viewonly">
+						<div>{{rf.remark.value }}</div>
+					</ng-container>
+					<ng-container *ngIf="!cond_viewonly">
+						<textarea rows="5" formControlName="remark" [class.is-invalid]="rf.remark.invalid && rf.remark.touched" placeholder="Remarks" class="form-control" ></textarea>
+						<div *ngIf="rf.remark.errors" class="invalid-feedback">
+							<div *ngIf="rf.remark.errors.required">Remarks cannot be blank.</div>
+							<div *ngIf="rf.remark.hasError('whitespace')">Invalid Remarks</div>
+						</div>
+					</ng-container>
+				</div>				
+			</div> 											
+			
+			<ng-container *ngIf="!cond_viewonly">
+				<div class="col-lg-12 text-center mt-4 mb-4">
+					<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="addRemark()">
+						<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+						{{editStatus == 1 ? 'Update' : 'Save'}}	
+					</button>
+					<!--<button [disabled]="loading['button'] || buttonDisable" type="button" (click)="remarkFormreset()"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Reset</button>-->
+					<div class="clearfix"></div>				
+				</div>
+			</ng-container>
+		</form>
+	</div>
+	
+<div class="row" *ngIf="isItApplicable && dataloaded">
+    <div class="col-12">
+		<!--
+        <div class="add card-box table-responsive enq-view"> 
+		-->
+			<!--
+            <h3>Living Wage Calculator</h3>
+			-->
+			
+			<div class="text-info">
+			This template of the amfori BSCI System Manual helps producers to
+			understand the living costs of its workforce within its regional context. This
+			approach allows the living wage calculation to be specific to the context,
+			and it creates an opportunity for constructive dialogue between management
+			and the workers.(<a href="http://www.amfori.org/content/amfori-bsci-system-manual-annexes" target="_blank" >http://www.amfori.org/content/amfori-bsci-system-manual-annexes</a>)
+			</div>
+			<mat-tab-group >
+				<mat-tab label="Regional Context Information">
+					<div class="col-12 m-t-15">
+						<h3>Living Wage Requirement</h3>
+						<form #checklistForm="ngForm"  (ngSubmit)="onSubmit(checklistForm,'requirement')">
+							<div class="review-check">
+								<table class="table table-striped tempdrivenform">
+									<!--
+									<thead>
+										<tr>
+										<th>Living Wage Requirement</th>         
+										</tr>
+									</thead>
+									-->
+									<tbody>
+										<tr *ngFor="let requirement of livingrequirements; index as i ">
+											<!--
+											<td><p>{{ 1+i }}. {{ requirement.name }} </p>
+												<div class="ans-cmt col-12 row">    
+													<div class="col-12">
+														<h4>Comment</h4>
+														<div class="md-form">
+															<textarea type="text" #qtdComments="ngModel" [required]="true" name="qtd_comments{{requirement.id}}" [(ngModel)]="reviewcommentlist['qtd_comments'+''+requirement.id]" class="md-textarea form-control" mdbInput style="height:50px"></textarea>
+														</div>
+														<div class="validationerror" *ngIf="!qtdComments.valid && qtdComments.touched">
+															Please enter the comment
+														</div>
+													</div>
+						
+													
+												</div>  
+											</td>
+											-->
+											<td width="50%" class="align-middle">											
+												<label>{{ 1+i }}. {{ requirement.name }} <span class="text-danger">*</span></label>
+											</td>
+											<td>
+												<ng-container *ngIf="cond_viewonly">{{ reviewcommentlist['qtd_comments'+''+requirement.id] }}</ng-container>
+												<ng-container *ngIf="!cond_viewonly">
+													<input type="text" #qtdComments="ngModel" [required]="true" name="qtd_comments{{requirement.id}}" [(ngModel)]="reviewcommentlist['qtd_comments'+''+requirement.id]" class="form-control">
+													<div class="validationerror" *ngIf="!qtdComments.valid && qtdComments.touched">
+														Please enter the value
+													</div>
+												</ng-container>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+								<ng-container *ngIf="!cond_viewonly">
+									<div class="col-lg-12 text-center mt-4 mb-4">
+										
+										<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10">
+											<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+											{{ editStatusChecklist == 1 ? 'Update' : 'Save'}}	
+										</button>
+										<!-- <button [disabled]="loading['button'] || buttonDisable" type="button" [routerLink]="['/application/apps/view']" [queryParams]="{id:this.id}" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2 m-t-10">
+											<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+											Cancel
+										</button> -->
+						
+									</div>
+								</ng-container>
+							</div>
+						</form>
+					</div>	
+                </mat-tab>
+                <mat-tab label="Average Family Expenses Information">
+					<div class="col-12 m-t-15">
+						<h3>Average Family Expenses Information</h3>
+						<form #categoryForm="ngForm"  (ngSubmit)="onSubmit(categoryForm,'category')">
+							<!--
+							<div class="add card-box table-responsive enq-view">
+							-->							
+								<table class="table table-bordered col-12" style="font-size:13px;">
+									<thead>
+									<tr>
+										<th scope="col" >Category</th>
+										<th scope="col" >Cost in Local Currency</th>
+										<th scope="col" >Number of Individuals</th>
+										<th scope="col" class="text-right">Total</th>
+									</tr>
+									</thead>
+									<tbody>
+										<ng-container>
+											<tr *ngFor="let category of livingcategorys; index as i ">
+												<th scope="col" class="align-middle" ><label>{{ category.name }} <span class="text-danger">*</span></label></th>
+												<td width="20%">
+													<ng-container *ngIf="cond_viewonly">{{ categorycommentlist['cost'+''+category.id] }}</ng-container>
+													<ng-container *ngIf="!cond_viewonly">
+														<input type="text" pattern="^\d{0,10}(\.\d{0,2})?$" #qtdCost="ngModel" [required]="true" name="cost{{category.id}}" [(ngModel)]="categorycommentlist['cost'+''+category.id]" class="form-control" mdbInput>
+														<div class="validationerror" *ngIf="!qtdCost.valid && qtdCost.touched">
+															Please enter valid cost
+														</div>
+													</ng-container>
+												</td>
+												<td width="20%">
+													<ng-container *ngIf="cond_viewonly">{{ categorycommentlist['individual'+''+category.id] }} </ng-container>
+													<ng-container *ngIf="!cond_viewonly">
+														<input type="text" pattern="^[0-9]*$" #qtdIndividual="ngModel" [required]="true" name="individual{{category.id}}" [(ngModel)]="categorycommentlist['individual'+''+category.id]" class="form-control" mdbInput>
+														<div class="validationerror" *ngIf="!qtdIndividual.valid && qtdIndividual.touched">
+															Please enter the No. of Individuals
+														</div>
+													</ng-container>
+												</td>
+												<td width="15%" class="text-right align-middle">{{ getCalVal(category.id) }}</td>
+											</tr> 
+											
+											<tr>
+												<th scope="col" colspan="3" style="text-align: right;">Total Family Basket</th>
+												<td class="text-right">{{ getCalTotalVal() }}</td>
+											</tr>
+											<tr>
+												<th scope="col" colspan="3" style="text-align: right;">Percentage of expenses for food</th>
+												<td class="text-right">{{ getCalTotalFood() }}%</td>
+											</tr> 
+										</ng-container>
+									</tbody>
+								</table>
+
+								
+								<div class="col-12">
+									<div class="form-group row">
+										<div class="col-2">&nbsp;</div>
+										<div class="col-8">
+											<table class="table table-bordered" style="font-size:13px;">
+												<tr>
+													<td colspan="2"  class="text-info text-center" style="font-size:15px;">Calculation Formula</td>
+												</tr>
+												<tr>
+													<td class="text-center" width="50%">Total Family Basket</td>
+													<td class="text-right"  width="50%">{{ this.totalFamilyBasket }}</td>
+												</tr>
+												<tr>
+													<td class="text-center">Number of Wage Earners per Family</td>
+													<td class="text-right">
+														<ng-container *ngIf="cond_viewonly">{{ categorycommentlist['no_of_wage'] }}</ng-container>
+
+														<ng-container *ngIf="!cond_viewonly">
+															<input type="text" #qtdWage="ngModel" pattern="^\d{0,10}(\.\d{0,2})?$" [required]="true" name="no_of_wage" [(ngModel)]="categorycommentlist['no_of_wage']" class="form-control text-right" mdbInput>
+															<div class="validationerror" *ngIf="!qtdWage.valid && qtdWage.touched">
+																Please enter valid Number of Wage Earners per Family
+															</div>
+														</ng-container>
+													</td>
+												</tr>
+											</table>
+										</div>
+										<div class="col-2">&nbsp;</div>
+									</div>	
+								</div>
+
+								<div class="col-12">
+									<div class="form-group row">
+										<div class="col-2">&nbsp;</div>
+										<div class="col-8">
+											<table class="table table-bordered" style="font-size:15px;">
+												<tr>
+													<td class="text-info text-center"  width="50%">Living Wage</td>
+													<td class="text-right"  width="50%">{{ getLivingwage() }} {{ reviewcommentlist['qtd_comments'+currencyCategoryID] }}</td>
+												</tr>
+											</table>
+										</div>
+										<div class="col-2">&nbsp;</div>	
+									</div>	
+								</div>
+								<div class="col-lg-12 text-center mt-4 mb-4">
+									
+									<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10">
+										<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+										{{ editStatusAverage == 1 ? 'Update' : 'Save'}}	
+									</button>
+									<!-- <button [disabled]="loading['button'] || buttonDisable" type="button" [routerLink]="['/application/apps/view']" [queryParams]="{id:this.id}" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2 m-t-10">
+										<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+										Cancel
+									</button> -->
+					
+								</div>
+							<!--	
+							</div>
+							-->
+						</form>
+					</div>	
+                </mat-tab>
+			</mat-tab-group>    
+		<!--		
+		</div>
+		-->
+    </div>
+</div>
+<app-usermessage [success]="success" [error]="error"  ></app-usermessage>

@@ -1,0 +1,479 @@
+<div class="row">
+	<div class="col-sm-12">
+		<div class="col-12 row" style="padding-right:0px;" >
+            <div class="col-8">
+			     <h4 class="page-title">Product Addition Details</h4>
+			</div>  
+            <div class="col-4 text-right" style="padding-right:0px;">
+				<a class="btn btn-secondary btn-sm active" href="#" role="button" *ngIf="id" [routerLink]="['/change-scope/product-addition/list']" >Back to Request List</a>
+			</div>
+		</div>	
+	</div>
+</div>
+<span *ngIf="loading['data']" class="spinner-border spinner-border-sm mr-1"></span>
+<ng-container *ngIf="!loading['data']" >
+    <div class="row" *ngIf="reviewdata" >
+        <div class="col-sm-12 mat-accordion">
+    			
+            <div class="clearfix"></div>
+
+            <div style="margin-bottom:10px; margin-top:10px;">
+                <div class="un-lst"><h3>Application Details</h3></div>
+                <mat-accordion>
+                    <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                            View Application Details
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        
+                        <div class="row" *ngIf="app_id" >
+                            <div class="col-sm-12">
+                                <div class="clearfix"></div>			
+                                <app-appdetail [id]="app_id" ></app-appdetail>							
+                            </div>				
+                        </div>
+                    </mat-expansion-panel>                
+                </mat-accordion>
+            </div>
+
+            
+            <div class="mat-accordion">
+                <div class="card-box enq-view">
+                    <h3>Addition Details</h3>
+                    <table class="table-secondary m-b-15">
+                        <tr>
+                            <th width="20%">Company Name</th>
+                            <td width="30%">{{ reviewdata.company_name }}</td>
+                            <th width="20%">Status</th>
+                            <td width="30%">{{ reviewdata.status_name }}</td>
+                        </tr>
+                        <tr>
+                            <th width="20%">Unit(s)</th>
+                            <td colspan="3">{{ reviewdata.units }}</td>
+                            
+                        </tr>
+                        <tr>
+                            <th width="20%">Created By</th>
+                            <td width="30%">{{ reviewdata.created_by }}</td>
+                            <th width="20%">Created Date</th>
+                            <td width="30%">{{ reviewdata.created_at }}</td>
+                        </tr>
+                    </table>
+                </div>
+
+            </div>
+
+            <div class="mat-accordion" *ngIf="reviewdata?.reviewer">
+                <div class="card-box enq-view">
+                    <h3>Reviewer Details</h3>
+                    <table class="table-secondary m-b-15">
+                        <tr>
+                            <th width="20%">Reviewer</th>
+                            <td width="30%">{{ reviewdata.reviewer.reviewer }}</td>
+                            <th width="20%">Assigned at</th>
+                            <td width="30%">{{ reviewdata.reviewer.assigned_date }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+             
+        </div>				
+    </div>
+
+
+
+    
+
+    <ng-container>
+        <div class="un-lst"><h3>New Product Details</h3></div>
+        <div style="margin-bottom:5px;" >
+            <table id="datatable" class="table table-bordered tab-bor col-12" >
+                <thead>
+                <tr>
+                    <th scope="col" class="center">S.No</th>
+                    <th scope="col"  >Product Category</th>
+                    <th scope="col"  >Product Description</th>
+                    <th scope="col" class="center" >Wastage (%)</th>
+                    <th scope="col" >Material Composition</th>
+                    <th scope="col"  >Standard</th>
+                    <th scope="col"  >Label Grade</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="productEntries?.length==0">
+                            <td colspan="8" class="center">No Products Added</td>
+                    </tr>
+                   <ng-container *ngFor="let productEntry of productEntries; let i=index; ">
+                            
+                    <!--<ng-container *ngFor="let productEntry of productListDetails; let i=index; "> -->
+                        <tr >
+                            
+                            <td scope="row" class="center"  [attr.rowspan]="productEntry.productStandardList.length<=0?1:productEntry.productStandardList.length" >{{  1+i  }}</td>
+                            <td  [attr.rowspan]="productEntry.productStandardList.length<=0?1:productEntry.productStandardList.length" >{{ productEntry.name }}</td>
+                            <td  [attr.rowspan]="productEntry.productStandardList.length<=0?1:productEntry.productStandardList.length" >{{ productEntry.product_type_name }}</td>
+                            <td  [attr.rowspan]="productEntry.productStandardList.length<=0?1:productEntry.productStandardList.length" class="center">{{ productEntry.wastage }}</td>
+                            <td  [attr.rowspan]="productEntry.productStandardList.length<=0?1:productEntry.productStandardList.length" >{{ productEntry.materialcompositionname }}</td>
+                            <td>
+                                {{ productEntry.productStandardList.length>0?productEntry.productStandardList[0]['standard_name']:'' }}
+                                <!--{{ productEntry.standard_name }} -->
+                            </td>
+                            <td>
+                                {{ productEntry.productStandardList.length>0?productEntry.productStandardList[0]['label_grade_name']:'' }}
+                                <!--{{  productEntry.label_grade_name }}-->
+                            </td>
+                        </tr>
+                        <ng-container *ngIf="productEntry.productStandardList.length>1">
+                            <tr  *ngFor="let productsEntry of productEntry.productStandardList | slice:1;"  >
+                               <!-- <td  >{{ productEntry.name }}</td>
+                                <td >{{ productEntry.product_type_name }}</td>
+                                <td  class="center">{{ productEntry.wastage }}</td>
+                                <td >{{ productEntry.materialcompositionname }}</td>-->
+
+                                <td>{{ productsEntry['standard_name'] }}</td>
+                                <td>{{ productsEntry['label_grade_name'] }}</td>
+                            </tr>
+                        </ng-container>
+                    </ng-container>
+                </tbody>
+            </table>
+            <!--<button type="button" *ngIf="product_status <= enumstatus['review_in_process'] && (resource_access==1 || (userType==2))" class="btn btn-sm btn-success " (click)="opentoeditProduct(editProduct);" style="float: right;">Edit Product</button>-->
+        </div>
+
+
+
+
+        <div class="un-lst"><h3>Facility Details</h3></div> 
+            <div *ngFor="let unit of applicationdata.units; index as i" style="margin-bottom:5px;" >
+                <mat-accordion >
+                    <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true" [expanded]="false">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                            {{ unit.unit_type_name}} : {{ unit.name }}
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <div class="card-box enq-view">
+                        
+                            <h3>{{ unit.unit_type_name}} Details</h3>
+                            <table class="table-secondary m-b-15">
+								<tr>
+									<th width="20%">Name</th>
+									<td width="30%">{{ unit.name }}</td>
+									<th width="20%">Postal Code</th>
+									<td width="30%">{{ unit.zipcode }}</td>
+								</tr>
+								<tr>
+									<th width="20%">Address</th>
+									<td colspan="3">{{ unit.address }}</td>
+								</tr>
+								<tr>
+									<th width="20%">Country</th>
+									<td width="30%">{{ unit.country_id_name }}</td>
+									<th width="20%">State</th>
+									<td width="30%">{{ unit.state_id_name }}</td>
+								</tr>
+								<tr>
+									<th width="20%">City</th>
+									<td width="30%">{{ unit.city }}</td>
+									<th width="20%">No. of Employees</th>
+									<td width="30%">{{ unit.no_of_employees }}</td>
+								</tr>
+							</table>
+                            <div class="card-box enq-view lst greybg">
+                                <h3>Standard Information</h3>
+                                <table class="table-secondary m-b-15">
+                                    <tr>
+                                        <th width="20%">Standard(s)</th>
+                                        <td width="80%" colspan="3">
+                                            <ul>
+                                                <li *ngFor="let standard of unit.standarddetails; ">
+                                                <span>{{ standard.name }}</span></li>
+                                            </ul>  
+                                        </td>
+                                    </tr>
+                                </table>	
+                            </div>
+                            <div class="mat-accordion">
+                                <div class="card-box enq-view">
+                                    <h3>{{ unit.unit_type_name}} Product Details</h3>
+                                     
+                                        <table class="table table-bordered col-12" style="font-size:13px;">
+                                            <thead>
+                                            <tr>
+                                                <th scope="col" class="center">S.No</th>
+                                                <th scope="col"  >Product Category</th>
+                                                <th scope="col"  >Type of Product</th>
+                                                <th scope="col" class="center" >Wastage (%)</th>
+                                                <th scope="col" >Material Composition</th>
+                                                <th scope="col"  >Standard</th>
+                                                <th scope="col"  >Label Grade</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                                 
+                                                    <tr *ngFor="let product of unit?.product_details; index as is;">
+                                                        <td scope="row" class="center"   >{{  1+ is }}</td>
+                                                        <td >{{ product.name }}</td>
+                                                        <td >{{ product.product_type_name }}</td>
+                                                        <td class="center">{{ product.wastage }}</td>
+                                                        <td >
+                                                            {{ product.materialcompositionname }}
+                                                        </td>
+                                                        <td>{{ product.standard_name }}</td>
+                                                        <td>{{ product.label_grade_name }}</td>
+                                                    </tr> 
+                                                          
+                                            </tbody>
+                                        </table>
+                                         
+                                    <!--<ul>
+                                        <li style="width:100%;"><span class="label-pad">Products</span>   <span class="name-pad" style="width:100%;"><span *ngFor="let prd of unit.products; let isLast=last;" >{{ prd }} {{isLast ? '' : ', '}}</span></span></li>
+                                    </ul>-->
+                                </div>
+                            </div>
+                            <!--       
+                            <div class="mat-accordion">
+                                <div class="card-box enq-view">
+                                    <h3>{{ unit.unit_type_name}} Process Details</h3>
+                                    <ul>
+                                        <li style="width:100%;"><span class="label-pad">Process(es)</span>   <span class="name-pad" style="width:100%;"><span *ngFor="let prs of unit.process; let isLast=last;" >{{ prs }} {{isLast ? '' : ', '}}</span></span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            -->
+                            <div class="mat-accordion">
+                                <div class="card-box enq-view">
+                                    <h3>New Product</h3>
+                                    
+                                        <table id="datatable" class="table table-bordered tab-bor col-12" >
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col" class="center">S.No</th>
+                                                    <th scope="col"  >Product Category</th>
+                                                    <th scope="col"  >Product Description</th>
+                                                    <th scope="col" class="center" >Wastage (%)</th>
+                                                    <th scope="col" >Material Composition</th>
+                                                    <th scope="col"  >Standard</th>
+                                                    <th scope="col"  >Label Grade</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngIf="unitProductList[unit.id]?.length==0">
+                                                    <td colspan="8" class="center">No Product Added for this unit</td>
+                                                </tr>
+                                                <tr *ngFor="let productentry of unitProductList[unit.id]; let i=index; ">
+                                                    <td scope="row" class="center">{{  1+ i }}</td>
+                                                    <td>{{ productentry.name }}</td>
+                                                    <td>{{ productentry.product_type_name }}</td>
+                                                    <td>{{ productentry.wastage }}</td>
+                                                    <td>{{ productentry.materialcompositionname }}</td>
+                                                    <td>{{ productentry.standard_name }}</td>
+                                                    <td>{{ productentry.label_grade_name }}</td>
+                                                    
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                     
+                                         
+                                </div>
+                             
+                            </div>
+                        </div>
+                    </mat-expansion-panel>                
+                </mat-accordion>
+            </div>
+    </ng-container>
+    <div style="margin-bottom:10px; margin-top:10px;" *ngIf="reviewdata?.osp_reviews">
+        <div class="un-lst" ><h3>OSS Review Details</h3></div> 
+        <mat-accordion *ngFor="let additionreview of reviewdata.osp_reviews; index as i">
+            <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      Review {{ i+1 }}
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div class="card-box enq-view">
+                
+                    <h3>Review Details</h3>
+                    <table class="table-secondary m-b-15">
+                        <tr>
+                            <th width="20%">Reviewer</th>
+                            <td width="30%">{{ additionreview.created_by }}</td>
+                            <th width="20%">Reviewed At</th>
+                            <td width="30%">{{ additionreview.created_at }}</td>
+                        </tr>
+                        <tr>
+                            <th width="20%">Status</th>
+                            <td width="30%">{{ additionreview.status_label }}</td>
+                            <th width="20%">Review Comment</th>
+                            <td width="30%">{{ additionreview.comment }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </mat-expansion-panel>                
+        </mat-accordion>
+    </div>
+
+    <div style="margin-bottom:10px; margin-top:10px;" *ngIf="reviewdata?.reviewer_reviews">
+        <div class="un-lst" ><h3>Reviewer Review Details</h3></div> 
+
+        <mat-accordion *ngFor="let additionreview of reviewdata.reviewer_reviews; index as i">
+            <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      Review {{ i+1 }}
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div class="card-box enq-view">
+                
+                    <h3>Review Details</h3>
+
+                    <table class="table-secondary m-b-15">
+                        <tr>
+                            <th width="20%">Reviewer</th>
+                            <td width="30%">{{ additionreview.created_by }}</td>
+                            <th width="20%">Reviewed At</th>
+                            <td width="30%">{{ additionreview.created_at }}</td>
+                        </tr>
+                        <tr>
+                            <th width="20%">Status</th>
+                            <td width="30%">{{ additionreview.status_label }}</td>
+                            <th width="20%">Review Comment</th>
+                            <td width="30%">{{ additionreview.comment }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </mat-expansion-panel>                
+        </mat-accordion>
+    </div>
+
+    
+
+    <div class="text-right m-t-10" *ngIf="product_status==enumstatus['waiting_for_review'] && (resource_access==1 || (userType==1 && userdetails.rules.includes('application_review')) )">
+        <button type="button" [disabled]="loading['assignReviewer'] || buttonDisable" class="btn but-cust green m-b-5 m-r-5" (click)="openmodal(reviewconfirmcontent)" >
+        <span *ngIf="loading['assignReviewer']" class="spinner-border spinner-border-sm mr-1"></span>
+        Assign as Reviewer</button>
+    </div>
+</ng-container>
+<!--
+<div class="text-right m-t-10" *ngIf="product_status==enumstatus['approved'] && (resource_access==1 || userType==1)">
+    <button type="button" [disabled]="loading['assignReviewer'] || buttonDisable" class="btn but-cust green m-b-5 m-r-5" (click)="openmodal(certificationreviewconfirmcontent)" >
+    <span *ngIf="loading['assignReviewer']" class="spinner-border spinner-border-sm mr-1"></span>
+    Assign as Certification Reviewer</button>
+</div>
+-->
+
+<!--
+<div class="text-right m-t-10" *ngIf="product_status==enumstatus['certification_in_progress'] && (resource_access==1 || userType==1)">
+	<button type="button" *ngIf="auditPlanData.reviewer_id && auditPlanData.plan_status == auditPlanData.arrEnumPlanStatus['finalized'] && auditPlanData.certificate_status == auditPlanData.arrEnumCertificateStatus['open'] && (userdetails.resource_access==1 || (userType==1 && userdetails.uid==auditPlanData.reviewer_id ) ) " [routerLink]="['/certification/certification-reviewer-checklist']" [queryParams]="{audit_id:this.id,audit_plan_id:auditPlanData.id}" style="width:200px;" [disabled]="loading" class="btn but-cust green m-b-5 ml-2"  >
+	<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>Audit Certification Checklist</button>
+</div>
+-->
+<ng-container *ngIf="productdetails" >
+    <!--
+    <div class="text-right m-t-10" *ngIf="product_status==enumstatus['certification_in_process'] && (resource_access==1 || (userType==1 && userdetails.uid == productdetails.certificate_reviewer_id) )">
+    	<button type="button" [routerLink]="['/certification/certification-reviewer-checklist']" [queryParams]="{audit_id:productdetails.audit_id,product_addition_id:id,audit_plan_id:productdetails.audit_plan_id,certificate_id:productdetails.certificate_id}" style="width:200px;" class="btn but-cust green m-b-5 ml-2"  >
+    	Audit Certification Checklist</button>
+    </div>
+    -->
+    <div *ngIf="((userType==3 || resource_access==1) && (product_status==enumstatus['waiting_for_osp_review'] || product_status==enumstatus['pending_with_osp'])) || (( (productdetails.reviewer_id==userdetails.uid &&  userType==1) || resource_access==1) && product_status==enumstatus['review_in_process'])">
+        <form #reviewForm="ngForm"  (ngSubmit)="onSubmit(reviewForm)">
+            <div class="row m-t-15">
+                <div class="col-12">
+                    <div class="card-box enq-view">
+                        <h3>Status Details</h3>                     
+                        <ul class="tempdrivenform" style="margin-bottom:10px;">
+                            <li style="width:100%;"  ><span class="label-pad" style="width: 30%;">Status <span class="text-danger">*</span></span>   
+                                <span class="label-pad" style="width:35%;" >
+                                    <select name="review_status" #reviewStatus="ngModel" style="margin-top:4px; " [(ngModel)]="review_status" required  class="form-control" >
+                                        <option value="">-- Status -- </option>
+                                        <option *ngFor="let status of reviewerstatus | keyvalue" value="{{status.key}}">{{status.value}}</option>
+                                        
+                                    </select>
+                                    <div class="validationerror" *ngIf="!reviewStatus.valid && reviewStatus.touched">
+                                        Please select the status
+                                    </div>
+                                </span>
+                            </li>
+                            
+                            <li style="width:100%;" ><span class="label-pad" style="width: 30%;">Comments</span> 
+                                    
+                                <span class="label-pad" style="width:35%;padding-bottom:5px;" >
+                                    <textarea class="form-control" #reviewComment="ngModel" [required]="(reviewStatus.value !== undefined && reviewStatus.value!='' && (reviewStatus.value==2 || reviewStatus.value==3))?true:false" name="review_comments" rows=4 [(ngModel)]="review_comments" style=" margin-top:10px; line-height:18px;"></textarea>
+                                    <div class="validationerror" *ngIf="!reviewComment.valid && reviewComment.touched">
+                                        Please enter the Comments
+                                    </div>
+                                </span>
+                
+                            </li>
+                        </ul>							
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-12 text-center mb-4">
+
+
+                <button [disabled]="loading['reviewstatus'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10">
+                    <span *ngIf="loading['reviewstatus']" class="spinner-border spinner-border-sm mr-1"></span>
+                    Submit
+                </button>
+                <button [disabled]="loading['reviewstatus'] || buttonDisable" type="button" [routerLink]="['/change-scope/product-addition/list']" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2 m-t-10">
+                    <span *ngIf="loading['reviewstatus']" class="spinner-border spinner-border-sm mr-1"></span>
+                    Cancel
+                </button>
+
+                    
+
+                
+            </div>
+        </form>
+    </div>
+</ng-container>
+<app-usermessage [success]="success" [error]="error"  ></app-usermessage>  
+<ng-template #reviewconfirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+			Are you sure, do you want to assign this as reviewer?
+	</div>
+	<div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="assignReviewer()">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+		
+	</div>
+</ng-template>
+
+<ng-template #certificationreviewconfirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+			Are you sure, do you want to assign as certification reviewer?
+	</div>
+	<div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="assignCertificationReviewer()">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+		
+	</div>
+</ng-template>
+
+<ng-template #editProduct let-modal>
+    <div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">New Product Details</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:13px;">
+		<app-product-addition-product-edit [id]="id" [standard_id]="applicationdata.standard_ids"></app-product-addition-product-edit>		
+	</div>
+</ng-template>

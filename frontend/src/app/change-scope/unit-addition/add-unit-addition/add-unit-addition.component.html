@@ -1,0 +1,634 @@
+<div class="row">
+	<div class="col-sm-12">
+		<div class="col-12 row" >
+			<div class="col-8">
+			<h4 class="page-title">Unit Addition</h4>
+			</div>
+			<div class="col-4 text-right" style="padding-right:0px;">
+				<a class="btn btn-secondary btn-sm active" href="#" role="button" *ngIf="!id && redirecttype=='unit'" [routerLink]="['/change-scope/unit-addition/request']" >Back to Request</a>
+				<a class="btn btn-secondary btn-sm active" href="#" role="button" *ngIf="id && redirecttype=='unit'" [routerLink]="['/change-scope/unit-addition/list']" >Back to Request List</a>
+
+				<a class="btn btn-secondary btn-sm active" href="#" role="button" *ngIf="!new_app_id  && !redirecttype" [routerLink]="['/change-scope/unit-addition/list']" >Back</a>
+
+				<a class="btn btn-secondary btn-sm active" href="#" role="button" *ngIf="new_app_id  && !redirecttype"  [routerLink]="['/application/apps/view']" [queryParams]="{id:new_app_id}"  >Back</a>
+				
+			</div>
+		</div>	
+	</div>
+</div>
+
+<div style="margin-bottom:10px; margin-top:10px;">
+	<mat-accordion>
+		<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+			<mat-expansion-panel-header>
+				<mat-panel-title>
+				View Application Details
+				</mat-panel-title>
+			</mat-expansion-panel-header>
+			
+			<div class="row" *ngIf="app_id" >
+				<div class="col-sm-12" *ngIf="!new_app_id">
+					<div class="clearfix"></div>			
+					<app-appdetail [id]="app_id" ></app-appdetail>							
+				</div>
+				<div class="col-sm-12" *ngIf="new_app_id">
+					<div class="clearfix"></div>			
+					<app-appdetail [id]="new_app_id" ></app-appdetail>							
+				</div>				
+			</div>
+		</mat-expansion-panel>                
+	</mat-accordion>
+</div>
+
+<div class=" col-12 row" >
+<span *ngIf="loading['data']" class="spinner-border spinner-border-sm mr-1"></span>
+</div>
+<div class="row" *ngIf="applicationdata && !loading['data']" >
+    <div class="col-sm-12 mat-accordion">
+			
+        <div class="clearfix"></div>
+		
+		
+		<form  [formGroup]="form">
+			<div class="clearfix"></div>
+			
+			<div class="enq-view">
+ 
+				<div class="cs-pgm">  
+					<h3>Which location(s) &amp; related processes should be certified?<!--<a href="javascript:void(0);" (click)="openguidance(showguidance,'units')"  ><i class="fa fa-info-circle" aria-hidden="true" style="margin-left: 5px;"></i></a>--></h3>
+					<label>
+						NOTE: Please add all processing units which should be part of the scope. Certified suppliers do not need to be indicated here.
+					</label>
+
+					<h3>New Unit Additions</h3>
+					<table id="datatable" class="table table-bordered tab-bor col-12" >
+						<thead>
+						<tr>
+							<th scope="col" class="center">S.No</th>
+							<th scope="col">Name</th>
+							<th scope="col" class="center" >No. of Employees</th>
+							<th scope="col">Country</th>
+							<th scope="col">City</th>
+							<th scope="col">Type</th>
+							<th scope="col" class="center" >Action</th>
+						</tr>
+						</thead>
+						<tbody>
+							<tr *ngIf="unitEntries?.length==0">
+									<td colspan="6" class="center">No Facility Added</td>
+							</tr>
+							<tr *ngFor="let unitEntry of unitEntries; let i=index; " [class.currentedit]="this.unitIndex==i" >
+								<td scope="row" class="center">{{  1+ i }}</td>
+								<td>{{ unitEntry.unit_name }}</td>
+								<td  class="center">{{ unitEntry.no_of_employees }}</td>
+								<td>{{ unitEntry.unit_country_name }}</td>
+								<td>{{ unitEntry.unit_city }}</td>
+								<td>{{ this.unitType[unitEntry.unit_type] }}</td>                                    
+								<td  class="center">
+									<a href="javascript:void(0);" (click)="editUnit(i)" title="Edit" alt="Edit"> <i class="fa fa-edit"></i> </a>
+									&nbsp;&nbsp;
+									<a href="javascript:void(0);" (click)="removeUnit(confirmdeleteunit,unitEntry.unit_id)" title="Delete" alt="Delete"> <i class="fa fa-trash text-danger"></i> </a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<!--	
+					<a href="javascript:void(0);" class="btn btn-success" (click)="showCertFn()" >Add Unit(s) for Certification</a>
+					-->
+					<div class="col-lg-12 text-center mt-4" *ngIf="unitEntries?.length>0 && !new_app_id">
+						<button [disabled]="loading['button']" (click)="submitForAddition(confirmaddition)" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+							<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+							Submit for Addition
+						</button>&nbsp;&nbsp;
+					</div>
+				</div>
+
+				<app-usermessage [success]="unitsuccess" [error]="uniterror"  ></app-usermessage>
+
+				<div class="col-lg-12" >
+					<button [disabled]="loading['button']" (click)="setshowUnit()" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+						<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+						Click here to Add Unit
+					</button>&nbsp;&nbsp;
+				</div>
+				<div class="cs-pgm" *ngIf="showunit">
+					<h3>Unit Addition</h3>
+					<ng-container>
+	                    <div class="col-12 checkbox" style="margin-bottom:2px;">
+	                        <input type="checkbox" id="facility_unit"  value="2" [checked]="currentunittype==2?1:0" (click)="setfacilityunit($event,2)" > <label for="facility_unit">is this a Facility?</label>
+	                    
+	                        <input type="checkbox" id="subcontractor_unit"  style="margin-left:25px;"  value="3" [checked]="currentunittype==3?1:0" (click)="setfacilityunit($event,3)" > <label for="subcontractor_unit">is this a Subcontractor?</label>
+	                    </div>
+	                    <div *ngIf="company_unit_typeErrors" class="validationerror" style="width:100%; margin-left: 10px;" >
+		                    {{ company_unit_typeErrors }}
+		                </div>
+	                </ng-container> 
+
+	                <div class="form-group ch-bx" style="width: 100%;">
+	                    <div class="col-12" *ngIf="this.currentunittype!=1" style="margin-top:20px;">
+	                        <label>Standard(s) to be certified for this {{ unitypename }} <span class="text-danger">*</span></label>
+	                    </div>
+	                    <div class="col-12">
+	                        <div class="row" formArrayName="unitstandardsChk" >
+	                            <ng-container *ngIf="this.currentunittype!=1">
+	                                <div *ngFor="let standard of selStandardList; let i =index" class="col-4" >
+	                                    <div class="checkbox">
+	                                        <input id="inlineunitCheckbox{{standard.id}}" [checked]="selUnitStandardList.includes(standard.id)?true:false" (change)="onUnitStandardChange(standard.id, $event.target.checked);getBsectorList();" type="checkbox" [value]="standard.id">
+	                                        <label for="inlineunitCheckbox{{ standard.id }}" >{{ standard.name }}</label>
+	                                    </div>
+	                                </div>
+	                            </ng-container>
+	                           
+	                        </div>  
+	                        <div *ngIf="appunitstandardErrors" class="validationerror" >
+	                            {{ appunitstandardErrors }}
+	                        </div>  
+	                    </div>
+	                     
+	                </div>
+
+                
+
+
+
+					<div class="form-group row">
+						<div class="col-4">
+							<label>{{ unitypename }} Name <span class="text-danger">*</span></label>
+							<input type="text" formControlName="unit_name"  class="form-control"  placeholder="Name" [class.is-invalid]="f.unit_name.invalid && f.unit_name.touched">
+							<div *ngIf="f.unit_name.errors" class="invalid-feedback">
+								<div *ngIf="f.unit_name.errors.required">{{ unitypename }} Name is required</div>
+							</div>
+						</div>
+						<div class="col-4">
+							<label>Address <span class="text-danger">*</span></label>
+							<!--
+							<input type="text" formControlName="address"  class="form-control"  placeholder="Address *" [class.is-invalid]="f.address.invalid && f.address.touched">
+							-->
+							<textarea rows="1" formControlName="unit_address" [class.is-invalid]="f.unit_address.invalid && f.unit_address.touched " placeholder="Address" class="form-control" ></textarea>
+							<div *ngIf="f.unit_address.errors" class="invalid-feedback">
+								<div *ngIf="f.unit_address.errors.required">Address is required</div>
+							</div>
+						</div>
+						<div class="col-4">
+							<label>Postal Code <span class="text-danger">*</span></label>
+							<input type="text" formControlName="unit_zipcode"  class="form-control"  placeholder="Postal Code" [class.is-invalid]="f.unit_zipcode.invalid && f.unit_zipcode.touched">
+							<div *ngIf="f.unit_zipcode.errors" class="invalid-feedback">
+								<div *ngIf="f.unit_zipcode.errors.required">Postal Code is required</div>
+							</div>
+						</div>					
+					</div> 
+				
+					<div class="form-group row">
+					
+						<div class="col-4">
+							<label>Country <span class="text-danger">*</span></label>
+							<select formControlName="unit_country_id" class="form-control select2" [class.is-invalid]="f.unit_country_id.invalid && f.unit_country_id.touched" (change)="getStateList($event.target.value)">
+								<option value="">-- Country --</option>							
+								<option *ngFor="let country of countryList" value= {{country.id}}>{{country.name}}</option>
+							</select>     
+							
+							<div *ngIf="f.unit_country_id.errors" class="invalid-feedback">
+								<div *ngIf="f.unit_country_id.errors.required">Country is required</div>
+							</div>
+						</div>
+						
+						<div class="col-4">
+							<label>State <span class="text-danger">*</span></label>
+							<select formControlName="unit_state_id" class="form-control select2" [class.is-invalid]="f.unit_state_id.invalid && f.unit_state_id.touched">
+								<option value="">-- State --</option>							
+								<option *ngFor="let stateL of stateList" value= {{stateL.id}}>{{stateL.name}}</option>
+							</select>
+							<div *ngIf="f.unit_state_id.errors" class="invalid-feedback">
+								<div *ngIf="f.unit_state_id.errors.required">State is required</div>
+							</div>
+						</div>
+						
+						<div class="col-4">
+							<label>City <span class="text-danger">*</span></label>
+							<input type="text" formControlName="unit_city"  class="form-control"  placeholder="City" [class.is-invalid]="f.unit_city.invalid && f.unit_city.touched">
+							<div *ngIf="f.unit_city.errors" class="invalid-feedback">
+								<div *ngIf="f.unit_city.errors.required">City is required</div>
+							</div>
+						</div>
+						
+					</div>
+
+					<div class="form-group row">
+						<div class="col-4">
+							<label>No of Employees <span class="text-danger">*</span></label>
+							<input type="text" formControlName="no_of_employees"  class="form-control"  placeholder="No of Employees" [class.is-invalid]="f.no_of_employees.invalid && f.no_of_employees.touched">
+							<div *ngIf="f.no_of_employees.errors" class="invalid-feedback">
+								<div *ngIf="f.no_of_employees.errors.required">
+									No. of Employees is required
+								</div>
+								<div *ngIf="f.no_of_employees.errors.min">
+									No. of Employees should have minimum 1
+								</div>
+								<div *ngIf="f.no_of_employees.errors.pattern">
+									No. of Employees accept only numbers
+								</div>
+							</div>
+						</div>
+						
+						<div class="col-4">
+							<label>Business Sector <span class="text-danger">*</span></label>
+							
+							<mat-select placeholder="-- Business Sector --" formControlName="business_sector_id" multiple class="form-control select2" [class.is-invalid]="f.business_sector_id.invalid && f.business_sector_id.touched">
+								<mat-select-trigger>
+								<span *ngIf="f.business_sector_id.value?.length == 1" >{{f.business_sector_id.value ? getSelectedValue('business_sector_id', f.business_sector_id.value): ''}}</span>
+								<span *ngIf="f.business_sector_id.value?.length > 1" class="example-additional-selection">
+									{{f.business_sector_id.value.length}} {{ 'selected' }}
+								</span>
+								</mat-select-trigger>
+								<mat-option *ngFor="let bsector of bsectorList" [value]="bsector.id">{{bsector.name}}</mat-option>
+							</mat-select>
+							
+							
+							<div *ngIf="f.business_sector_id.errors" class="invalid-feedback">
+								<div *ngIf="f.business_sector_id.errors.required" >Business Sector is required</div>
+							</div>			
+							
+						</div>
+					</div>	
+					
+					<div class="form-group row">	
+						<div class="line-sec">
+							<div class="form-group row ">
+								<!--<a href="javascript:void(0);" (click)="openguidance(showguidance,'product_field')"  ><i class="fa fa-info-circle" aria-hidden="true" style="margin-left: 5px;"></i></a>-->
+								<!--
+									<div class="col-12">
+									<label>Product <span class="text-danger">*</span></label>
+									<select formControlName="unit_product_id" class="form-control select2" [class.is-invalid]="f.unit_product_id.invalid &&
+									f.unit_product_id.touched" >
+										<option value="" >-- Product --</option>
+										<option *ngFor="let product of filterProduct();  let i =index" value="{{product.pdt_autoid}}">{{product.name+' | '+product.product_type_name+' | '+product.wastage+'% wastage'+' | '+product.materialcompositionname+' | '+product.standard_name+' | '+product.label_grade_name}}</option>
+										
+									</select>
+									<div *ngIf="f.unit_product_id.errors" class="invalid-feedback">
+										<div *ngIf="f.unit_product_id.errors.required">
+												Product is required
+										</div>
+									</div>
+								</div>
+								<div class="col-2" style="padding-top:5px;" >
+									<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button"  (click)="addUnitProduct()"  >+Add Product</a>
+								</div>-->
+								 
+								<div class="col-12 row"   >
+									<div class="col-10"><label>Product List</label></div><!--<a href="javascript:void(0);" (click)="openguidance(showguidance,'product_grid')"  ><i class="fa fa-info-circle" aria-hidden="true" style="margin-left: 5px;"></i></a>-->
+									<div class="col-2 pad-right text-right">
+										<a class="btn btn-primary btn-sm" href="javascript:void(0);" role="button"  (click)="addUnitProductPop(unitProductEntryDetails)"><i class="fa fa-plus text-white"></i> Select Product</a>
+									</div>
+									<table id="datatable" class="table table-bordered tab-bor col-12" >
+										<thead>
+											<tr>
+												<th scope="col" class="center">S.No</th>
+												<th scope="col"  >Product Category</th>
+												<th scope="col"  >Product Description</th>
+												<th scope="col" class="center" >Wastage (%)</th>
+												<th scope="col" >Material Composition</th>
+												<th scope="col"  >Standard</th>
+												<th scope="col"  >Label Grade</th>
+												<th scope="col" class="center" >Action</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr *ngIf="unitProductList?.length==0">
+												<td colspan="8" class="center">No Product Added for this unit</td>
+											</tr>
+											<tr *ngFor="let productentry of unitProductList; let i=index; ">
+												<td scope="row" class="center">{{  1+ i }}</td>
+												<td>{{ productentry.name }}</td>
+												<td>{{ productentry.product_type_name }}</td>
+												<td>{{ productentry.wastage }}</td>
+												<td>{{ productentry.materialcompositionname }}</td>
+												<td>{{ productentry.standard_name }}</td>
+												<td>{{ productentry.label_grade_name }}</td>
+												<td  class="center">
+													<a href="javascript:void(0);" (click)="removeUnitProduct(i)" > <i class="fa fa-trash text-danger"></i> </a>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+								<div class="validationerror" *ngIf="unitproductErrors">Please add product</div>
+							</div>
+						</div>
+					</div>	
+				
+					<div class="form-group row">
+						<div class="line-sec">						
+							<div class="form-group row">
+								<div class="col-6">
+									<label>Process List</label><!--<a href="javascript:void(0);" (click)="openguidance(showguidance,'process_field')"  ><i class="fa fa-info-circle" aria-hidden="true" style="margin-left: 5px;"></i></a>-->
+									<table id="datatable" class="table table-bordered tab-bor col-12" >
+										<thead>
+										<tr>
+											<th scope="col" class="center">S.No</th>
+											<th scope="col"  >Process Name</th>
+											<th scope="col" class="center" >Action</th>
+										</tr>
+										</thead>
+										<tbody>
+											<tr *ngIf="processEntries?.length==0">
+												<td colspan="3" class="center">No Process Added</td>
+											</tr>
+											<tr *ngFor="let processEntry of processEntries; let i=index; ">
+												<td scope="row" class="center">{{  1+ i }}</td>
+												<td>{{ processEntry.name }}</td>
+												<td  class="center">
+													<a href="javascript:void(0);" (click)="removeProcess(processEntry.id)" > <i class="fa fa-trash text-danger"></i> </a>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+								<div class="col-4">
+									<label>Process(es) <span class="text-danger">*</span></label><!--<a href="javascript:void(0);" (click)="openguidance(showguidance,'process_grid')"  ><i class="fa fa-info-circle" aria-hidden="true" style="margin-left: 5px;"></i></a>-->
+									<select formControlName="sel_process"  class="form-control select2 m-t-3" [class.is-invalid]="f.sel_process.invalid && f.sel_process.touched">
+										<option value="" >-- Process --</option>
+										<option *ngFor="let process of processList" value= {{process.id}}>{{process.name}}</option>
+									</select>
+									<div *ngIf="f.sel_process.errors" class="invalid-feedback">
+										<div *ngIf="f.sel_process.errors.required">
+												Process is required
+										</div>
+									</div>
+								</div>
+							
+								<div class="col-2" style="padding-top:25px;">
+									<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button"  (click)="addProcess()"  >+Add Process</a>
+								</div>
+								<div  *ngIf="processErrors" class="col-8 validationerror">{{processErrors}}</div>
+							</div>
+						</div>
+					</div>	
+				
+				
+					<div class="form-group row">
+						<span class="label-pad" style="width:330px;"><label>Do you like to apply for reductions ?</label></span> -  <span class="name-pad">
+							<input type="radio" id="yes" [checked]="f.sel_reduction.value=='1'?true:false" formControlName="sel_reduction" value="1" >&nbsp; <label for="yes">Yes</label>
+							&nbsp;&nbsp;&nbsp;&nbsp;
+							<input type="radio" id="no" [checked]="f.sel_reduction.value=='2'?true:false" formControlName="sel_reduction" value="2">&nbsp;<label for="no"> No</label>
+						</span>
+
+						<div class="line-sec top" *ngIf="f.sel_reduction.value==1">
+							<div class="form-group row">
+								<div class="row col-12  " >
+									<div class="col-4">
+										<label>Existing Certified Standards <span class="text-danger">*</span></label>
+										<select formControlName="sel_standard"  class="form-control select2" (change)="certifiedstandardChange($event.target.value)" >
+											<option value="" >-- Standards --</option>										
+											<!--<option *ngFor="let standard of standardList" value= {{standard.id}}>{{standard.name}}</option>-->
+											<option *ngFor="let standard of reductionstandardList" value= {{standard.id}}>{{standard.name}}</option>
+											
+											
+										</select>
+										<div class="validationerror" *ngIf="unitstandard_error" >{{ unitstandard_error }}</div>
+									</div>
+									<div class="col-4">
+										<label>License Number <span class="text-danger" *ngIf="reductionStandardDetails.includes('license_number')">*</span></label>
+										<input type="text" class="form-control" formControlName="license_number" class="form-control" placeholder="License Number" >
+										<div class="validationerror" *ngIf="license_number_error" >{{ license_number_error }}</div>
+									</div>
+									<div class="col-4">
+										<label style="width: 100%;">Expiry Date <span class="text-danger" *ngIf="reductionStandardDetails.includes('expiry_date')">*</span></label>
+										<input style="width: 80%; display: inline;float:left;" type="text" [min]="maxDate" formControlName="expiry_date" class="form-control" placeholder="Expiry Date" matInput [matDatepicker]="expiry_date" (click)="expiry_date.open()">
+										<mat-datepicker-toggle matSuffix  [for]="expiry_date" style="float:left;"></mat-datepicker-toggle>
+										<mat-datepicker #expiry_date></mat-datepicker>
+										<!--<input type="text" class="form-control" formControlName="expiry_date" class="form-control" placeholder="Expiry Date" > -->
+										<div class="validationerror" *ngIf="expiry_date_error" >{{ expiry_date_error }}</div>
+									</div>
+								</div>
+
+								<div class="row col-12 ">
+									<div class="col-4">
+										<label style="width: 100%;">Certificate File <span class="text-danger" *ngIf="reductionStandardDetails.includes('certificate_file')">*</span></label>
+
+										<input type="file" formControlname="certFile" (change)="fileChange($event,'cert')"  >
+										<div style="font-size:11px;" >supported file formats: 
+											
+											<span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs}}<span *ngIf="!last">, </span> </span>
+											
+										</div>
+										<br><Br>
+											<div class="validationerror" *ngIf="addstandard_error"  >{{ addstandard_error }}</div>
+										<ul  class="filelist">
+											<li style="width:100%;" *ngFor="let item of filterFile; index as i" >
+												{{ item?.name }}
+												<a href="javascript:void(0);"  (click)="removeFiles(i,'cert')" style="color:red; font-weight:bold;margin-right: 5px;float:right;" >X</a>
+											</li>
+										</ul>                                   
+									</div>
+									
+									<div class="col-4">
+										<label>Latest Audit Report <span class="text-danger"  *ngIf="reductionStandardDetails.includes('latest_audit_report')">*</span></label>
+
+										<input type="file" formControlname="auditReportFile" (change)="fileChange($event,'audit')"  >
+										<div style="font-size:11px;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs}}<span *ngIf="!last">, </span> </span></div>
+										<br><Br>
+											<div class="validationerror" *ngIf="addauditstandard_error"  >{{ addauditstandard_error }}</div>
+										<ul  class="filelist">
+											<li style="width:100%;" *ngFor="let item of auditfilterFile; index as i" >
+												{{ item?.name }}
+												<a href="javascript:void(0);"  (click)="removeFiles(i,'audit')" style="color:red; font-weight:bold;margin-right: 5px;float:right;" >X</a>
+											</li>
+										</ul>                                   
+									</div>
+									
+									<div class="col-3" style="padding-top:25px;">
+										<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button"  (click)="addStandard()" >+Add Standard</a>
+									</div>
+								</div>
+										
+								<div class="col-12 m-t-20">
+									<table id="datatable" class="table table-bordered tab-bor col-12" >
+										<thead>
+										<tr>
+											<th scope="col" class="center">S.No</th>
+											<th scope="col"  >Standard Name</th>
+											<th scope="col"  >License Number</th>
+                                    		<th scope="col"  >Expiry Date</th>
+											<th scope="col" class="center" >File(s)</th>
+											<th scope="col" class="center" >Action</th>
+										</tr>
+										</thead>
+										<tbody>
+											<tr *ngIf="standardEntries?.length==0">
+												<td colspan="4" class="center">No Standard Added</td>
+											</tr>
+											<tr *ngFor="let standardEntry of standardEntries; let i=index; " [class.currentedit]="f.sel_standard.value==standardEntry.id">
+												<td scope="row" class="center">{{  1 + i }}</td>
+												<td>{{ standardEntry.name }}</td>
+												<td>{{ standardEntry.license_number }}</td>
+												<td>{{ standardEntry.expiry_date }}</td>
+												<td  class="center">
+														<ul class="filelist" style="margin-bottom: 0px;">
+															<li style="width:100%;" *ngFor="let item of filterItemsOfType(standardEntry.uploadedFileNames); index as i"   >
+																{{ item?.name }}
+															</li>
+														</ul>
+												</td>
+												<td  class="center">
+													<a href="javascript:void(0);" (click)="editStandard(standardEntry.id)" title="Edit" alt="Edit"> <i class="fa fa-edit"></i> </a>
+													&nbsp;&nbsp;
+													<a href="javascript:void(0);" (click)="removeStandard(standardEntry.id)" title="Delete" alt="Delete"> <i class="fa fa-trash text-danger"></i> </a>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+								
+								
+							
+							</div>
+						</div>
+					</div>
+							
+				
+					<div class="col-lg-12 text-center mt-4 mb-4">
+						<button [disabled]="loading['button']" (click)="addUnit('draft')" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+							<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+							Save
+						</button>
+						&nbsp;&nbsp;
+						<button [disabled]="loading['button']" (click)="emptyUnits()" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2">
+							<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+							Reset
+						</button>
+						<div class="clearfix"></div>
+							
+						
+					</div>	
+				</div>						
+				
+			</div>
+			
+		</form>
+    </div>				
+</div>
+<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+<ng-template #confirmdeleteunit let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to delete the unit?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>
+<ng-template #confirmaddition let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to submit for addition?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>
+
+
+
+<ng-template #downloading let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Please wait, your file is downloading ...
+	</div>
+</ng-template>
+	
+<ng-template #unitProductEntryDetails let-modal>
+	
+	<form #unitProductForm="ngForm">
+	
+		<div class="modal-header">
+		
+			<div class="col-12 row pad-right" style="z-index:99999;">
+				<div class="col-2"><h4 class="modal-title">Select Product</h4></div>				
+				<div class="col-10">&nbsp;</div>						
+			</div>
+				
+		
+			<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+				<span class="c-icon" aria-hidden="true">&times;</span>
+			</button>
+		</div>
+	
+	
+	
+		<div class="modal-body">
+		
+			<div class="clearfix"></div>
+			<div class="enq-view">
+				
+				<ng-container *ngFor="let std of selProductStandardList;  let i =index">
+					<ng-container *ngIf="filterProductStandard(std).length>0">
+					<h3>{{ getStandardName(std) }}</h3>
+					<table class="table table-bordered col-12 pad-left pad-right" style="font-size:13px;">
+						<thead>
+							<tr>
+								<th scope="col" width="2%" class="center">S.No</th>
+								<th scope="col" width="8%">Product</th>
+								<th scope="col" width="10%">Product Type</th>	
+								<th scope="col" width="8%">Wastage</th>
+								<th scope="col" width="13%">Material Composition</th>
+								<th scope="col" width="16%">Standard</th>
+								<th scope="col" width="13%">Label Grade</th>																
+								<th scope="col" width="3%" class="center">Select</th>																		
+							</tr>
+						</thead>
+						<tbody>
+							<ng-container *ngFor="let product of filterProductStandard(std);  let i =index" >
+								<tr>	
+									<td style="vertical-align:middle;" width="2%" scope="row" class="center">{{ 1+ i }}</td>
+									<td style="vertical-align:middle;">{{ product.name }}</td>
+									<td style="vertical-align:middle;">{{ product.product_type_name }}</td>
+									<td style="vertical-align:middle;">{{ product.wastage }}% wastage</td>
+									<td style="vertical-align:middle;">{{ product.materialcompositionname }}</td>
+									<td style="vertical-align:middle;">{{ product.standard_name }}</td>
+									<td style="vertical-align:middle;">{{ product.label_grade_name }}</td>																		
+									<td style="vertical-align:middle;" class="center" width="5%">
+										<!--{{product.pdt_index}}-->
+										<input (change)="onProductCheckboxChange($event.target.value, $event.target.checked);" type="checkbox" name="input_weight{{product.pdt_index}}" value="{{product.pdt_index}}" #inputWeight="ngModel" [(ngModel)]="popunitproductlist['input_weight'+product.pdt_index]">																		
+									</td>								
+								</tr> 								
+							</ng-container>  																										
+						</tbody>
+					</table>						
+					</ng-container>
+				</ng-container>
+				
+				<div *ngIf="!unitproductremainingstatus" class="col-12 text-info center">No products found based on the selected standard(s).</div>
+					
+			</div>						
+			
+		</div>
+		
+		<div class="clearfix"></div>
+		
+		<app-usermessage [success]="productpopupsuccess" [error]="productpopuperror"  ></app-usermessage>
+
+		<div class="modal-footer" *ngIf="!logsuccess">
+			<button type="button" *ngIf="unitproductremainingstatus" class="btn btn-success " (click)="addUnitProductFromPop()">
+				<!--<span class="spinner-border spinner-border-sm mr-1"></span>-->Add</button>
+
+			<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">
+				<!--<span class="spinner-border spinner-border-sm mr-1"></span>-->Close</button>
+		</div>
+	</form>
+</ng-template>

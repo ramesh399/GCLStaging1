@@ -1,0 +1,584 @@
+<!--<div class="row">
+    <div class="col-sm-12">
+        <div class="page-title-box p-b-30">
+            <div class="col-6" style="padding-left:0px;" >
+            <h4 class="page-title">View Audit Planning</h4></div>
+            <div class="text-right float-right col-6">
+                <a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/audit/list-audit-plan']" >Back</a>
+            </div>
+        </div>	
+    </div>
+</div>-->
+<div class="row" style="padding-top:20px;" *ngIf="planloading"  ><span class="spinner-border spinner-border-sm mr-1"></span></div>
+<div class="row" style="padding-top:10px;" *ngIf="auditPlanData"  >
+    <div class="col-sm-12 mat-accordion">
+        <div class="mat-accordion">
+            <div class="card-box enq-view">
+                <h3>Company Details</h3>
+                <table class="table-secondary m-b-15">
+					<tr>
+						<th width="20%">Company Name</th>
+						<td width="30%">{{ auditPlanData.company_name }}</td>
+						<th width="20%">Zipcode</th>
+						<td width="30%">{{ auditPlanData.zipcode }}</td>
+                    </tr>
+                    <tr>
+						<th width="20%">Address</th>
+						<td width="30%">{{ auditPlanData.address }}</td>
+						<th width="20%">Country</th>
+						<td width="30%">{{ auditPlanData.country_name }}</td>
+                    </tr>
+                    <tr>
+						<th width="20%">State</th>
+						<td width="30%">{{ auditPlanData.state_name }}</td>
+						<th width="20%">City</th>
+						<td width="30%">{{ auditPlanData.city }}</td>
+                    </tr>
+                    <tr *ngIf="auditPlanData.status==auditPlanData.arrEnumStatus['finalized_without_audit']">
+						<th  >Status</th>
+						<td colspan="3" >{{ auditPlanData.status_name }}</td>
+						 
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        <div class="mat-accordion" *ngIf="userType!=2 && auditPlanData.status!=auditPlanData.arrEnumStatus['finalized_without_audit']">
+            <div class="card-box enq-view">
+                <h3>Audit Details</h3>
+                <table class="table-secondary m-b-15">
+					<tr>
+						<th width="20%">Lead Auditor</th>
+						<td width="30%">{{ auditPlanData.application_lead_auditor_name }}</td>
+						<th width="20%">Quotation Manday(s)</th>
+						<td width="30%">{{ auditPlanData.quotation_manday }}</td>
+                    </tr>
+                    <tr>
+						<th width="20%">Actual Manday(s)</th>
+						<td width="30%">{{ auditPlanData.actual_manday }}</td>
+						<th width="20%">Created By</th>
+						<td width="30%">{{ auditPlanData.created_by_name }}</td>
+                    </tr>
+                    <tr>
+						<th width="20%">Created At</th>
+						<td width="30%">{{ auditPlanData.created_at }}</td>
+						<th width="20%">Status</th>
+						<td width="30%">{{ auditPlanData.plan_status_name }}</td>
+                    </tr>
+                    <tr>
+                        <th width="20%">Application Type</th>
+                        <td width="30%">{{ auditPlanData.type_label }}</td>
+                        <th width="20%">Audit Type</th>
+                        <td width="30%">{{ auditPlanData.audit_type_name }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="mat-accordion" >
+            <div class="card-box enq-view" style="padding-bottom:20px;"  *ngFor="let unit of auditPlanData?.units; index as i">
+                    
+                <h3>{{ unit.unit_name }} [<ng-container *ngFor="let std of unit.standard; let stdi=index;">{{std.standard_name}} <span *ngIf="stdi+1!=unit.standard.length">,</span></ng-container>]</h3>
+                <div>
+                    <table class="table-secondary m-b-15">
+                        <tr>
+                            <th width="20%">Unit Date(s)</th>
+                            <td colspan="3"><div *ngFor="let date of unit.date; let last=last;" class="txt-bg-3d center" style="width:100px;float:left;">{{ date}}</div></td>
+                        </tr>
+                        <tr>
+                            <th width="20%">Quotation Manday(s)</th>
+                            <td width="30%">{{ unit.quotation_manday }}</td>
+                            <th width="20%">Lead Auditor</th>
+                            <td width="30%">{{ unit.unit_lead_auditor }}</td>
+                        </tr>
+                        <tr>
+                            <th width="20%">Actual Manday(s)</th>
+                            <td width="30%">{{ unit.actual_manday }}</td>
+                            <th width="20%">Technical Expert</th>
+                            <td width="30%">{{ unit.technical_expert }}</td>
+                        </tr>
+                        <tr>
+                            <th width="20%">Translator</th>
+                            <td width="30%">{{unit.translator}}</td>
+                            <th width="20%">Observer</th>
+                            <td width="30%">{{unit.observer}}</td>
+                        </tr>
+                        <tr>
+                            <th width="20%">Status</th>
+                            <td width="30%">{{unit.status_label}}</td>
+                            <th width="20%">Status Changed Date</th>
+                            <td width="30%">{{ unit.status_change_date }}</td>
+                        </tr>
+                        <tr *ngIf="auditPlanData.status >= auditPlanData.arrEnumStatus['approved']">
+                            <th width="20%">Total Findings</th>
+                            <td width="30%">{{unit.total_findings}}</td>
+                            <th width="20%">Total Non Conformities</th>
+                            <td width="30%">{{unit.total_non_conformity}}</td>
+                        </tr>
+                    </table>
+                    
+                    <table class="table table-bordered col-12" style="font-size:13px;"  *ngIf="userType!=2">
+                        <thead>
+                        <tr>
+                            <th width="5%" scope="col" class="center">S.No</th>
+							<th width="20%"scope="col">Auditor</th>
+							<th scope="col">Date(s)</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let auditor of unit?.auditors; index as is;" >
+                                <td scope="row" class="center"   >{{ 1+is}}</td>
+                                <td >{{ auditor.display_name }} <span *ngIf="auditor.is_justified_user">*</span></td>
+                                <td>
+                                    <!-- 
+									<span *ngFor="let date of auditor.date; let last=last;" class="txt-bg-3d">{{ date}} </span>
+                                    <ng-container *ngIf="last"> &amp; </ng-container> {{ date}}<span *ngIf="!last">, </span> -->
+									<div *ngFor="let date of auditor.date; let last=last;" class="txt-bg-3d center" style="width:100px;float:left;">{{ date}}</div>
+                                </td>
+                            </tr> 
+                        </tbody>
+                    </table>
+					
+					<table class="table table-bordered col-12" style="font-size:13px;"  *ngIf="userType!=2  && auditPlanData.status >= auditPlanData.arrEnumStatus['approved']">
+                        <thead>
+                        <tr>
+                            <th scope="col" class="center" width="6%">S.No</th>
+                            <th scope="col">Sub Topic</th>
+                            <th scope="col" class="center">Status</th>
+							<th scope="col">Reviewed By</th>
+							<th scope="col" class="center" >Reviewed Date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let subtopic of unit?.subtopics; index as st;" >
+                                <td scope="row" class="center"   >{{ 1+st}}</td>
+                                <td >{{ subtopic.name }}</td>
+                                <td class="center" >{{ subtopic.status_name }}</td>
+								<td >{{ subtopic.display_name }}</td>
+								<td class="center" >{{ subtopic.executed_date }}</td>
+                            </tr> 
+                        </tbody>
+                    </table>				
+			       
+                    <!--
+                    <button type="button" *ngIf="(unit.status==auditPlanData.arrUnitEnumStatus['reviewer_reinititated'] || unit.status==auditPlanData.arrUnitEnumStatus['open'] || unit.status==auditPlanData.arrUnitEnumStatus['in_progress'] || unit.status==auditPlanData.arrUnitEnumStatus['awaiting_for_unit_lead_auditor_approval']) && auditPlanData.status >= auditPlanData.arrEnumStatus['approved'] && (userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('audit_execution') && unit.auditorIds.includes(userdetails.uid) ) ) " (click)="open(executeAuditContent,'executeAudit',{audit_plan_unit_id:unit.id,audit_plan_id:auditPlanData.id,audit_id:auditPlanData.audit_id,unit_id:unit.unit_id},i)"  [disabled]="loading" class="btn but-cust green m-b-5 ml-2"  >
+                        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                    Conduct the Audit</button>
+                    
+
+
+
+
+                    <button type="button" *ngIf="(unit.status==auditPlanData.arrUnitEnumStatus['awaiting_for_lead_auditor_approval']) && (userdetails.resource_access==1 || (userType==1 && userdetails.uid==auditPlanData.application_lead_auditor && userdetails.rules.includes('audit_execution')) ) " (click)="open(executeAuditContent,'executeAudit',{audit_plan_unit_id:unit.id,audit_plan_id:auditPlanData.id,audit_id:auditPlanData.audit_id,unit_id:unit.unit_id},i)"  [disabled]="loading" class="btn but-cust green m-b-5 ml-2"  >
+                        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                    Conduct the Audit</button>
+
+
+                    <button type="button" *ngIf="(userType==2 && (unit.status==auditPlanData.arrUnitEnumStatus['audit_completed'] || unit.status==auditPlanData.arrUnitEnumStatus['remediation_in_progress'])) || (userType==1 && unit.status>=auditPlanData.arrUnitEnumStatus['in_progress'] )" [routerLink]="['/audit/audit-findings']" [queryParams]="{audit_plan_id:auditPlanData.id,audit_id:auditPlanData.audit_id,unit_id:unit.unit_id,audit_plan_unit_id:unit.id,type:'all'}" [disabled]="loading" class="btn but-cust green m-b-5 ml-2"  >
+                        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+						View Checklist
+					</button>
+					
+					<button type="button" *ngIf="unit.total_non_conformity>0 && ((userType==2 && (unit.status==auditPlanData.arrUnitEnumStatus['audit_completed'] || unit.status==auditPlanData.arrUnitEnumStatus['remediation_in_progress'])) || (userType==1 && unit.status>=auditPlanData.arrUnitEnumStatus['in_progress'] && unit.status<=auditPlanData.arrUnitEnumStatus['remediation_in_progress']))" [routerLink]="['/audit/audit-findings']" [queryParams]="{audit_plan_id:auditPlanData.id,audit_id:auditPlanData.audit_id,unit_id:unit.unit_id,audit_plan_unit_id:unit.id,type:'nc'}" [disabled]="loading" class="btn but-cust green m-b-5 ml-2"  >
+                        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+						View Non Conformities
+					</button>
+
+                    <button  type="button" *ngIf="unit.status==auditPlanData.arrUnitEnumStatus['awaiting_for_unit_lead_auditor_approval']  && (userdetails.resource_access==1 || (userType==1 && userdetails.uid==unit.unit_lead_auditor_id && userdetails.rules.includes('audit_execution')))" (click)="open(sendToLeadAuditorContent,'sendtoleadauditor',{audit_plan_id:auditPlanData.id,audit_id:auditPlanData.audit_id,unit_id:unit.unit_id,audit_plan_unit_id:unit.id})" [disabled]="loading" class="btn but-cust green m-b-5 ml-2"  >
+                        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                        Submit for Lead Auditor Approval</button>
+
+
+                    <button type="button" *ngIf="(unit.status >= auditPlanData.arrUnitEnumStatus['audit_completed'] || unit.status == auditPlanData.arrUnitEnumStatus['remediation_in_progress']) && (userType==2 || userType==3 || userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('audit_execution')) || (userType==1 && userdetails.uid==auditPlanData.application_lead_auditor && userdetails.rules.includes('audit_execution')) || (userType==1 && userdetails.uid==auditPlanData.reviewer_id ) || (userType==1 && userdetails.uid==unit.unit_lead_auditor_id && userdetails.rules.includes('audit_execution'))) " [disabled]="loading" class="btn but-cust green m-b-5 ml-2 mr-2" (click)="downloadunitNCreport(this.id,auditPlanData.id,unit.id);openmodal(downloading)">
+                        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                        Download NC Report
+                    </button>
+                    
+                    -->
+ 
+                </div>
+            </div>
+            
+        </div>
+
+        <div style="float:left;width:100%;"  *ngIf="auditPlanData?.inspectionplan">
+            <mat-accordion>
+                <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            Audit Plan
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div class="card-box enq-view" >
+                    
+                        <h3>Audit Plan Details</h3>
+                        
+                        <table class="table table-bordered col-12" style="font-size:13px;">
+                            <thead>
+                            <tr>
+                                <th scope="col" class="center" width="5%">S.No</th>
+								<th scope="col" width="15%">Location</th>
+                                <th scope="col" width="15%">Activity</th>
+                                <th scope="col" width="15%">Inspector</th>
+                                <th scope="col" width="12%" class="center">Date</th>
+                                <th scope="col" width="9%" class="center">Start Time</th>
+                                <th scope="col" width="9%" class="center">End Time</th>
+                                <th scope="col" width="20%">Persons need to be present</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr  *ngFor="let plans of auditPlanData?.inspectionplan; index as is">
+                                    <td scope="row" class="center">{{ 1+is}}</td>
+									<td>{{ plans.application_unit_name }}</td>
+                                    <td>{{ plans.activity }}</td>
+                                    <td>{{ plans.inspector }}</td>
+                                    <td class="center">{{ plans.date }}</td>
+                                    <td class="center">{{ plans.start_time }}</td>
+                                    <td class="center">{{ plans.end_time }}</td>
+                                    <td>{{ plans.person_need_to_be_present }}</td>
+                                </tr> 
+                            </tbody>
+                        </table>
+                        
+                    </div>
+                    
+                </mat-expansion-panel>                
+            </mat-accordion>
+        </div>
+
+        
+       <div style="float:left;width:100%;"  *ngIf="userType!=2">
+            <mat-accordion *ngFor="let auditreview of auditPlanData.auditreviews; index as i">
+                <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            Risk Assesment Details
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div class="card-box enq-view">
+                    
+                        <h3>Reviewer Details</h3>
+                        
+                        <ul>						
+                            <li><span class="label-pad">Reviewer</span>   <span class="name-pad">{{ auditreview.reviewer }}</span></li>
+                            <li><span class="label-pad">Answer</span>   <span class="name-pad">{{ auditreview.answer_name }}</span></li>				
+                            <li><span class="label-pad">Status</span>   <span class="name-pad">{{ auditreview.status_name }}</span></li>
+                            <li><span class="label-pad">Created Date &amp; Time</span>   <span class="name-pad">{{ auditreview.created_at }}</span></li>
+                            <li style="width:100%;"><span class="label-pad">Review Result</span><span class="name-pad">{{ auditreview.review_result_name }}</span></li>
+                            <li style="width:100%;">
+                                <span class="label-pad" >Comments</span>
+                                
+                                <span class="name-pad" [innerHTML]="auditreview.status_comments" ></span>
+                            </li>
+
+                            
+                        </ul>	
+                        
+
+                        <div   >
+                            <h3 *ngIf="auditreview?.reviewcomments.length>0">Reviewer Comments</h3>
+                            
+                            <div class="page-title-box">
+                                <div *ngFor="let reviewcomment of auditreview.reviewcomments; index as i">	
+                                    <div class="qustion">
+                                    <h5>{{ 1+i }}. {{ reviewcomment.question }}</h5>
+                                    {{ reviewcomment.answer }}
+                                    <p [innerHTML]="reviewcomment.comment"></p>
+                                    </div>
+                                </div>  
+                            </div>
+
+                            <h3 *ngIf="auditreview?.unitreviewcomments.length>0">Facility Review Comments</h3>
+                            
+                            <div class="page-title-box" *ngFor="let unitreviewcomment of auditreview.unitreviewcomments; index as i" >
+
+                                <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false" [expanded]="true">
+                                    <mat-expansion-panel-header>
+                                        <mat-panel-title>
+                                            Unit: {{ unitreviewcomment.unit_name }}
+                                        </mat-panel-title>
+                                    </mat-expansion-panel-header>
+                                    <div *ngFor="let unitreviewcomment of unitreviewcomment.reviews; index as j">	
+                                        <div class="qustion">
+                                            <h5>{{ 1+j }}. {{ unitreviewcomment.question }}</h5>
+                                            {{ unitreviewcomment.answer }}
+                                            <p [innerHTML]="unitreviewcomment.comment"></p>
+                                        </div>
+                                    </div>  
+                                </mat-expansion-panel>
+
+                            </div>
+                        </div>
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </mat-expansion-panel>                
+            </mat-accordion>
+        </div>
+
+
+        <div style="float:left;width:100%;"  *ngIf="userType!=2">
+            <mat-accordion >
+                <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                           Reviewer History
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div class="card-box enq-view">
+                    
+                        <h3>Reviewer History Details</h3>
+                        <mat-accordion *ngFor ="let stage of stage_arr" >
+                            <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title>
+                                       Review {{stage+1}}
+                                    </mat-panel-title>
+                                </mat-expansion-panel-header>
+                                <div class="mat-accordion"  >
+                                    <div class="card-box enq-view">
+                                        <h3>Reviewer : {{ auditPlanData.reviewer_details.reviewer_name}}</h3>
+                                       
+                                        <table class="table table-bordered col-12" style="font-size:13px;">
+                                            <thead>
+                                            <tr>
+                                                <th scope="col">Standards</th>
+                                                <th scope="col" width="15%">Unit Name</th>
+                                                <th scope="col">Sub Topic</th>
+                                                <th scope="col">Question</th>
+                                                <th scope="col" class="center">Answer</th>
+                                                <th scope="col">Comment</th>
+                                                <th scope="col" class="center" >Created At</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                                
+                                                <tr *ngFor="let revidata of reviewerhistroy; index as rh;">
+                                                
+                                                    <td *ngIf="stage == revidata.review_stage"scope="row" class="center">{{ revidata.standard_label }}</td>
+                                                    <td *ngIf="stage == revidata.review_stage">{{ revidata.unit_name}} </td>
+                                                    <td *ngIf="stage == revidata.review_stage">{{ revidata.sub_topic}} </td>
+                                                    <td *ngIf="stage == revidata.review_stage">{{ revidata.questions }}</td>
+                                                    <td *ngIf="stage == revidata.review_stage"class="center" >No</td>
+                                                    <td *ngIf="stage == revidata.review_stage">{{ revidata.comment }}</td>
+                                                    <td *ngIf="stage == revidata.review_stage"class="center" >{{ revidata.created_at }}</td>
+                                                
+                                                </tr> 
+                                            </tbody>
+                                        </table>
+                                        <div *ngFor="let revnotes of reviewernotes; index as rn">
+                                            <div *ngIf="revnotes.stage == stage" class="qustion"> 
+                                            <h3 >Note </h3>
+                                            <textarea readonly class="md-textarea form-control" [innerHTML]="revnotes.notes"></textarea>
+                                            </div>
+                                            
+                                        </div>	
+                                    </div>
+                                </div>
+                            </mat-expansion-panel>                
+                        </mat-accordion>
+                            
+                    </div>
+                </mat-expansion-panel>                
+            </mat-accordion>
+        </div>
+
+
+
+
+        <!--
+
+        <div *ngIf="auditPlanData?.history  && userType!=2" style="float:left;width:100%;" >
+            <mat-accordion *ngFor="let history of auditPlanData?.history; index as hi">
+                <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            History {{ 1+hi }}
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+            <div class="col-sm-12 mat-accordion" >
+                <div class="mat-accordion">
+                    <div class="card-box enq-view">
+                        <h3>Company Details</h3>
+                        <ul>
+                            <li><span class="label-pad">Company Name</span>   <span class="name-pad">{{ history.company_name }}</span></li>
+                            <li><span class="label-pad">Zipcode</span>   <span class="name-pad">{{ history.zipcode }}</span></li>
+                            <li><span class="label-pad">Address</span>   <span class="name-pad">{{ history.address }}</span></li>
+                            <li><span class="label-pad">Country</span>   <span class="name-pad">{{ history.country_name }}</span></li>
+                            <li><span class="label-pad">State</span>   <span class="name-pad">{{ history.state_name }}</span></li>
+                            <li><span class="label-pad">City</span>   <span class="name-pad">{{ history.city }}</span></li>								
+                        </ul>
+                    </div>
+                </div>
+                <div class="mat-accordion">
+                    <div class="card-box enq-view" style="padding-bottom:20px;"  *ngFor="let unit of history?.units; index as i">
+                            
+                        <h3>{{ unit.unit_name }}</h3>
+                        <div   >
+                            <ul>
+                                <li><span class="label-pad">Unit Date(s)</span>   <span class="name-pad">{{ unit.date.join(', ')}}</span></li>
+                                <li><span class="label-pad">Quotation Manday(s)</span>   <span class="name-pad">{{unit.quotation_manday}}</span></li>
+                                <li><span class="label-pad">Lead Auditor</span>   <span class="name-pad">{{unit.unit_lead_auditor}}</span></li>
+                                <li><span class="label-pad">Actual Manday(s)</span>   <span class="name-pad">{{unit.actual_manday}}</span></li>
+                                <li><span class="label-pad">Technical Expert</span>   <span class="name-pad">{{unit.technical_expert}}</span></li>
+                                <li><span class="label-pad">Translator</span>   <span class="name-pad">{{unit.translator}}</span></li>
+                            </ul>
+                            <table class="table table-bordered col-12" style="font-size:13px;">
+                                <thead>
+                                <tr>
+                                    <th scope="col" class="center" width="10%">S.No</th>
+                                    <th scope="col" >Auditor</th>
+                                    <th scope="col" >Date(s)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let auditor of unit?.auditors; index as is;" >
+                                        <td scope="row" class="center"   >{{ 1+is}}</td>
+                                        <td >{{ auditor.display_name }}</td>
+                                        <td>
+                                            <span *ngFor="let date of auditor.date; let last=last;" class="txt-bg-3d">{{ date}} </span>
+                                            
+                                        </td>
+                                    </tr> 
+                                </tbody>
+                            </table>
+                           
+                           
+        
+                        </div>
+                    </div>
+                    
+                </div>
+        
+                <div style="float:left;width:100%;"  *ngIf="history?.inspectionplan">
+                    <mat-accordion>
+                        <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Audit Plan
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div class="card-box enq-view" >
+                            
+                                <h3>Audit Plan Details</h3>
+                                
+                                <table class="table table-bordered col-12" style="font-size:13px;">
+                                    <thead>
+										<tr>
+											<th scope="col" class="center" width="5%">S.No</th>
+											<th scope="col" width="15%">Location</th>
+											<th scope="col" width="15%">Activity</th>
+											<th scope="col" width="15%">Inspector</th>
+											<th scope="col" width="12%" class="center">Date</th>
+											<th scope="col" width="9%" class="center">Start Time</th>
+											<th scope="col" width="9%" class="center">End Time</th>
+											<th scope="col" width="20%">Persons need to be present</th>
+										</tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let plans of history?.inspectionplan; index as is">
+                                            <td scope="row" class="center">{{ 1+is}}</td>
+											<td>{{ plans.application_unit_name }}</td>
+                                            <td>{{ plans.activity }}</td>
+                                            <td>{{ plans.inspector }}</td>
+                                            <td class="center">{{ plans.date }}</td>
+                                            <td class="center">{{ plans.start_time }}</td>
+                                            <td class="center">{{ plans.end_time }}</td>
+                                            <td>{{ plans.person_need_to_be_present }}</td>
+                                        </tr> 
+                                    </tbody>
+                                </table>
+								
+								
+                                
+                            </div>
+							 <button type="button"  *ngIf="(userType==2 && auditPlanData.status >= auditPlanData.arrEnumStatus['awaiting_for_customer_approval']  ) || (userdetails.resource_access==1  && auditPlanData.status >= auditPlanData.arrEnumStatus['inspection_plan_in_process'])|| (userType==1 && auditPlanData.status >= auditPlanData.arrEnumStatus['inspection_plan_in_process']  && userdetails.uid==auditPlanData.application_lead_auditor)"  style="width:240px;" (click)="downloadInspection(this.id);openmodal(downloading)" [disabled]="loading" class="btn but-cust green m-b-5 ml-2 m-r-5"  >
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+								Download Audit Plan as PDF</button> 
+                        </mat-expansion-panel>                
+                    </mat-accordion>
+                </div>
+         
+               <div style="float:left;width:100%;">
+                    <mat-accordion *ngFor="let auditreview of history.auditreviews; index as i">
+                        <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Risk Assesment Details
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div class="card-box enq-view">
+                            
+                                <h3>Reviewer Details</h3>
+                                
+                                <ul>						
+                                    <li><span class="label-pad">Reviewer</span>   <span class="name-pad">{{ auditreview.reviewer }}</span></li>
+                                    <li><span class="label-pad">Answer</span>   <span class="name-pad">{{ auditreview.answer_name }}</span></li>				
+                                    <li><span class="label-pad">Status</span>   <span class="name-pad">{{ auditreview.status_name }}</span></li>
+                                    <li><span class="label-pad">Created Date &amp; Time</span>   <span class="name-pad">{{ auditreview.created_at }}</span></li>
+                                    <li style="width:100%;"><span class="label-pad">Review Result</span><span class="name-pad">{{ auditreview.review_result_name }}</span></li>
+                                    <li style="width:100%;">
+                                        <span class="label-pad" >Comments</span>
+                                       
+                                        <span class="name-pad" [innerHTML]="auditreview.status_comments" ></span>
+                                    </li>
+        
+                                    
+                                </ul>	
+                                
+        
+                                <div>
+                                    <h3 *ngIf="auditreview?.reviewcomments.length>0">Reviewer Comments</h3>
+                                    
+                                    <div class="page-title-box">
+                                        <div *ngFor="let reviewcomment of auditreview.reviewcomments; index as i">	
+                                            <div class="qustion">
+                                            <h5>{{ 1+i }}. {{ reviewcomment.question }}</h5>
+                                            {{ reviewcomment.answer }}
+                                            <p [innerHTML]="reviewcomment.comment"></p>
+                                            </div>
+                                        </div>  
+                                    </div>
+        
+                                    <h3 *ngIf="auditreview?.unitreviewcomments.length>0">Facility Review Comments</h3>
+                                    
+                                    <div class="page-title-box" *ngFor="let unitreviewcomment of auditreview.unitreviewcomments; index as i" >
+        
+                                        <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false" [expanded]="true">
+                                            <mat-expansion-panel-header>
+                                                <mat-panel-title>
+                                                    Unit: {{ unitreviewcomment.unit_name }}
+                                                </mat-panel-title>
+                                            </mat-expansion-panel-header>
+                                            <div *ngFor="let unitreviewcomment of unitreviewcomment.reviews; index as j">	
+                                                <div class="qustion">
+                                                    <h5>{{ 1+j }}. {{ unitreviewcomment.question }}</h5>
+                                                    {{ unitreviewcomment.answer }}
+                                                    <p [innerHTML]="unitreviewcomment.comment"></p>
+                                                </div>
+                                            </div>  
+                                        </mat-expansion-panel>
+        
+                                    </div>
+                                </div>
+                                
+                                
+                                
+                                
+                                
+                            </div>
+                        </mat-expansion-panel>                
+                    </mat-accordion>
+                </div>
+        
+        
+            </div>
+            </mat-expansion-panel>                
+        </mat-accordion>
+        </div> -->
+
+    </div>
+    <span *ngIf="auditPlanData.status!=auditPlanData.arrEnumStatus['finalized_without_audit']">* - Justified User</span>
+</div>

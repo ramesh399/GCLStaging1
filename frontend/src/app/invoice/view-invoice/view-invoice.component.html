@@ -1,0 +1,370 @@
+<form #invoiceForm="ngForm"  (ngSubmit)="onSubmit(invoiceForm)">
+<div class="row">
+
+	<div class="col-sm-12  p-b-10">
+		<div class="page-title-box">
+		    <div class="float-left">
+				<h4 class="page-title">{{title}} Details</h4>
+			</div>
+			
+			<div class="text-right float-right">
+				<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/invoice/'+backLink]" [queryParams]="{type:type}">Back</a>				
+			</div>
+		</div>	
+	</div>
+	
+
+	<div class="col-12 row" style="padding-top:20px;" *ngIf="loadingdata"  ><span class="spinner-border spinner-border-sm mr-1"></span></div>
+    <div class="col-12">
+	    
+        <div class="add card-box table-responsive" *ngIf="offerdata">
+                               				
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view">
+					<div style="font-size:16px; margin-bottom:15px; padding-bottom:5px; border-bottom:1px solid #cecece;display: inline-block; "> Invoice Number : {{ offerdata.invoice_number }}</div>
+					<!--
+					<h3>Certification Fee</h3>  
+					<div class="form-group row">									
+						
+						<div class="tbl-sec">
+							<table id="datatable" class="table table-bordered tab-bor col-12" >
+								<thead>
+								<tr>
+									<th scope="col" class="center">S.No</th>
+									<th scope="col">Activity</th>
+									<th scope="col">Description</th>
+									<th scope="col" class="text-right">Amount</th>									
+								</tr>
+								</thead>
+								<tbody>
+									<tr *ngIf="offerdata.offer_certification_fee?.length==0">
+											<td colspan="4" class="center">No Fee Added</td>
+									</tr>
+									<tr *ngFor="let feeEntry of offerdata.offer_certification_fee; let i=index; ">
+										<td scope="row" class="center">{{  1+ i }}</td>
+										<td>{{ feeEntry.activity }}</td>
+										<td>{{ feeEntry.description }}</td>
+										<td class="text-right">{{offerdata.offer.currency}} {{ feeEntry.amount | number :'1.2-2' }}</td>									
+									</tr>
+								</tbody>
+								<tfoot>
+									<tr>
+									   <td colspan="3" class="text-right"><strong>Sub-Total of Certification Fee</strong></td>
+									   <td class="text-right"><strong>{{offerdata.offer.currency}} {{offerdata.offer.certification_fee_sub_total | number :'1.2-2'}}</strong></td>
+									</tr>
+								</tfoot>
+							</table>
+						</div>						
+					</div>	
+					-->
+										
+					<div class="form-group row mb-0" *ngIf="offerdata.franchise_details">												
+						<div class="tbl-sec">
+							<table id="datatable" class="table table-bordered tab-bor col-12" style="border:0px;">
+								<tr>
+									<td width="70%">
+										<div style="font-size:24px;font-weight:bold;margin-bottom:40px;">{{offerdata.franchise_details.company_name}}</div>
+										<div class="m-b-5">{{offerdata.franchise_details.address}}, {{offerdata.franchise_details.city}} - {{offerdata.franchise_details.zipcode}}, {{offerdata.franchise_details.state}}, {{offerdata.franchise_details.country}}</div>
+										<div class="m-b-5">e-mail : {{offerdata.franchise_details.email}}, Ph. {{offerdata.franchise_details.telephone}}, Mobile: {{offerdata.franchise_details.mobile}}</div>
+										<div class="m-b-5">GST No. {{offerdata.franchise_details.gst_no}}</div>
+									</td>
+									<td width="30%" class="text-center">
+										<img src="{{weburl}}/images/header-img.png" border="0" style="width:206px;">						
+									</td>										
+								</tr>
+							</table>
+						</div>					
+					</div>					
+					<div class="form-group row">												
+						<div class="tbl-sec">
+							<table id="datatable" class="table table-bordered tab-bor col-12" >
+								<thead>
+								<tr>
+									<th scope="col" width="5%" class="center">S.No</th>
+									<!--
+									<th scope="col">Activity</th>
+									-->
+									<th scope="col">Description</th>
+									<th  *ngIf="type==1 || type==2" scope="col" class="center">Standard(s)</th>
+									<th scope="col" width="15%" class="text-right">Amount</th>									
+								</tr>
+								</thead>
+								<tbody>
+									<tr *ngIf="offerdata.offer_other_expenses?.length==0">
+											<td colspan="4" class="center">No Other Expenses Added</td>
+									</tr>
+									<tr *ngFor="let expenseEntry of offerdata.offer_other_expenses; let i=index; ">
+										<td scope="row" class="center">{{  1+ i }}</td>
+										<!--
+										<td>{{ expenseEntry.activity }}</td>
+										-->
+										<td>{{ expenseEntry.description }}</td>
+										<td class="center" *ngIf="type==1 || type==2">{{ expenseEntry.standard_label }}</td>
+										<td class="text-right">{{offerdata.offer.currency}} {{ expenseEntry.amount | number :'1.2-2' }}</td>									
+									</tr>
+								</tbody>
+								<tfoot>
+									<!--
+									<tr>
+										<td colspan="3" class="text-right"><strong>Sub-Total of Other Expenses</strong></td>
+										<td class="text-right"><strong>{{offerdata.offer.currency}} {{offerdata.offer.other_expense_sub_total | number :'1.2-2' }}</strong></td>										
+									</tr>
+									-->
+									
+									<tr>
+										<td [attr.colspan]="totalColSpan" class="text-right"><strong>TOTAL</strong></td>
+										<td class="text-right"><strong>{{offerdata.offer.currency}} {{offerdata.offer.total | number :'1.2-2' }}</strong></td>										
+									</tr>
+									
+									<tr *ngIf="offerdata.invoice_discount>0">
+										<td [attr.colspan]="totalColSpan" class="text-right"><strong>Discount</strong></td>
+										<td class="text-right"><strong>{{offerdata.offer.currency}} {{offerdata.invoice_discount | number :'1.2-2' }}</strong></td>
+									</tr>
+									
+									<tr *ngIf="offerdata.invoice_discount>0">
+										<td [attr.colspan]="totalColSpan" class="text-right"><strong>GRAND TOTAL</strong></td>
+										<td class="text-right"><strong>{{offerdata.offer.currency}} {{offerdata.invoice_grand_total_fee | number :'1.2-2' }}</strong></td>
+									</tr>									
+									
+									<tr>
+										<td [attr.colspan]="totalColSpan" class="text-right">{{offerdata.offer.taxname}} Rate</td>
+										<td class="text-right">{{offerdata.offer.currency}} {{offerdata.invoice_tax_amount | number :'1.2-2'}}</td>										
+									</tr>
+									
+									<tr>
+										<td [attr.colspan]="totalColSpan" class="text-right"><strong>TOTAL Payable Amount in {{currency_code}}</strong></td>
+										<td class="text-right"><strong>{{offerdata.offer.currency}} {{offerdata.offer.total_payable_amount | number :'1.2-2' }}</strong></td>										
+									</tr>
+									
+									<tr *ngIf="offerdata.offer.conversion_required_status==1">
+										<td style="border: 1px solid #d7d7d7;" [attr.colspan]="totalColSpan" align="center" class="text-center">
+											<b>Conversion rate  {{offerdata.offer.currency}} 1.00 = {{offerdata.offer.conversion_currency_code}} {{offerdata.offer.conversion_rate | number :'1.2-2'}}</b>
+											<br>
+											Conversion rate is valid for next 30 days
+										</td>
+										<td style="border: 1px solid #d7d7d7;padding-right:5px;" class="text-right"><strong>{{offerdata.offer.conversion_currency_code}} {{offerdata.offer.conversion_total_payable_amount | number :'1.2-2'}}</strong></td>
+									</tr>
+									
+								</tfoot>
+							</table>
+						</div>					
+						
+					</div>
+					
+					<div class="m-t-15"  *ngIf="offerdata.invoice_status=='3'">
+						<h3>Rejected Information</h3>											
+						<div class="card-box enq-view">	
+							<table class="table-secondary m-b-15">
+								<tr>
+									<th width="20%">Rejected By</th>
+									<td width="30%">{{offerdata.rejected_by}}</td>
+									<th width="20%">Rejected Date</th>
+									<td width="30%">{{offerdata.rejected_date}}</td>										
+								</tr>
+								<tr>
+									<th width="20%">Rejected Comment</th>
+									<td width="80%" colspan="3">{{offerdata.reject_comments}}</td>							
+								</tr>
+							</table>
+						</div>												
+					</div>
+
+					<h3>Payment Details</h3>  
+					<div class="form-group row" *ngIf="offerdata.oss_payment_details?.length>0">												
+						<div class="tbl-sec">
+							<table id="datatable" class="table table-bordered tab-bor col-12">
+								<tr *ngFor="let paymentEntry of offerdata.oss_payment_details; let i=index; ">
+									<td width="20%">{{paymentEntry.payment_label}}</td>
+									<td width="80%">{{paymentEntry.payment_content}}</td>										
+								</tr>
+							</table>
+						</div>					
+					</div>
+					
+					
+					<div class="row m-t-15"  *ngIf="(offerdata.invoice_status==offerdata?.enumStatus['payment_received'] || offerdata.invoice_status==offerdata?.enumStatus['payment_cancelled'])">
+	
+						<h3>Payment Status</h3> 
+						<div class="card-box enq-view">	
+							<table class="table-secondary m-b-15">
+								<tr>
+									<th width="20%">Payment Status</th>
+									<td width="30%">{{ offerdata.invoice_status_name }}</td>
+									<th width="20%">Payment date</th>
+									<td width="30%">{{ offerdata.paymentDetails.payment_date }}</td>
+								</tr>  
+								<tr>
+									<th width="20%">Comment</th>
+									<td colspan="3">{{ payment_comment }}</td>
+								</tr> 
+								<tr>
+									<th width="20%">Updated By</th>
+									<td width="30%">{{ offerdata.paymentDetails.payment_updated_by }}</td>
+									<th width="20%">Updated date</th>
+									<td width="30%">{{ offerdata.paymentDetails.payment_status_date }}</td>
+								</tr>  
+							</table>  
+						</div>               
+						
+					</div>						
+					<div class="form-group row" >
+					
+						<div class="col-lg-12 text-center mt-4 mb-4">
+							<button type="button" *ngIf="offerdata?.canGenerateInvoice" [routerLink]="['/invoice/invoice-generate']" [queryParams]="{id:offerdata.id,type:type}" [disabled]="loading" class="btn but-cust blue m-b-5 ">
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+								Edit Invoice
+							</button>							
+							
+							<button type="button" *ngIf="offerdata?.canSubmitForInvoiceApproval" [disabled]="loading" class="btn but-cust green m-b-5 ml-2" (click)="open(submitContent)" >
+							<span *ngIf="loading || loadingdata" class="spinner-border spinner-border-sm mr-1"></span>
+								Submit for Approval
+							</button>
+							
+							<button type="button" *ngIf="offerdata?.canDoInvoiceApproval" [disabled]="loading" class="btn but-cust green m-b-5 ml-2" (click)="open(confirmContent)" >
+							<span *ngIf="loading || loadingdata" class="spinner-border spinner-border-sm mr-1"></span>
+								Finalize
+							</button>
+
+							<button type="button" *ngIf="offerdata?.canDoInvoiceApproval  && userType != 3" [disabled]="loading" class="btn  but-cust  red m-b-5 ml-2" (click)="open(rejectContent)" >
+							<span *ngIf="loading || loadingdata" class="spinner-border spinner-border-sm mr-1"></span>
+								Reject
+							</button>
+							
+							<button *ngIf="(offerdata?.invoice_status>0) && (userdetails.resource_access==1 || ((userType==3 || userType==1 || userType==2)))" type="button" [disabled]="loading" class="btn but-cust green m-b-5 ml-2" (click)="downloadFile(offerdata.invoice_number,offerdata.id);openModel(downloading);">
+							<span *ngIf="loading || loadingdata" class="spinner-border spinner-border-sm mr-1"></span>
+							Download
+							</button>							
+							
+							
+						</div>
+					</div>
+
+					<div class="row m-t-15"  *ngIf="offerdata.canUpdatePaymentStatus">
+	
+						<h3>Payment Status</h3>                     
+						<ul class="tempdrivenform" style="margin-bottom:10px;">
+							<li style="width:100%; line-height:25px;">
+								<span class="label-pad" style="width: 20%;  padding-top:10px">Payment Date</span>
+								<div style="width:27%;display:block; float:left; padding:5px">
+									<input type="text" [(ngModel)]="paymentDate" name="payment_date"  class="form-control" placeholder="Payment Date *" matInput [matDatepicker]="payment_date" [max]="minDate" (click)="payment_date.open()" style="width:80%; float:left;" required>
+									<mat-datepicker-toggle matSuffix  [for]="payment_date" style="float:left;"></mat-datepicker-toggle>
+										<mat-datepicker #payment_date></mat-datepicker>
+									<div class="validationerror" *ngIf="payment_date_error && !paymentDate">
+										Please select the Payment Date
+									</div>
+								</div>
+							</li>
+							<li style="width:100%; line-height:25px;">
+								<span class="label-pad" style="width: 20%;  padding-top:10px">Payment Status</span>
+								<div style="width:25%;display:block; float:left; padding:5px">
+									<select  class="form-control" #paymentStatus="ngModel" name="payment_status"   [(ngModel)]="payment_status"  required  >
+										<option value="">-- Payment Status --</option>
+										<option *ngFor="let item of offerdata.paymentStatusArr | keyvalue" value="{{item.key}}" >{{ item.value }}</option>
+									</select>
+									<div class="validationerror" *ngIf="!paymentStatus.valid && paymentStatus.touched">
+										Please select the Payment Status
+									</div>
+								</div>
+							</li>
+							<li style="width:100%">
+								<span class="label-pad" style="width: 20%;">Comment</span>
+								<div style="width:40%;display:block; float:left; padding:5px;">
+									<textarea type="text" required #paymentComment="ngModel" name="payment_comment" [(ngModel)]="payment_comment" class="md-textarea form-control" mdbInput ></textarea>
+									<div class="validationerror" *ngIf="!paymentComment.valid && paymentComment.touched">
+										Please enter the comment
+									</div>
+								</div>
+							</li>
+						</ul>
+						<div class="col-lg-12 text-center mb-4">
+							<button [disabled]="loading || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10">
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+								Submit
+							</button>					
+						</div>
+					</div>
+					
+					
+
+
+							
+					<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+				</div>		
+        </div>
+	</div>	        
+	
+</div>	
+</form>
+<ng-template #submitContent let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+         
+           Are you sure, do you want to submit the invoice for approval ?
+         
+    </div>
+    <div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="checkUserSel('approval')">Ok</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+        
+    </div>
+</ng-template>
+
+<ng-template #confirmContent let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+         
+           Are you sure, do you want to finalize the invoice ?
+         
+    </div>
+    <div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="checkUserSel('finalize')">Ok</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+        
+    </div>
+</ng-template>
+
+
+<ng-template #rejectContent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Reject Invoice</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<form>
+			<div class="form-group">
+				<label for="status">Reason for reject</label>
+				<div class="input-group">
+							
+					<textarea name="comment" [(ngModel)]="model.comment" rows="4" style="width:100%;" ></textarea>
+					
+					<div class="validationerror" *ngIf="comment_error"  >Please enter the reason</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="checkUserSel('reject')">Save</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>
+
+<ng-template #downloading let-modal>
+	<div class="modal-header">
+			<h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+			Please wait, your file is downloading ...
+	</div>
+</ng-template>

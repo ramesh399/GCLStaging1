@@ -1,0 +1,284 @@
+<div class="row"  >
+    <div class="col-12">
+        <div class="card-box table-responsive">
+        	<div class="row col-12 m-b-5 pad-right">
+              	<div class="col-8 pad-left">
+                <h4 class="page-title">Audit RA Scope Holder</h4>
+                <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+                
+              	</div>
+               
+            </div>
+        
+            <div class="row col-12 m-b-5 pad-right">
+                <div class="col-4 text-left pad-left">
+                    <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                        <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+                    </select>
+                </div>
+                <div class="col-4 text-left p-t-5"></div>
+                <div class="col-4 text-right pad-right">
+                    Search: <input class="search-pad" type="text" name="searchTerm" [(ngModel)]="service.searchTerm"/>
+                </div>
+            </div>
+
+
+
+            <div class="col-12 pad-left">
+                <table id="datatable" class="table table-bordered" >
+                    <thead>
+						<tr>
+							<th width="5%" scope="col" class="center">S.No</th>
+							<th scope="col">Type of Risk</th>	
+							<th width="15%" scope="col">Audit Type</th>
+                            <th width="15%" scope="col">Created At</th>	
+							<th width="10%" class="text-center" scope="col">Action</th>	
+						</tr>
+                    </thead>
+                    <tbody>
+						<tr *ngFor="let scope_holder of scope_holders$ | async; let i=index; ">
+							<td scope="row" class="center">{{ 1+i+ service.pageNo }}</td>
+						   
+							<td><ngb-highlight [result]="scope_holder.type_of_risk_label"  [term]="service.searchTerm"></ngb-highlight></td>
+							<td><ngb-highlight [result]="scope_holder.audit_type_label"  [term]="service.searchTerm"></ngb-highlight></td>
+                            <td><ngb-highlight [result]="scope_holder.created_at"  [term]="service.searchTerm"></ngb-highlight></td>
+							<td  class="center">
+								<a href="javascript:void(0);" (click)="viewScopeHolder(scope_holderDetails,scope_holder)" title="View" alt="View"> <i class="fa fa-eye"></i> </a>
+								<a href="javascript:void(0);" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('edit_audit_scope_holder')" (click)="editScopeHolder(i,scope_holder)" title="Edit" alt="Edit" class="pl-2"> <i class="fa fa-edit"></i> </a>
+								<a href="javascript:void(0);" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('delete_audit_scope_holder')" (click)="removeScopeHolder(confirmcontent,i,scope_holder)" title="Delete" alt="Delete" class="pl-2"> <i class="fa fa-trash text-danger"></i> </a>
+							</td>
+						</tr>
+						<tr  *ngIf="(scope_holders$ | async)?.length==0" >
+							<td colspan="5" class="center">{{ commontxt.norecords }}</td>
+						</tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex justify-content-between p-2">
+                <ngb-pagination maxSize="10" rotate=true [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+                    <ng-template ngbPaginationPrevious>Prev</ng-template>
+                    <ng-template ngbPaginationNext>Next</ng-template>			  
+                </ngb-pagination>
+            </div>
+   		</div>
+	</div>
+</div>
+<div class="row" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('add_audit_scope_holder') || (userdetails.rules.includes('edit_audit_scope_holder') && scope_holderData)">
+    <div class="col-12">
+        <div class="add card-box table-responsive enq-view">                      
+			<h3>{{editStatus == 1 ? 'Update' : 'Add'}} Audit Ra Scope Holder </h3>                             
+			<form  [formGroup]="form" (ngSubmit)="onSubmit()">
+				<div class="form-group row">
+
+					<div class="col-6">
+						<label>Type of Risk <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Type of Risk" matTooltipClass="tooltip-text-size" aria-tooltip="Type of Risk" matTooltipPosition="right"></i>
+						<select formControlName="type_of_risk_id" [class.is-invalid]="f.type_of_risk_id.invalid && f.type_of_risk_id.touched" class="form-control select2">
+							<option value="">-- Type of Risk --</option>
+							<option  *ngFor="let item of risklist" value="{{item.id}}">{{item.name}}</option>
+						</select>
+						<div *ngIf="f.type_of_risk_id.errors" class="invalid-feedback">
+							<div *ngIf="f.type_of_risk_id.errors.required" >Type of Risk is required</div>
+						</div>
+					</div>          
+
+					<div class="col-6">
+						<label>Audit Type <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Audit Type" matTooltipClass="tooltip-text-size" aria-tooltip="Audit Type" matTooltipPosition="right"></i>
+						<select formControlName="audit_type_id" [class.is-invalid]="f.audit_type_id.invalid && f.audit_type_id.touched" class="form-control select2">
+							<option value="">-- Audit Type --</option>
+							<option  *ngFor="let item of auditTypelist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+						</select>
+						<div *ngIf="f.audit_type_id.errors" class="invalid-feedback">
+							<div *ngIf="f.audit_type_id.errors.required" >Audit Type is required</div>
+						</div>
+					</div>   
+
+					
+				</div> 
+				
+				<div class="form-group row">
+					
+					<div class="col-6">
+						<label>Potential Risks <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Potential Risks" matTooltipClass="tooltip-text-size" aria-tooltip="Potential Risks" matTooltipPosition="right"></i>
+                        <input type="text" formControlName="potential_risks"  class="form-control" placeholder="Potential Risks" [class.is-invalid]="f.potential_risks.invalid && f.potential_risks.touched">
+                        
+                        <div *ngIf="f.potential_risks.errors" class="invalid-feedback">
+                            <div *ngIf="f.potential_risks.errors.required">Potential Risks is required</div>
+							<div *ngIf="f.potential_risks.hasError('whitespace')" >Invalid Potential Risks</div>
+                        </div>
+					</div>
+
+					 
+
+                    <div class="col-6">
+						<label>Measure/s for Risk Reduction <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Measure/s for Risk Reduction" matTooltipClass="tooltip-text-size" aria-tooltip="Measure/s for Risk Reduction" matTooltipPosition="right"></i>
+                        <input type="text" formControlName="measures_for_risk_reduction"  class="form-control" placeholder="Measure/s for Risk Reduction" [class.is-invalid]="f.measures_for_risk_reduction.invalid && f.measures_for_risk_reduction.touched">
+                        
+                        <div *ngIf="f.measures_for_risk_reduction.errors" class="invalid-feedback">
+                            <div *ngIf="f.measures_for_risk_reduction.errors.required">Measure/s for Risk Reduction is required</div>
+							<div *ngIf="f.measures_for_risk_reduction.hasError('whitespace')" >Invalid Measure/s for Risk Reduction</div>
+                        </div>
+					</div>
+					
+                </div>
+                
+                
+                <div class="form-group row">
+					
+					<div class="col-6">
+						<label>Frequency of risk <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Frequency of risk" matTooltipClass="tooltip-text-size" aria-tooltip="Frequency of risk" matTooltipPosition="right"></i>
+                        <input type="text" formControlName="frequency_of_risk"  class="form-control" placeholder="Frequency of risk" [class.is-invalid]="f.frequency_of_risk.invalid && f.frequency_of_risk.touched">
+                        
+                        <div *ngIf="f.frequency_of_risk.errors" class="invalid-feedback">
+                            <div *ngIf="f.frequency_of_risk.errors.required">Frequency of risk is required</div>
+							<div *ngIf="f.frequency_of_risk.hasError('whitespace')" >Invalid Frequency of risk</div>
+                        </div>
+					</div>
+
+					 
+
+                    <div class="col-6">
+						<label>Probability Rate <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Probability Rate" matTooltipClass="tooltip-text-size" aria-tooltip="Probability Rate" matTooltipPosition="right"></i>
+                        <input type="text" formControlName="probability_rate"  class="form-control" placeholder="Probability Rate" [class.is-invalid]="f.probability_rate.invalid && f.probability_rate.touched">
+                        
+                        <div *ngIf="f.probability_rate.errors" class="invalid-feedback">
+                            <div *ngIf="f.probability_rate.errors.required">Probability Rate is required</div>
+							<div *ngIf="f.probability_rate.hasError('whitespace')" >Invalid Probability Rate</div>
+                        </div>
+					</div>
+					
+                </div>
+                
+
+                <div class="form-group row">
+					
+					<div class="col-6">
+						<label>Responsible Person <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Responsible Person" matTooltipClass="tooltip-text-size" aria-tooltip="Responsible Person" matTooltipPosition="right"></i>
+                        <input type="text" formControlName="responsible_person"  class="form-control" placeholder="Responsible Person" [class.is-invalid]="f.responsible_person.invalid && f.responsible_person.touched">
+                        
+                        <div *ngIf="f.responsible_person.errors" class="invalid-feedback">
+                            <div *ngIf="f.responsible_person.errors.required">Responsible Person is required</div>
+							<div *ngIf="f.responsible_person.hasError('whitespace')" >Invalid Responsible Person</div>
+                        </div>
+					</div>
+
+					 
+
+                    <div class="col-6">
+						<label>Conformity <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Conformity" matTooltipClass="tooltip-text-size" aria-tooltip="Conformity" matTooltipPosition="right"></i>
+						<select formControlName="conformity" [class.is-invalid]="f.conformity.invalid && f.conformity.touched" class="form-control select2">
+							<option value="">-- Conformity --</option>
+							<option  *ngFor="let item of conformitylist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+						</select>
+						<div *ngIf="f.conformity.errors" class="invalid-feedback">
+							<div *ngIf="f.conformity.errors.required" >Conformity is required</div>
+						</div>
+					</div>   
+					
+                </div>
+                
+                <div class="form-group row">
+                    <div class="col-6">
+                        <label>Description of risks <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Description of risks" matTooltipClass="tooltip-text-size" aria-tooltip="Description of risks" matTooltipPosition="right"></i>
+                        <textarea type="text" formControlName="description_of_risk" [class.is-invalid]="f.description_of_risk.invalid && f.description_of_risk.touched " class="form-control" placeholder="Description of risks *" ></textarea>
+                        <div *ngIf="f.description_of_risk.errors" class="invalid-feedback">
+                            <div *ngIf="f.description_of_risk.errors.required" >Description of risks is required</div>
+                            <div *ngIf="f.description_of_risk.hasError('whitespace')" >Invalid Description of risks</div>
+                        </div>
+                    </div>   
+                    
+                    <div class="col-6">
+                        <label>Auditor Commments <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Auditor Commments" matTooltipClass="tooltip-text-size" aria-tooltip="Auditor Commments" matTooltipPosition="right"></i>
+                        <textarea type="text" formControlName="auditor_comments" [class.is-invalid]="f.auditor_comments.invalid && f.auditor_comments.touched " class="form-control" placeholder="Auditor Commments *" ></textarea>
+                        <div *ngIf="f.auditor_comments.errors" class="invalid-feedback">
+                            <div *ngIf="f.auditor_comments.errors.required" >Auditor Commments is required</div>
+                            <div *ngIf="f.auditor_comments.hasError('whitespace')" >Invalid Auditor Commments</div>
+                        </div>
+                    </div>   
+                </div>
+                   
+							
+				<div class="col-lg-12 text-center mt-4 mb-4">
+					<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="addscope_holder()">
+						<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+						{{editStatus == 1 ? 'Update' : 'Save'}}	
+					</button>
+					<button [disabled]="loading['button'] || buttonDisable" type="button" (click)="scope_holderFormreset()"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Reset</button>
+
+					<div class="clearfix"></div>
+						
+					
+				</div>
+			</form>				             
+        </div>
+    </div>
+</div>
+<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+
+<ng-template #scope_holderDetails let-modal>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+	<div class="modal-body" style="font-size:16px;">
+		<div class="card-box enq-view">		
+			<table class="table-secondary m-b-15" *ngIf="ScopeHolderData">
+				<tr>
+					<th width="20%">Type of Risk</th>
+					<td width="30%">{{ ScopeHolderData.type_of_risk_label }}</td>
+					<th width="20%">Audit Type</th>
+					<td width="30%">{{ ScopeHolderData.audit_type_label }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Potential Risks</th>
+					<td width="30%">{{ ScopeHolderData.potential_risks }}</td>
+					<th width="20%">Risk Reduction Measures</th>
+					<td width="30%">{{ ScopeHolderData.measures_for_risk_reduction }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Frequency of risk</th>
+					<td width="30%">{{ ScopeHolderData.frequency_of_risk }}</td>
+					<th width="20%">Probability Rate</th>
+					<td width="30%">{{ ScopeHolderData.audit_type_label }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Responsible Person</th>
+					<td width="30%">{{ ScopeHolderData.responsible_person }}</td>
+					<th width="20%">Conformity</th>
+					<td width="30%">{{ ScopeHolderData.conformity }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Description of risks</th>
+					<td colspan="3">{{ ScopeHolderData.description_of_risk }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Auditor Commments</th>
+					<td colspan="3">{{ ScopeHolderData.auditor_comments }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Created By</th>
+					<td width="30%">{{ ScopeHolderData.created_by_label }}</td>
+					<th width="20%">Created Date</th>
+					<td width="30%">{{ ScopeHolderData.created_at }}</td>
+				</tr>	
+			</table>
+			
+			<div style="text-align: center;">
+				<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="modal.dismiss('cancel click')" >Close</a>
+			</div>
+		</div>
+    </div>
+</ng-template>
+<ng-template #confirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to delete the data?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>	
+	</div>
+</ng-template>

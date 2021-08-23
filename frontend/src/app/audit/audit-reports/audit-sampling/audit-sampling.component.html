@@ -1,0 +1,801 @@
+<!--
+<div class="row"  >
+    <div class="col-12">
+        <div class="card-box table-responsive">
+        	<div class="row col-12 m-b-5 pad-right">
+              	<div class="col-8 pad-left">
+                <h4 class="page-title">Audit Sampling</h4>
+                <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+                
+              	</div>
+               
+            </div>
+        
+            <div class="row col-12 m-b-5 pad-right">
+                <div class="col-4 text-left pad-left">
+                    <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                        <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+                    </select>
+                </div>
+                <div class="col-4 text-left p-t-5"></div>
+                <div class="col-4 text-right pad-right">
+                    Search: <input class="search-pad" type="text" name="searchTerm" [(ngModel)]="service.searchTerm"/>
+                </div>
+            </div>
+		
+
+			<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+			
+			<h3>Sampling</h3>	
+            <div class="col-12 pad-left">
+                <table id="datatable" class="table table-bordered" >
+                    <thead>
+						<tr>
+							<th width="5%" scope="col" class="center">S.No</th>
+							<th scope="col">Operator Title</th>	
+                            <th width="15%" scope="col">Sampling Date</th>
+                            <th width="15%" scope="col">Samples Were taken from</th>
+                            <th width="15%" scope="col">Created At</th>	
+							<th width="10%" class="text-center" scope="col">Action</th>	
+						</tr>
+                    </thead>
+                    <tbody>
+						<tr *ngFor="let sampling of samplings$ | async; let i=index; ">
+							<td scope="row" class="center">{{ 1+i+ service.pageNo }}</td>
+						   
+							<td><ngb-highlight [result]="sampling.operator_title"  [term]="service.searchTerm"></ngb-highlight></td>
+                            <td><ngb-highlight [result]="sampling.sampling_date"  [term]="service.searchTerm"></ngb-highlight></td>
+                            <td><ngb-highlight [result]="sampling.samples_were_taken_from"  [term]="service.searchTerm"></ngb-highlight></td>
+                            <td><ngb-highlight [result]="sampling.created_at"  [term]="service.searchTerm"></ngb-highlight></td>
+							<td  class="center">
+								<a href="javascript:void(0);" (click)="viewSampling(samplingDetails,sampling)" title="View" alt="View"> <i class="fa fa-eye"></i> </a>
+								<a href="javascript:void(0);" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('edit_audit_sampling')" (click)="editSampling(i,sampling)" title="Edit" alt="Edit" class="pl-2"> <i class="fa fa-edit"></i> </a>
+								<a href="javascript:void(0);" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('delete_audit_sampling')" (click)="removeSampling(confirmcontent,i,sampling)" title="Delete" alt="Delete" class="pl-2"> <i class="fa fa-trash text-danger"></i> </a>
+							</td>
+						</tr>
+						<tr  *ngIf="(samplings$ | async)?.length==0" >
+							<td colspan="6" class="center">{{ commontxt.norecords }}</td>
+						</tr>
+                    </tbody>
+                </table>
+            </div>
+			
+		 
+            <div class="d-flex justify-content-between p-2">
+                <ngb-pagination maxSize="10" rotate=true [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+                    <ng-template ngbPaginationPrevious>Prev</ng-template>
+                    <ng-template ngbPaginationNext>Next</ng-template>			  
+                </ngb-pagination>
+            </div>
+   		</div>
+	</div>
+</div>
+-->
+    
+	<div class="col-12 row enq-view pad-right" >
+		<div class="col-8 text-primary" style="border-bottom: 1px solid #d7d7d7;font-size:16px;padding-left:0px;">
+			Sampling
+        </div>
+        
+        <div class="col-4 text-right pad-right" style="border-bottom: 1px solid #d7d7d7;" >
+            <ng-container *ngIf="!cond_viewonly && dataloaded" >
+                <div class="radio" >
+                    Is it applicable?&nbsp;&nbsp;&nbsp;						
+                    <input type="radio" id="yes" [checked]="this.isItApplicable?true:false" value="1" (change)="isItApp(1)"><label for="yes">Yes</label>
+                    &nbsp;&nbsp;&nbsp;
+                    <input type="radio" id="no" [checked]="!this.isItApplicable?true:false" value="2" (change)="isItApp(2)"><label for="no">No</label>										
+                </div>
+            </ng-container>
+		</div>
+	</div>
+	<div class="col-12" *ngIf="!dataloaded">
+        <span class="spinner-border spinner-border-sm mr-1"></span>
+    </div>
+	<div *ngIf="!isItApplicable && dataloaded" class="m-t-5">
+		<form  [formGroup]="remarkForm">
+			<div class="form-group row">					
+				<div class="col-12">
+                    <label>Remarks <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Remarks" matTooltipClass="tooltip-text-size" aria-tooltip="Remarks" matTooltipPosition="right"></i>
+                    
+                    <ng-container *ngIf="cond_viewonly">
+                        <div>{{rf.remark.value }}</div>
+                    </ng-container>
+                    <ng-container *ngIf="!cond_viewonly">
+                        <textarea rows="5" formControlName="remark" [class.is-invalid]="rf.remark.invalid && rf.remark.touched" placeholder="Remarks" class="form-control" ></textarea>
+                        <div *ngIf="rf.remark.errors" class="invalid-feedback">
+                            <div *ngIf="rf.remark.errors.required">Remarks cannot be blank.</div>
+                            <div *ngIf="rf.remark.hasError('whitespace')">Invalid Remarks</div>
+                        </div>
+                    </ng-container>
+				</div>				
+			</div> 											
+			<ng-container *ngIf="!cond_viewonly">		
+                <div class="col-lg-12 text-center mt-4 mb-4">
+                    <button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="addRemark()">
+                        <span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+                        {{editStatus == 1 ? 'Update' : 'Save'}}	
+                    </button>
+                    <button [disabled]="loading['button'] || buttonDisable" type="button" (click)="remarkFormreset()"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Reset</button>
+                    <div class="clearfix"></div>				
+                </div>
+            </ng-container>
+		</form>
+	</div>
+
+    <div class="clearfix"></div>
+    <div class="form-group row col-12 pad-right" *ngIf="isItApplicable && dataloaded &&  (userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('audit_execution')) || userdetails.rules.includes('add_audit_sampling') || (userdetails.rules.includes('edit_audit_sampling') && samplingData))">
+            <!--
+            <div class="add card-box table-responsive enq-view">  
+            -->		
+                
+                 
+                    <!--
+                    <div class="tabDiv col-12"> 
+                        <h3>{{editStatus == 1 ? 'Update' : 'Add'}} Audit sampling </h3>  
+                    -->					
+                        
+                            <ng-container *ngIf="!cond_viewonly">
+                                <form  [formGroup]="form" (ngSubmit)="onSubmit()" style="width:100%;" >
+                                <div class="form-group row m-t-15">
+
+                                    <div class="col-4">
+                                        <label>Operator Title <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Operator Title" matTooltipClass="tooltip-text-size" aria-tooltip="Operator Title" matTooltipPosition="right"></i>
+                                        <input type="text" formControlName="operator_title"  class="form-control" placeholder="Operator Title" [class.is-invalid]="f.operator_title.invalid && f.operator_title.touched">
+                                        
+                                        <div *ngIf="f.operator_title.errors" class="invalid-feedback">
+                                            <div *ngIf="f.operator_title.errors.required">Operator Title is required</div>
+                                            <div *ngIf="f.operator_title.hasError('whitespace')" >Invalid Operator Title</div>
+                                            <div *ngIf="f.operator_title.errors.maxlength">Operator Title cannot exceed 255 characters</div>
+                                        </div>
+                                    </div>     
+
+                                    <div class="col-3">
+                                        <label>Date <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Date" matTooltipClass="tooltip-text-size" aria-tooltip="Date" matTooltipPosition="right"></i><br>
+                                        <input readonly  style="width: 80%; display: inline;float:left;" type="text" formControlName="sampling_date" class="form-control" placeholder="Date" [class.is-invalid]="f.sampling_date.invalid && f.sampling_date.touched" matInput [matDatepicker]="sampling_date" (click)="sampling_date.open()">
+                                        <mat-datepicker-toggle matSuffix  [for]="sampling_date"></mat-datepicker-toggle>
+                                        <mat-datepicker #sampling_date></mat-datepicker>
+                                        
+                                        <div *ngIf="f.sampling_date.errors" class="invalid-feedback">
+                                            <div *ngIf="f.sampling_date.errors.required">Date is required</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-5">
+                                        <label>Operator Responsible person present during sampling <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Operator Responsible person present during sampling" matTooltipClass="tooltip-text-size" aria-tooltip="Operator Responsible person present during sampling" matTooltipPosition="right"></i>
+                                        <input type="text" formControlName="operator_responsible_person"  class="form-control" placeholder="Operator Responsible person present during sampling" [class.is-invalid]="f.operator_responsible_person.invalid && f.operator_responsible_person.touched">
+                                        
+                                        <div *ngIf="f.operator_responsible_person.errors" class="invalid-feedback">
+                                            <div *ngIf="f.operator_responsible_person.errors.required">Operator Responsible person is required</div>
+                                            <div *ngIf="f.operator_responsible_person.hasError('whitespace')" >Invalid Operator Responsible person</div>
+                                            <div *ngIf="f.operator_responsible_person.errors.maxlength">Responsible person cannot exceed 255 characters</div>
+                                        </div>
+                                    </div>
+                                </div> 
+                                
+                                <div class="form-group row">
+                                    
+                                    
+                                    
+
+                                    <div class="col-6">
+                                        <label>GCL Sample No:  (Please use the current number from GCL PCSTR) <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="GCL Sample No" matTooltipClass="tooltip-text-size" aria-tooltip="GCL Sample No" matTooltipPosition="right"></i>
+                                        <input type="text" formControlName="sample_no"  class="form-control" placeholder="GCL Sample No" [class.is-invalid]="f.sample_no.invalid && f.sample_no.touched">
+                                        
+                                        <div *ngIf="f.sample_no.errors" class="invalid-feedback">
+                                            <div *ngIf="f.sample_no.errors.required">GCL Sample No is required</div>
+                                            <div *ngIf="f.sample_no.hasError('whitespace')" >Invalid GCL Sample No</div>
+                                            <div *ngIf="f.sample_no.errors.maxlength">GCL Sample No cannot exceed 255 characters</div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                
+                                
+                                <div class="form-group row">
+                                    
+                                    <div class="col-4">
+                                        <label>GCL staff who took sample <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="GCL staff who took sample" matTooltipClass="tooltip-text-size" aria-tooltip="GCL staff who took sample" matTooltipPosition="right"></i>
+                                        <input type="text" formControlName="staff_who_took_sample"  class="form-control" placeholder="GCL staff who took sample" [class.is-invalid]="f.staff_who_took_sample.invalid && f.staff_who_took_sample.touched">
+                                        
+                                        <div *ngIf="f.staff_who_took_sample.errors" class="invalid-feedback">
+                                            <div *ngIf="f.staff_who_took_sample.errors.required">GCL staff is required</div>
+                                            <div *ngIf="f.staff_who_took_sample.hasError('whitespace')" >Invalid GCL staff</div>
+                                            <div *ngIf="f.staff_who_took_sample.errors.maxlength">GCL staff cannot exceed 255 characters</div>
+                                        </div>
+                                    </div>
+                                    
+
+                                    <div class="col-4">
+                                        <label>Type of samples <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Type of samples" matTooltipClass="tooltip-text-size" aria-tooltip="Type of samples" matTooltipPosition="right"></i>
+                                        <input type="text" formControlName="type_of_samples"  class="form-control" placeholder="Type of samples" [class.is-invalid]="f.type_of_samples.invalid && f.type_of_samples.touched">
+                                        
+                                        <div *ngIf="f.type_of_samples.errors" class="invalid-feedback">
+                                            <div *ngIf="f.type_of_samples.errors.required">Type of samples is required</div>
+                                            <div *ngIf="f.type_of_samples.hasError('whitespace')" >Invalid Type of samples</div>
+                                            <div *ngIf="f.type_of_samples.errors.maxlength">Type of samples cannot exceed 255 characters</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <label>Samples were taken from <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Samples were taken from" matTooltipClass="tooltip-text-size" aria-tooltip="Samples were taken from" matTooltipPosition="right"></i>
+                                        <input type="text" formControlName="samples_were_taken_from"  class="form-control" placeholder="Samples were taken from" [class.is-invalid]="f.samples_were_taken_from.invalid && f.samples_were_taken_from.touched">
+                                        
+                                        <div *ngIf="f.samples_were_taken_from.errors" class="invalid-feedback">
+                                            <div *ngIf="f.samples_were_taken_from.errors.required">Samples were taken from is required</div>
+                                            <div *ngIf="f.samples_were_taken_from.hasError('whitespace')" >Invalid Samples were taken from</div>
+                                            <div *ngIf="f.samples_were_taken_from.errors.maxlength">Samples were taken from cannot exceed 255 characters</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+
+                            <!-- <div class="form-group row">
+                                    
+                                    
+                                    
+
+                                    
+                                    <div class="col-6">
+                                        <label>Storage room <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Storage room" matTooltipClass="tooltip-text-size" aria-tooltip="Storage room" matTooltipPosition="right"></i>
+                                        <input type="text" formControlName="storage_room"  class="form-control" placeholder="Storage room" [class.is-invalid]="f.storage_room.invalid && f.storage_room.touched">
+                                        
+                                        <div *ngIf="f.storage_room.errors" class="invalid-feedback">
+                                            <div *ngIf="f.storage_room.errors.required">Storage room is required</div>
+                                            <div *ngIf="f.storage_room.hasError('whitespace')" >Invalid Storage room</div>
+                                            <div *ngIf="f.storage_room.errors.maxlength">Storage room cannot exceed 255 characters</div>
+                                        </div>
+                                    </div>
+                                
+                                </div>
+                                -->
+                                <!--
+                                <div class="form-group row">
+                                    
+                                    <div class="col-6">
+                                        <label>Processing line <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Processing line" matTooltipClass="tooltip-text-size" aria-tooltip="Processing line" matTooltipPosition="right"></i>
+                                        <input type="text" formControlName="processing_line"  class="form-control" placeholder="Processing line" [class.is-invalid]="f.processing_line.invalid && f.processing_line.touched">
+                                        
+                                        <div *ngIf="f.processing_line.errors" class="invalid-feedback">
+                                            <div *ngIf="f.processing_line.errors.required">Processing line is required</div>
+                                            <div *ngIf="f.processing_line.hasError('whitespace')" >Invalid Processing line</div>
+                                            <div *ngIf="f.processing_line.errors.maxlength">Processing line cannot exceed 255 characters</div>
+                                        </div>
+                                    </div>
+                                    
+
+                                    <div class="col-6">
+                                        <label>Other Such as Market <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Other Such as Market" matTooltipClass="tooltip-text-size" aria-tooltip="Other Such as Market" matTooltipPosition="right"></i>
+                                        <input type="text" formControlName="other_such_as_market"  class="form-control" placeholder="Other Such as Market" [class.is-invalid]="f.other_such_as_market.invalid && f.other_such_as_market.touched">
+                                        
+                                        <div *ngIf="f.other_such_as_market.errors" class="invalid-feedback">
+                                            <div *ngIf="f.other_such_as_market.errors.required">Other Such as Market is required</div>
+                                            <div *ngIf="f.other_such_as_market.hasError('whitespace')" >Invalid Other Such as Market</div>
+                                            <div *ngIf="f.other_such_as_market.errors.maxlength">Other Such as Market cannot exceed 255 characters</div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                -->
+                                <div class="form-group row">
+                                    
+                                    <div class="col-6">
+                                        <label>Number of sub samples per sample <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Number of sub samples per sample" matTooltipClass="tooltip-text-size" aria-tooltip="Number of sub samples per sample" matTooltipPosition="right"></i>
+                                        <input type="text" formControlName="number_of_sub_samples_per_sample"  class="form-control" placeholder="Number of sub samples per sample" [class.is-invalid]="f.number_of_sub_samples_per_sample.invalid && f.number_of_sub_samples_per_sample.touched">
+                                        
+                                        <div *ngIf="f.number_of_sub_samples_per_sample.errors" class="invalid-feedback">
+                                            <div *ngIf="f.number_of_sub_samples_per_sample.errors.required">Number of sub samples is required</div>
+                                            <div *ngIf="f.number_of_sub_samples_per_sample.errors.pattern" >Invalid Number of sub samples</div>
+                                            <div *ngIf="f.number_of_sub_samples_per_sample.errors.maxlength">Number of sub samples cannot exceed 255 characters</div>
+                                        </div>
+                                    </div>
+                                    
+
+                                    <div class="col-6">
+                                        <label>Describe other details of sampling method <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Describe other details of sampling method" matTooltipClass="tooltip-text-size" aria-tooltip="Describe other details of sampling method" matTooltipPosition="right"></i>
+                                        <input type="text" formControlName="describe_other_details_of_sampling_method"  class="form-control" placeholder="Describe other details of sampling method" [class.is-invalid]="f.describe_other_details_of_sampling_method.invalid && f.describe_other_details_of_sampling_method.touched">
+                                        
+                                        <div *ngIf="f.describe_other_details_of_sampling_method.errors" class="invalid-feedback">
+                                            <div *ngIf="f.describe_other_details_of_sampling_method.errors.required">Details of sampling method is required</div>
+                                            <div *ngIf="f.describe_other_details_of_sampling_method.hasError('whitespace')" >Invalid Details of sampling method</div>
+                                            <div *ngIf="f.describe_other_details_of_sampling_method.errors.maxlength">Details of sampling method cannot exceed 255 characters</div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+
+
+                                <div class="form-group row line-sec-prd"  >
+                                    <!--
+                                    <div style="float:right;">
+                                        <a href="javascript:void(0);" (click)="addsample(logEntry)" title="Add Log" alt="Add Log"> <i class="fa fa-plus"></i> </a>
+                                    </div>							
+                                    -->
+                                    <div class="col-12" >
+                                        <h3>List of Samples</h3>
+                                        <table  id="datatable" class="table table-bordered tab-bor col-12" >
+                                            <thead>
+                                            <tr>
+                                                <th width="5%" scope="col" class="center">S.No</th>
+                                                <th scope="col">Sample (bag) number</th>	
+                                                <th scope="col">Taken from</th>		
+                                                <th width="10%" scope="col" class="text-center">Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngIf="sampleEntries?.length==0">
+                                                    <td colspan="5" class="center">No Sample Added</td>
+                                                </tr>
+                                                <tr *ngFor="let sampleEntry of sampleEntries; let i=index; ">
+                                                    <td scope="row" class="center">{{  1+ i }}</td>
+                                                    <td>{{ sampleEntry.sample_number }}</td>
+                                                    <td>{{ sampleEntry.taken_from }}</td>
+                                                    <td  class="center">
+                                                        <a href="javascript:void(0);" (click)="editSample(i)" title="Edit" alt="Edit" > <i class="fa fa-edit"></i> </a>
+                                                        &nbsp;
+                                                        <a href="javascript:void(0);" (click)="removeSample(i)" title="Delete" alt="Delete"  > <i class="fa fa-trash text-danger"></i> </a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+                                        
+
+
+                                    </div>
+                                    
+                                    <div class="row col-12">
+                                    
+                                        <div class="col-4">
+                                            <label>Sample (bag) number <span class="text-danger">*</span></label>
+                                            <input type="text" formControlName="sample_number"  class="form-control" placeholder="Sample (bag) number" [class.is-invalid]="f.sample_number.invalid && f.sample_number.touched">
+                                            <div *ngIf="f.sample_number.errors" class="invalid-feedback">
+                                                <div *ngIf="f.sample_number.errors.required">Sample (bag) number cannot be blank.</div>
+                                                <div *ngIf="f.sample_number.errors.pattern">Invalid Sample (bag) number</div>
+                                                <div *ngIf="f.sample_number.errors.maxlength">Sample (bag) number cannot exceed 255 characters</div>
+                                            </div>
+                                        </div>
+                                    
+                                        <div class="col-4">
+                                            <label>Taken from (batch N°, or other reference) <span class="text-danger">*</span></label>
+                                            <input type="text" formControlName="taken_from"  class="form-control" placeholder="Taken from" [class.is-invalid]="f.taken_from.invalid && f.taken_from.touched">
+                                            <div *ngIf="f.taken_from.errors" class="invalid-feedback">
+                                                <div *ngIf="f.taken_from.errors.required">Taken from cannot be blank.</div>
+                                                <div *ngIf="f.taken_from.errors.pattern || f.taken_from.hasError('whitespace')">Invalid Taken from</div>
+                                                <div *ngIf="f.taken_from.errors.maxlength">Taken from cannot exceed 255 characters</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4" style="padding-top:28px;" >
+                                            <a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="addSample()"  >+Add Sample</a>
+                                        </div>
+                                        
+                                    </div>
+                                    
+                                </div>
+                                
+
+                                <div class="form-group row">
+                                    <div class="col-12">
+                                        <label style="float: left;padding-top:6px">Samples were taken based on a specific suspicion <span class="text-danger">*</span> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Samples were taken based on a specific suspicion" matTooltipClass="tooltip-text-size" aria-tooltip="Samples were taken based on a specific suspicion" matTooltipPosition="right"></i></label> 
+                                    
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                        <select formControlName="samples_were_taken_based_on_a_specific_suspicion" class="form-control select2" [class.is-invalid]="f.samples_were_taken_based_on_a_specific_suspicion.invalid &&
+                                        f.samples_were_taken_based_on_a_specific_suspicion.touched" style="float: left; width:100px;">
+                                            <option value="" >-- Select --</option>
+                                            <option value="1">Yes</option>
+                                            <option value="2">No</option>
+                                        </select>
+                                        
+                                        <div *ngIf="f.samples_were_taken_based_on_a_specific_suspicion.errors" class="invalid-feedback"><br>
+                                            <div *ngIf="f.samples_were_taken_based_on_a_specific_suspicion.errors.required" >Samples were taken is required</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row"  *ngIf="f.samples_were_taken_based_on_a_specific_suspicion.value==1">
+                                    <div class="col-12">
+                                        <label>State the Reason <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Reason" matTooltipClass="tooltip-text-size" aria-tooltip="Reason" matTooltipPosition="right"></i>
+                                                
+                                        <textarea rows="2" formControlName="reason" [class.is-invalid]="f.reason.invalid && f.reason.touched" placeholder="Reason" class="form-control" ></textarea>
+                                        <div *ngIf="f.reason.errors" class="invalid-feedback">
+                                            <div *ngIf="f.reason.errors.required">Reason cannot be blank.</div>
+                                            <div *ngIf="f.reason.errors.pattern || f.reason.hasError('whitespace')">Invalid Reason</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <h3>Number of samples taken along by GCL representative</h3>
+                                <div class="form-group row">
+                                    
+                                    <div class="col-4">
+                                        <label>Sealed <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Sealed" matTooltipClass="tooltip-text-size" aria-tooltip="Sealed" matTooltipPosition="right"></i>
+                                        <input type="text" formControlName="representative_sealed"  class="form-control" placeholder="Sealed" [class.is-invalid]="f.representative_sealed.invalid && f.representative_sealed.touched">
+                                        
+                                        <div *ngIf="f.representative_sealed.errors" class="invalid-feedback">
+                                            <div *ngIf="f.representative_sealed.errors.required">Sealed is required</div>
+                                            <div *ngIf="f.representative_sealed.hasError('whitespace')" >Invalid Sealed</div>
+                                            <div *ngIf="f.representative_sealed.errors.maxlength">Sealed cannot exceed 255 characters</div>
+                                        </div>
+                                    </div>
+                                    
+
+                                    <div class="col-4">
+                                        <label>Unsealed <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Unsealed" matTooltipClass="tooltip-text-size" aria-tooltip="Unsealed" matTooltipPosition="right"></i>
+                                        <input type="text" formControlName="representative_unsealed"  class="form-control" placeholder="Unsealed" [class.is-invalid]="f.representative_unsealed.invalid && f.representative_unsealed.touched">
+                                        
+                                        <div *ngIf="f.representative_unsealed.errors" class="invalid-feedback">
+                                            <div *ngIf="f.representative_unsealed.errors.required">Unsealed is required</div>
+                                            <div *ngIf="f.representative_unsealed.hasError('whitespace')" >Invalid Unsealed</div>
+                                            <div *ngIf="f.representative_unsealed.errors.maxlength">Unsealed cannot exceed 255 characters</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-4">
+                                        <label>Sample Bag Number(s) <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Sample Bag Number(s)" matTooltipClass="tooltip-text-size" aria-tooltip="Sample Bag Number(s)" matTooltipPosition="right"></i>
+                                        <input type="text" formControlName="representative_sample_bag_number"  class="form-control" placeholder="Sample Bag Number(s)" [class.is-invalid]="f.representative_sample_bag_number.invalid && f.representative_sample_bag_number.touched">
+                                        
+                                        <div *ngIf="f.representative_sample_bag_number.errors" class="invalid-feedback">
+                                            <div *ngIf="f.representative_sample_bag_number.errors.required">Sample Bag Number(s) is required</div>
+                                            <div *ngIf="f.representative_sample_bag_number.hasError('whitespace')" >Invalid Sample Bag Number(s)</div>
+                                            <div *ngIf="f.representative_sample_bag_number.errors.maxlength">Sample Bag Number(s) cannot exceed 255 characters</div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+
+                                <h3>Number of counter samples kept by operator</h3>
+                                <div class="form-group row">
+                                    
+                                    <div class="col-4">
+                                        <label>Sealed <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Sealed" matTooltipClass="tooltip-text-size" aria-tooltip="Sealed" matTooltipPosition="right"></i>
+                                        <input type="text" formControlName="operator_sealed"  class="form-control" placeholder="Sealed" [class.is-invalid]="f.operator_sealed.invalid && f.operator_sealed.touched">
+                                        
+                                        <div *ngIf="f.operator_sealed.errors" class="invalid-feedback">
+                                            <div *ngIf="f.operator_sealed.errors.required">Sealed is required</div>
+                                            <div *ngIf="f.operator_sealed.hasError('whitespace')" >Invalid Sealed</div>
+                                            <div *ngIf="f.operator_sealed.errors.maxlength">Sealed cannot exceed 255 characters</div>
+                                        </div>
+                                    </div>
+                                    
+
+                                    <div class="col-4">
+                                        <label>Unsealed <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Unsealed" matTooltipClass="tooltip-text-size" aria-tooltip="Unsealed" matTooltipPosition="right"></i>
+                                        <input type="text" formControlName="operator_unsealed"  class="form-control" placeholder="Unsealed" [class.is-invalid]="f.operator_unsealed.invalid && f.operator_unsealed.touched">
+                                        
+                                        <div *ngIf="f.operator_unsealed.errors" class="invalid-feedback">
+                                            <div *ngIf="f.operator_unsealed.errors.required">Unsealed is required</div>
+                                            <div *ngIf="f.operator_unsealed.hasError('whitespace')" >Invalid Unsealed</div>
+                                            <div *ngIf="f.operator_unsealed.errors.maxlength">Unsealed cannot exceed 255 characters</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-4">
+                                        <label>Sample Bag Number(s) <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Sample Bag Number(s)" matTooltipClass="tooltip-text-size" aria-tooltip="Sample Bag Number(s)" matTooltipPosition="right"></i>
+                                        <input type="text" formControlName="operator_sample_bag_number"  class="form-control" placeholder="Sample Bag Number(s)" [class.is-invalid]="f.operator_sample_bag_number.invalid && f.operator_sample_bag_number.touched">
+                                        
+                                        <div *ngIf="f.operator_sample_bag_number.errors" class="invalid-feedback">
+                                            <div *ngIf="f.operator_sample_bag_number.errors.required">Sample Bag Number(s) is required</div>
+                                            <div *ngIf="f.operator_sample_bag_number.hasError('whitespace')" >Invalid Sample Bag Number(s)</div>
+                                            <div *ngIf="f.operator_sample_bag_number.errors.maxlength">Sample Bag Number(s) cannot exceed 255 characters</div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+
+                                <div class="form-group row" >
+                                    <div class="col-12">
+                                        <label>Further comments <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Further comments" matTooltipClass="tooltip-text-size" aria-tooltip="Further comments" matTooltipPosition="right"></i>
+                                                
+                                        <textarea rows="3" formControlName="further_comments" [class.is-invalid]="f.further_comments.invalid && f.further_comments.touched" placeholder="Further comments" class="form-control" ></textarea>
+                                        <div *ngIf="f.further_comments.errors" class="invalid-feedback">
+                                            <div *ngIf="f.further_comments.errors.required">Further comments cannot be blank.</div>
+                                            <div *ngIf="f.further_comments.errors.pattern || f.further_comments.hasError('whitespace')">Invalid Further comments</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                            
+                                <div class="col-lg-12 text-center mt-4 mb-4">
+                                    <button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="addsampling()">
+                                        <span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+                                        {{editStatus == 1 ? 'Update' : 'Save'}}	
+                                    </button>
+                                    <!--<button [disabled]="loading['button'] || buttonDisable" type="button" (click)="samplingFormreset()"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Reset</button>-->
+
+                                    <div class="clearfix"></div>
+                                        
+                                    
+                                </div>
+                                </form>
+                            </ng-container>
+
+
+
+                            <ng-container *ngIf="cond_viewonly">
+                                <div class="col-12 pad-left pad-right">
+                                    
+                                    <table class="table-secondary m-b-15">
+                                        <tr>
+                                            <th width="20%">Operator Title</th>
+                                            <td width="30%">{{ samplingdata.operator_title }}</td>
+                                            <th width="20%">Date</th>
+                                            <td width="30%">{{ samplingdata.sampling_date }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th width="20%">Operator Responsible person present during sampling</th>
+                                            <td width="30%">{{ samplingdata.operator_responsible_person }}</td>
+                                            <th width="20%">GCL Sample No: (Please use the current number from GCL PCSTR)</th>
+                                            <td width="30%">{{ samplingdata.sample_no }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th width="20%">GCL staff who took sample</th>
+                                            <td width="30%">{{ samplingdata.staff_who_took_sample }}</td>
+                                            <th width="20%">Type of samples</th>
+                                            <td width="30%">{{ samplingdata.type_of_samples }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th width="20%">Samples were taken from</th>
+                                            <td width="30%">{{ samplingdata.samples_were_taken_from }}</td>
+                                            <th width="20%">Number of sub samples per sample</th>
+                                            <td width="30%">{{ samplingdata.number_of_sub_samples_per_sample }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th width="20%">Describe other details of sampling method</th>
+                                            <td colspan="3">{{ samplingdata.describe_other_details_of_sampling_method }}</td>
+                                        </tr>
+                                    </table>
+                                        
+    
+                                </div> 
+                                
+                                 
+                                    
+                                <div class="col-12 pad-left pad-right" >
+                                    <h3>List of Samples</h3>
+                                    <table  id="datatable" class="table table-bordered tab-bor col-12" >
+                                        <thead>
+                                        <tr>
+                                            <th width="5%" scope="col" class="center">S.No</th>
+                                            <th scope="col">Sample (bag) number</th>	
+                                            <th scope="col">Taken from</th>		
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngIf="sampleEntries?.length==0">
+                                                <td colspan="5" class="center">No Sample Added</td>
+                                            </tr>
+                                            <tr *ngFor="let sampleEntry of sampleEntries; let i=index; ">
+                                                <td scope="row" class="center">{{  1+ i }}</td>
+                                                <td>{{ sampleEntry.sample_number }}</td>
+                                                <td>{{ sampleEntry.taken_from }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                
+
+
+
+                                <div class="col-12 pad-right pad-left">
+                                    <table class="table-secondary m-b-15">
+                                        <tr>
+                                            <th width="30%">Samples were taken based on a specific suspicion</th>
+                                            <td width="70%">{{ samplingdata.samples_were_taken_based_on_a_specific_suspicion=='1'?'Yes':'No' }}</td>
+                                        </tr>
+                                        <tr  *ngIf="samplingdata.samples_were_taken_based_on_a_specific_suspicion=='1'">
+                                            <th>State the Reason</th>
+                                            <td>{{ samplingdata.reason }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                
+                                 
+                                <h3>Number of samples taken along by GCL representative</h3>
+                                <div class="col-12 pad-left pad-right">
+                                    <table class="table-secondary m-b-15">
+                                        <tr>
+                                            <th width="15%;">Sealed</th><td width="15%;">{{ samplingdata.representative_sealed }}</td>
+                                            <th width="15%;">Unsealed</th><td width="15%;">{{ samplingdata.representative_unsealed }}</td>
+                                            <th width="20%;">Sample Bag Number(s)</th><td width="20%;">{{ samplingdata.representative_sample_bag_number }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+                                <h3>Number of counter samples kept by operator</h3>
+                                <div class="col-12 pad-left pad-right">
+                                    <table class="table-secondary m-b-15">
+                                        <tr>
+                                            <th width="15%;">Sealed</th><td width="15%;">{{ samplingdata.operator_sealed }}</td>
+                                            <th width="15%;">Unsealed</th><td width="15%;">{{ samplingdata.operator_unsealed }}</td>
+                                            <th width="20%;">Sample Bag Number(s)</th><td width="20%;">{{ samplingdata.operator_sample_bag_number }}</td>
+                                        </tr>
+                                    </table>
+                                    <!--
+                                    <div class="col-12 mat-accordion">
+                                        <div class="mat-accordion">
+                                            <div class="card-box enq-view">
+                                                <ul>
+                                                    <li style="width: 25%;"><span class="label-pad" style="width: 30%;">Sealed</span>   <span class="name-pad">{{ samplingdata.operator_sealed }}</span></li>
+                                                    <li style="width: 27%;"><span class="label-pad" style="width: 30%;">Unsealed</span>   <span class="name-pad">{{ samplingdata.operator_unsealed }}</span></li>
+                                                    <li style="width: 48%;"><span class="label-pad" style="width: 45%;">Sample Bag Number(s)</span>   <span class="name-pad">{{ samplingdata.operator_sample_bag_number }}</span></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    -->
+                                </div>
+                                <div class="col-12 pad-left pad-right">
+                                    <table class="table-secondary m-b-15">
+                                        <tr>
+                                            <th width="15%;">Further comments</th><td width="84%;" >{{ samplingdata.further_comments }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <!--
+                                <div class="form-group row">
+                                    <div class="col-12 mat-accordion">
+                                        <div class="mat-accordion">
+                                            <div class="card-box enq-view">
+                                                <ul>
+                                                    <li style="width: 100%;"><span class="label-pad">Further comments</span>   <span class="name-pad">{{ samplingdata.further_comments }}</span></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                -->
+                            </ng-container>
+                         
+                    <!--		
+                    </div>
+                    -->
+                    
+                 
+            <!--	
+            </div>
+            
+        </div>-->
+    </div>
+    <app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+
+<!--
+<ng-template #logEntry let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">{{editSampleStatus == 1 ? 'Update' : 'Add'}} Sample</h4>		
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<div class="alert alert-success" *ngIf="logsuccess">{{logsuccess}}</div>
+		<div *ngIf="!logsuccess" >
+			<form [formGroup]="sampleForm">
+				
+                <div class="form-group" >
+                    <div class="col-12">
+                        <label>Sample (bag) number <span class="text-danger">*</span></label>
+                        <input type="text" formControlName="sample_number"  class="form-control" placeholder="Sample (bag) number" [class.is-invalid]="sf.sample_number.invalid && sf.sample_number.touched">
+                        <div *ngIf="sf.sample_number.errors" class="invalid-feedback">
+                            <div *ngIf="sf.sample_number.errors.required">Sample (bag) number cannot be blank.</div>
+                            <div *ngIf="sf.sample_number.errors.pattern">Invalid Sample (bag) number</div>
+                            <div *ngIf="sf.sample_number.errors.maxlength">Sample (bag) number cannot exceed 255 characters</div>
+                        </div>
+                    </div>
+                </div>
+				
+                
+                <div class="form-group" >
+                    <div class="col-12">
+                        <label>Taken from (batch N°, or other reference) <span class="text-danger">*</span></label>
+                        <input type="text" formControlName="taken_from"  class="form-control" placeholder="Taken from" [class.is-invalid]="sf.taken_from.invalid && sf.taken_from.touched">
+                        <div *ngIf="sf.taken_from.errors" class="invalid-feedback">
+                            <div *ngIf="sf.taken_from.errors.required">Taken from cannot be blank.</div>
+                            <div *ngIf="sf.taken_from.errors.pattern || sf.taken_from.hasError('whitespace')">Invalid Taken from</div>
+                            <div *ngIf="sf.taken_from.errors.maxlength">Taken from cannot exceed 255 characters</div>
+                        </div>
+                    </div>
+                </div>
+               
+			
+			</form>
+		</div>
+	</div>
+	<div class="modal-footer" *ngIf="!logsuccess">
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">
+			<span *ngIf="loading['logsbutton']" class="spinner-border spinner-border-sm mr-1"></span>Cancel</button>
+		<button type="button" class="btn btn-success " [disabled]="loading['logsbutton']" (click)="submitLogAction();">
+		<span *ngIf="loading['logsbutton']" class="spinner-border spinner-border-sm mr-1"></span>{{editSampleStatus == 1 ? 'Update' : 'Save'}}</button>
+	</div>
+</ng-template>
+
+<ng-template #samplingDetails let-modal>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+	<div class="modal-body" style="font-size:16px;">
+		<div class="card-box enq-view">		
+			<ul *ngIf="SamplingData">
+				<li><span class="label-pad">Operator Title</span>   <span class="name-pad">{{ SamplingData.operator_title }}</span></li>
+				<li><span class="label-pad">Date</span>   <span class="name-pad">{{ SamplingData.sampling_date }}</span></li>
+				<li style="width:100%;"><span class="label-pad">Operator Responsible person present during sampling</span>   <span class="name-pad">{{ SamplingData.operator_responsible_person }}</span></li>
+                <li style="width:100%;"><span class="label-pad">GCL Sample No:  (Please use the current number from GCL PCSTR):</span>   <span class="name-pad">{{ SamplingData.sample_no }}</span></li>
+                
+                <li><span class="label-pad">GCL staff who took sample</span>   <span class="name-pad">{{ SamplingData.staff_who_took_sample }}</span></li>
+                <li><span class="label-pad">Type of samples</span>   <span class="name-pad">{{ SamplingData.type_of_samples }}</span></li>
+
+                <li><span class="label-pad">Samples taken from</span>   <span class="name-pad">{{ SamplingData.samples_were_taken_from }}</span></li>
+                <li><span class="label-pad">Storage room</span>   <span class="name-pad">{{ SamplingData.storage_room }}</span></li>
+                <li><span class="label-pad">Processing line</span>   <span class="name-pad">{{ SamplingData.processing_line }}</span></li>
+                <li><span class="label-pad">Other Such as Market</span>   <span class="name-pad">{{ SamplingData.other_such_as_market }}</span></li>
+
+                
+                <li style="width:100%;"><span class="label-pad">Number of sub samples per sample</span>   <span class="name-pad">{{ SamplingData.number_of_sub_samples_per_sample }}</span></li>
+                <li style="width:100%;"><span class="label-pad">Describe other details of sampling method</span>   <span class="name-pad">{{ SamplingData.describe_other_details_of_sampling_method }}</span></li>
+                <li style="width:100%;"><span class="label-pad">Samples were taken based on a specific suspicion</span>   <span class="name-pad">{{ SamplingData.specific_suspicion_label }}</span></li>
+                <li style="width:100%;" *ngIf="SamplingData.samples_were_taken_based_on_a_specific_suspicion"><span class="label-pad">Reason</span>   <span class="name-pad">{{ SamplingData.reason }}</span></li>
+
+                <li><span class="label-pad"> Rep.Sealed</span>   <span class="name-pad">{{ SamplingData.representative_sealed }}</span></li>
+                <li><span class="label-pad">Rep.Unsealed</span>   <span class="name-pad">{{ SamplingData.representative_unsealed }}</span></li>
+                <li><span class="label-pad">Rep.Sample Bag Number(s)</span>   <span class="name-pad">{{ SamplingData.representative_sample_bag_number }}</span></li>
+
+                <li><span class="label-pad">Opt.Sealed</span>   <span class="name-pad">{{ SamplingData.operator_sealed }}</span></li>
+                <li><span class="label-pad">Opt.Unsealed</span>   <span class="name-pad">{{ SamplingData.operator_unsealed }}</span></li>
+                <li><span class="label-pad">Opt.Sample Bag Number(s)</span>   <span class="name-pad">{{ SamplingData.operator_sample_bag_number }}</span></li>
+
+                <li><span class="label-pad"> Further comments</span>   <span class="name-pad">{{ SamplingData.further_comments }}</span></li>
+                
+				<li><span class="label-pad">Created at</span>   <span class="name-pad">{{ SamplingData.created_at }}</span></li>
+			</ul>
+		</div>
+        <div class="tbl-sec" >
+        	<span *ngIf="loading['logviewdata']" class="spinner-border spinner-border-sm mr-1"></span>
+        	<ng-container >
+				<table id="datatable" class="table table-bordered tab-bor col-12" style="font-size: 13px;" >
+					<thead>
+					<tr>
+						<th colspan="3" scope="col" class="center">List Of Samples</th>
+					</tr>
+					<tr>
+						<th width="5%" scope="col" class="center">S.No</th>
+                        <th scope="col">Sample (bag) number</th>	
+                        <th scope="col">Taken from</th>		
+					</tr>
+					</thead>
+					<tbody>
+						<tr *ngIf="sampleEntries?.length==0">
+							<td colspan="3" class="center">No Sample Added</td>
+						</tr>
+						<tr *ngFor="let sampleEntry of sampleEntries; let i=index; ">
+							<td scope="row" class="center">{{  1+ i }}</td>
+							<td>{{ sampleEntry.sample_number }}</td>
+							<td>{{ sampleEntry.taken_from }}</td>
+						</tr>
+					</tbody>
+				</table>
+			</ng-container>
+
+			<div style="text-align: center;">
+				<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="modal.dismiss('cancel click')" >Close</a>
+			</div>
+		</div>
+    </div>
+</ng-template>
+-->
+<ng-template #confirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to delete the data?
+	</div>
+	<div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+		
+	</div>
+</ng-template>
+
+
+<!-- 
+
+ -->

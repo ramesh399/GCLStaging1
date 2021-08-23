@@ -1,0 +1,729 @@
+<div class="row">
+    <div class="col-sm-12">
+        <div class="page-title-box p-b-30">
+            <div class="col-6" style="padding-left:0px;" >
+            <h4 class="page-title">View Audit Planning</h4></div>
+            <div class="text-right float-right col-6">
+                <a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/certification/generate-list']" >Back</a>
+            </div>
+        </div>	
+    </div>
+</div>
+<div class="row" style="padding-top:20px;" *ngIf="loading"  ><span class="spinner-border spinner-border-sm mr-1"></span></div>
+
+<!--
+<div style="margin-bottom:10px; margin-top:10px;" *ngIf="product_addition_id">
+    <div class="un-lst"><h3>Product Addition Details</h3></div>
+    <mat-accordion>
+        <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                View Product Addition Details
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <div class="row" >
+                <div class="col-sm-12">
+                    <div class="clearfix"></div>
+                    <app-productadditiondetail [id]="product_addition_id" ></app-productadditiondetail>
+                </div>
+            </div>
+        </mat-expansion-panel>
+    </mat-accordion>
+</div>
+-->
+
+
+<div class="row" style="padding-top:20px;" *ngIf="auditPlanData"  >
+
+    <div class="col-sm-12 mat-accordion">
+		
+		<mat-accordion>
+			<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+				<mat-expansion-panel-header>
+					<mat-panel-title>
+					View Application Details
+					</mat-panel-title>
+				</mat-expansion-panel-header>
+				
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="clearfix"></div>			
+						<app-appdetail [id]="auditPlanData.app_id" ></app-appdetail>							
+					</div>				
+				</div>
+
+			</mat-expansion-panel>     
+                    <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                Quotation Details
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                    
+                        <div class="card-box enq-view" *ngFor="let unit of auditPlanData?.units; index as i">
+                    
+                            <!-- 
+                    			                    <h3>{{ unit.unit_name }} [<ng-container *ngFor="let std of unit.standard; let stdi=index;">{{std.standard_name}} <span *ngIf="stdi+1!=unit.standard.length">,</span></ng-container>]</h3>
+                    			                    -->
+                            <div class="un-lst">
+                                <h3>{{ unit.unit_name }} </h3>
+                                <!-- [<ng-container *ngFor="let std of unit.standarddetails; let stdi=index;">
+                    							{{std.name}}<span *ngIf="stdi+1!=unit.standarddetails.length">, </span></ng-container>]</h3> -->
+                            </div>
+                    
+                            <!-- New Button Code Start Here ------- -->
+                    
+                    
+                            <!--
+                    			                    <div *ngIf="unit.followup_status" >				
+                    			                        <button type="button" (click)="changeAuditTab('normal',unit.id)" class="btn btn-sm {{normalcontentstatus[unit.id] ? 'btn-success' : 'btn-primary'}}">Normal</button>
+                    			                        <button type="button" (click)="changeAuditTab('followup',unit.id)" class="btn btn-sm {{followupcontentstatus[unit.id] ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Follow-Up</button>
+                    			                    </div>
+                    			                    -->
+                            <!--{{unit.followup_status?'card-box':'' }}-->
+                            <div class="add pad-left pad-right table-responsive enq-view col-12">
+                    
+                    
+                    
+                                <table class="table-secondary m-b-15">
+                    
+                    
+                                    <tr>
+                                        <th width="20%">Adjusted Manday(s)</th>
+                                        <td width="30%">{{ auditPlanData?.manday ? auditPlanData?.manday[i]?.adjusted_manday : ''}}</td>
+                                        <th width="20%">Final Manday(s)</th>
+                                        <td width="30%">{{ auditPlanData?.manday ? auditPlanData?.manday[i]?.final_manday_withtrans : ''
+                                            }}</td>
+                                    </tr>
+                                    <tr>
+                    
+                                        <th width="20%">Adjusted Manday Comments</th>
+                                        <td width="30%">{{auditPlanData?.manday ? auditPlanData?.manday[i]?.adjusted_manday_comment: '' }}</td>
+                                        <th width="20%">Translator Required</th>
+                                        <td width="30%">{{ auditPlanData?.manday ?  auditPlanData?.manday[i]?.translator_required === "true" ? "Yes": "No" : ''}}</td>
+                                    </tr>
+                    
+                                </table>
+                    
+                    
+                            </div>
+                    
+                    
+                        </div>
+                    
+                    </mat-expansion-panel>
+        </mat-accordion>
+        
+        
+        <div class="mat-accordion">
+            <div class="card-box enq-view">
+                <h3>Certificate Details</h3>
+                <table class="table-secondary m-b-15">
+                    <tr>
+                        <th width="20%">Standard</th>
+                        <td width="30%">{{ auditPlanData.standard_label }}</td>
+                        <th width="20%">Type</th>
+                        <td width="30%">{{ auditPlanData.type_label }}</td>
+                    </tr>
+                    <tr>
+                        <th width="20%">Status</th>
+                        <td width="30%">{{ auditPlanData.certificate_status_name }}</td>
+                        <th width="20%">Created At</th>
+                        <td width="30%">{{ auditPlanData.certificate_created_at }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+
+		<div style="margin-bottom:20px;" *ngIf="product_addition_id">
+			<mat-accordion>
+				<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+					<mat-expansion-panel-header>
+						<mat-panel-title>
+						View Audit Plan Details
+						</mat-panel-title>
+					</mat-expansion-panel-header>
+					
+					<div class="row" *ngIf="id" >
+						<div class="col-sm-12">
+							<div class="clearfix"></div>            
+							<app-auditdetail [id]="auditPlanData.audit_id" ></app-auditdetail>                            
+						</div>              
+					</div>
+
+				</mat-expansion-panel>                
+			</mat-accordion>
+        </div>               	
+		
+		<div style="margin-bottom:20px;" *ngIf="!product_addition_id">
+			<div class="row" *ngIf="id" >
+				<div class="col-sm-12">
+					<div class="clearfix"></div>            
+					<app-auditdetail [id]="auditPlanData.audit_id" ></app-auditdetail>                            
+				</div>              
+			</div>			
+        </div>		
+        
+        <div class="mat-accordion clearfix" *ngIf="auditPlanData.cb_reason">
+            <div class="card-box enq-view">
+                <h3>Other Certification Body Details</h3>
+                <table class="table-secondary m-b-15">
+					<tr>
+						<th width="20%">Reason</th>
+						<td width="30%">{{ auditPlanData.cb_reason }}</td>
+						<th width="20%">Date</th>
+						<td width="30%">{{ auditPlanData.cb_date }}</td>
+                    </tr>
+                    <tr>
+						<th width="20%">File</th>
+						<td colspan="3"><a href="javascript:void(0);" (click)="downloadcbFile(auditPlanData.certificate_id,auditPlanData.cb_file,'cb_file');openmodal(downloading);"><i class="fa fa-download"></i> {{ auditPlanData.cb_file }}</a></td>
+					</tr>
+                </table>
+            </div>			
+		</div>
+		
+		<div *ngIf="product_addition_id" style="margin-bottom:10px; margin-top:10px;">			
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="clearfix"></div>            
+					<app-productadditiondetail [id]="product_addition_id" ></app-productadditiondetail>                          
+				</div>              
+			</div>				
+		</div>		
+		
+		<div style="float:left;width:100%;"  *ngIf="userType!=2 && auditPlanData?.checklistreviews?.length>0">
+            <mat-accordion *ngFor="let auditreview of auditPlanData.checklistreviews; index as i">
+                <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            Certification Checklist Details
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div class="card-box enq-view">
+                    
+                        <h3>Checklist Details</h3>
+                        
+                        <ul>						
+                            <li><span class="label-pad">Reviewer</span>   <span class="name-pad">{{ auditreview.reviewer }}</span></li>
+                            <!-- <li><span class="label-pad">Answer</span>   <span class="name-pad">{{ auditreview.answer_name }}</span></li>				 -->
+                            <li><span class="label-pad">Status</span>   <span class="name-pad">{{ auditreview.answer_name }}</span></li>
+                            <!-- <li><span class="label-pad">Created Date &amp; Time</span>   <span class="name-pad">{{ auditreview.created_at }}</span></li> -->
+                            <li style="width:100%;">
+                                <span class="label-pad" >Created Date &amp; Time</span>
+                                <span class="name-pad" [innerHTML]="auditreview.created_at" ></span>
+                            </li>
+                            <li style="width:100%;">
+                                <span class="label-pad" >Comments</span>
+                                <span class="name-pad" [innerHTML]="auditreview.risk_comments" ></span>
+                            </li>                           
+                        </ul>	
+                        
+
+                        <div>
+                            <h3 *ngIf="auditreview?.checklistcomments?.length>0">Reviewer Comments</h3>                            
+                            <div class="page-title-box">
+                                <div *ngFor="let reviewcomment of auditreview.checklistcomments; index as i">	
+                                    <div class="qustion">
+                                    <h5>{{ 1+i }}. {{ reviewcomment.question }}</h5>
+                                    {{ reviewcomment.answer }}
+                                    <p [innerHTML]="reviewcomment.comment"></p>
+                                    </div>
+                                </div>  
+                            </div>
+                        </div>
+                     
+                    </div>
+                </mat-expansion-panel>                
+            </mat-accordion>
+        </div>
+
+
+        <div class="card-box enq-view m-t-15">
+            <div  *ngIf="error" class="alert alert-danger mt-3 mb-2">{{error}}</div>
+            <div  *ngIf="success" class="alert alert-success mt-3 mb-2" >{{success}}</div>
+        </div>
+
+		<!--
+        <button type="button"  *ngIf="(userType==2 && auditPlanData.status >= auditPlanData.arrEnumStatus['awaiting_for_customer_approval']  ) || (userdetails.resource_access==1  && auditPlanData.status >= auditPlanData.arrEnumStatus['inspection_plan_in_process'])|| (userType==1 && auditPlanData.status >= auditPlanData.arrEnumStatus['inspection_plan_in_process']  && userdetails.uid==auditPlanData.application_lead_auditor)"  style="width:240px;" (click)="downloadInspection(this.id);openmodal(downloading)" [disabled]="loading" class="btn but-cust green m-b-5 ml-2 m-r-5"  >
+            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+        Download Audit Plan as PDF</button>
+		-->       
+        
+		<!--
+		<button type="button" *ngIf="auditPlanData.reviewer_id && auditPlanData.plan_status == auditPlanData.arrEnumPlanStatus['finalized'] && auditPlanData.certificate_status == auditPlanData.arrEnumCertificateStatus['open'] && (userdetails.resource_access==1 || (userType==1 && userdetails.uid==auditPlanData.reviewer_id ) ) " [routerLink]="['/certification/certification-reviewer-checklist']" [queryParams]="{audit_id:this.id,audit_plan_id:auditPlanData.id}" style="width:200px;" [disabled]="loading" class="btn but-cust green m-b-5 ml-2"  >
+            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+        Audit Certification Checklist </button>
+		-->
+		
+		<button type="button" *ngIf="auditPlanData.certificate_reviewer_status==1 && auditPlanData.certificate_review_status==0 && auditPlanData.certificate_reviewer_id && auditPlanData.certificate_status == auditPlanData.arrEnumCertificateStatus['certification_in_process'] && (userdetails.resource_access==1 || (userType==1 && userdetails.uid==auditPlanData.certificate_reviewer_id ) ) " [routerLink]="['/certification/certification-reviewer-checklist']" [queryParams]="{audit_id:id,certificate_id:auditPlanData.certificate_id,audit_plan_id:auditPlanData.id,product_addition_id:product_addition_id}" [disabled]="loading" class="btn but-cust green m-b-5 ml-2"  style="width:240px;">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>Audit Certification Checklist 
+		</button>
+        
+        
+        <button type="button" *ngIf="auditPlanData.show_certificate_selection && auditPlanData.certificate_reviewer_status==1 && auditPlanData.certificate_review_status==0 && auditPlanData.certificate_reviewer_id && auditPlanData.certificate_status == auditPlanData.arrEnumCertificateStatus['certification_in_process'] && (userdetails.resource_access==1 || (userType==1 && userdetails.uid==auditPlanData.certificate_reviewer_id ) ) " class="btn but-cust green ml-2 m-b-5 m-r-5" (click)="selectProduct(productEntryDetails)" style="width:220px;">
+			<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+			Manage Application Product(s)
+        </button>
+        
+        <!--&& auditPlanData.reviewer_id-->
+		<button type="button" *ngIf="auditPlanData.certificate_reviewer_status==0  && auditPlanData.certificate_status == auditPlanData.arrEnumCertificateStatus['open'] && auditPlanData.certificate_status != auditPlanData.arrEnumCertificateStatus['certified_by_other_cb'] && (userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('certification_review') ) ) " (click)="openmodal(certificationreviewconfirmcontent)" [disabled]="loading" class="btn but-cust green m-b-5 ml-2"  style="width:240px;">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>Assign as Certification Reviewer
+		</button>		
+				
+		<!--
+		<button type="button" [routerLink]="['/certification/certification-reviewer-checklist']" [queryParams]="{audit_id:this.id,audit_plan_id:auditPlanData.id}" style="width:200px;" [disabled]="loading" class="btn but-cust green m-b-5 ml-2"  >
+            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+        Audit Certification Checklist</button>
+		-->
+		
+		<!--
+		<ng-container *ngIf="auditPlanData.certificate_review_status==1 && auditPlanData.certificate_status == auditPlanData.arrEnumCertificateStatus['certification_in_process'] && (userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('certification_review') )) ">
+            <button type="button"  [disabled]="loading" class="btn but-cust green m-b-5 ml-2"  *ngFor="let unitstd of auditPlanData?.units[0].standard; index as i" style="width:300px;" (click)="showCertificatedraft(showdraft,unitstd.standard_id,'draft')">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+            View Draft Certificate for {{unitstd.standard_name}}</button>
+        </ng-container>
+		-->
+		
+		<ng-container *ngIf="auditPlanData.certificate_review_status==1 && auditPlanData.certificate_status == auditPlanData.arrEnumCertificateStatus['certification_in_process'] && (userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('certification_review') )) ">
+            <button type="button"  [disabled]="loading" class="btn but-cust green m-b-5 ml-2" style="width:240px;" (click)="showCertificatedraft(auditPlanData.standard_id,'pdf');openmodal(downloading);">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+            Draft Certificate for {{auditPlanData.standard_name}}</button>		
+        </ng-container>
+
+        <button type="button" *ngIf="auditPlanData.certificate_review_status==1 &&  auditPlanData.certificate_status == auditPlanData.arrEnumCertificateStatus['certification_in_process'] && (userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('certification_review') )) " (click)="open(confirmGenerateCertficateContent,'generatecertificate',{certificate_id:certificate_id,audit_id:auditPlanData.audit_id,audit_plan_id:auditPlanData.id})"  [disabled]="loading" class="btn but-cust green m-b-5 ml-2"  >
+            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+        Generate Certificate</button>
+		
+		<!--
+        <ng-container *ngIf="auditPlanData.certificate_status == auditPlanData.arrEnumCertificateStatus['certificate_generated'] && (userType==2 || userdetails.resource_access==1 ||  (userType==1 && userdetails.uid==auditPlanData.application_lead_auditor && userdetails.rules.includes('audit_execution')) || (userType==1 && userdetails.rules.includes('certification_review') )) ">
+            <button type="button"  [disabled]="loading" class="btn but-cust green m-b-5 ml-2"  *ngFor="let unitstd of auditPlanData?.units[0].standard; index as i" style="width:auto;" (click)="showCertificatedraft(showdraft,unitstd.standard_id,'pdf');openmodal(downloading);">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+            Download Certificate for {{unitstd.standard_name}}</button>
+        </ng-container>
+		
+		
+		 <ng-container *ngIf="auditPlanData.certificate_status == auditPlanData.arrEnumCertificateStatus['certificate_generated'] && (userType==2 || userdetails.resource_access==1 ||  (userType==1 && userdetails.uid==auditPlanData.application_lead_auditor && userdetails.rules.includes('audit_execution')) || (userType==1 && userdetails.rules.includes('certification_review') )) ">
+            <button type="button"  [disabled]="loading" class="btn but-cust green m-b-5 ml-2" style="width:auto;" (click)="showCertificatedraft(showdraft,auditPlanData.standard_id,'pdf');openmodal(downloading);">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+            Download Certificate for {{auditPlanData.standard_name}}</button>
+        </ng-container>		
+        -->
+		 
+
+    </div>
+</div>
+
+<ng-template #showdraft let-modal>
+    
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+    
+    <div class="modal-body" >
+        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+        <div *ngIf="draftcertificatedata">
+
+            <div>
+                <div style="width:80%;text-align: left;float:left;font-size:12px;">
+                    <img src="{{auditPlanData.apiUrl}}backend/web/images/header-img.jpg">						
+                </div>
+                <div style="width:20%;float:right;font-size:12px;font-family:Arial;">
+                    <img src="{{auditPlanData.apiUrl}}backend/web/images/qrcode-img.png" style="width: 85px;margin-left: 45px;">
+                </div>
+            </div>
+            <div>
+                <table width="100%" style="margin-top:10px;">	
+                    <tr>
+                        <td style="text-align:center;font-weight:bold;font-size:23px;" valign="middle" >CERTIFICATE OF COMPLIANCE</td>					  
+                    </tr>
+                    <tr>
+                        <td style="text-align:center;font-weight:bold;font-size:16px;" valign="middle" >(Scope Certificate)</td>					  
+                    </tr>
+                    <tr>
+                        <td style="text-align:center;font-weight:bold;font-size:14px;padding-top:12px;" valign="middle" >Registration No: {{draftcertificatedata.registration_no}}</td>					  
+                    </tr>
+                    <tr>
+                        <td style="text-align:center;font-weight:bold;font-size:14x;padding-top:12px;" valign="middle" >GCL INTERNATIONAL LTD declares that</td>	  
+                    </tr>
+                    <tr>
+                        <td style="text-align:center;font-weight:bold;font-size:18px;padding-top:12px;" valign="middle" >{{draftcertificatedata.company_name}}</td>	  
+                    </tr>
+                    <tr>
+                        <td style="text-align:center;font-weight:bold;font-size:16px;" valign="middle" >{{draftcertificatedata.company_address}}</td>	  
+                    </tr>
+                    <tr>
+                        <td style="text-align:center;font-size:14px;" valign="middle" >has been inspected and assessed according to the</td>	  
+                    </tr>
+                    <tr>
+                        <td style="text-align:center;font-size:18px;padding-top:12px;font-weight:bold;" valign="middle" >{{draftcertificatedata.standard_name}}</td>	  
+                    </tr>
+                    <tr>
+                        <td style="text-align:center;font-size:16px;padding-top:5px;font-weight:bold;" valign="middle" >- Version 2.0 -</td>	  
+                    </tr>
+                    <tr>
+                        <td style="text-align:center;font-size:14px;" valign="middle" >and that products of the categories as mentioned below (and further specified in the annex) comply with this standard:</td>	  
+                    </tr>
+                    <tr>
+                        <td style="text-align:center;font-size:14px;padding-top:5px;" valign="middle" >Product categories: <b>{{draftcertificatedata.product_categories}}</b></td>	  
+                    </tr>
+                    <tr>
+                        <td style="text-align:center;font-size:14px;" valign="middle" >Processing steps / activities carried out under responsibility of the above mentioned company (by the operations as detailed in the annex) for the certified products:</td>	  
+                    </tr>
+                    <tr>
+                        <td style="text-align:center;font-size:14px;padding-top:15px;font-weight:bold;" valign="middle" >{{draftcertificatedata.scope_holder_process}}</td>	  
+                    </tr>
+                    <tr *ngIf="draftcertificatedata.facility_process">
+                        <td style="text-align:center;font-size:14px;padding-top:15px;font-weight:bold;" valign="middle" >Facility: {{draftcertificatedata.facility_process}}</td>	  
+                    </tr>
+                    <tr *ngIf="draftcertificatedata.sub_contract_process">
+                        <td style="text-align:center;font-size:14px;padding-top:15px;font-weight:bold;" valign="middle" >Sub-Contract: {{draftcertificatedata.sub_contract_process}}</td>	  
+                    </tr>
+                    <tr>
+                        <td style="text-align:left;font-size:14px;padding-top:15px;padding-left:10px;" valign="middle" >This Certificate is valid until: <b>{{draftcertificatedata.certificate_expiry_date}}</b></td>	  
+                    </tr>
+                </table><br>
+
+                <p style="font-size: 14px;">In specific the certificate covers the following products:</p>
+                <table class="table table-bordered col-12" style="margin-top:15px;">	
+                    <thead>
+                        <tr>
+                            <th style="text-align:left;font-size:14px;" valign="middle" >Name of product</th>
+                            <th style="text-align:left;font-size:14px;" valign="middle" >Material composition</th>	
+                            <th style="text-align:left;font-size:14px;" valign="middle" >Product code</th>		
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let products of draftcertificatedata.certificate_covered_products">
+                            <td style="text-align:left;font-size:14px;">{{products.name_of_product}}</td>
+                            <td style="text-align:left;font-size:14px;">{{products.material_composition}}</td>
+                            <td style="text-align:left;font-size:14px;">{{products.label_grade}}</td>
+                        </tr>
+                    </tbody>
+                </table><br>
+
+                <p style="font-size: 14px;">Under the scope of this certificate the following facilities / subcontractors have been inspected and assessed. The listed processing steps/activities comply with the corresponding criteria of the {{draftcertificatedata.standard_name}} for the certified products:</p>
+                <table class="table table-bordered col-12" style="margin-top:15px;">	
+                    <thead>
+                        <tr>
+                            <th style="text-align:left;font-size:14px;" valign="middle" >Name and address of operation</th>
+                            <th style="text-align:left;font-size:14px;" valign="middle" >Processing steps / activities</th>	
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let operations of draftcertificatedata.sub_contract_facility_unit">
+                            <td style="text-align:left;font-size:14px;">{{operations.name_of_operation}}<br>{{operations.address_of_operation}}</td>
+                            <td style="text-align:left;font-size:14px;">{{operations.processing_steps}}</td>
+                        </tr>
+                    </tbody>
+                </table><br>
+
+                <table width="100%" class="reportDetailLayout" style="margin-top:15px;">	
+                    <tr>
+                        <td style="text-align:center;font-size:14px;padding-top:5px;" valign="middle" class="reportDetailLayoutInner">Place and Date of Issue <br>London, {{draftcertificatedata.certificate_generate_date}}</td>
+                        <td style="text-align:center;font-size:14px;padding-top:5px;" valign="middle" class="reportDetailLayoutInner">Stamp of the issuing body</td>	
+                        <td style="text-align:center;font-size:14px;padding-top:5px;" valign="middle" class="reportDetailLayoutInner">{{draftcertificatedata.standard_code}} Logo</td>		
+                    </tr>
+                    <tr>
+                        <td style="text-align:center;font-size:14px;padding-top:5px;" valign="middle" class="reportDetailLayoutInner">
+                            <img style="width:120px;" src="{{auditPlanData.apiUrl}}backend/web/images/certificate-sign.png">
+                        </td>
+                        <td style="text-align:center;font-size:14px;padding-top:5px;" valign="middle" class="reportDetailLayoutInner">
+                            <img style="width:100px;" src="{{auditPlanData.apiUrl}}backend/web/images/gcl-stamp.png" >
+                        </td>
+                        <td style="text-align:center;font-size:14px;padding-top:5px;" valign="middle" class="reportDetailLayoutInner">
+                            <img style="width:80px;" *ngFor="let logo of draftcertificatedata.logo" src="{{auditPlanData.apiUrl}}backend/web/images/{{logo}}" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center;font-size:14px;padding-top:5px;" valign="middle" class="reportDetailLayoutInner">Name of the authorized person:<br>Gary Jones, Chief Executive Officer<br>GCL International Ltd</td>
+                        <td style="text-align:center;font-size:14px;padding-top:5px;" valign="middle" class="reportDetailLayoutInner"></td>	
+                        <td style="text-align:center;font-size:14px;padding-top:5px;" valign="middle" class="reportDetailLayoutInner"></td>		
+                    </tr>
+                    
+                </table>
+
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #confirmFinalizeContent let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+        Are you sure, do you want to finalize the audit?
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="modal.close()">Ok</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+        
+    </div>
+</ng-template>
+
+
+<ng-template #confirmGenerateCertficateContent let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+        Are you sure, do you want to generate certificate for the audit?
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="modal.close()">Ok</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+        
+    </div>
+</ng-template>
+
+<ng-template #confirmSubmitForReviewContent let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+        Are you sure, do you want to submit the audit findings for Reviewer?
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="modal.close()">Ok</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+        
+    </div>
+</ng-template>
+
+<ng-template #sendToLeadAuditorContent let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+        Are you sure, do you want to submit the unit findings for Lead auditor approval?
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="modal.close()">Ok</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+        
+    </div>
+</ng-template>
+
+<ng-template #confirmSendCustomerContent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+			Are you sure, do you want to send the Audit to the customer?
+	</div>
+	<div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="modal.close()">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+		
+	</div>
+</ng-template>
+
+<ng-template #confirmContent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+			Are you sure, do you want to submit the Audit Plan for review?
+	</div>
+	<div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="modal.close()">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+		
+	</div>
+</ng-template>
+<ng-template #confirmReviewerContent let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+            Are you sure, do you want to assign this audit to you as reviewer?
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="modal.close()">Ok</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+        
+    </div>
+</ng-template>
+
+<ng-template #completeInspectionContent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to complete the Audit Plan for the unit?
+	</div>
+	<div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="modal.close()">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+		
+	</div>
+</ng-template>
+
+<ng-template #sendInspectionContent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to send the Audit Plan to the customer?
+	</div>
+	<div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="modal.close()">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+		
+	</div>
+</ng-template>
+<ng-template #approveInspectionContent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+			Are you sure, do you want to approve the Audit Plan for this Audit?
+	</div>
+	<div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="modal.close()">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+		
+	</div>
+</ng-template>
+<ng-template #rejectInspectionContent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		<form>
+			<div class="form-group">
+				<label for="comments">Comments</label>
+				<div class="input-group">
+					<textarea name="comments" [(ngModel)]="model.comments" class="form-control" placeholder="Comments"  ></textarea>
+				</div>
+				<div class="validationerror" *ngIf="comments_error"  >Please enter the comments</div>
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="checkUserComment()">Submit</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+		
+	</div>
+</ng-template>
+<ng-template #executeAuditContent let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Subtopic</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+        <form>
+            <div class="form-group">
+                <label for="subtopic">Subtopic</label>
+                <div class="input-group">
+                    
+                    <mat-select placeholder="Subtopic *" name="subtopic"  multiple class="form-control select2"   [(ngModel)]="model.subtopic" >
+                        <mat-select-trigger>
+                        <span *ngIf="model.subtopic?.length == 1" >{{model.subtopic ? getSelectedValue(model.subtopic): ''}}</span>
+                        <span *ngIf="model.subtopic?.length > 1" class="example-additional-selection">
+                            {{model.subtopic.length}} {{ 'selected' }}
+                        </span>
+                        </mat-select-trigger>
+                        <mat-option *ngFor="let subtopicd of subTopicList" [value]="subtopicd.id">{{subtopicd.name}}</mat-option>
+                    </mat-select>
+
+                    
+                    <!--
+                    <select name="subtopic" class="form-control select2" [(ngModel)]="model.subtopic" >
+                        <option value="" >-- select --</option>
+                        <option *ngFor="let answer of subTopicList; " value="{{answer.id}}" >{{ answer.name }}</option>
+                    </select>
+                    -->
+                    <span *ngIf="this.loadingData['subtopic']" class="spinner-border spinner-border-sm mr-1"></span>
+                    
+                </div>
+                <div class="validationerror" *ngIf="subtopic_error"  >Please select the subtopic</div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="checkSubTopic()">Submit</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+        
+    </div>
+</ng-template>
+<ng-template #downloading let-modal>
+    <div class="modal-header">
+            <h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+            Please wait, your file is downloading ...
+    </div>
+</ng-template>
+
+<ng-template #certificationreviewconfirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+			Are you sure, do you want to assign as certification reviewer?
+	</div>
+	<div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="assignCertificationReviewer()">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+		
+	</div>
+</ng-template>
+
+<ng-template #productEntryDetails let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title"> Product for Scope Certificate Generation</h4>		
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+			<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	
+	<div class="modal-body" *ngIf="auditPlanData">
+		<app-application-product-detail-list [id]="auditPlanData.app_id" [product_addition_id]="product_addition_id" [standard_id]="cur_standard_id"></app-application-product-detail-list>				
+	</div>
+	
+	<div class="modal-footer"  >
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Close</button>
+	</div>	
+	
+</ng-template>

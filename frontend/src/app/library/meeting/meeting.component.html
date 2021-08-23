@@ -1,0 +1,633 @@
+<div class="row"  >
+    <div class="col-12">
+        <div class="card-box table-responsive">
+        	<div class="row col-12 m-b-5 pad-right">
+              	<div class="col-8 pad-left">
+                <h4 class="page-title"><i class="fa fa-list-ul"></i> IC & MRM Minutes</h4>
+                <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+                
+              	</div>
+               
+            </div>
+        
+            <div class="row col-12 m-b-5 pad-right">
+                <div class="col-3 text-left pad-left">
+                    <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                        <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+                    </select>
+                </div>
+                <div class="col-5 text-left">
+				<input style="width: 38%; display: inline-block;" class="form-control"  type="text" placeholder="Meeting Date From" matInput [matDatepicker]="from_date" [(ngModel)]="service.from_date" name="from_date" (click)="from_date.open()">
+				<mat-datepicker-toggle matSuffix  [for]="from_date"></mat-datepicker-toggle>
+				<mat-datepicker #from_date></mat-datepicker>
+				&nbsp;
+				<input  style="width: 38%; display: inline-block;" class="form-control" type="text" placeholder="Meeting Date To" matInput [matDatepicker]="to_date" (click)="to_date.open()"  name="to_date" [(ngModel)]="service.to_date" >
+				<mat-datepicker-toggle matSuffix  [for]="to_date"></mat-datepicker-toggle>
+				<mat-datepicker #to_date></mat-datepicker>	
+				</div>
+                <div class="col-4 text-right pad-right">
+                    <input class="search-pad" type="text" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+                </div>
+            </div>
+
+
+
+            <div class="col-12 pad-left">
+                <table id="datatable" class="table table-bordered" >
+                    <thead>
+                    <tr>
+                        <th width="5%" scope="col" class="center">S.No</th>
+						<th width="19%" scope="col">Type</th>
+						<th width="12%" scope="col">Meeting Date</th>
+						<th scope="col">Location</th>								
+						<th width="12%" scope="col" class="text-center">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+						<tr *ngFor="let meetingEntry of Meetings$ | async; let i=index; ">
+							<td scope="row" class="center">{{  1+ i + service.pageNo }}</td>
+							<td><ngb-highlight [result]="meetingEntry.type_label"  [term]="service.searchTerm"></ngb-highlight></td>
+							<td><ngb-highlight [result]="meetingEntry.meeting_date"  [term]="service.searchTerm"></ngb-highlight></td>
+							<td><ngb-highlight [result]="meetingEntry.location"  [term]="service.searchTerm"></ngb-highlight></td>	
+							<td  class="center">
+								<a href="javascript:void(0);" (click)="viewMeeting(MeetingDetails,meetingEntry)" title="View" alt="View"> <i class="fa fa-eye"></i> </a>
+								<a href="javascript:void(0);" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('edit_ic_mrm_minutes')" (click)="editMeeting(i,meetingEntry)" title="Edit" alt="Edit" class="pl-2"> <i class="fa fa-edit"></i> </a>
+								<a href="javascript:void(0);" (click)="generatePdfMeeting(meetingEntry);openmodal(downloading);" title="Generate Pdf" alt="Generate Pdf" class="pl-2"> <i class="fa fa-file-pdf-o"></i> </a>
+								<a href="javascript:void(0);" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('delete_ic_mrm_minutes')" (click)="removeMeeting(confirmcontent,meetingEntry)" title="Delete" alt="Delete" class="pl-2"> <i class="fa fa-trash text-danger"></i> </a>
+							</td>
+						</tr>
+						<tr  *ngIf="(Meetings$ | async)?.length==0" >
+							<td colspan="5" class="center">{{ commontxt.norecords }}</td>
+						</tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="row col-12 pad-left pad-right">
+				<div class="col-6">
+					<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+					<div *ngIf="!(service.loading$ | async)">
+					Displaying {{ (Meetings$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (Meetings$ | async).length }} of {{ (total$ | async) }} results.
+					</div>
+				</div>
+				<div class="col-6 pad-right text-right">						
+				<ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+					<ng-template ngbPaginationFirst>First</ng-template>
+					<ng-template ngbPaginationPrevious>Prev</ng-template>
+					<ng-template ngbPaginationNext>Next</ng-template>			  
+					<ng-template ngbPaginationLast>Last</ng-template>			  
+				</ngb-pagination>						
+				</div>
+			</div>
+   		</div>
+	</div>
+</div>
+
+<div class="row" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('add_ic_mrm_minutes') || (userdetails.rules.includes('edit_ic_mrm_minutes') && meetingData)">
+    <div class="col-12">
+		<div class="col-12 pad-left">
+			<div class="add card-box table-responsive enq-view">                                   
+					<div class="col-12 row pad-right">
+							
+							<div class="tabDiv col-6">
+								<h3>{{editStatus == 1 ? 'Update' : 'Add'}} Meeting</h3> 
+							
+								<form  [formGroup]="form" (ngSubmit)="onSubmit()">
+								<div class="form-group row">
+									<div class="col-6">
+										<label>Date <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Date" matTooltipClass="tooltip-text-size" aria-tooltip="Date" matTooltipPosition="right"></i><br>
+										<input type="text" style="width: 70%; display: inline;float:left;" formControlName="meeting_date" class="form-control" placeholder="Date" [class.is-invalid]="f.meeting_date.invalid && f.meeting_date.touched" matInput [matDatepicker]="meeting_date" (click)="meeting_date.open()">
+										<mat-datepicker-toggle matSuffix  [for]="meeting_date"></mat-datepicker-toggle>
+										<mat-datepicker #meeting_date></mat-datepicker>
+										<div *ngIf="f.meeting_date.errors" class="invalid-feedback">
+											<div *ngIf="f.meeting_date.errors.required">Date is required</div>
+										</div>
+									</div>
+									<div class="col-6">
+										<label>Type <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Type" matTooltipClass="tooltip-text-size" aria-tooltip="Type" matTooltipPosition="right"></i>
+										<select formControlName="type" class="form-control select2" [class.is-invalid]="f.type.invalid && f.type.touched">
+											<option value="">-- Type --</option>
+											<option  *ngFor="let item of typelist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+										</select>     
+										<div *ngIf="f.type.errors" class="invalid-feedback">
+											<div *ngIf="f.type.errors.required">Type is required</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<div class="col-12">
+										<label>Location <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Location" matTooltipClass="tooltip-text-size" aria-tooltip="Location" matTooltipPosition="right"></i>
+										<input type="text" formControlName="location"  class="form-control"  placeholder="Location" [class.is-invalid]="f.location.invalid && f.location.touched">
+										<div *ngIf="f.location.errors" class="invalid-feedback">
+											<div *ngIf="f.location.errors.required">Location is required</div>										
+											<div *ngIf="f.location.errors.maxlength">Location cannot exceed 255 characters</div>
+											<div *ngIf="f.location.errors.pattern || f.location.hasError('whitespace')">Invalid Location</div>							
+										</div>
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<div class="col-12">
+										<label>Attendees <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Attendees" matTooltipClass="tooltip-text-size" aria-tooltip="Attendees" matTooltipPosition="right"></i>
+										<textarea placeholder="Attendees" formControlName="attendees"  [class.is-invalid]="f.attendees.invalid && f.attendees.touched" rows="4" class="form-control"></textarea>
+										<div *ngIf="f.attendees.errors" class="invalid-feedback">
+											<div *ngIf="f.attendees.errors.required">Attendees is required</div>
+											<div *ngIf="f.attendees.errors.pattern || f.attendees.hasError('whitespace')" >Invalid Attendees</div>
+										</div>
+									</div>
+								</div>
+								
+								<div class="form-group row">
+									<div class="col-12">
+										<label>Apologies <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Apologies" matTooltipClass="tooltip-text-size" aria-tooltip="Apologies" matTooltipPosition="right"></i>
+										<textarea placeholder="Apologies" formControlName="apologies"  [class.is-invalid]="f.apologies.invalid && f.apologies.touched" rows="4" class="form-control"></textarea>
+										<div *ngIf="f.apologies.errors" class="invalid-feedback">
+											<div *ngIf="f.apologies.errors.required">Apologies is required</div>
+											<div *ngIf="f.apologies.errors.pattern || f.apologies.hasError('whitespace')" >Invalid Apologies</div>
+										</div>
+									</div>
+								</div>
+
+								
+								
+								<div class="col-lg-12 text-center mt-4 mb-4">
+									<button [disabled]="loading['button']" (click)="addMeeting()" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+										<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+										{{editStatus == 1 ? 'Update' : 'Save'}}
+									</button>
+									<button [disabled]="loading['button']" (click)="meetingFormreset()" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2">
+										<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+										Reset
+									</button>				
+									<div class="clearfix"></div>
+										
+									
+								</div>
+								
+								
+								
+								</form>
+							</div>
+							<div class="tabDiv col-6 pad-right" *ngIf="meetingData">
+								<div style="float:right;">
+									<a href="javascript:void(0);" (click)="addMinute(newMinute)" title="Add Log" alt="Add Log"> <i class="fa fa-plus"></i> </a>
+								</div>
+								<h3>Minutes</h3> 
+								
+								<div class="tbl-sec pl-0 pr-0">
+									<span *ngIf="loading['minutedata']" class="spinner-border spinner-border-sm mr-1"></span>
+									<table *ngIf="!loading['minutedata']" id="datatable" class="table table-bordered tab-bor col-12" >
+										<thead>
+										<tr>
+											<th width="5%" scope="col" class="center">S.No</th>
+											<th scope="col">Minute Date</th>	
+											<th scope="col">Raised</th>	
+											<th class="text-center" scope="col">Class</th>
+											<th class="text-center" scope="col">Status</th>	
+											<th width="8%" scope="col" class="center">Action</th>
+										</tr>
+										</thead>
+										<tbody>
+											<tr *ngIf="minuteEntries?.length==0">
+												<td colspan="6" class="center">No Minutes Added</td>
+											</tr>
+											<tr *ngFor="let minuteEntry of minuteEntries; let i=index; ">
+												<td scope="row" class="center">{{  1+ i }}</td>
+												<td>{{ minuteEntry.minute_date }}</td>
+												<td>{{ minuteEntry.raised_id_label }}</td>
+												<td>{{ minuteEntry.class_label }}</td>
+												<td>{{ minuteEntry.status_label }}</td>
+												<!-- *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('edit_inspection_time')"-->
+												<td  class="center">
+													<a href="javascript:void(0);" (click)="viewMinute(minuteDetails,minuteEntry)" title="View" alt="View"> <i class="fa fa-eye"></i> </a>
+													&nbsp;
+													<a href="javascript:void(0);" (click)="editMinute(newMinute,i,minuteEntry)" title="Edit" alt="Edit" > <i class="fa fa-edit"></i> </a>
+													&nbsp;
+													<a href="javascript:void(0);" (click)="Minutelogs(minutelogs,minuteEntry)" title="Manage Logs" alt="Manage Logs" > <i class="fa fa-flag"></i> </a>
+													&nbsp;
+													<a href="javascript:void(0);" (click)="removeMinute(confirmcontent,minuteEntry)" title="Delete" alt="Delete"  > <i class="fa fa-trash text-danger"></i> </a>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						
+						
+							
+					</div>
+				 
+			</div>
+		</div>	
+    </div>
+</div>
+<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+<ng-template #downloading let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+        Please wait, your file is downloading ...
+    </div>
+</ng-template>
+<ng-template #minuteDetails let-modal>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+	<div class="modal-body" style="font-size:16px;">
+		<div class="card-box enq-view">	
+			<table class="table-secondary m-b-15" *ngIf="viewminuteData">
+				<tr>
+					<th width="20%">Minute Date</th>
+					<td width="30%">{{ viewminuteData.minute_date }}</td>
+					<th width="20%">Raised</th>
+					<td width="30%">{{ viewminuteData.raised_id_label }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Class</th>
+					<td width="30%">{{ viewminuteData.class_label }}</td>
+					<th width="20%">Status</th>
+					<td width="30%">{{ viewminuteData.status_label }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Details</th>
+					<td colspan="3">{{ viewminuteData.details }}</td>
+				</tr>	
+			</table>
+		</div>
+        <div class="tbl-sec pl-0 pr-0">
+			<ng-container >
+				
+				<span *ngIf="loading['minutelogdata']" class="spinner-border spinner-border-sm mr-1"></span>
+				<table id="datatable" class="table table-bordered tab-bor col-12" style="font-size: 13px;" >
+					<thead>
+					<tr>
+						<th colspan="4" scope="col" class="center">Logs</th>
+					</tr>
+					<tr>
+						<th width="5%" scope="col" class="center">S.No</th>
+						<th scope="col">Log Date</th>	
+						<th class="text-center" scope="col">Description</th>	
+						<th scope="col">Status</th>	
+					</tr>
+					</thead>
+					<tbody>
+						<tr *ngIf="minutelogData.length==0">
+							<td colspan="4" class="center">No Log Added</td>
+						</tr>
+						<tr *ngFor="let logEntry of minutelogData; let i=index; ">
+							<td scope="row" class="center">{{  1+ i }}</td>
+							<td>{{ logEntry.log_date }}</td>
+							<td>{{ logEntry.description }}</td>
+							<td>{{ logEntry.status_label }}</td>
+							
+						</tr>
+					</tbody>
+				</table>
+			</ng-container>
+			<div style="text-align: center;">
+				<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="modal.dismiss('cancel click')" >Close</a>
+			</div>
+		</div>
+    </div>
+</ng-template>
+<ng-template #minutelogs let-modal>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+	<div class="modal-body" style="font-size:16px;">
+        <div class="tbl-sec pl-0 pr-0" >
+        	<div class="col-12" style="padding-left:0px !important;">
+				<div class="table-responsive enq-view">
+					<h3>Log</h3>
+					<ng-container >
+						<span *ngIf="loading['minutelogdata']" class="spinner-border spinner-border-sm mr-1"></span>
+						<table *ngIf="!loading['minutelogdata']" id="datatable" class="table table-bordered tab-bor col-12" style="font-size: 13px;" >
+							<thead>							
+							<tr>
+								<th width="5%" scope="col" class="center">S.No</th>
+								<th scope="col">Log Date</th>	
+								<th scope="col">Description</th>	
+								<th class="center" scope="col">Status</th>	
+								<th scope="col" class="center">Action</th>	
+							</tr>
+							</thead>
+							<tbody>
+								<tr *ngIf="minutelogData?.length==0">
+									<td colspan="5" class="center">No Log Added</td>
+								</tr>
+								<tr *ngFor="let logEntry of minutelogData; let i=index; ">
+									<td scope="row" class="center">{{  1+ i }}</td>
+									<td>{{ logEntry.log_date }}</td>
+									<td>{{ logEntry.description }}</td>
+									<td class="center">{{ logEntry.status_label }}</td>
+									<td  class="center">
+										<a href="javascript:void(0);" (click)="editMinutelog(i,logEntry)" title="Edit" alt="Edit" > <i class="fa fa-edit"></i> </a>
+										&nbsp;
+										<a href="javascript:void(0);" (click)="removeMinutelog(confirmcontent,logEntry)" title="Delete" alt="Delete"  > <i class="fa fa-trash text-danger"></i> </a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</ng-container>
+			
+			                                  
+					<div class="col-12 m-t-20" style="padding-left:0px !important;">
+						<h3>{{editLogStatus == 1 ? 'Update' : 'Add'}} Log</h3>
+						<form [formGroup]="minutelogForm">
+							
+							<div class="form-group row" style="font-size:13px;" >
+								<div class="col-4">
+									<!--
+									<label for="log_date">Date <span class="text-danger">*</span></label>
+									<div class="input-group">
+										<input type="text" name="log_date" [(ngModel)]="model.log_date" class="form-control" placeholder="Date" matInput [matDatepicker]="log_date" (click)="log_date.open()">
+										<mat-datepicker-toggle matSuffix  [for]="log_date" style="float:left;"></mat-datepicker-toggle>
+											<mat-datepicker #log_date></mat-datepicker>
+									</div>
+									-->
+									
+									<label>Date <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Date" matTooltipClass="tooltip-text-size" aria-tooltip="Date" matTooltipPosition="right"></i><br>
+									<input type="text" style="width: 70%; display: inline;float:left;" formControlName="log_date" class="form-control" placeholder="Date" [class.is-invalid]="mlf.log_date.invalid && mlf.log_date.touched" matInput [matDatepicker]="log_date" (click)="log_date.open()">
+									<mat-datepicker-toggle matSuffix  [for]="log_date"></mat-datepicker-toggle>
+									<mat-datepicker #log_date></mat-datepicker>
+									<div *ngIf="mlf.log_date.errors" class="invalid-feedback">
+										<div *ngIf="mlf.log_date.errors.required">Date is required</div>
+									</div>
+									
+									<div class="validationerror" *ngIf="log_date_error">Date cannot be blank.</div>
+								</div>
+								<div class="col-4">
+									<label for="description">Description <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Description" matTooltipClass="tooltip-text-size" aria-tooltip="Description" matTooltipPosition="right"></i>
+									<textarea style="height: 45px;" formControlName="description" rows="2" class="form-control" [class.is-invalid]="mlf.description.invalid && mlf.description.touched"></textarea>
+									<div *ngIf="mlf.description.errors" class="invalid-feedback">
+										<div *ngIf="mlf.description.errors.required">Description is required</div>
+										<div *ngIf="mlf.description.errors.pattern || mlf.description.hasError('whitespace')" >Invalid Description</div>							
+									</div> 
+									<div class="validationerror" *ngIf="description_error"  >Please enter the Description</div>
+								</div>
+								<div class="col-4">
+									<label for="status">Status <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Status" matTooltipClass="tooltip-text-size" aria-tooltip="Status" matTooltipPosition="right"></i>
+									<select formControlName="status" class="form-control select2" [class.is-invalid]="mlf.status.invalid && mlf.status.touched">
+										<option value="">-- Status --</option>
+										<option  *ngFor="let item of statuslist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+									</select>     
+									<div *ngIf="mlf.status.errors" class="invalid-feedback">
+										<div *ngIf="mlf.status.errors.required">Status is required</div>														
+									</div>
+									<div class="validationerror" *ngIf="logstatus_error">Please select the Status</div>
+								</div>
+								<!--
+								<div class="col-4">
+									<label for="description">Description <span class="text-danger">*</span></label>
+									<div class="input-group">		
+										<textarea style="height: 45px;" name="description" [(ngModel)]="model.description" rows="2" class="form-control"></textarea>
+									</div> 
+									<div class="validationerror" *ngIf="description_error"  >Please enter the Description</div>
+								</div>
+								<div class="col-4">
+									<label for="status">Status <span class="text-danger">*</span></label>
+									<div class="input-group">
+										<select name="status" [(ngModel)]="model.status"  class="form-control select2" >
+												<option value="">-- Status --</option>
+												<option  *ngFor="let item of statuslist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+										</select>     
+									</div>
+									<div class="validationerror" *ngIf="logstatus_error">Please select the Status</div>
+								</div>
+								-->
+							</div>
+						</form>	
+
+						<div style="text-align: center;">
+							<button type="button" class="btn btn-success ml-2" [disabled]="popupbtnDisable" (click)="submitMinutelogAction();">
+							<span *ngIf="loading['minutelogbutton']" class="spinner-border spinner-border-sm mr-1"></span>{{editLogStatus == 1 ? 'Update' : 'Save'}}</button>
+							&nbsp;
+							<button type="button" class="btn btn-secondary active" (click)="modal.dismiss('cancel click')">
+								<span *ngIf="loading['logsbutton']" class="spinner-border spinner-border-sm mr-1"></span>Cancel</button>
+							
+						</div>
+					</div>	
+				</div>
+			</div>		
+		</div>
+    </div>
+</ng-template>
+<ng-template #newMinute let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title" *ngIf="!this.minutedata">Add Minute</h4>
+		<h4 class="modal-title" id="modal-basic-title" *ngIf="this.minutedata">Update Minute</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<div class="alert alert-success" *ngIf="minutesuccess">{{minutesuccess}}</div>
+		<div *ngIf="!minutesuccess" >
+			<form [formGroup]="minuteForm">
+				<div class="form-group row">
+					<div class="col-6">
+						<label for="minute_date">Date <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Date" matTooltipClass="tooltip-text-size" aria-tooltip="Date" matTooltipPosition="right"></i><br>
+					    <input readonly style="width: 70%; display: inline;float:left;" type="text" formControlName="minute_date" class="form-control" placeholder="Date" matInput [matDatepicker]="minute_date" (click)="minute_date.open()" [class.is-invalid]="mf.minute_date.invalid && mf.minute_date.touched">
+		                <mat-datepicker-toggle matSuffix  [for]="minute_date" style="float:left;"></mat-datepicker-toggle>
+		                <mat-datepicker #minute_date></mat-datepicker>
+						<div *ngIf="mf.minute_date.errors" class="invalid-feedback" style="float:left;">
+							<div *ngIf="mf.minute_date.errors.required">Date is required</div>
+						</div>
+					</div>
+					<div class="validationerror" *ngIf="minute_date_error">Date cannot be blank.</div>
+				</div>
+				
+				<div class="form-group row">
+					<div class="col-6">
+						<label for="raised_id">Raised <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Raised" matTooltipClass="tooltip-text-size" aria-tooltip="Raised" matTooltipPosition="right"></i>
+						<select formControlName="raised_id" class="form-control select2" [class.is-invalid]="mf.raised_id.invalid && mf.raised_id.touched">
+							<option value="">-- Raised --</option>
+							<option  *ngFor="let item of raisedlist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+						</select> 
+						<div *ngIf="mf.raised_id.errors" class="invalid-feedback">
+							<div *ngIf="mf.raised_id.errors.required">Raised is required</div>
+						</div>
+					</div>
+					<div class="validationerror" *ngIf="raised_id_error">Please select the Raised</div>
+				</div>
+
+				<div class="form-group row">
+					<div class="col-6">
+						<label for="class">Class <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Class" matTooltipClass="tooltip-text-size" aria-tooltip="Class" matTooltipPosition="right"></i>					
+						<select formControlName="class" class="form-control select2" [class.is-invalid]="mf.class.invalid && mf.class.touched">
+								<option value="">-- Class --</option>
+								<option  *ngFor="let item of classlist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+						</select>  
+						<div *ngIf="mf.class.errors" class="invalid-feedback">
+							<div *ngIf="mf.class.errors.required">Class is required</div>
+						</div>
+					</div>
+					<div class="validationerror" *ngIf="class_error">Please select the Class</div>
+				</div>
+			
+				<div class="form-group row">
+					<div class="col-12">
+						<label for="details">Details</label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Details" matTooltipClass="tooltip-text-size" aria-tooltip="Details" matTooltipPosition="right"></i>							
+						<textarea formControlName="details" rows="2" class="form-control" [class.is-invalid]="mf.details.invalid && mf.details.touched"></textarea>
+						<div *ngIf="mf.details.errors" class="invalid-feedback">
+							<div *ngIf="mf.details.errors.required">Details is required</div>
+							<div *ngIf="mf.details.errors.pattern || mf.details.hasError('whitespace')" >Invalid Details</div>
+						</div>
+						
+					</div> 
+					<div class="validationerror" *ngIf="details_error"  >Please enter the Details</div>
+					
+				</div>
+
+				<div class="form-group row">
+					<div class="col-6">
+						<label for="status">Status <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Status" matTooltipClass="tooltip-text-size" aria-tooltip="Status" matTooltipPosition="right"></i>
+					
+						<select formControlName="status" class="form-control select2" [class.is-invalid]="mf.status.invalid && mf.status.touched">
+								<option value="">-- Status --</option>
+								<option  *ngFor="let item of statuslist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+						</select> 
+						<div *ngIf="mf.status.errors" class="invalid-feedback">
+							<div *ngIf="mf.status.errors.required">Status is required</div>
+						</div>
+					</div>
+					<div class="validationerror" *ngIf="status_error">Please select the Status</div>
+				</div>
+				
+			
+			</form>
+		</div>
+	</div>
+	<div class="modal-footer"  *ngIf="!minutesuccess">
+		<button type="button" class="btn btn-success " [disabled]="popupbtnDisable" (click)="submitMinuteAction();">
+			<span *ngIf="loading['logsbutton']" class="spinner-border spinner-border-sm mr-1"></span>{{editMinuteStatus == 1 ? 'Update' : 'Save'}}</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">
+			<span *ngIf="loading['logsbutton']" class="spinner-border spinner-border-sm mr-1"></span>Cancel</button>
+	</div>
+</ng-template>
+	
+<ng-template #MeetingDetails let-modal>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+	<div class="modal-body" style="font-size:16px;">
+		<div class="card-box enq-view">	
+			<table class="table-secondary m-b-15" *ngIf="meetingViewData">
+				<tr>
+					<th width="20%">Date</th>
+					<td width="30%">{{ meetingViewData.meeting_date }}</td>
+					<th width="20%">Type</th>
+					<td width="30%">{{ meetingViewData.type_label }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Attendees</th>
+					<td colspan="3">{{ meetingViewData.attendees }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Apologies</th>
+					<td colspan="3">{{ meetingViewData.apologies }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Location</th>
+					<td width="30%">{{ meetingViewData.location }}</td>
+					<th width="20%">Created at</th>
+					<td width="30%">{{ meetingViewData.created_at }}</td>
+				</tr>	
+			</table>
+		</div>
+        <div class="tbl-sec pl-0 pr-0" >
+        	<span *ngIf="loading['minuteviewdata']" class="spinner-border spinner-border-sm mr-1"></span>
+        	<ng-container >
+				<table id="datatable" class="table table-bordered tab-bor col-12" style="font-size: 13px;" >
+					<thead>
+					<tr>
+						<th colspan="7" scope="col" class="center">Minutes</th>
+					</tr>
+					<tr>
+						<th width="2%" scope="col" class="center">S.No</th>
+						<th width="10%" scope="col">Date</th>	
+						<th scope="col">Raised</th>	
+						<th scope="col">Class</th>
+						<th class="center"  scope="col">Status</th>	
+						<th width="50%" scope="col">Details</th>
+						<th width="7%" scope="col" class="center">Action</th>						
+					</tr>
+					</thead>
+					<tbody>
+						<tr *ngIf="minuteviewEntries?.length==0">
+							<td colspan="7" class="center">No Minutes Added</td>
+						</tr>
+						
+						<ng-container *ngFor="let minuteEntry of minuteviewEntries; let i=index;">					
+						<tr>
+							<td scope="row" class="center">{{  1+ i }}</td>
+							<td>{{ minuteEntry.minute_date }}</td>
+							<td>{{ minuteEntry.raised_id_label }}</td>
+							<td>{{ minuteEntry.class_label }}</td>
+							<td class="center">{{ minuteEntry.status_label }}</td>
+							<td>{{ minuteEntry.details }}</td>
+							<td width="7%" class="center">								
+								<a href="javascript:void(0);" (click)="fnViewLog(minuteEntry.id)"> {{minuteEntry?.log_display_status==0 ? 'View' : 'Close'}} (No.of Logs:{{minuteEntry?.log_data?.length==0 ? 0 : minuteEntry?.log_data?.length}})</a>
+							</td>
+						</tr>
+						
+						<tr *ngIf="minuteEntry?.log_display_status==1">
+							<td colspan="7">
+							  <table id="datatable" class="table table-bordered tab-bor col-12" style="font-size: 13px;" >
+							    <thead>
+									<tr>
+										<th colspan="7" scope="col" class="center">Minutes Log</th>
+									</tr>
+									<tr>
+										<th width="5%" scope="col" class="center">S.No</th>
+										<th width="10%" scope="col">Date</th>	
+										<th scope="col">Details</th>											
+										<th width="8%" class="center"  scope="col">Status</th>																
+									</tr>
+									</thead>
+									<tbody>
+									    <tr *ngIf="minuteEntry?.log_data?.length==0">
+											<td colspan="7" class="center">No Log Added</td>
+										</tr>
+										<tr *ngFor="let ldata of minuteEntry.log_data; let ii=index; ">
+											<td scope="row" class="center">{{  1+ ii }}</td>
+											<td width="10%">{{ ldata.log_date }}</td>
+											<td>{{ ldata.description }}</td>
+											<td class="center" width="10%">{{ ldata.status_label }}</td>									
+										</tr>
+									</tbody>	
+							  </table>	
+							</td>							
+						</tr>	
+						
+						</ng-container>	
+						
+					</tbody>
+				</table>
+			</ng-container>
+
+			<div style="text-align: center;">
+				<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="modal.dismiss('cancel click')" >Close</a>
+			</div>
+		</div>
+    </div>
+</ng-template>
+
+<ng-template #confirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to delete the data?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>

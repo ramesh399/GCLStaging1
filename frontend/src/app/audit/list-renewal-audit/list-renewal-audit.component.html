@@ -1,0 +1,104 @@
+<form>
+  
+    <div class="row" *ngIf="auditStatus">
+      <div class="col-12">
+          <div class="card-box table-responsive">
+                 
+            <div class="row col-12 m-b-5 pad-right">
+              <div class="col-8 pad-left">
+                <h4 class="page-title"><i class="fa fa-list-ul"></i> Renewal Audit List</h4>
+                <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+              </div>
+            </div>
+            
+            <div class="row col-12 m-b-5 pad-right">
+                <div class="col-3 text-left pad-left">
+                <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                    <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+                  </select>
+                  </div>
+                  <div class="col-5 text-left">
+                    <select class="custom-select" style="width: 55%; font-size:13px;" name="statusFilter" [(ngModel)]="service.statusFilter">
+                        <option value="">All</option>
+                        <option  *ngFor="let item of statuslist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+                    </select> 
+                    &nbsp;&nbsp;
+                    <mat-select style="width: 40%;font-size:13px;" placeholder="-- Standard --" #standardFilter name="standardFilter" [(ngModel)]="service.standardFilter" multiple class="custom-select"  >
+                        <mat-select-trigger>
+                        <span *ngIf="standardFilter.value?.length == 1" >{{standardFilter.value ?  getSelectedValue(standardFilter.value) : ''}}</span>
+                        <span *ngIf="standardFilter.value?.length > 1" class="example-additional-selection">
+                            {{standardFilter.value.length}} {{ 'selected' }}
+                        </span>
+                        </mat-select-trigger>
+                        <mat-option *ngFor="let std of standardList" [value]="std.id">{{std.code}}</mat-option>
+                    </mat-select>
+                  </div>
+              <div class="col-4 text-right pad-right">
+                Search: <input class="search-pad" type="text" name="searchTerm" [(ngModel)]="service.searchTerm"/>
+              </div>
+            </div>
+    
+            <div class="col-12 pad-left">
+                <table id="datatable" class="table table-bordered" >
+                  <thead>
+                  <tr>
+                    <th scope="col" class="center" width="6%">S.No</th>
+                    <!--
+                    <th scope="col" sortable="invoice_number" (sort)="onSort($event)" >Invoice Number</th>
+                    <th scope="col" sortable="total_payable_amount" (sort)="onSort($event)" >Amount</th>
+                    <th scope="col" sortable="tax_amount" (sort)="onSort($event)" >Tax</th>	
+                    -->				
+                    <th scope="col" sortable="company_name" (sort)="onSort($event)" width="20%">Company Name</th>
+                    <th scope="col" (sort)="onSort($event)" width="10%" class="center">No.of Units</th>
+                    <th scope="col" (sort)="onSort($event)" width="15%">Standards</th>
+                    <th scope="col" (sort)="onSort($event)" width="10%">Country</th>
+                    <th scope="col" (sort)="onSort($event)" width="10%">City</th>
+                    <th scope="col" sortable="status" (sort)="onSort($event)" width="8%">Status</th>
+                    <!--<th scope="col" sortable="created_at" (sort)="onSort($event)">Created By</th>-->
+                    <th scope="col" sortable="type" (sort)="onSort($event)" width="12%">Created Date</th>
+                    <th scope="col" width="15%" class="text-center">Action</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr *ngFor="let offer of listauditplan$ | async; let i=index; ">
+                    <th scope="row" class="center">{{ i+1+ service.pageNo }}</th>
+                    
+                    <!--
+                    <td><ngb-highlight [result]="offer.invoice_number" [term]="service.searchTerm"></ngb-highlight></td>
+                    <td><ngb-highlight [result]="offer.currency+' '+offer.total_payable_amount" [term]="service.searchTerm"></ngb-highlight></td>
+                    <td><ngb-highlight [result]="offer.currency+' '+offer.tax_amount" [term]="service.searchTerm"></ngb-highlight></td>	
+                    -->
+                    
+                    <td><ngb-highlight [result]="offer.company_name" [term]="service.searchTerm"></ngb-highlight></td>
+                    <td class="center"><ngb-highlight [result]="offer.application_unit_count" [term]="service.searchTerm"></ngb-highlight></td>
+                    <td><ngb-highlight [result]="offer.application_standard" [term]="service.searchTerm"></ngb-highlight></td>
+                    <td><ngb-highlight [result]="offer.application_country" [term]="service.searchTerm"></ngb-highlight></td>
+                    <td><ngb-highlight [result]="offer.application_city" [term]="service.searchTerm"></ngb-highlight></td>
+                                    
+                    <td><ngb-highlight [result]="offer.audit_status_name" [term]="service.searchTerm"></ngb-highlight></td>
+                    <td><ngb-highlight [result]="offer.created_at" [term]="service.searchTerm"></ngb-highlight></td>
+                                    
+                    <td width="15%" class="text-center">
+                        <a href="javascript:void(0);" *ngIf="offer.id" [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:offer.id}" ><i class="fa fa-eye"></i> </a>
+                        &nbsp;
+                        <a href="javascript:void(0);" *ngIf="(offer.audit_status==auditStatus['open'] || offer.audit_status==auditStatus['submitted'] || offer.audit_status==auditStatus['rejected'])&& (userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('generate_audit_plan')) )"  [routerLink]="['/audit/audit-plan']" [queryParams]="{app_id:offer.app_id,offer_id:offer.offer_id,id:offer.id}" ><i class="fa fa-edit"></i></a>
+                    </td>
+                    </tr>
+                    <tr  *ngIf="(listauditplan$ | async)?.length==0" >
+              <td colspan="8" class="center">{{ commontxt.norecords }}</td>
+            </tr>
+                  </tbody>
+                </table>
+            </div>
+            
+            <div class="d-flex justify-content-between p-2">
+              <ngb-pagination maxSize="10" rotate=true [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+                <ng-template ngbPaginationPrevious>Prev</ng-template>
+                <ng-template ngbPaginationNext>Next</ng-template>			  
+              </ngb-pagination>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+    </form>

@@ -1,0 +1,69 @@
+<!-- Page-Title -->
+<div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box p-b-30">
+				<h4 class="page-title">View Qualification Checklist Details</h4>
+				<div class="clearfix"></div>
+				<div class="text-right float-right">
+					<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/master/qualification-checklist/list']" >Back</a>
+				</div>
+			</div>		
+        </div>
+    </div>
+
+    <div class="row" *ngIf="qualificationdata">
+        <div class="col-12">
+			
+			<div class="card-box enq-view enq-view-det" *ngIf="qualificationdata.role_label">
+				<h3>Role</h3>                     
+				<p>{{ qualificationdata.role_label }}</p>                
+			</div>
+			
+			<div class="card-box enq-view enq-view-det" *ngIf="qualificationdata.standard_label">
+				<h3>Standard</h3>                     
+				<p>{{ qualificationdata.standard_label }}</p>                
+			</div>
+			
+			<div class="card-box enq-view enq-view-det" *ngIf="qualificationdata.process_label">
+				<h3>Process</h3>                     
+				<p>{{ qualificationdata.process_label }}</p>                
+			</div>
+
+			<div class="card-box enq-view enq-view-det" *ngIf="qualificationdata.bsector_label">
+				<h3>Business Sector</h3>                     
+				<p>{{ qualificationdata.bsector_label }}</p>                
+			</div>
+
+			<div class="card-box enq-view enq-view-det" *ngIf="qualificationdata.bsectorgroup_label">
+				<h3>Business Sector Group</h3>                     
+				<p>{{ qualificationdata.bsectorgroup_label }}</p>                
+			</div>
+
+			<div class="card-box enq-view enq-view-det" *ngIf="qualificationdata.process_label">
+				<h3>Process</h3>                     
+				<p>{{ qualificationdata.process_label }}</p>                
+			</div>
+			
+			<div class="card-box enq-view enq-view-det" *ngIf="qualificationdata.name">
+				<h3>Name</h3>                     
+				<p>{{ qualificationdata.name }}</p>                
+			</div>	
+
+			<div class="card-box enq-view enq-view-det" *ngIf="qualificationdata.guidance">
+				<h3>Quidance</h3>                     
+				<p>{{ qualificationdata.guidance }}</p>                
+			</div>	
+			
+            <div class="card-box enq-view">                   
+                <ul>
+                    <li><span class="label-pad">Recurring Period</span> -  <span class="name-pad">{{ qualificationdata.recurring_period_label }}</span></li>
+                    <li><span class="label-pad">File Upload Required</span>  -  <span class="name-pad">{{ qualificationdata.file_upload_required_label }}</span></li>                    
+                </ul> 				
+            </div> 
+			
+            <div class="text-right">                
+                <button type="button" class="btn but-cust green m-b-5 ml-2" [routerLink]="['/master/qualification-checklist/list']" >Back to List</button>                
+            </div>
+			
+        </div>
+    </div> <!-- end row -->

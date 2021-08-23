@@ -1,0 +1,104 @@
+<form>
+  
+<div class="row">
+  <div class="col-12">
+      <div class="card-box table-responsive">
+
+		<div class="row col-12 m-b-5 pad-right">
+          <div class="col-8 pad-left">
+            <h4 class="page-title"><i class="fa fa-list-ul"></i> Standard Label Grade List</h4>
+            <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+          </div>
+          <div class="col-4 text-right pad-right">
+            <a class="btn btn-primary btn-sm" href="#" role="button" [routerLink]="['/master/standardlabelgrade/add']" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('add_standard_label_grade')"><i class="fa fa-plus text-white"></i> Add Label Grade</a>
+          </div>
+        </div>
+		
+		<div class="row col-12 m-b-5 pad-right">
+            <div class="col-4 text-left pad-left">
+			  <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+              </select>
+            </div>
+            <div class="col-4 text-left p-t-5"></div>
+			<div class="col-4 text-right pad-right">
+			  <input class="search-pad" type="text" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+			</div>
+        </div>
+
+		
+        
+		<div class="col-12 pad-left">
+			<table id="datatable" class="table table-bordered" >
+			  <thead>
+			  <tr>
+				<th width="5%" scope="col" class="center">S.No</th>				
+				<th scope="col" sortable="name" (sort)="onSort($event)" >Label Grade</th>
+				<th scope="col" sortable="std.name" (sort)="onSort($event)" >Standard Name</th>
+				<th width="12%" class="text-center" scope="col" sortable="created_at" (sort)="onSort($event)">Date</th>
+				<th width="10%" scope="col" class="text-center">Action</th>
+			  </tr>
+			  </thead>
+			  <tbody>
+			  <tr *ngFor="let standardlabelgrade of standardlabelgrades$ | async; let i=index; ">
+				<th scope="row" class="center">{{  1+ i + service.pageNo }}</th>
+				<td><ngb-highlight [result]="standardlabelgrade.name" [term]="service.searchTerm"></ngb-highlight></td>	
+				<td><ngb-highlight [result]="standardlabelgrade.type" [term]="service.searchTerm"></ngb-highlight></td>				
+				<td class="text-center"><ngb-highlight [result]="standardlabelgrade.created_at" [term]="service.searchTerm"></ngb-highlight></td>
+				<td class="text-center">
+					<a href="javascript:void(0);" [routerLink]="['/master/standardlabelgrade/edit']" [queryParams]="{id:standardlabelgrade.id}" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('edit_standard_label_grade')"><i class="fa fa-edit" title="Edit" alt="Edit"></i></a>		
+					<a href="javascript:void(0);" (click)="open(commonModel,'deactivate',standardlabelgrade.id)"  *ngIf="standardlabelgrade.status==0 && (userdetails.resource_access==1 || userdetails.rules.includes('deactivate_standard_label_grade'))" class="pl-2" title="Active" alt="Active"><i class="fa fa-toggle-on text-success"></i></a>	
+					<a href="javascript:void(0);" *ngIf="standardlabelgrade.status==1 && (userdetails.resource_access==1 || userdetails.rules.includes('activate_standard_label_grade'))" (click)="open(commonModel,'activate',standardlabelgrade.id)" class="pl-2" title="In-active" alt="In-active"><i class="fa fa-toggle-off text-danger"></i></a>	
+					<a href="javascript:void(0);" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('delete_standard_label_grade')" (click)="open(commonModel,'delete',standardlabelgrade.id)" class="pl-2" title="Delete" alt="Delete"><i class="fa fa-trash text-danger"></i></a>	
+				</td>
+				</tr>
+				<tr  *ngIf="(standardlabelgrades$ | async)?.length==0" >
+          <td colspan="5" class="center">{{ commontxt.norecords }}</td>
+        </tr>
+			  </tbody>
+			</table>
+        </div>
+		
+        <div class="row col-12 pad-left pad-right">
+			<div class="col-6">
+				<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+				<div *ngIf="!(service.loading$ | async)">
+				Displaying {{ (standardlabelgrades$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (standardlabelgrades$ | async).length }} of {{ (total$ | async) }} results.
+				</div>
+			</div>
+			<div class="col-6 pad-right text-right">						
+			<ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+				<ng-template ngbPaginationFirst>First</ng-template>
+				<ng-template ngbPaginationPrevious>Prev</ng-template>
+				<ng-template ngbPaginationNext>Next</ng-template>			  
+				<ng-template ngbPaginationLast>Last</ng-template>			  
+			</ngb-pagination>						
+			</div>
+		</div>
+      </div>
+    </div>
+  </div>
+
+</form>
+
+<ng-template #commonModel let-modal>
+    
+	<div class="modal-header">
+				<h4 class="modal-title" id="modal-basic-title">Message</h4>
+				<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('close')">
+			<span class="c-icon" aria-hidden="true">&times;</span>
+				</button>
+		</div>
+	
+		<div class="modal-body text-center" style="font-size:16px;padding:5px;">
+		<div class="alert alert-info" *ngIf="alertInfoMessage">{{alertInfoMessage}}</div>
+		<div class="alert alert-success" *ngIf="alertSuccessMessage">{{alertSuccessMessage}}</div>
+		<div class="alert alert-danger" *ngIf="alertErrorMessage">{{alertErrorMessage}}</div>
+	</div>	
+	
+		<div class="modal-footer text-center">
+		<button type="button" class="btn btn-success" *ngIf="okBtn" (click)="commonModalAction();">Ok</button>
+				<button type="button" class="btn btn-outline-secondary" *ngIf="cancelBtn" (click)="modal.dismiss('cancel')">Cancel</button>        
+		</div>
+	
+</ng-template>

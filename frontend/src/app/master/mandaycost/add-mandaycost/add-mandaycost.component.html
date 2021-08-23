@@ -1,0 +1,177 @@
+<div class="col-12 row pad-right" >
+	<div class="col-8">
+		<h4 class="page-title">{{title}}</h4>
+	</div>
+	<div class="col-4 text-right pad-right">
+		<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/master/mandaycost/list']"><i class="fa fa-arrow-left text-white"></i> Back</a>
+	</div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="add card-box table-responsive">
+            <form  [formGroup]="form" (ngSubmit)="onSubmit()">                            				
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view">
+					<div>
+						<h3>May Day Cost Details</h3>                 
+									
+						<div class="form-group row p-b-10">
+						
+							<div class="col-4">
+								<label>Country <span class="text-danger">*</span></label>
+								<select formControlName="country_id" class="form-control select2" [class.is-invalid]="f.country_id.invalid && f.country_id.touched ">
+									<option value="" >-- Country --</option>
+									<option *ngFor="let country of countryList" value= {{country.id}}>{{country.name}}</option>
+								</select>
+								<div *ngIf="f.country_id.errors" class="invalid-feedback">
+									<div *ngIf="f.country_id.errors.required">Country is required</div>
+									<div *ngIf="f.country_id.errors.incorrect">{{ country_idErrors }}</div>									
+								</div>
+							</div>
+							
+							<div class="col-2">
+								<label>Currency Code <span class="text-danger">*</span></label>
+								<input type="text" formControlName="currency_code" [class.is-invalid]="f.currency_code.invalid && f.currency_code.touched " class="form-control" placeholder="Currency Code" >
+								<div *ngIf="f.currency_code.errors" class="invalid-feedback">									
+									<div *ngIf="f.currency_code.errors.required">Currency Code is required</div>
+									<div *ngIf="f.currency_code.errors.pattern">Invalid Currency Code</div>
+									<div *ngIf="f.currency_code.errors.maxlength">Currency Code cannot exceed 10 characters</div>										
+								</div>
+							</div>
+							
+							<div class="col-2">
+								<label>Man Day Cost <span class="text-danger">*</span></label>
+								<input type="text" formControlName="man_day_cost" [class.is-invalid]="f.man_day_cost.invalid &&	f.man_day_cost.touched " class="form-control" placeholder="Many Day Cost" >
+								<div *ngIf="f.man_day_cost.errors" class="invalid-feedback">
+									<div *ngIf="f.man_day_cost.errors.required">Man Day Cost is required</div>
+									<div *ngIf="f.man_day_cost.errors.pattern">Invalid Man Day Cost</div>
+									<div *ngIf="f.man_day_cost.errors.maxlength">Man Day Cost cannot exceed 10 characters</div>
+								</div>
+							</div>
+							
+							<div class="col-2">
+								<label>Admin Fee <span class="text-danger">*</span></label>
+								<input type="text" formControlName="admin_fee" [class.is-invalid]="f.admin_fee.invalid &&	f.admin_fee.touched " class="form-control" placeholder="Admin Fee" >
+								<div *ngIf="f.admin_fee.errors" class="invalid-feedback">
+									<div *ngIf="f.admin_fee.errors.required">Admin Fee is required</div>
+									<div *ngIf="f.admin_fee.errors.pattern">Invalid Admin Fee</div>
+									<div *ngIf="f.admin_fee.errors.maxlength">Admin Fee cannot exceed 10 characters</div>
+								</div>
+							</div>
+							
+							<div class="col-2">
+								<label>Client Logo Approval Fee <span class="text-danger">*</span></label>
+								<input type="text" formControlName="client_logo_approval_fee" [class.is-invalid]="f.client_logo_approval_fee.invalid &&	f.client_logo_approval_fee.touched " class="form-control" placeholder="Client Logo Approval Fee" >
+								<div *ngIf="f.client_logo_approval_fee.errors" class="invalid-feedback">
+									<div *ngIf="f.client_logo_approval_fee.errors.required">Client Logo Approval Fee is required</div>
+									<div *ngIf="f.client_logo_approval_fee.errors.pattern">Invalid Client Logo Approval Fee</div>
+									<div *ngIf="f.client_logo_approval_fee.errors.maxlength">Client Logo Approval Fee cannot exceed 10 characters</div>
+								</div>
+							</div>
+							
+						</div>	
+						
+						<h3>Tax Details</h3>
+						
+						<div class="form-group row">
+						
+							<div class="row col-12 prd-lab">
+								<div class="col-4">
+									<label>Name <span class="text-danger">*</span></label>
+									<input type="text" formControlName="tax_name"  class="form-control" [class.is-invalid]="f.tax_name.invalid && f.tax_name.touched" placeholder="Tax Name" (keyup)="checkTaxDetails();">
+									<div *ngIf="f.tax_name.errors" class="invalid-feedback">
+										<div *ngIf="f.tax_name.errors.required">Tax Name is required</div>										
+									</div>
+								</div>
+							
+								<div class="col-4">
+									<label>Percentage <span class="text-danger">*</span></label>
+									<input type="text" formControlName="tax_percentage"  class="form-control" [class.is-invalid]="f.tax_percentage.invalid && f.tax_percentage.touched" placeholder="Tax Percentage" (keyup)="checkTaxDetails();">
+									<div *ngIf="f.tax_percentage.errors" class="invalid-feedback">
+										<div *ngIf="f.tax_percentage.errors.required">Tax Percentage is required</div>
+										<div *ngIf="f.tax_percentage.errors.pattern">Invalid Tax Percentage</div>
+										<div *ngIf="f.tax_percentage.errors.max">Percentage should be maximum 100</div>
+									</div>
+								</div>	
+								
+								<div class="col-4">
+                                    <label>Tax For <span class="text-danger">*</span></label>
+                                    <select formControlName="tax_for" class="form-control select2" [class.is-invalid]="f.tax_for.invalid && f.tax_for.touched">
+                                        <option value="" >-- Tax For --</option>
+                                        <option value="1">Same State</option>
+										<option value="2">Other State</option>
+                                    </select>
+                                    <div *ngIf="f.tax_for.errors" class="invalid-feedback">
+                                        <div *ngIf="f.tax_for.errors.required" >Tax For is required</div>
+                                    </div>
+                                </div>
+								
+								<div class="col-4" style="padding-top:25px;">
+									<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="addTax()">{{ updateStatus ? 'Update' : 'Add' }} Tax</a>
+									&nbsp;
+									<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="resetTax()">Reset</a>
+									
+								</div>
+								
+							</div>
+							
+							<div class="tbl-sec">
+							
+								<table id="datatable" class="table table-bordered tab-bor col-12" >
+									<thead>
+									<tr>
+										<th width="5%" scope="col" class="center">S.No</th>
+										<th scope="col">Name</th>
+										<th scope="col">Percentage</th>
+										<th scope="col">Tax For</th>										
+										<th width="8%" scope="col" class="center">Action</th>
+									</tr>
+									</thead>
+									<tbody>
+										<tr *ngIf="taxEntries?.length==0">
+												<td colspan="4" class="center">No Tax Added</td>
+										</tr>
+										<tr *ngFor="let taxEntry of taxEntries; let i=index; ">
+											<td scope="row" class="center">{{  1+ i }}</td>
+											<td>{{ taxEntry.tax_name }}</td>
+											<td>{{ taxEntry.tax_percentage }}</td>
+											<td>{{ taxEntry.tax_for_label }}</td>											
+											<td  class="center">
+												<a href="javascript:void(0);" (click)="editTax(i)" title="Edit" alt="Edit"> <i class="fa fa-edit"></i> </a>
+												&nbsp;&nbsp;
+												<a href="javascript:void(0);" (click)="removeTax(i)" title="Delete" alt="Delete"> <i class="fa fa-trash text-danger"></i> </a>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+								
+							</div>
+						</div>
+													
+																			
+						<div class="col-lg-12 text-center mt-4 mb-4">
+							<button [disabled]="loading || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+								{{btnLabel}}
+							</button>
+							<button [disabled]="loading || buttonDisable" type="button" [routerLink]="['/master/mandaycost/list']" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2">
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+								Cancel
+							</button>
+							
+							<div class="clearfix"></div>
+							
+							<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+						</div>
+						
+						<div class="col-lg-12 error">
+						Note: After completing your actions, please click "Submit" button to store the data.
+						</div>
+						
+					</div>
+						
+				</div>
+                 
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,409 @@
+<div class="row">
+    <div class="col-12" *ngIf="!reportdetailsloaded"><span class="spinner-border spinner-border-sm mr-1"></span></div>
+    <div class="col-12" *ngIf="applicableforms && reportdetailsloaded">
+
+        <div class="col-12 row pad-right" *ngIf="authservice.authenticateIsOnline">
+            <div class="col-11 pad-left pad-right">
+                <button type="button" *ngIf="applicableforms['checklist']"
+                    (click)="changeAuditExecutionTab('checklist')"
+                    class="btn btn-sm {{checklist_status ? 'btn-success' : 'btn-primary'}}">Checklist</button>
+
+                <ng-container *ngIf="audit_type != 2">
+                    <button type="button" *ngIf="applicableforms['audit_report']"
+                        (click)="changeAuditExecutionTab('audit_report')"
+                        class="btn btn-sm {{report_status ? 'btn-success' : 'btn-primary'}}"
+                        style="margin-left:3px;">Audit Report</button>
+                    <button type="button"
+                        *ngIf="applicableforms[unit_id] && applicableforms[unit_id]['attendance_list']"
+                        (click)="changeAuditExecutionTab('attendance')"
+                        class="btn btn-sm {{attendance_status ? 'btn-success' : 'btn-primary'}}"
+                        style="margin-left:3px;">Attendance</button>
+                    <button type="button" *ngIf="applicableforms[unit_id] && applicableforms[unit_id]['sampling_list']"
+                        (click)="changeAuditExecutionTab('sampling')"
+                        class="btn btn-sm {{sampling_status ? 'btn-success' : 'btn-primary'}}"
+                        style="margin-left:3px;">Sampling</button>
+                    <button type="button" *ngIf="applicableforms[unit_id] && applicableforms[unit_id]['interview_list']"
+                        (click)="changeAuditExecutionTab('interview')"
+                        class="btn btn-sm {{interview_status ? 'btn-success' : 'btn-primary'}}"
+                        style="margin-left:3px;">Interview</button>
+                    <button type="button"
+                        *ngIf="applicableforms[unit_id] && applicableforms[unit_id]['clientinformation_list']"
+                        (click)="changeAuditExecutionTab('client_information')"
+                        class="btn btn-sm {{client_information_status ? 'btn-success' : 'btn-primary'}}"
+                        style="margin-left:3px;">Client Information</button>
+                    <button type="button"
+                        *ngIf="applicableforms[unit_id] && applicableforms[unit_id]['environment_list']"
+                        (click)="changeAuditExecutionTab('environment')"
+                        class="btn btn-sm {{environment_status ? 'btn-success' : 'btn-primary'}}"
+                        style="margin-left:3px;">Environment</button>
+                    <button type="button"
+                        *ngIf="applicableforms[unit_id] && applicableforms[unit_id]['livingwage_list']"
+                        (click)="changeAuditExecutionTab('living_wage_calc')"
+                        class="btn btn-sm {{living_wage_calc_status ? 'btn-success' : 'btn-primary'}}"
+                        style="margin-left:3px;">Living Wage Calc.</button>
+                    <button type="button" *ngIf="applicableforms[unit_id] && applicableforms[unit_id]['qbs']"
+                        (click)="changeAuditExecutionTab('qbs')"
+                        class="btn btn-sm {{qbs_status ? 'btn-success' : 'btn-primary'}}"
+                        style="margin-left:3px;">QBS</button>
+                    <button type="button" *ngIf="applicableforms[unit_id] && applicableforms[unit_id]['chemical_list']"
+                        (click)="changeAuditExecutionTab('chemical_list')"
+                        class="btn btn-sm {{chemical_list_status ? 'btn-success' : 'btn-primary'}}"
+                        style="margin-left:3px;">Chemical List</button>
+                </ng-container>
+
+                <button type="button" *ngIf="applicableforms['audit_ncn_report']"
+                    (click)="changeAuditExecutionTab('audit_ncn_report')"
+                    class="btn btn-sm {{audit_ncn_report_status ? 'btn-success' : 'btn-primary'}}"
+                    style="margin-left:3px;">Audit & NCN Report</button>
+            </div>
+            <div class="col-1 pad-left text-right pad-right" *ngIf="applicableforms['checklist']">
+                <a class="btn btn-secondary btn-sm active" href="#" role="button"
+                    [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:audit_id}"><i
+                        class="fa fa-arrow-left text-white"></i> Back</a>
+            </div>
+        </div>
+
+        <ng-container *ngIf="audit_type != 2">
+            <div class="add card-box table-responsive enq-view" *ngIf="report_status">
+                <app-view-auditreport-files [id]="app_id" [audit_id]="audit_id"></app-view-auditreport-files>
+            </div>
+            <div class="add card-box table-responsive enq-view"
+                *ngIf="attendance_status && applicableforms[unit_id]['attendance_list']">
+                <app-audit-attendance-sheet></app-audit-attendance-sheet>
+            </div>
+
+            <div class="add card-box table-responsive enq-view"
+                *ngIf="sampling_status && applicableforms[unit_id]['sampling_list']">
+                <app-audit-sampling></app-audit-sampling>
+            </div>
+
+            <div class="add card-box table-responsive enq-view lst"
+                *ngIf="interview_status && applicableforms[unit_id]['interview_list']">
+                <app-audit-interview-employee></app-audit-interview-employee>
+            </div>
+
+            <div class="add card-box table-responsive enq-view lst"
+                *ngIf="client_information_status && applicableforms[unit_id]['clientinformation_list']">
+                <app-audit-clientinformation [app_id]="app_id" [unit_id]="unit_id"></app-audit-clientinformation>
+            </div>
+
+            <div class="add card-box table-responsive enq-view"
+                *ngIf="environment_status && applicableforms[unit_id]['environment_list']">
+                <app-audit-environment [app_id]="app_id" [unit_id]="unit_id"></app-audit-environment>
+            </div>
+
+            <div class="add card-box table-responsive enq-view"
+                *ngIf="living_wage_calc_status && applicableforms[unit_id]['livingwage_list']">
+                <app-audit-livingwage-checklist></app-audit-livingwage-checklist>
+            </div>
+
+
+            <div class="add card-box table-responsive enq-view" *ngIf="qbs_status && applicableforms[unit_id]['qbs']">
+                <app-audit-qbs-scopeholder></app-audit-qbs-scopeholder>
+            </div>
+
+            <div class="add card-box table-responsive enq-view"
+                *ngIf="chemical_list_status && applicableforms[unit_id]['chemical_list']">
+                <app-audit-chemical-list></app-audit-chemical-list>
+            </div>
+        </ng-container>
+
+        <div class="add card-box table-responsive enq-view" *ngIf="audit_ncn_report_status">
+            <app-audit-nc></app-audit-nc>
+        </div>
+
+        <div [className]="authservice.authenticateIsOnline ? 'add card-box table-responsive enq-view' : 'add table-responsive enq-view'"
+            *ngIf="checklist_status">
+            <form #checklistForm="ngForm">
+                <!--
+				<div class="row col-12 page-title-box">
+					<div class="col-2"><h4 class="page-title">{{title}}</h4></div>
+					<div class="col-10">
+						<div>
+							<button type="button" (click)="changeDashboardContent('overview')" class="btn btn-sm {{overview_status ? 'btn-success' : 'btn-primary'}}">Overview</button>
+							<button type="button" (click)="changeDashboardContent('offer')" class="btn btn-sm {{offer_status ? 'btn-success' : 'btn-primary'}} m-l-5">Quotation</button>
+							<button type="button" (click)="changeDashboardContent('enquiry')" class="btn btn-sm {{enquiry_status ? 'btn-success' : 'btn-primary'}} m-l-5">Enquiries</button>
+							<button type="button" (click)="changeDashboardContent('pending_users')" class="btn btn-sm {{pending_users_status ? 'btn-success' : 'btn-primary'}} m-l-5">User Actions</button>
+							<button type="button" (click)="changeDashboardContent('renewal_audit')" class="btn btn-sm {{renewal_audit_status ? 'btn-success' : 'btn-primary'}} m-l-5">Renewal Audit</button>
+							<button type="button" (click)="changeDashboardContent('due_certificate')" class="btn btn-sm {{due_certificate_status ? 'btn-success' : 'btn-primary'}} m-l-5">Due Certificate</button>
+							<button type="button" (click)="changeDashboardContent('nc_due')" class="btn btn-sm {{nc_due_status ? 'btn-success' : 'btn-primary'}} m-l-5">Pending Report</button>
+						</div>
+					</div>
+				</div>
+				
+				
+				
+				<div class="col-12">
+					<div class="col-8">
+						<h3>Personnel Details</h3>					
+					</div>
+					<div class="col-4 text-right pad-right">
+						<a class="btn btn-secondary btn-sm active" href="#" role="button"  [routerLink]="['/audit/view-audit-plan']"  [queryParams]="{id:audit_id}" >Back</a>
+					</div>
+				</div>	
+				-->
+
+                <h3>Audit Execution Checklist</h3>
+                <!--  class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view reviewquestion" -->
+                <div class="col-12 row pad-right">
+                    <div class="col-11 pad-left pad-right pad-below">
+
+                        <ng-container *ngFor="let tabs of checkListTabs; let i = index">
+                            <button type="button" (click)="subtopicIDCheck(tabs.id)" style=" margin: 5px;"
+                                class="btn btn-sm {{(tabs.id == questionIndex) ? 'btn-success' : 'btn-tab'}}">{{tabs.name}}
+
+                                <span class="checkmark" *ngIf="formCompleted[tabs.id]">
+
+                                    <div class="checkmark_stem"></div>
+                                    <div class="checkmark_kick"></div>
+                                </span>
+                            </button>
+                        </ng-container>
+
+
+                    </div>
+
+                </div>
+                <!--  class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view reviewquestion" -->
+                <div class="col-12" *ngIf="!dataloaded">
+                    <span class="spinner-border spinner-border-sm mr-1"></span>
+                </div>
+                <div *ngIf="dataloaded">
+                    <!-- -->
+                    <div class="col-12" *ngIf="this.loadingInfo?.questions">
+                        <span class="spinner-border spinner-border-sm mr-1"></span>
+                    </div>
+                    <div style="border:1px solid #cfcfcf;" *ngIf="questionList && questionList?.length">
+
+                        <table class="table table-striped tempdrivenform" style="margin-bottom:0px;">
+
+                            <tbody>
+                                <tr *ngFor="let question of questionList; index as j " style="position: relative;"
+                                    [ngClass]="questionInvalid[question.id] ? 'withAnswer' : 'withoutAnswer'">
+                                    <td class="separator" *ngIf="question.sub_topic_id == questionIndex ">
+                                        <span *ngIf="loading && (saveIds.includes(question.id))"
+                                            class="question_save spinner-border spinner-border-sm mr-1"></span>
+
+                                        <p> {{ question.name }}
+                                            <a href="javascript:void(0);" (click)="toggleGuidance(question.id)">
+                                                <i class="fa fa-info-circle" aria-hidden="true"></i></a>
+                                        </p>
+                                        <div class="checklist_guidance"
+                                            *ngIf="guidanceIncludeList.includes(question.id)">
+                                            <div *ngIf="question.interpretation" style="margin-top:10px;">
+                                                <b>Interpretation:</b><br>
+                                                {{ question.interpretation }}
+                                            </div>
+                                            <div *ngIf="question.expected_evidence">
+                                                <b>Expected Evidence:</b><br>
+                                                {{ question.expected_evidence }}
+                                            </div>
+                                        </div>
+
+                                        <div class="ans-cmt col-12 row m-b-10" *ngIf="question.revieweranswer_name">
+                                            <div class="col-4">
+                                                <h4>Reviewer Answer</h4>
+                                                {{ question.revieweranswer_name }}
+                                            </div>
+                                            <div class="col-4">
+                                                <h4>Reviewer Comment</h4>
+                                                {{ question.reviewercomment }}
+                                            </div>
+                                        </div>
+
+                                        <div class="ans-cmt col-12 row">
+                                            <div class="col-4">
+
+                                                <h4>Answer<span class="text-danger">*</span></h4>
+                                                <div class="md-form">
+
+                                                    <select
+                                                        (change)="changeFindingComment($event.target.value,question.id)"
+                                                        (blur)="onBlur(checklistForm, question.id)" class="form-control"
+                                                        name="qtd{{question.id}}" #qtdAnswer="ngModel"
+                                                        [(ngModel)]="reviewcommentlist['qtd'+question.id]" required>
+                                                        <option value="">-- Options --</option>
+                                                        <option
+                                                            *ngFor="let answer of question.findingans_list | keyvalue; "
+                                                            value="{{answer.key}}">{{ answer.value }}</option>
+                                                        <!--<option *ngFor="let answer of answerList | keyvalue; " value="{{answer.key}}" >{{ answer.value }}</option>-->
+                                                    </select>
+                                                    <!--<option *ngFor="let answer of question.findingans_list | keyvalue; " value="{{answer.key}}" >{{ answer.value }}</option>-->
+                                                    <div class="validationerror"
+                                                        *ngIf="!qtdAnswer.valid && qtdAnswer.touched">
+                                                        Please select the Answer
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-8">
+                                                <h4>Finding <span class="text-danger"
+                                                        *ngIf="qtdAnswer.value != 3">*</span></h4>
+                                                <div class="md-form">
+                                                    <textarea name="finding{{question.id}}"
+                                                        (blur)="onBlur(checklistForm, question.id)"
+                                                        #qtdFinding="ngModel"
+                                                        [(ngModel)]="reviewcommentlist['finding'+question.id]"
+                                                        [attr.required]="qtdAnswer.value != 3" type="text"
+                                                        class="md-textarea form-control" style="height:50px">
+
+                                                    </textarea>
+                                                    <div class="validationerror"
+                                                        *ngIf="!qtdFinding.valid && qtdFinding.touched">
+                                                        Please enter the Finding
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-4" *ngIf="qtdAnswer.value==2">
+                                                <h4>NC Classification <span class="text-danger">*</span></h4>
+                                                <div class="md-form">
+                                                    <select class="form-control" name="severity{{question.id}}"
+                                                        #qtdSeverity="ngModel"
+                                                        (blur)="onBlur(checklistForm, question.id)"
+                                                        [(ngModel)]="reviewcommentlist['severity'+question.id]"
+                                                        [required]="(qtdAnswer.value==2)?true:false">
+                                                        <option value="">-- Options --</option>
+                                                        <option *ngFor="let answer of question.answer_list | keyvalue; "
+                                                            value="{{answer.key}}">{{ answer.value }}</option>
+                                                    </select>
+                                                    <div class="validationerror"
+                                                        *ngIf="!qtdSeverity.valid && qtdSeverity.touched">
+                                                        Please select the Severity
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-4" *ngIf="question.file_required==1">
+
+                                                <h4>Upload File <span class="text-danger"
+                                                        *ngIf="qtdAnswer.value==1">*</span></h4>
+                                                <div class="md-form" *ngIf="!questionfile[question.id]">
+                                                    <input type="file" id="files"
+                                                        (blur)="onBlur(checklistForm, question.id)"
+                                                        (change)="fileChange($event,question.id, checklistForm)"
+                                                        name="qtd_file{{question.id}}">
+
+
+                                                    <!--[(ngModel)]="reviewcommentlist['qtd_file'+question.id]"  #qtdReviewFile="ngModel" -->
+                                                    <br>
+                                                    <div style="font-size:11px;">supported file formats: <span
+                                                            *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{
+                                                            docs}}<span *ngIf="!last">, </span> </span></div>
+                                                </div>
+                                                <div class="validationerror"
+                                                    *ngIf="fileErrList[question.id] &&  qtdAnswer.value!=3"> Please
+                                                    upload the valid file</div>
+
+                                                <div *ngIf="questionfile[question.id]"
+                                                    style="padding:5px; border:1px solid #cecece; background-color: beige; height:32px;width: 100%;">
+                                                    <span class="name-pad"
+                                                        *ngIf="authservice.authenticateIsOnline && question.file!==undefined && question.execution_checklist_id!==undefined && question.file == questionfile[question.id].name">
+
+                                                        <a href="javascript:void(0);"
+                                                            (click)="downloadFindingFile(question.file,question.execution_checklist_id);open(downloading);"><i
+                                                                class="fa fa-download"></i>&nbsp;{{
+                                                            questionfile[question.id].name }}</a>
+
+                                                    </span>
+                                                    <span class="name-pad"
+                                                        *ngIf="!authservice.authenticateIsOnline || question.file != questionfile[question.id].name">
+
+                                                        {{ questionfile[question.id].name }}
+
+                                                    </span>
+
+                                                    <a href="javascript:void(0);"
+                                                        (click)="removeFile(question.id, question.answer)"
+                                                        style="color:red; font-weight:bold;">X</a>
+                                                </div>
+                                            </div>
+
+                                            <!--<div class="col-4">
+                                                <h4>Finding Type</h4>
+                                                <div class="md-form">
+                                                    <select class="form-control" #qtdReviewFile="ngModel" (change)="fileChange($event,question.id)" name="qtd_file{{question.id}}" [(ngModel)]="reviewcommentlist['qtd_file'+question.id]" >
+                                                        <option value="">-- Options --</option>
+                                                        <option value="1">Desk Study</option>
+                                                        <option value="2">Follow-up Audit</option>
+                                                    </select>
+                                                </div>
+                                            </div>-->
+
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!--<tr *ngFor="let question of questionList; index as j ">
+                                    <td><p>{{ 1+j }}. {{ question.name }} <a href="javascript:void(0);" (click)="toggleGuidance(question.id)" *ngIf="question.guidance"  ><i class="fa fa-info-circle" aria-hidden="true"></i></a></p>
+                                        <div class="checklist_guidance" *ngIf="guidanceIncludeList.includes(question.id)" [innerHTML]="question.guidance " ></div>
+                                        <div class="ans-cmt col-12 row">    
+                                            <div class="col-4">     
+                                                <h4>Answer</h4>
+                                                <div class="row" >
+                                                    <div class="col-10">
+                                                        
+                                                        <select class="form-control" name="qtd{{question.id}}" #qtdAnswer="ngModel" [(ngModel)]="reviewcommentlist['qtd'+question.id]"  required >
+                                                            <option value="">-- Options --</option>
+                                                            <option *ngFor="let answer of question.answers | keyvalue; " value="{{answer.key}}" >{{ answer.value }}</option>
+                                                        </select>
+                                                        <div class="validationerror" *ngIf="!qtdAnswer.valid && qtdAnswer.touched">
+                                                            Please select the Answer
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                            </div>
+                                            <div class="col-8">
+                                                <h4>Comment</h4>
+                                                <div class="md-form">
+                                                    <textarea type="text" #qtdComment="ngModel" name="qtd_comments{{question.id}}" [(ngModel)]="reviewcommentlist['qtd_comments'+question.id]" class="md-textarea form-control" required  mdbInput style="height:50px"></textarea>
+                                                </div>
+                                                <div class="validationerror" *ngIf="!qtdComment.valid && qtdComment.touched">
+                                                    Please enter the comment
+                                                </div>
+                                            </div>
+                                        </div>  
+                                    </td>
+                                </tr>-->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+
+                <div class="col-lg-12 text-center" style="border-top: 1px solid #cecece;"
+                    *ngIf="questionList && questionList.length>0">
+                    <button [disabled]="loading || buttonDisable"
+                        class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10"
+                        (click)="onSubmit(checklistForm, 'fromButton',  (checkListTabs[checkListTabs.length - 1].id == questionIndex))">
+                        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                        <span
+                            *ngIf="checkListTabs[checkListTabs.length - 1] && (checkListTabs[checkListTabs.length - 1].id !== questionIndex)">Next</span>
+                        <span
+                            *ngIf="checkListTabs[checkListTabs.length - 1] && (checkListTabs[checkListTabs.length - 1].id == questionIndex)">Finish
+                            the Audit</span>
+                    </button>
+                </div>
+                <app-usermessage [success]="success" [error]="error"></app-usermessage>
+                <div class="col-12 alert alert-info mt-3 mb-0" *ngIf="dataToSync && authservice.authenticateIsOnline">
+                    Please press the submit button to update the data in GCL from local.</div>
+                <div class="col-12 error alert-danger p-2 mt-3 mb-0"
+                    *ngIf="dataToSyncErrorMsg && !authservice.authenticateIsOnline">No checklist found in offline for
+                    this Unit and Sub Topic. If you need this checklist in offline, you should select the Sub Topic and
+                    load the checklist when you are in online.</div>
+                <div class="col-12 error alert-danger p-2 mt-3 mb-0"
+                    *ngIf="dataToSyncErrorMsg && authservice.authenticateIsOnline">No checklist found for this Unit and
+                    Sub Topic.</div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<ng-template #downloading let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+        Please wait, your file is downloading ...
+    </div>
+</ng-template>

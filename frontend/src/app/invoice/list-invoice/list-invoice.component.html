@@ -1,0 +1,128 @@
+<form>
+  
+<div class="row">
+  <div class="col-12">
+      <div class="card-box table-responsive">
+     		
+		<div class="row col-12 m-b-5 pad-right">
+          <div class="col-8 pad-left">
+            <h4 class="page-title"><i class="fa fa-list-ul"></i> Invoice List</h4>
+            <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+		  </div>
+		  <div class="col-4 text-right pad-right">
+        	<a class="btn btn-primary" href="#"   role="button"  >Add Invoice</a>
+          </div>
+        </div>
+		
+		<div class="row col-12 m-b-5 pad-right">
+            <div class="col-4 text-left pad-left">
+            <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+              </select>
+              </div>
+              <div class="col-4 text-left p-t-5">
+                  
+                </div>
+          <div class="col-4 text-right pad-right">
+            <input class="search-pad" type="text" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+          </div>
+        </div>
+
+		<div class="col-12 pad-left">
+			<table id="datatable" class="table table-bordered" >
+			  <thead>
+			  <tr>
+				<th scope="col" class="center">S.No</th>
+				<th scope="col" sortable="type" (sort)="onSort($event)" >Invoice Number</th>
+				<th scope="col" sortable="type" (sort)="onSort($event)" >Amount</th>
+				<th scope="col" sortable="type" (sort)="onSort($event)" >Tax</th>				
+				<th scope="col" sortable="type" (sort)="onSort($event)" >Company Name</th>
+				
+				<th scope="col" sortable="payment_status" (sort)="onSort($event)" >Payment Status</th>
+
+				<th scope="col" sortable="created_at" (sort)="onSort($event)">Created By</th>
+				<th scope="col" sortable="type" (sort)="onSort($event)" >Created Date</th>
+				<th scope="col">Action</th>
+			  </tr>
+			  </thead>
+			  <tbody>
+			  <tr *ngFor="let offer of invoices$ | async; let i=index; ">
+				<th scope="row" class="center">{{ i+1+ service.pageNo }}</th>
+				<td><ngb-highlight [result]="offer.invoice_number" [term]="service.searchTerm"></ngb-highlight></td>
+				<td><ngb-highlight [result]="offer.currency+' '+offer.total_payable_amount" [term]="service.searchTerm"></ngb-highlight></td>
+				<td><ngb-highlight [result]="offer.currency+' '+offer.tax_amount" [term]="service.searchTerm"></ngb-highlight></td>				
+				<td><ngb-highlight [result]="offer.company_name" [term]="service.searchTerm"></ngb-highlight></td>
+				<td><ngb-highlight [result]="offer.payment_status_name" [term]="service.searchTerm"></ngb-highlight></td>
+				<td><ngb-highlight [result]="offer.creator" [term]="service.searchTerm"></ngb-highlight></td>
+				<td><ngb-highlight [result]="offer.created_at" [term]="service.searchTerm"></ngb-highlight></td>
+				<td class="center">
+					<a href="javascript:void(0);" *ngIf="offer.invoice_status!=0" [routerLink]="['/invoice/view-invoice']" [queryParams]="{id:offer.id}" title="View" alt="View" class="pl-2"><i class="fa fa-eye"></i> </a>
+					<a href="javascript:void(0);" *ngIf="offer.invoice_status!=0" (click)="downloadInvoiceFile(offer.invoice_number,offer.invoice_id,offer.offer_id);open(downloading)" title="Download as PDF" alt="Download as PDF" class="pl-2"><i class="fa fa-file-pdf-o"></i> </a>
+				</td>
+				</tr>
+				<tr  *ngIf="(invoices$ | async)?.length==0" >
+          <td colspan="8" class="center">{{ commontxt.norecords }}</td>
+        </tr>
+			  </tbody>
+			</table>
+        </div>
+		
+         <div class="row col-12 pad-left pad-right">
+			<div class="col-6">
+				<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+				<div *ngIf="!(service.loading$ | async)">
+				Displaying {{ (invoices$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (invoices$ | async).length }} of {{ (total$ | async) }} results.
+				</div>
+			</div>
+			<div class="col-6 pad-right text-right">						
+			<ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+				<ng-template ngbPaginationFirst>First</ng-template>
+				<ng-template ngbPaginationPrevious>Prev</ng-template>
+				<ng-template ngbPaginationNext>Next</ng-template>			  
+				<ng-template ngbPaginationLast>Last</ng-template>			  
+			</ngb-pagination>						
+			</div>
+		</div>
+      </div>
+    </div>
+  </div>
+
+</form>
+<ng-template #downloading let-modal>
+	<div class="modal-header">
+			<h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+			Please wait, your file is downloading ...
+	</div>
+</ng-template>
+
+<!--
+<ng-template #changereviewercontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Change Reviewer</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<form>
+		<div class="form-group">
+			<label for="user_id">User</label>
+			<div class="input-group">
+						
+				<select name="user_id" [(ngModel)]="model.user_id"  class="form-control select2" style="width:320px; display:inline;" >
+						<option value="">-- User --</option>
+						<option *ngFor="let user of revieweruserList" value= {{user.id}}>{{ user.first_name+' '+user.last_name }}</option>
+				</select>     
+				<div class="validationerror" *ngIf="user_id_error"  >Please select the user</div>
+			</div>
+		</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="checkUserSel('','change')">Save</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>
+-->

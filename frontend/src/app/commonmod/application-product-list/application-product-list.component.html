@@ -1,0 +1,247 @@
+<div class="enq-view"> 
+	<!--
+	<div class="col-12 pad-left pad-right">
+		<div class="col-6 pad-left pad-right">
+			<h3>Application Product(s)<a href="javascript:void(0);" (click)="openguidance(showguidance,'product')"  ><i class="fa fa-info-circle" aria-hidden="true" style="margin-left: 5px;"></i></a>  </h3> 
+		</div>
+		<div class="col-6 pad-left pad-right">
+			<a class="btn btn-secondary btn-sm active" href="#" role="button" href="javascript:void(0);" (click)="productView()">Back</a>
+		</div>
+	</div>
+	-->
+	
+	<div class="clearfix"></div>
+	<div class="col-12 row pad-right pad-left m-b-5"  style="border-bottom: 1px solid #d7d7d7;font-size:16px; height:27px; margin-left: 1px;">
+		<div class="col-12 text-primary pad-left" >
+			<h3 style="border-bottom:none;">Application Product(s) <a href="javascript:void(0);" (click)="openguidance(showguidance,'product')"  ><i class="fa fa-info-circle" aria-hidden="true" style="margin-left: 5px;"></i></a></h3>
+		</div>
+		
+	</div>
+	<div class="row col-12" *ngIf="productLoading"><span  class="spinner-border spinner-border-sm mr-1"></span></div>
+	<div *ngIf="!editStatus && !productLoading">
+		<table id="datatable" class="table table-bordered tab-bor col-12 pad-right" >
+			<thead>
+				<tr>
+					<th scope="col" class="center" width="3%">S.No</th>
+					<th scope="col">Product Category</th>
+					<th scope="col">Product Description</th>
+					<th scope="col" class="center">Wastage (%)</th>
+					<th scope="col">Material Composition</th>
+					<th scope="col">Standard</th>
+					<th scope="col">Label Grade</th>
+					<th scope="col" class="center" width="8%">Action</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr *ngIf="productEntries?.length==0">
+					<td colspan="8" class="center">No Products Added</td>
+				</tr>
+			   <ng-container *ngFor="let productEntry of productEntries; let i=index; ">
+						
+				<!--<ng-container *ngFor="let productEntry of productListDetails; let i=index; "> -->
+					<tr>						
+						<td scope="row" class="center"  [attr.rowspan]="productEntry.productStandardList.length<=0?1:productEntry.productStandardList.length" >{{  1+i  }}</td>
+						<td  [attr.rowspan]="productEntry.productStandardList.length<=0?1:productEntry.productStandardList.length" >{{ productEntry.name }}</td>
+						<td  [attr.rowspan]="productEntry.productStandardList.length<=0?1:productEntry.productStandardList.length" >{{ productEntry.product_type_name }}</td>
+						<td  [attr.rowspan]="productEntry.productStandardList.length<=0?1:productEntry.productStandardList.length" class="center">{{ productEntry.wastage }}</td>
+						<td  [attr.rowspan]="productEntry.productStandardList.length<=0?1:productEntry.productStandardList.length" >{{ productEntry.materialcompositionname }}</td>
+						<td>
+							{{ productEntry.productStandardList.length>0?productEntry.productStandardList[0]['standard_name']:'' }}
+							<!--{{ productEntry.standard_name }} -->
+						</td>
+						<td>
+							{{ productEntry.productStandardList.length>0?productEntry.productStandardList[0]['label_grade_name']:'' }}
+							<!--{{  productEntry.label_grade_name }}-->
+						</td>
+						<td  [attr.rowspan]="productEntry.productStandardList.length<=0?1:productEntry.productStandardList.length" class="center" style="vertical-align: middle;">
+							<a   href="javascript:void(0);" (click)="editProduct(i)" title="Edit" alt="Edit"> <i class="fa fa-edit"></i> </a>
+						</td>
+					</tr>
+					<ng-container *ngIf="productEntry.productStandardList.length>1">
+						<tr  *ngFor="let productsEntry of productEntry.productStandardList | slice:1;">
+
+							<td>{{ productsEntry['standard_name'] }}</td>
+							<td>{{ productsEntry['label_grade_name'] }}</td>
+						</tr>
+					</ng-container>
+				</ng-container>
+			</tbody>
+		</table>
+	</div>
+	
+	<div class="row" *ngIf="editStatus">
+		<div class="col-12">
+			<div class="col-12 pad-left">
+					
+					<table class="table table-bordered tab-bor col-12 pad-right" >
+						<thead>
+							<tr>								
+								<th scope="col">Product Category</th>
+								<th scope="col">Product Description</th>
+								<th scope="col" class="center">Wastage (%)</th>
+								<th scope="col">Material Composition</th>
+								<th scope="col">Standard</th>
+								<th scope="col">Label Grade</th>					
+							</tr>
+						</thead>
+						<tbody>												   
+							<tr>																
+								<td [attr.rowspan]="productEntry.productStandardList.length<=0?1:productEntry.productStandardList.length" >{{ productEntry.name }}</td>
+								<td [attr.rowspan]="productEntry.productStandardList.length<=0?1:productEntry.productStandardList.length" >{{ productEntry.product_type_name }}</td>
+								<td [attr.rowspan]="productEntry.productStandardList.length<=0?1:productEntry.productStandardList.length" class="center">{{ productEntry.wastage }}</td>
+								<td [attr.rowspan]="productEntry.productStandardList.length<=0?1:productEntry.productStandardList.length" >{{ productEntry.materialcompositionname }}</td>
+								<td>
+									{{ productEntry.productStandardList.length>0?productEntry.productStandardList[0]['standard_name']:'' }}										
+								</td>
+								<td>
+									{{ productEntry.productStandardList.length>0?productEntry.productStandardList[0]['label_grade_name']:'' }}										
+								</td>									
+							</tr>
+							
+							<ng-container *ngIf="productEntry.productStandardList.length>1">
+								<tr *ngFor="let productsEntry of productEntry.productStandardList | slice:1;"    >
+
+									<td>{{ productsEntry['standard_name'] }}</td>
+									<td>{{ productsEntry['label_grade_name'] }}</td>
+								</tr>
+							</ng-container>
+							
+						</tbody>
+					</table>		
+					
+					<div class="clearfix"></div>
+					
+					<div class="col-12 row pad-right m-b-5 m-t-15">
+						<div class="col-12 text-primary" style="border-bottom: 1px solid #d7d7d7;font-size:16px;padding-left:0px;">
+							Material Composition <a href="javascript:void(0);" (click)="openguidance(showguidance,'product')"><i class="fa fa-info-circle" aria-hidden="true" style="margin-left: 5px;"></i></a>
+						</div>						
+					</div>
+					
+					<form  [formGroup]="enquiryForm">
+						<div class="form-group row">														
+							<div class="col-12 m-t-10">
+								<div class="col-12 form-group row pad-left pad-right">
+								
+									<div class="col-4">
+										<label>Material <span class="text-danger">*</span></label>
+										<select formControlName="material"  [class.is-invalid]="f.material.invalid && f.material.touched "  class="form-control select2"  >
+											<option value="" >-- Material --</option>
+											<option *ngFor="let materialdt of materialList" value= {{materialdt.id}}>{{materialdt.name}}</option>
+										</select>
+										<span *ngIf="loading?.material" class="spinner-border spinner-border-sm mr-1"></span>
+										<div *ngIf="f.material.errors" class="invalid-feedback">
+											<div *ngIf="f.material.errors.required"  >
+												Material is required
+											</div>
+										</div>
+									</div>
+
+									<div class="col-3" >
+										<label>Material Type <span class="text-danger">*</span></label>
+										<select formControlName="material_type"  [class.is-invalid]="f.material_type.invalid && f.material_type.touched "  class="form-control select2"  >
+											<option value="" >-- Material Type --</option>
+											<option *ngFor="let materialdt of materialTypeList" value= {{materialdt.id}}>{{materialdt.name}}</option>
+										</select>
+										<div *ngIf="f.material_type.errors" class="invalid-feedback">
+											<div *ngIf="f.material_type.errors.required"  >
+												Material Type is required
+											</div>
+										</div>
+									</div>
+									<div class="col-2">
+										<label>Percentage (%) <span class="text-danger">*</span></label>
+										<input type="text" formControlName="material_percentage"  class="form-control" placeholder="Percentage (%)" [class.is-invalid]="f.material_percentage.invalid && f.material_percentage.touched ">
+										<div *ngIf="f.material_percentage.errors" class="invalid-feedback">
+											<div *ngIf="f.material_percentage.errors.required"  >
+												Percentage is required
+											</div>
+											<div *ngIf="f.material_percentage.errors.pattern">
+												Percentage should be valid numbers
+											</div>
+											<div *ngIf="f.material_percentage.errors.max">
+												Percentage should be maximum 100
+											</div>
+										</div>
+									</div>
+
+									<div class="col-3" style="padding-top:29px;">										
+										<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="addProductMaterial()">{{ editStatus ? 'Update':'Add'}} Material</a>
+										<a class="btn btn-secondary btn-sm active ml-2" href="javascript:void(0);" role="button" (click)="resetProductMaterial()">Reset</a>
+									</div>
+								</div>	
+							
+								<div class="col-12 m-t-10 pad-left pad-right">
+									<table id="datatable" class="table table-bordered tab-bor col-12" >
+										<thead>
+											<tr>
+												<th scope="col" class="center" width="3%">S.No</th>
+												<th scope="col">Material</th>
+												<th scope="col">Material Type</th>
+												<th scope="col" class="center">Percentage (%)</th>
+												<th scope="col" class="center" width="8%">Action</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr *ngIf="productMaterialList?.length==0">
+												<td colspan="5" class="center">No Material Added</td>
+											</tr>
+											<tr *ngFor="let materialEntry of productMaterialList; let im=index; " [class.currentedit]="f.material.value==materialEntry.material_id">
+												<td scope="row" class="center">{{  1+ im }}</td>
+												<td>{{ materialEntry.material_name }}</td>
+												<td>{{ materialEntry.material_type_name }}</td>
+												<td class="center">{{ materialEntry.material_percentage }}</td>
+												<td  class="center">
+													<a href="javascript:void(0);" (click)="editProductMaterial(materialEntry.material_id)" title="Edit" alt="Edit"> <i class="fa fa-edit"></i> </a>
+													&nbsp;&nbsp;
+													<a href="javascript:void(0);" (click)="removeProductMaterial(materialEntry.material_id)" title="Delete" alt="Delete"> <i class="fa fa-trash text-danger"></i> </a>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+									
+								</div>
+								
+								<div class="col-12 validationerror" *ngIf="productmaterial_error" >{{ productmaterial_error }}</div>
+							</div>
+							
+						</div>								
+									
+						<div class="col-lg-12 text-center mt-4 mb-4">
+							<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="updateMaterialComposition()">
+								<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+								Update Material	
+							</button>
+							&nbsp;&nbsp;
+							<button [disabled]="loading['button'] || buttonDisable" class="btn btn-secondary btn-custom waves-effect w-md waves-light m-b-5" style="background-color: #545b62;" (click)="productView()">
+								<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+								Back to Product List
+							</button>
+							<!--
+							&nbsp;&nbsp;
+							<a *ngIf="editStatus" class="btn btn-secondary btn-sm active m-b-5" role="button" href="javascript:void(0);" (click)="productView()">Back to Product List</a>
+							-->
+							<!--
+							<button [disabled]="loading['button'] || buttonDisable" type="button" (click)="signatureFormreset()"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Reset</button>
+							-->
+							
+							<div class="clearfix"></div>
+
+							<app-usermessage [success]="success" [error]="error"  ></app-usermessage>  
+						</div>
+						
+					</form>				             
+				
+			</div>	
+		</div>
+	</div>
+
+</div>
+
+<ng-template #showguidance let-modal>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+    <div class="modal-body" style="font-size:16px;">
+            {{ guidanceContent }} 
+    </div>
+</ng-template>

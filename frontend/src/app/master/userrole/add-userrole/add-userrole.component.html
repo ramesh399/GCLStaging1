@@ -1,0 +1,82 @@
+<div class="col-12 row pad-right" >
+	<div class="col-8">
+		<h4 class="page-title">{{title}}</h4>
+	</div>
+	<div class="col-4 text-right pad-right">
+		<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/master/userrole/list']"><i class="fa fa-arrow-left text-white"></i> Back</a>
+	</div>
+</div>
+
+	<div class="row">
+        <div class="col-12">
+            <div class="add card-box table-responsive">
+                <form  [formGroup]="form" (ngSubmit)="onSubmit()"  >
+                                                                          
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view">
+                        
+                        <div class="form-group">                                                        
+                            
+                            <div class="col-6">
+                                <label>Role Name <span class="text-danger">*</span></label>
+                                <input type="text" formControlName="role_name" [class.is-invalid]="f.role_name.invalid &&
+                                f.role_name.touched " class="form-control" placeholder="Role Name" >
+                                <div *ngIf="f.role_name.errors" class="invalid-feedback">
+									<div *ngIf="f.role_name.errors.required">Role Name is required</div>
+									<div *ngIf="f.role_name.errors.pattern || f.role_name.hasError('whitespace')">Invalid Role Name</div>
+									<div *ngIf="f.role_name.errors.maxlength">Role Name cannot exceed 255 characters</div>
+									<div *ngIf="f.role_name.errors.incorrect">{{ role_nameErrors }}</div>																		
+								</div>
+                            </div>
+														
+                            <div class="col-6 m-t-10">
+                                <label>Role Type <span class="text-danger">*</span></label>
+                                <select class="form-control" formControlName="resource_access" [class.is-invalid]="f.resource_access.invalid && f.resource_access.touched " >
+                                    <option value="">-- Role Type --</option>
+                                    <option *ngFor="let role of roletypes | keyvalue" value="{{role.key}}">{{role.value}}</option>
+                                </select>
+                                <span *ngIf="loading['roles']" class="spinner-border spinner-border-sm mr-1"></span>
+                                <div *ngIf="f.resource_access.errors" class="invalid-feedback">
+                                    <div *ngIf="f.resource_access.errors.required">Role Type is required</div>
+                                </div>
+                            </div>
+							
+                            <div class="col-6 m-t-15" *ngIf="f.resource_access.value==2">
+                                <label>Actions</label>
+
+                                <div>
+                                    <ngx-treeview [config]="config" [items]="items"  (selectedChange)="values = $event"></ngx-treeview>
+                                    <div *ngIf="actionsError" class="validationerror" >
+                                        {{ actionsError }}
+                                    </div>
+                                </div>
+                                
+                            </div>
+
+                            
+                            <div class="col-12 m-t-40" *ngIf="f.resource_access.value != 1">
+                                <label style="width:110px; margin-top:2px;" for="enable_oss" >Enable for OSS</label>
+                                <input type="checkbox" formControlName="enable_oss" id="enable_oss" value="1" class="form-check-input" >
+                            </div>
+                            
+
+                            <div class="col-lg-12 text-center mt-4 mb-4">
+                                <button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+                                    <span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+                                    {{btnLabel}}
+                                </button>
+                                <button [disabled]="loading['button'] || buttonDisable" type="button" [routerLink]="['/master/userrole/list']" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2">
+									<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+									Cancel
+								</button>
+                                
+								<div class="clearfix"></div>
+							
+								<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>

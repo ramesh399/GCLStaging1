@@ -1,0 +1,422 @@
+
+<app-enquiry-header></app-enquiry-header>
+
+   
+    <section class="enquiery-form">
+         <!--   *ngIf="submittedSuccess" -->
+           
+        <div class="container" *ngIf="submittedSuccess" style="margin-top:35px; height: 400px;"   >
+            <div class="row"  >
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >
+                    <div class="row alert alert-success" role="alert">
+                        Enquiry Details was submitted successfully. We will contact you shortly.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+       <!--  *ngIf="!submittedSuccess" -->
+        <div class="container" *ngIf="!submittedSuccess">
+
+           
+
+            
+
+           
+            <div class="row apply">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 pl-0">
+                    <h1>Apply for a Quotation</h1>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb float-right">
+                            <li class="breadcrumb-item">
+                                <a href="#">Home</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">Apply for a Quotation</li>
+                        </ol>
+                    </nav>
+                </div>
+			</div>
+			<!-- (ngSubmit)="onSubmit()" -->
+            <form  [formGroup]="enquiryForm" >
+                <div class="row mt-4 enq-fom-det">
+					
+					<!--
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 grey-lft">
+                        <h2>Legal Representative</h2>
+                        
+                        <div class="form-group row">
+                            <div class="col-12">
+                                <input type="text" formControlName="firstName" [class.is-invalid]="f.firstName.invalid && f.firstName.touched " class="form-control" maxlength="255" placeholder="First Name *" autofocus>
+                               	<div *ngIf="f.firstName.errors" class="invalid-feedback">
+                                    <div *ngIf="f.firstName.errors.required" >First Name is required</div>
+									<div *ngIf="f.firstName.errors.maxlength">First Name cannot exceed 255 characters</div>
+									<div *ngIf="f.firstName.errors.pattern || f.firstName.hasError('whitespace')">Invalid First Name</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-12">
+                                <input type="text" formControlName="lastName" [class.is-invalid]="f.lastName.invalid && f.lastName.touched " class="form-control" maxlength="255" placeholder="Last Name *" >
+                                <div *ngIf="f.lastName.errors" class="invalid-feedback">
+                                    <div *ngIf="f.lastName.errors.required" >Last Name is required</div>
+									<div *ngIf="f.lastName.errors.maxlength">Last Name cannot exceed 255 characters</div>
+									<div *ngIf="f.lastName.errors.pattern || f.lastName.hasError('whitespace')">Invalid Last Name</div>
+                                </div>
+								
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row">
+                            <div class="col-12">
+                                <input type="text" formControlName="email" [class.is-invalid]="f.email.invalid && f.email.touched "   class="form-control" placeholder="Email *" >
+                                <div *ngIf="f.email.errors" class="invalid-feedback">
+                                    <div *ngIf="f.email.errors.required" >Email is required</div>
+									<div *ngIf="f.email.errors.maxlength">Email cannot exceed 255 characters</div>
+									<div *ngIf="f.email.errors.email">Email must be a valid email address</div>
+									<div *ngIf="f.email.hasError('whitespace')">Invalid Email</div>
+                                </div>
+								
+                            </div>
+                        </div>
+						<div class="form-group row">
+                            <div class="col-12">
+                                <select formControlName="country" class="form-control select2" (change)="getStateList($event.target.value,1);" [class.is-invalid]="country.invalid && country.touched" >
+                                    <option value="" >-- Country * --</option>
+                                    <option *ngFor="let country of countryList" value="{{country.id}}">{{country.name}}</option>
+                                </select>
+                                
+								<div *ngIf="country.errors" class="invalid-feedback">
+									<div *ngIf="country.errors.required" >Country cannot be blank.</div>
+								</div>
+								
+								
+                            </div>
+                        </div>
+						
+						<div class="form-group row">
+                            <div class="col-12">
+                                <select formControlName="states" class="form-control select2" [class.is-invalid]="states.invalid && states.touched">
+                                    <option value="" >-- State * --</option>
+                                    <option *ngFor="let states of stateList" value="{{states.id}}">{{states.name}}</option>
+                                </select>
+								<div *ngIf="states.errors" class="invalid-feedback">
+									<div *ngIf="states.errors.required" >State cannot be blank.</div>
+								</div>
+                            </div>
+                        </div>
+						
+                        <div class="form-group row">
+                            <div class="col-12">
+							
+								
+								
+								<div>
+									<input class="form-control phone_code" formControlName="phone_code"  type="text" placeholder="" value=""  readonly >
+									<input class="form-control ph_telephone" type="text" minlength="8" formControlName="telePhone" placeholder="Telephone *" [ngClass]="{ 'is-invalid': f.telePhone.invalid && f.telePhone.touched }" />
+									<div *ngIf="f.telePhone.errors" class="invalid-feedback">
+										<div *ngIf="f.telePhone.errors.required"> Telephone cannot be blank.</div>
+										<div *ngIf="f.telePhone.errors.minlength">Telephone must be at least 8 characters</div>
+										<div *ngIf="f.telePhone.errors.maxlength">Telephone can be max 15 number long</div>
+										<div *ngIf="f.telePhone.errors.pattern || f.telePhone.hasError('whitespace')">Invalid Telephone Number</div>
+									</div>
+									
+									
+									
+								</div>				
+
+                            </div>
+                        </div>                        
+                        
+                    </div>
+					-->
+                    
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 grey-rgt">
+                        
+						<div formGroupName="company">
+							<h2>Company Details</h2>
+							<div class="row" >
+								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+							
+									<div class="form-group row">
+										<div class="col-12">
+											<input type="text" formControlName="companyName" class="form-control" [class.is-invalid]="companyName.invalid && companyName.touched " placeholder="Company Name *" >
+											<div *ngIf="companyName.errors" class="invalid-feedback">
+												<div *ngIf="companyName.errors.required" >Company Name is required</div>
+												<div *ngIf="companyName.errors.maxlength">Company Name cannot exceed 255 characters</div>
+												<div *ngIf="companyName.hasError('whitespace')">Invalid Company Name</div>
+											</div>
+										</div>
+									</div>                                
+																	
+									<div class="form-group row">
+										<div class="col-12">
+											<input type="text" formControlName="website" placeholder="Website" class="form-control" [class.is-invalid]="website.invalid && website.touched">
+											<div *ngIf="website.errors" class="invalid-feedback">
+											  <div *ngIf="website.errors.pattern || website.hasError('whitespace')">Invalid Website Address</div>
+											</div>
+										</div>
+									</div>
+									
+									<div class="form-group row">
+										<div class="col-12">
+											<select formControlName="companyCountry" (change)="getStateList($event.target.value,2);getPhonecode($event.target.value);" class="form-control select2" [class.is-invalid]="companyCountry.invalid &&
+											companyCountry.touched " >
+												<option value="" >-- Country *--</option>
+												<option *ngFor="let country of countryList" value= {{country.id}}>{{country.name}}</option>
+											</select>
+											<div *ngIf="companyCountry.errors" class="invalid-feedback">
+												<div *ngIf="companyCountry.errors.required" >Country cannot be blank.</div>
+											</div>
+
+										</div>
+									</div>
+									
+									<div class="form-group row">
+										<div class="col-12">
+											<input type="text" formControlName="city" placeholder="Town/City *" class="form-control" [class.is-invalid]="city.invalid && city.touched " >                                        
+											<div *ngIf="city.errors" class="invalid-feedback">
+												<div *ngIf="city.errors.required">City cannot be blank.</div>
+												<div *ngIf="city.errors.maxlength">City cannot exceed 255 characters</div>
+												<div *ngIf="city.errors.pattern || city.hasError('whitespace')">Invalid City</div>		
+											</div>	
+										</div>
+									</div>
+									
+									<div class="form-group row">
+										<div class="col-12">
+											<textarea  rows="7" formControlName="address1" [class.is-invalid]="address1.invalid && address1.touched " placeholder="Address Line 1 *" class="form-control" ></textarea>
+											<div *ngIf="address1.errors" class="invalid-feedback">
+											<div *ngIf="address1.errors.required"  >Address Line 1 cannot be blank.</div>
+											<div *ngIf="address1.hasError('whitespace')">Invalid Address Line 1</div>
+											</div>
+										</div>
+									</div>
+									
+									<!--
+									<div class="form-group row">
+										<div class="col-12">
+											<textarea formControlName="address2" rows="7" class="form-control" placeholder="Address Line2" ></textarea>
+										</div>
+									</div>
+									-->
+									
+								</div>
+								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+
+									<div class="form-group row">
+										<div class="col-12">
+											<input type="text" formControlName="contactName" placeholder="Contact Name *" class="form-control" [class.is-invalid]="contactName.invalid && contactName.touched " >
+											<div *ngIf="contactName.errors" class="invalid-feedback">
+												<div *ngIf="contactName.errors.required" >Contact Name is required</div>
+												<div *ngIf="contactName.errors.maxlength">Contact Name cannot exceed 255 characters</div>
+												<div *ngIf="contactName.errors.pattern || contactName.hasError('whitespace')">Invalid Contact Name</div>
+											</div>
+										</div>
+									</div>
+									<div class="form-group row">
+										<div class="col-12">
+											<input type="text" formControlName="companyEmail" placeholder="Email *" class="form-control"  [class.is-invalid]="companyEmail.invalid && companyEmail.touched"  >                           
+											<div *ngIf="companyEmail.errors" class="invalid-feedback">
+												<div *ngIf="companyEmail.errors.required" >Email is required</div>
+												<div *ngIf="companyEmail.errors.maxlength">Email cannot exceed 255 characters</div>
+												<div *ngIf="companyEmail.errors.email">Email must be a valid email address</div>
+												<div *ngIf="companyEmail.hasError('whitespace')">Invalid Email</div>												
+											</div>
+										
+										</div>
+									</div>
+									<div class="form-group row">
+										<div class="col-12">
+										   <select formControlName="companyStates" class="form-control select2" [class.is-invalid]="companyStates.invalid && companyStates.touched">
+												<option value="" >-- State * --</option>
+												<option *ngFor="let cstates of companyStateList" value="{{cstates.id}}">{{cstates.name}}</option>
+											</select>
+											<div *ngIf="companyStates.errors" class="invalid-feedback">
+												<div *ngIf="companyStates.errors.required" >State cannot be blank.</div>
+											</div>
+										</div>
+									</div>
+									
+									
+									
+									<div class="form-group row">
+										<div class="col-12">
+											<input type="text" maxlength="15" formControlName="zipcode" placeholder="Post/Zip Code *" class="form-control" [class.is-invalid]="zipcode.invalid && zipcode.touched " >
+											<div *ngIf="zipcode.errors" class="invalid-feedback">
+												<div *ngIf="zipcode.errors.required">Post/Zip Code cannot be blank.</div>
+												<div *ngIf="zipcode.errors.maxlength">Post/Zip Code cannot exceed 15 characters</div>
+												<div *ngIf="zipcode.errors.pattern || zipcode.hasError('whitespace')">Invalid Post/Zip Code</div>
+											</div>
+										</div>
+										
+									</div>
+									
+									<div class="form-group row">
+										<div class="col-12">
+											<div>
+												<input class="form-control phone_code" formControlName="cphone_code"  type="text" placeholder="" value=""  readonly >
+												<input class="form-control ph_telephone" type="text" minlength="6" formControlName="ctelePhone" placeholder="Telephone *" [ngClass]="{ 'is-invalid': ctelePhone.invalid && ctelePhone.touched }" />
+												
+												<div *ngIf="ctelePhone.errors" class="invalid-feedback">
+													<div *ngIf="ctelePhone.errors.required"> Telephone cannot be blank.</div>
+													<div *ngIf="ctelePhone.errors.minlength">Telephone must be at least 8 numbers</div>
+													<div *ngIf="ctelePhone.errors.maxlength">Telephone can be max 15 number long</div>
+													<div *ngIf="ctelePhone.errors.pattern || ctelePhone.hasError('whitespace')">Invalid Telephone Number</div>
+												</div>
+											</div>															
+										
+											<!--
+											<div>
+												<input class="form-control phone_code" formControlName="cphone_code"  type="text" placeholder="" value=""  readonly >
+												<input type="text" minlength="8" formControlName="ctelePhone" placeholder="Telephone *" class="form-control ph_telephone" [ngClass]="{ 'is-invalid': submitted && ctelePhone.errors }" />
+											</div>
+											<div *ngIf="ctelePhone.errors && submitted" class="invalid-feedback">
+												<div *ngIf="ctelePhone.errors.required">Telephone cannot be blank.</div>
+												<div *ngIf="ctelePhone.errors.minLength">Telephone must be at least 6 numbers.</div>
+											</div>
+											-->
+											
+										</div>
+									</div>
+									
+									
+									
+									<!--
+									<div class="form-group row">
+										<div class="col-12">
+											<input type="text" maxlength="15" formControlName="noOfSites" placeholder="Number of sites" class="form-control" [class.is-invalid]="noOfSites.invalid && noOfSites.touched " >
+											<div *ngIf="noOfSites.errors" class="invalid-feedback">
+												<div *ngIf="noOfSites.errors.pattern || noOfSites.hasError('whitespace')">Invalid Number of Sites</div>
+												<div *ngIf="noOfSites.errors.min">Number of Sites should have more than "0"</div>
+												<div *ngIf="noOfSites.errors.maxlength">Number of Sites cannot exceed 10 characters</div>
+											</div>										
+										</div>										
+									</div>
+									-->
+									
+									
+									
+								</div>
+							</div>
+						</div>	
+						
+						<h2>Standards *</h2>
+                        
+                        <div *ngIf="!standardsLength && submitted" style="color:#dc3545;font-size:14px;">
+                            <div>
+                                Please select any standards
+                            </div>
+                        </div>
+                        <div class="row" formArrayName="standardsChk" >
+                            <div *ngFor="let standard of standardList; let i =index" class="col-lg-4 col-md-4 col-sm-6 col-xs-12" >
+                                <div class="checkbox">
+                                    <input id="inlineCheckbox{{ standard.id }}" (change)="onChange(standard.id, $event.target.checked)" type="checkbox" [value]="standard.id" >
+                                    <label for="inlineCheckbox{{ standard.id }}" >{{ standard.name }}</label>
+                                </div>
+                            </div>
+                        </div>
+						
+						<!--
+						<h2>Company Details </h2>
+						-->
+                        <div class="row emp m-t-5">
+							<!--
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 p-0">
+                                <div class="col-12">
+									<label>Number of Employees</label>
+                                    <input type="text" formControlName="noOfEmployees" class="form-control" placeholder="Number of employees" >
+                                </div>
+                            </div>
+							-->
+							
+							<!--
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 p-0">
+                                <div class="col-12">
+									<label>Number of Sites (Including Facilitator & Sub-contractor)</label>
+                                    <input type="text" formControlName="noOfSites" class="form-control" placeholder="Number of sites" [class.is-invalid]="f.noOfSites.invalid && f.noOfSites.touched ">
+									
+									<div *ngIf="f.noOfSites.errors" class="invalid-feedback">
+                                        <div *ngIf="f.noOfSites.errors.pattern || f.noOfSites.hasError('whitespace')">Invalid Number of Sites</div>
+                                        <div *ngIf="f.noOfSites.errors.min">Number of Sites should have more than "0"</div>
+										<div *ngIf="f.noOfSites.errors.maxlength">Number of Sites cannot exceed 10 characters</div>
+                                    </div>
+                                </div>
+                            </div>
+							-->
+							
+                            <!--
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mt-3">
+                                <div class="form-group">
+									<label>Description of your company operations</label>
+                                    <textarea formControlName="companyOperations" class="form-control" placeholder="Description of your company operations" ></textarea>
+                                </div>
+								
+                                <div class="form-group row">
+                                    <div class="col-12">
+										<label>Any other information about your company</label>
+                                        <textarea formControlName="otherInformation" class="form-control" placeholder="Any other information about your company" ></textarea>
+                                    </div>
+                                </div>
+								
+                            </div>
+							-->
+                        
+
+                            <div class="col-lg-12 col-md-6 col-sm-12 col-xs-12 mt-3 pr-0">
+                                <p class="float-left">Privacy Notice</p>
+                                <div class="float-left checkbox ml-4">
+                                    <input type="checkbox" formControlName="agreement" value="1" class="form-check-input" >
+                                    <label for="checkbox15">Agreement</label>
+                                    <div *ngIf="agreement.errors" style="color:#dc3545;font-size:14px;">
+                                    <div *ngIf="agreement.errors.required && submitted" >Please tick the Agreement</div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+							
+							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 p-0">
+                                <div class="col-12">
+									<!--<re-captcha (resolved)="resolved($event)" siteKey="6LfWAssUAAAAAPcUBOgIQa1yd7CxTN3YeMFwWS_f"></re-captcha>
+									<div *ngIf="recaptchaErrors" class="validationerror">{{ recaptchaErrors }}</div>-->
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12 text-center mt-4 mb-4">
+                                    <button [disabled]="loading" (click)="executeImportantAction()" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+                                        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                                        Submit
+                                    </button>
+                                    <button type="button" class="btn btn-success grey btn-custom waves-effect w-md waves-light m-b-5 ml-2">Cancel</button>
+
+                                    <div *ngIf="submittedError && error" class="alert alert-danger mt-3 mb-0">{{error}}</div>
+                            </div>
+
+                            
+                        </div>
+						
+                    </div>
+					
+					<!--
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 grey-rgt mt-3 ch-bx">
+                        
+					</div>	
+					
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 grey-rgt mt-3 ch-bx">
+                        
+                    </div>
+					-->
+                    
+                </div>
+            </form>
+        </div>
+        
+        <div class="col-lg-12 text-center mt-5">
+            <p>Copyright &copy; {{ year }} GCL International Ltd | All Right Reserved</p>
+        </div>
+</section>
+
+
+
+        

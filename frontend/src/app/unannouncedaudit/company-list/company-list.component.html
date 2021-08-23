@@ -1,0 +1,182 @@
+<form>
+  
+    <div class="row" >
+      <div class="col-12">
+          <div class="card-box table-responsive">
+                 
+            <div class="row col-12 m-b-5 pad-right">
+              <div class="col-8 pad-left">
+                <h4 class="page-title"><i class="fa fa-list-ul"></i> Company List</h4>
+                <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+              </div>
+              <div class="col-4 text-right pad-right">
+                <!-- <a class="btn btn-primary" href="#" *ngIf="userType==2 || userdetails.resource_access==1 || ((userType==3 ||userType==1) && userdetails.rules.includes('create_application')) " role="button" [routerLink]="['/application/add-request']" >Add Application</a>-->
+                <!-- <a class="btn btn-primary" href="#" *ngIf="userdetails.resource_access==1" role="button" [routerLink]="['/application/add-request']" >Add Application</a>-->
+              </div>
+            </div>
+            
+            <div class="row col-12 m-b-5 pad-right">
+                <div class="col-3 text-left pad-left">
+                <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                    <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+                  </select>
+                  </div>
+    
+                  <div class="col-5 text-rigth">
+                    <mat-select style="width: 40%;font-size:13px;" placeholder="-- Standard --" #standardFilter name="standardFilter" [(ngModel)]="service.standardFilter" multiple class="custom-select"  >
+                        <mat-select-trigger>
+                        <span *ngIf="standardFilter.value?.length == 1" >{{standardFilter.value ?  getSelectedValue(standardFilter.value,'standard') : ''}}</span>
+                        <span *ngIf="standardFilter.value?.length > 1" class="example-additional-selection">
+                            {{standardFilter.value.length}} {{ 'selected' }}
+                        </span>
+                        </mat-select-trigger>
+                        <mat-option *ngFor="let std of standardList" [value]="std.id">{{std.code}}</mat-option>
+                      </mat-select> 
+                    &nbsp; 					
+                    <mat-select style="width: 30%;font-size:13px;" placeholder="-- RA --" #riskFilter name="riskFilter" [(ngModel)]="service.riskFilter" multiple class="custom-select"  >
+                      <mat-select-trigger>
+                      <span *ngIf="riskFilter.value?.length == 1" >{{riskFilter.value ?  getSelectedValue(riskFilter.value,'ra') : ''}}</span>
+                      <span *ngIf="riskFilter.value?.length > 1" class="example-additional-selection">
+                          {{riskFilter.value.length}} {{ 'selected' }}
+                      </span>
+                      </mat-select-trigger>
+                      <mat-option *ngFor="let risk of riskList" [value]="risk.id">{{risk.name}}</mat-option>
+                    </mat-select>
+                  </div>
+              <div class="col-4 text-right pad-right">
+                <input class="search-pad" type="text" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+              </div>
+            </div>
+    
+            <div class="col-12 pad-left" *ngIf="arrEnumStatus">
+                <table id="datatable" class="table table-bordered" >
+                  <thead>
+                  <tr>
+                    <th width="5%" scope="col" class="text-center">S.No</th>
+                    <th scope="col"  >Customer Number</th>
+                    <th scope="col" sortable="company_name" (sort)="onSort($event)" >Company Name</th>				
+                    <th scope="col" class="text-center">No.of Units</th>				
+                    <th scope="col">Standard(s)</th>				
+                    <th scope="col" >Contact Person</th>
+                    <!--
+                    <th scope="col" sortable="city" (sort)="onSort($event)" >City</th>
+                    -->
+                    <!--<th scope="col">Email Address</th>-->
+                    <th scope="col">Telephone</th>
+                    <th scope="col" class="text-center" (sort)="onSort($event)" >No.of TC</th>
+                    <th scope="col" class="text-center">Risk Category</th>
+                    <th width="10%" scope="col" sortable="created_at" (sort)="onSort($event)">Created Date</th>
+                    <th width="6%" class="text-center" scope="col">Action</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr *ngFor="let application of applications$ | async; let i=index; ">
+                    <th scope="row" class="center">{{ i+1+ service.pageNo }}</th>			
+                    <td><ngb-highlight [result]="application.customer_number"  [term]="service.searchTerm"></ngb-highlight></td>
+
+                    <td><ngb-highlight [result]="application.company_name"  [term]="service.searchTerm"></ngb-highlight></td>
+                    <td class="text-center"><ngb-highlight [result]="application.application_unit_count"></ngb-highlight></td>
+                    <td><ngb-highlight [result]="application.application_standard"></ngb-highlight></td>
+                    
+                    <td><ngb-highlight [result]="application.first_name" [term]="service.searchTerm"></ngb-highlight></td>
+                    <!--<td><ngb-highlight [result]="application.email_address" [term]="service.searchTerm"></ngb-highlight></td>-->
+                    <!--
+                    <td><ngb-highlight [result]="application.city" [term]="service.searchTerm"></ngb-highlight></td>
+                    -->
+                    <td><ngb-highlight [result]="application.telephone" [term]="service.searchTerm"></ngb-highlight></td>
+                    <td class="text-center"><ngb-highlight [result]="application.no_of_tc" [term]="service.searchTerm"></ngb-highlight></td>
+                    <td class="text-center"><ngb-highlight [result]="application.risk_category_label" [term]="service.searchTerm"></ngb-highlight></td>
+                    <td><ngb-highlight [result]="application.created_at" [term]="service.searchTerm"></ngb-highlight></td>
+                    <td class="center">
+                        <a href="javascript:void(0);" *ngIf="userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('application_review'))" class="pl-2" (click)="openmodal(viewunannouncedaudit,application)" title="Plan Unannounced Audit" alt="Plan Unannounced Audit"><i class="fa fa-calendar-check-o"></i> </a>
+                    </td>
+                    </tr>
+                    <tr  *ngIf="(applications$ | async)?.length==0" >
+              <td colspan="12" class="center">{{ commontxt.norecords }}</td>
+            </tr>
+                  </tbody>
+                </table>
+            </div>
+            
+            <div class="row col-12 pad-left pad-right">
+                <div class="col-6">
+                    <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+                    <div *ngIf="!(service.loading$ | async)">
+                    Displaying {{ (applications$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (applications$ | async).length }} of {{ (total$ | async) }} results.
+                    </div>
+                </div>
+                <div class="col-6 pad-right text-right">						
+                <ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+                    <ng-template ngbPaginationFirst>First</ng-template>
+                    <ng-template ngbPaginationPrevious>Prev</ng-template>
+                    <ng-template ngbPaginationNext>Next</ng-template>			  
+                    <ng-template ngbPaginationLast>Last</ng-template>			  
+                </ngb-pagination>						
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+    </form>
+
+    <ng-template #viewunannouncedaudit let-modal>
+        <div class="modal-header">
+            <h4 class="modal-title" id="modal-basic-title">Plan Unannounced Audit</h4>
+            <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span class="c-icon" aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="alert alert-success" *ngIf="msgsuccess">{{msgsuccess}}</div>
+            <div *ngIf="!msgsuccess" >
+                <form  [formGroup]="form">
+                    <div class="form-group row">
+                        <div class="col-12">
+                            <label>Standard <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Standard" matTooltipClass="tooltip-text-size" aria-tooltip="Standard" matTooltipPosition="right"></i>
+                            <mat-select placeholder="-- Standard --" formControlName="standard_id" multiple class="form-control select2" [class.is-invalid]="f.standard_id.invalid && f.standard_id.touched" (selectionChange)="getUnits($event.value)">
+                                <mat-select-trigger>
+                                <span *ngIf="f.standard_id.value?.length == 1" >{{f.standard_id.value ? getSelectedValue(f.standard_id.value,'standard'): ''}}</span>
+                                <span *ngIf="f.standard_id.value?.length > 1" class="example-additional-selection">
+                                    {{f.standard_id.value.length}} {{ 'selected' }}
+                                </span>
+                                </mat-select-trigger>
+                                <mat-option *ngFor="let standard of auditstdlist" value= {{standard.id}}>{{ standard.name }}</mat-option>
+                            </mat-select>  					
+                            <div *ngIf="f.standard_id.errors" class="invalid-feedback">
+                                <div *ngIf="f.standard_id.errors.required">Standard is required</div>
+                            </div>	
+                        </div>
+                    </div>	
+                    
+                    <div class="clearfix"></div> 
+                
+                    <div class="form-group row">
+                        <div class="col-12">
+                            <label>Unit <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Unit" matTooltipClass="tooltip-text-size" aria-tooltip="Unit" matTooltipPosition="right"></i>
+                            <mat-select placeholder="-- Unit --" formControlName="unit_id" multiple class="form-control select2" [class.is-invalid]="f.unit_id.invalid && f.unit_id.touched">
+                                <mat-select-trigger>
+                                <span *ngIf="f.unit_id.value?.length == 1" >{{f.unit_id.value ? getSelectedValue(f.unit_id.value,'unit'): ''}}</span>
+                                <span *ngIf="f.unit_id.value?.length > 1" class="example-additional-selection">
+                                    {{f.unit_id.value.length}} {{ 'selected' }}
+                                </span>
+                                </mat-select-trigger>
+                                <mat-option *ngFor="let unit of unitList" [value]="unit.id">{{unit.name}}</mat-option>
+                            </mat-select>  
+                            <div *ngIf="f.unit_id.errors" class="invalid-feedback">
+                                <div *ngIf="f.unit_id.errors.required" >Unit Name is required</div>
+                            </div>	 
+                        </div>
+                    </div>	
+                            
+                </form>
+            </div>
+        </div>
+        <div class="modal-footer" *ngIf="msgsuccess=='' || msgsuccess=== undefined">
+          <button type="button" [disabled]="loading" class="btn btn-success " (click)="SubmitForm()">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>Save</button>
+
+          <button type="button" [disabled]="loading" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>Cancel</button> 
+        </div>
+    </ng-template>

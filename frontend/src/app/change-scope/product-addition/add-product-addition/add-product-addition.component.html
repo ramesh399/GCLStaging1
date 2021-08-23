@@ -1,0 +1,733 @@
+<div class="row">
+    <div class="col-12">
+        <div class="add card-box table-responsive">
+           
+            		
+				<div class="col-12 row pad-right" >
+                    <div class="col-8">
+                    <h4 class="page-title"><i class="fa fa-list-ul"></i> {{title}}</h4>
+                    </div>
+                    <div class="col-4 text-right pad-right">
+                    <a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/change-scope/product-addition/list']" >Back</a>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom:10px;  " *ngIf="productdetails && productdetails.app_id">
+                    <mat-accordion>
+                        <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                View Application Details
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            
+                            <div class="row" >
+                                <div class="col-sm-12">
+                                    <div class="clearfix"></div>            
+                                    <app-appdetail [id]="productdetails.app_id" ></app-appdetail>                          
+                                </div>              
+                            </div>
+                        </mat-expansion-panel>                
+                    </mat-accordion>
+                </div>
+
+                <div class="col-12" ><span *ngIf="loading['data']" class="spinner-border spinner-border-sm mr-1"></span></div>
+
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view"  *ngIf="productdetails" >
+				    <form  [formGroup]="form"  >
+                   
+                        <ng-container *ngIf="!loading['data']" >
+                            <div class="cs-pgm"> 
+                                <h3>What type(s) of products would you like to have certified?<!--<a href="javascript:void(0);" (click)="openguidance(showguidance,'product')"  ><i class="fa fa-info-circle" aria-hidden="true" style="margin-left: 5px;"></i></a> --> </h3> 
+                                <div class="form-group row">
+                                    
+                                    
+                                    <div  style="width:100%;">
+                                        <h3>Products</h3>
+                                        <table id="datatable" class="table table-bordered tab-bor col-12" >
+                                            <thead>
+                                            <tr>
+                                                <th scope="col" class="center">S.No</th>
+                                                <th scope="col"  >Product Category</th>
+                                                <th scope="col"  >Product Description</th>
+                                                <th scope="col" class="center" >Wastage (%)</th>
+                                                <th scope="col" >Material Composition</th>
+                                                <th scope="col"  >Standard</th>
+                                                <th scope="col"  >Label Grade</th>
+                                                <th scope="col" class="center" >Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngIf="productEntries?.length==0">
+                                                        <td colspan="8" class="center">No Products Added</td>
+                                                </tr>
+                                               <ng-container *ngFor="let productEntry of productEntries; let i=index; ">
+                                                        
+                                                <!--<ng-container *ngFor="let productEntry of productListDetails; let i=index; "> -->
+                                                    <tr [class.currentedit]="this.productIndex===i" >
+                                                        
+                                                        <td scope="row" class="center"  [attr.rowspan]="productEntry.productStandardList.length<=0?1:productEntry.productStandardList.length" >{{  1+i  }}</td>
+                                                        <td  [attr.rowspan]="productEntry.productStandardList.length<=0?1:productEntry.productStandardList.length" >{{ productEntry.name }}</td>
+                                                        <td  [attr.rowspan]="productEntry.productStandardList.length<=0?1:productEntry.productStandardList.length" >{{ productEntry.product_type_name }}</td>
+                                                        <td  [attr.rowspan]="productEntry.productStandardList.length<=0?1:productEntry.productStandardList.length" class="center">{{ productEntry.wastage }}</td>
+                                                        <td  [attr.rowspan]="productEntry.productStandardList.length<=0?1:productEntry.productStandardList.length" >{{ productEntry.materialcompositionname }}</td>
+                                                        <td>
+                                                            {{ productEntry.productStandardList.length>0?productEntry.productStandardList[0]['standard_name']:'' }}
+                                                            <!--{{ productEntry.standard_name }} -->
+                                                        </td>
+                                                        <td>
+                                                            {{ productEntry.productStandardList.length>0?productEntry.productStandardList[0]['label_grade_name']:'' }}
+                                                            <!--{{  productEntry.label_grade_name }}-->
+                                                        </td>
+                                                        <td  [attr.rowspan]="productEntry.productStandardList.length<=0?1:productEntry.productStandardList.length" class="center">
+                                                            <a href="javascript:void(0);" (click)="editProduct(i)" title="Edit" alt="Edit"> <i class="fa fa-edit"></i> </a>
+                                                            &nbsp;&nbsp;
+                                                            <a href="javascript:void(0);" (click)="removeProduct(confirmcontent,productEntry.autoid)" title="Delete" alt="Delete"> <i class="fa fa-trash text-danger"></i> </a>
+                                                        </td>
+                                                    </tr>
+                                                    <ng-container *ngIf="productEntry.productStandardList.length>1">
+                                                        <tr  *ngFor="let productsEntry of productEntry.productStandardList | slice:1;" [class.currentedit]="this.productIndex===i"  >
+                                                           <!-- <td  >{{ productEntry.name }}</td>
+                                                            <td >{{ productEntry.product_type_name }}</td>
+                                                            <td  class="center">{{ productEntry.wastage }}</td>
+                                                            <td >{{ productEntry.materialcompositionname }}</td>-->
+
+                                                            <td>{{ productsEntry['standard_name'] }}</td>
+                                                            <td>{{ productsEntry['label_grade_name'] }}</td>
+                                                        </tr>
+                                                    </ng-container>
+                                                </ng-container>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12 mt-4" >
+                                <button [disabled]="loading['button']" (click)="setshowProduct()" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+                                    <span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+                                    Click here to Add Product
+                                </button>&nbsp;&nbsp;
+                            </div>
+
+                            <div class="cs-pgm" *ngIf="showProduct">
+                                <h3>Product Addition</h3>
+                                
+                                    
+                					<div class="row col-12 line-sec-prd " >
+                                        
+                                        <div class="col-4">
+                                            <label>Product Category</label>
+                                            <select formControlName="product" class="form-control select2" (change)="getProductType($event.target.value)" [class.is-invalid]="f.product.invalid &&
+                                            f.product.touched " >
+                                                <option value="" >-- Product Category * --</option>
+                                                <option *ngFor="let product of productList" value= {{product.id}}>{{product.name}}</option>
+                                            </select>
+                                            <div *ngIf="f.product.errors" class="invalid-feedback">
+                                                <div *ngIf="f.product.errors.required"  >
+                                                    Product Category is required
+                                                </div>
+                                            </div>
+                                            <div *ngIf="productErrors" class="validationerror" >
+                                                {{ productErrors }}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-4">
+                                            <label>Product Description</label>
+                                            <select formControlName="product_type" class="form-control select2" [class.is-invalid]="f.product_type.invalid &&
+                                            f.product_type.touched " (change)="getProductMaterial($event.target.value)">
+                                                <option value="" >-- Product Description * --</option>
+                                                <option *ngFor="let producttype of productTypeList" value= {{producttype.id}}>{{producttype.name}}</option>
+                                            </select>
+                                            <span *ngIf="loading?.producttype" class="spinner-border spinner-border-sm mr-1"></span>
+
+                                            <div *ngIf="f.product_type.errors" class="invalid-feedback">
+                                                <div *ngIf="f.product_type.errors.required"  >
+                                                    Product Description is required
+                                                </div>
+                                            </div>
+                                            <div *ngIf="producttypeErrors" class="validationerror" >
+                                                    {{ producttypeErrors }}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-4">
+                                            <label>Wastage (%)</label>
+                                            <input type="text" formControlName="wastage"  class="form-control" placeholder="Wastage (%) *" [class.is-invalid]="f.wastage.invalid && f.wastage.touched ">
+                                            <div *ngIf="f.wastage.errors" class="invalid-feedback">
+                                                <div *ngIf="f.wastage.errors.required"  >
+                                                    Wastage is required
+                                                </div>
+                                                <div *ngIf="f.wastage.errors.pattern">
+                                                    Wastage should be valid numbers
+                                                </div>
+                                                <div *ngIf="f.wastage.errors.max">
+                                                    Wastage should be maximum 100
+                                                </div>
+                                            </div>
+                                            <div *ngIf="wastageErrors" class="validationerror" >
+                                                {{ wastageErrors }} 
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-11 m-t-10 row app-pdt-std">
+                                            <div class="col-4" >
+                                                <label>Material</label>
+                                                <select formControlName="material"  [class.is-invalid]="f.material.invalid && f.material.touched "  class="form-control select2"  >
+                                                    <option value="" >-- Material * --</option>
+                                                    <option *ngFor="let materialdt of materialList" value= {{materialdt.id}}>{{materialdt.name}}</option>
+                                                </select>
+                                                <span *ngIf="loading?.material" class="spinner-border spinner-border-sm mr-1"></span>
+                                                <div *ngIf="f.material.errors" class="invalid-feedback">
+                                                    <div *ngIf="f.material.errors.required"  >
+                                                        Material is required
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-4" >
+                                                <label>Material Type</label>
+                                                <select formControlName="material_type"  [class.is-invalid]="f.material_type.invalid && f.material_type.touched "  class="form-control select2"  >
+                                                    <option value="" >-- Material Type * --</option>
+                                                    <option *ngFor="let materialdt of materialTypeList" value= {{materialdt.id}}>{{materialdt.name}}</option>
+                                                </select>
+                                                <div *ngIf="f.material_type.errors" class="invalid-feedback">
+                                                    <div *ngIf="f.material_type.errors.required"  >
+                                                        Material Type is required
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-2">
+                                                <label>Percentage (%)</label>
+                                                <input type="text" formControlName="material_percentage"  class="form-control" placeholder="Percentage (%) *" [class.is-invalid]="f.material_percentage.invalid && f.material_percentage.touched ">
+                                                <div *ngIf="f.material_percentage.errors" class="invalid-feedback">
+                                                    <div *ngIf="f.material_percentage.errors.required"  >
+                                                        Percentage is required
+                                                    </div>
+                                                    <div *ngIf="f.material_percentage.errors.pattern">
+                                                        Percentage should be valid numbers
+                                                    </div>
+                                                    <div *ngIf="f.material_percentage.errors.max">
+                                                        Percentage should be maximum 100
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-2" style="padding-top:29px;">
+                                                <a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="addProductMaterial()"  >+Add Material</a>
+                                            </div>
+
+                                            <div class="tbl-sec col-12" style="margin-top:10px;">
+                                                <table id="datatable" class="table table-bordered tab-bor col-12" >
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col" class="center">S.No</th>
+                                                            <th scope="col"  >Material</th>
+                                                            <th scope="col" class="center" >Material Type</th>
+                                                            <th scope="col" class="center" >Percentage (%)</th>
+                                                            <th scope="col" class="center" >Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr *ngIf="productMaterialList?.length==0">
+                                                                <td colspan="5" class="center">No Material Added</td>
+                                                        </tr>
+                                                        <tr *ngFor="let materialEntry of productMaterialList; let im=index; " [class.currentedit]="f.material.value==materialEntry.material_id">
+                                                            <td scope="row" class="center">{{  1+ im }}</td>
+                                                            <td>{{ materialEntry.material_name }}</td>
+                                                            <td>{{ materialEntry.material_type_name }}</td>
+                                                            <td class="center">{{ materialEntry.material_percentage }}</td>
+                                                            <td  class="center">
+                                                                <a href="javascript:void(0);" (click)="editProductMaterial(materialEntry.material_id)" title="Edit" alt="Edit"> <i class="fa fa-edit"></i> </a>
+                                                                &nbsp;&nbsp;
+                                                                <a href="javascript:void(0);" (click)="removeProductMaterial(materialEntry.material_id)" title="Delete" alt="Delete"> <i class="fa fa-trash text-danger"></i> </a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                
+                                            </div>
+                                            
+                                            <div class="col-12 validationerror" *ngIf="productmaterial_error" >{{ productmaterial_error }}</div>
+                                        </div>
+                                    
+                                        
+
+                                        <div class="col-11 row app-pdt-std" >
+                                            <div class="col-5">
+                                                <label>Product Standard</label>
+                                                <select formControlName="composition_standard"  [class.is-invalid]="f.composition_standard.invalid && f.composition_standard.touched "  class="form-control select2" (change)="getStandardGrade($event.target.value)">
+                                                    <option value="" >-- Product Standard * --</option>
+                                                    <option *ngFor="let standard of selStandardList" value= {{standard.id}}>{{standard.name}}</option>
+                                                </select>
+                                                <div *ngIf="f.composition_standard.errors" class="invalid-feedback">
+                                                    <div *ngIf="f.composition_standard.errors.required"  >
+                                                        Product Standard is required
+                                                    </div>
+                                                </div>
+                                                
+                                            </div>
+
+                                            <div class="col-4">
+                                                <label>Label Grade</label>
+                                                <select formControlName="label_grade" [class.is-invalid]="f.label_grade.invalid && f.label_grade.touched " class="form-control select2">
+                                                    <option value="" >-- Label Grade * --</option>
+                                                    <option *ngFor="let grade of labelGradeList" value= {{grade.id}}>{{grade.name}}</option>
+                                                </select>
+                                                <span *ngIf="loading?.labelgrade" class="spinner-border spinner-border-sm mr-1"></span>
+                                                <div *ngIf="f.label_grade.errors" class="invalid-feedback">
+                                                    <div *ngIf="f.label_grade.errors.required"  >
+                                                        Label Grade is required
+                                                    </div>
+                                                </div>
+                                                <div class="validationerror" *ngIf="grade_error" >{{ grade_error }}</div>
+                                            </div>
+
+
+
+                                            <div class="col-3" style="padding-top:29px;">
+                                                <a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="addProductStandard()"  >+Add Product Standard</a>
+                                            </div>
+
+                                            <div class="tbl-sec col-12" style="margin-top:10px;">
+                                                <table id="datatable" class="table table-bordered tab-bor col-12" >
+                                                    <thead>
+                                                    <tr>
+                                                        <th scope="col" class="center">S.No</th>
+                                                        <th scope="col"  >Product Standard Name</th>
+                                                        <th scope="col" class="center" >Label Grade</th>
+                                                        <th scope="col" class="center" >Action</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr *ngIf="productStandardList?.length==0">
+                                                                <td colspan="4" class="center">No Product Standards Added</td>
+                                                        </tr>
+                                                        <tr *ngFor="let standardEntry of productStandardList; let i=index; " [class.currentedit]="f.composition_standard.value==standardEntry.standard_id" >
+                                                            <td scope="row" class="center">{{  1+ i }}</td>
+                                                            <td>{{ standardEntry.standard_name }}</td>
+                                                            <td class="center">{{ standardEntry.label_grade_name }}</td>
+                                                            <td  class="center">
+                                                                <a href="javascript:void(0);" (click)="editProductStandard(standardEntry.standard_id)" title="Edit" alt="Edit"> <i class="fa fa-edit"></i> </a>
+                                                                &nbsp;&nbsp;
+                                                                <a href="javascript:void(0);" (click)="removeProductStandard(standardEntry.standard_id)" title="Delete" alt="Delete"> <i class="fa fa-trash text-danger"></i> </a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                
+                                            </div>
+                                            <div class="col-12 validationerror" *ngIf="productstandardgrade_error" >{{ productstandardgrade_error }}</div>
+                                        </div>
+                                        <div class="col-6" >									
+                                            <div class="validationerror" *ngIf="unitvalproductErrors">Product with same Category & Description was already added{{unitvalproductErrors}}</div>
+                                            <!-- <a class="btn btn-success" href="javascript:void(0);" role="button" (click)="addProduct()"  >Save Product</a> 
+                                            &nbsp;&nbsp;
+                                            <a class="btn btn-secondary active grey" href="javascript:void(0);" role="button" (click)="showProductFn()"  >Cancel</a> -->
+                                        </div>
+
+                                        
+                                    </div>
+                                    <div class="col-12 validationerror" *ngIf="productstandard_error" >{{ productstandard_error }}</div>
+
+            										   
+                					<div class="col-lg-12 text-center mt-4 mb-4">
+                							<button [disabled]="loading?.button || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)='addProduct()'>
+                								<span *ngIf="loading?.button" class="spinner-border spinner-border-sm mr-1"></span>
+                								Submit
+                							</button>
+                                            &nbsp;&nbsp;
+                                            <button [disabled]="loading['button']" (click)="productReset()" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2">
+                                                <span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+                                                Reset
+                                            </button>
+                							<!-- <button [disabled]="loading || buttonDisable" type="button" [routerLink]="['/transfer-certificate/request/list']" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2">
+                								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                								Cancel
+                							</button> -->
+                														
+                							<div class="clearfix"></div>
+                							
+                							
+                					</div>
+                                </div>
+                        </ng-container>
+                    </form>
+					<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+
+
+
+
+
+
+
+                    <form #appform="ngForm"  >
+
+                        <div class="un-lst"><h3>Facility Details</h3></div> 
+                        <div *ngFor="let unit of applicationdata.units; index as i" style="margin-bottom:5px;" >
+                            <mat-accordion >
+                                <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true" [expanded]="true">
+                                    <mat-expansion-panel-header>
+                                        <mat-panel-title>
+                                        {{ unit.unit_type_name}} : {{ unit.name }}
+                                        </mat-panel-title>
+                                    </mat-expansion-panel-header>
+                                    <div class="card-box enq-view">
+                                    
+                                        <h3>{{ unit.unit_type_name}} Details</h3>
+                                        <table class="table-secondary m-b-15">
+                                            <tr>
+                                                <th width="20%">Name</th>
+                                                <td width="30%">{{ unit.name }}</td>
+                                                <th width="20%">Postal Code</th>
+                                                <td width="30%">{{ unit.zipcode }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th width="20%">Address</th>
+                                                <td colspan="3">{{ unit.address }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th width="20%">Country</th>
+                                                <td width="30%">{{ unit.country_id_name }}</td>
+                                                <th width="20%">State</th>
+                                                <td width="30%">{{ unit.state_id_name }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th width="20%">City</th>
+                                                <td width="30%">{{ unit.city }}</td>
+                                                <th width="20%">No. of Employees</th>
+                                                <td width="30%">{{ unit.no_of_employees }}</td>
+                                            </tr>
+                                        </table>
+                                        <div class="card-box enq-view lst greybg">
+                                            <h3>Standard Information</h3>
+                                            <table class="table-secondary m-b-15">
+                                                <tr>
+                                                    <th width="20%">Standard(s)</th>
+                                                    <td width="80%">
+                                                        <ul>
+                                                            <li *ngFor="let standard of unit.standarddetails; ">
+                                                            <span>{{ standard.name }}</span></li>
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+                                            </table>		
+                                            
+                                        </div>
+                                        <div class="mat-accordion">
+                                            <div class="card-box enq-view">
+                                                <h3>{{ unit.unit_type_name}} Product Details</h3>
+                                                 
+                                                    <table class="table table-bordered col-12" style="font-size:13px;">
+                                                        <thead>
+                                                        <tr>
+                                                            <th scope="col" class="center">S.No</th>
+                                                            <th scope="col"  >Product Category</th>
+                                                            <th scope="col"  >Type of Product</th>
+                                                            <th scope="col" class="center" >Wastage (%)</th>
+                                                            <th scope="col" >Material Composition</th>
+                                                            <th scope="col"  >Standard</th>
+                                                            <th scope="col"  >Label Grade</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                             
+                                                                <tr *ngFor="let product of unit?.product_details; index as is;">
+                                                                    <td scope="row" class="center"   >{{  1+ is }}</td>
+                                                                    <td >{{ product.name }}</td>
+                                                                    <td >{{ product.product_type_name }}</td>
+                                                                    <td class="center">{{ product.wastage }}</td>
+                                                                    <td >
+                                                                        {{ product.materialcompositionname }}
+                                                                    </td>
+                                                                    <td>{{ product.standard_name }}</td>
+                                                                    <td>{{ product.label_grade_name }}</td>
+                                                                </tr> 
+                                                                      
+                                                        </tbody>
+                                                    </table>
+                                                     
+                                                <!--<ul>
+                                                    <li style="width:100%;"><span class="label-pad">Products</span>   <span class="name-pad" style="width:100%;"><span *ngFor="let prd of unit.products; let isLast=last;" >{{ prd }} {{isLast ? '' : ', '}}</span></span></li>
+                                                </ul>-->
+                                            </div>
+                                        </div>
+                                        <!--       
+                                        <div class="mat-accordion">
+                                            <div class="card-box enq-view">
+                                                <h3>{{ unit.unit_type_name}} Process Details</h3>
+                                                <ul>
+                                                    <li style="width:100%;"><span class="label-pad">Process(es)</span>   <span class="name-pad" style="width:100%;"><span *ngFor="let prs of unit.process; let isLast=last;" >{{ prs }} {{isLast ? '' : ', '}}</span></span></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        -->
+                                        <div class="mat-accordion">
+                                            <div class="card-box enq-view">
+                                                <h3>Add New Product</h3>
+
+
+                                                <div class="line-sec">
+                                                    <div class="form-group row ">
+                                                        <div class="col-12 row">
+                                                            <!--<label>Product</label><a href="javascript:void(0);" (click)="openguidance(showguidance,'product_field')"  ><i class="fa fa-info-circle" aria-hidden="true" style="margin-left: 5px;"></i></a>-->
+                                                             <!--
+                                                            <select  class="form-control select2 "  [(ngModel)]="product_ids['qtd_'+unit.id]" name="qtd_{{unit.id}}" #productids="ngModel" >
+                                                                <option value="" >-- Product * --</option>
+                                                                <option *ngFor="let product of selUnitStandardList[unit.id];  let i =index" value= {{i}}>{{product.name+' | '+product.product_type_name+' | '+product.wastage+'% wastage'+' | '+product.materialcompositionname+' | '+product.standard_name+' | '+product.label_grade_name}}</option>
+                                                                
+                                                            </select>
+                                                            <div *ngIf="newproducterror[unit.id]" class="validationerror">
+                                                                Product is required
+                                                            </div>
+                                                            -->
+                                                            <div class="col-10"><label>Product List</label></div>
+                                                            <div class="col-2 pad-right text-right">
+                                                                <a class="btn btn-primary btn-sm" href="javascript:void(0);" role="button"  (click)="addUnitProductPop(unitProductEntryDetails,unit)"><i class="fa fa-plus text-white"></i> Select Product</a>
+                                                            </div>
+                                                        </div>
+                                                        <!--<div class="col-2" style="padding-top:5px;" >
+                                                            <a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button"  (click)="addUnitProduct(unit.id)"  >+Add Product</a>
+                                                        </div>-->
+
+                                                        <div class="col-12">
+                                                            <!--<label>Product List</label><a href="javascript:void(0);" ><i class="fa fa-info-circle" aria-hidden="true" style="margin-left: 5px;"></i></a>-->
+                                                            <table id="datatable" class="table table-bordered tab-bor col-12" >
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th scope="col" class="center">S.No</th>
+                                                                        <th scope="col"  >Product Category</th>
+                                                                        <th scope="col"  >Product Description</th>
+                                                                        <th scope="col" class="center" >Wastage (%)</th>
+                                                                        <th scope="col" >Material Composition</th>
+                                                                        <th scope="col"  >Standard</th>
+                                                                        <th scope="col"  >Label Grade</th>
+                                                                        <th scope="col" class="center" >Action</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr *ngIf="unitProductList[unit.id]?.length==0">
+                                                                        <td colspan="8" class="center">No Product Added for this unit</td>
+                                                                    </tr>
+                                                                    <tr *ngFor="let productentry of unitProductList[unit.id]; let i=index; ">
+                                                                        <td scope="row" class="center">{{  1+ i }}</td>
+                                                                        <td>{{ productentry.name }}</td>
+                                                                        <td>{{ productentry.product_type_name }}</td>
+                                                                        <td>{{ productentry.wastage }}</td>
+                                                                        <td>{{ productentry.materialcompositionname }}</td>
+                                                                        <td>{{ productentry.standard_name }}</td>
+                                                                        <td>{{ productentry.label_grade_name }}</td>
+                                                                        <td  class="center">
+                                                                            <a href="javascript:void(0);" (click)="removeUnitProduct(unit.id,i)" > <i class="fa fa-trash text-danger"></i> </a>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="validationerror" *ngIf="unitproductErrors">Please add product</div>
+                                                    </div>
+                                                </div>
+                                             
+                                            </div>
+                                         
+                                        </div>
+                                    </div>
+                                </mat-expansion-panel>                
+                            </mat-accordion>
+                        </div>
+                    </form>
+
+
+                    <div class="col-12 text-center" >
+                     
+                        <button (click)="onSubmit('draft')" [disabled]="loading?.button || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+                            <span *ngIf="loading?.button" class="spinner-border spinner-border-sm mr-1"></span>
+                            Save
+                        </button>
+                        &nbsp;&nbsp;
+                        <button (click)="onSubmit('addition')" *ngIf="(productdetails.status ==0|| productdetails.status==1 ) && (userdetails.resource_access==1 || userType==2)"  [disabled]="loading?.button || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+                            <span *ngIf="loading?.button" class="spinner-border spinner-border-sm mr-1"></span>
+                            Save & Submit for Approval
+                        </button>
+                         
+                    </div>
+        
+                    <app-usermessage [success]="unitpdtsuccess" [error]="unitpdterror"  ></app-usermessage>
+
+
+
+
+
+
+
+
+				</div>
+           
+        </div>
+    </div>
+</div>
+<!--
+<ng-template #AddProduct let-modal>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+	<div class="modal-body" style="font-size:16px;">
+		<div class="card-box enq-view">		
+			<form [formGroup]="unitForm">
+                <div class="form-group row">
+					<div class="col-6">
+						<label for="unit_id">Unit <span class="text-danger">*</span></label>
+						<select formControlName="unit_id" class="form-control select2" [class.is-invalid]="uf.unit_id.invalid && uf.unit_id.touched">
+							<option value="">-- Unit --</option>
+							<option  *ngFor="let item of unitlist" value="{{item.id}}">{{item.name}}</option>
+						</select> 
+					</div>
+                </div>
+                <div class="form-group row">	
+                    <div class="line-sec" style="font-size: 13px;">
+                        <div class="form-group row ">
+                            <div class="col-12" style="padding-top:25px;">
+                                <label>Product List</label>
+                                <table id="datatable" class="table table-bordered tab-bor col-12" >
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" class="center">S.No</th>
+                                            <th scope="col"  >Product Category</th>
+                                            <th scope="col"  >Product Description</th>
+                                            <th scope="col" class="center" >Wastage (%)</th>
+                                            <th scope="col" >Material Composition</th>
+                                            <th scope="col"  >Standard</th>
+                                            <th scope="col"  >Label Grade</th>
+                                            <th scope="col" class="center" >Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngIf="unitProductList?.length==0">
+                                            <td colspan="8" class="center">No Product Added for this unit</td>
+                                        </tr>
+                                        <tr *ngFor="let productentry of unitProductList; let i=index; ">
+                                            <td scope="row" class="center">{{  1+ i }}</td>
+                                            <td>{{ productentry.name }}</td>
+                                            <td>{{ productentry.product_type_name }}</td>
+                                            <td>{{ productentry.wastage }}</td>
+                                            <td>{{ productentry.materialcompositionname }}</td>
+                                            <td>{{ productentry.standard_name }}</td>
+                                            <td>{{ productentry.label_grade_name }}</td>
+                                            <td  class="center">
+                                                <a href="javascript:void(0);" (click)="removeUnitProduct(i)" > <i class="fa fa-trash text-danger"></i> </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="validationerror" *ngIf="unitproductErrors">Please add product</div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+		</div>
+        <div style="text-align: center;">
+            <a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="modal.dismiss('cancel click')" >Close</a>
+        </div>
+    </div>
+</ng-template>
+    -->
+<ng-template #confirmcontent let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+        Are you sure, do you want to delete the product?
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+        
+    </div>
+</ng-template>
+
+
+<ng-template #unitProductEntryDetails let-modal>
+	
+	<form #unitProductForm="ngForm">
+	
+		<div class="modal-header">
+		
+			<div class="col-12 row pad-right" style="z-index:99999;">
+				<div class="col-2"><h4 class="modal-title">Select Product</h4></div>				
+				<div class="col-10">&nbsp;</div>						
+			</div>
+				
+		
+			<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+				<span class="c-icon" aria-hidden="true">&times;</span>
+			</button>
+		</div>
+	
+	
+	
+		<div class="modal-body">
+		
+			<div class="clearfix"></div>
+			<div class="enq-view">
+				
+				<ng-container *ngFor="let std of selProductStandardList;  let i =index">
+					<ng-container *ngIf="filterProductStandard(std.id,curunitid).length>0">
+					<h3>{{ std.name }}</h3>
+					<table class="table table-bordered col-12 pad-left pad-right" style="font-size:13px;">
+						<thead>
+							<tr>
+								<th scope="col" width="2%" class="center">S.No</th>
+								<th scope="col" width="8%">Product</th>
+								<th scope="col" width="10%">Product Type</th>	
+								<th scope="col" width="8%">Wastage</th>
+								<th scope="col" width="13%">Material Composition</th>
+								<th scope="col" width="16%">Standard</th>
+								<th scope="col" width="13%">Label Grade</th>																
+								<th scope="col" width="3%" class="center">Select</th>																		
+							</tr>
+						</thead>
+						<tbody>
+							<ng-container *ngFor="let product of filterProductStandard(std.id,curunitid);  let i =index" >
+								<tr>	
+									<td style="vertical-align:middle;" width="2%" scope="row" class="center">{{ 1+ i }}</td>
+									<td style="vertical-align:middle;">{{ product.name }}</td>
+									<td style="vertical-align:middle;">{{ product.product_type_name }}</td>
+									<td style="vertical-align:middle;">{{ product.wastage }}% wastage</td>
+									<td style="vertical-align:middle;">{{ product.materialcompositionname }}</td>
+									<td style="vertical-align:middle;">{{ product.standard_name }}</td>
+									<td style="vertical-align:middle;">{{ product.label_grade_name }}</td>																		
+									<td style="vertical-align:middle;" class="center" width="5%">
+										<!--{{product.pdt_index}}-->
+										<input (change)="onProductCheckboxChange($event.target.value, $event.target.checked);" type="checkbox" name="input_weight{{product.pdt_index}}" value="{{product.pdt_index}}" #inputWeight="ngModel" [(ngModel)]="popunitproductlist['input_weight'+product.pdt_index]">																		
+									</td>								
+								</tr> 								
+							</ng-container>  																										
+						</tbody>
+					</table>						
+					</ng-container>
+				</ng-container>
+				
+				<div *ngIf="!unitproductremainingstatus" class="col-12 text-info center">No products found based on the selected standard(s).</div>
+					
+			</div>						
+			
+		</div>
+		
+		<div class="clearfix"></div>
+		
+		<app-usermessage [success]="productpopupsuccess" [error]="productpopuperror"  ></app-usermessage>
+
+		<div class="modal-footer" *ngIf="!logsuccess">
+            <button type="button" *ngIf="unitproductremainingstatus" class="btn btn-success " (click)="addUnitProductFromPop(curunitid)">
+                <!--<span class="spinner-border spinner-border-sm mr-1"></span>-->Add</button>
+			<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">
+				<!--<span class="spinner-border spinner-border-sm mr-1"></span>-->Close</button>
+		</div>
+	</form>
+</ng-template>

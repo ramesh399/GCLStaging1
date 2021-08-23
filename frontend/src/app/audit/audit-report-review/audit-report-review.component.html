@@ -1,0 +1,622 @@
+<div class="row">
+  <div class="col-12">
+    <div class="add card-box table-responsive">
+      <form #checklistForm="ngForm">
+        <div class="col-12 row pad-right">
+          <div class="col-8">
+            <h4 class="page-title">Audit Execution</h4>
+          </div>
+          <div class="col-4 text-right pad-right">
+            <a
+              class="btn btn-secondary btn-sm active"
+              href="#"
+              role="button"
+              [routerLink]="['/audit/view-audit-plan']"
+              [queryParams]="{ id: audit_id }"
+            >
+              Back
+            </a>
+          </div>
+        </div>
+        <!-- class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view reviewquestion" -->
+        <div>
+          <!--  -->
+          <div class="col-12" *ngIf="this.loadingInfo?.questions">
+            <span class="spinner-border spinner-border-sm mr-1"></span>
+          </div>
+          <!-- style="border:1px solid #cfcfcf;" -->
+          <ng-container *ngIf="questionList?.length">
+            <div
+              style="margin-bottom: 15px"
+              *ngFor="let unitquestion of questionList; index as qj"
+            >
+              <mat-accordion>
+                <mat-expansion-panel
+                  (opened)="panelOpenState = true"
+                  (closed)="panelOpenState = false"
+                  [expanded]="true"
+                >
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>{{
+                      unitquestion.unit_name
+                    }}</mat-panel-title> 
+                   <!-- <button class="view_checklistbutton" 
+                      [routerLink]="['/audit/audit-findings']" 
+                      [queryParams]="{ 
+                        app_id: appid,
+                        audit_plan_id: audit_plan_id,
+                        audit_id:audit_id,
+                        unit_id:unitquestion.unit_id,
+                        audit_plan_unit_id:unitid[unitquestion.unit_id],
+                        type:'all'}"  
+                      
+                      >view checklists</button>  -->
+                  </mat-expansion-panel-header>
+          
+          <ng-container *ngFor="let tabs of subTopicList; let i = index">
+            <button   type="button" style=" margin: 5px;" (click)="setInvalidField(tabs.id)"
+            *ngIf="questionValueList.includes(''+tabs.id)"
+              class="btn btn-sm  {{(tabs.id == tabIndex) ? 'btn-success' : 'btn-tab'}}">{{tabs.name}}  
+ 
+               <span class="checkmark" *ngIf="!formErr[tabs.id]">
+
+                <div class="checkmark_stem"></div>
+                <div class="checkmark_kick"></div>
+              </span> 
+            </button>
+          </ng-container>
+                  <table
+                    class="table table-striped tempdrivenform"
+                    style="margin-bottom: 0px" 
+                  >
+                    <tbody>
+                      <tr
+                        *ngFor="
+                          let question of unitquestion.questions;
+                          index as j
+                        "
+                      >
+                        <td style="display: relative;"  [ngClass]="{'rejected': qtdReviewerAnswer.value === '2' }" *ngIf="tabIndex == question.sub_topic_id">
+                           <i class="fa fa-edit question-edit" *ngIf="editQuestion[question.id]" (click)="editQuestion[question.id] = !editQuestion[question.id]"></i> 
+                          <p>
+                            {{ 1 + j }}. {{ question.name }} 
+                            <a
+                              href="javascript:void(0);"
+                              (click)="
+                                toggleGuidance(
+                                  unitquestion.unit_id + '_' + question.id
+                                )
+                              "
+                            >
+                              <i
+                                class="fa fa-info-circle"
+                                aria-hidden="true"
+                              ></i>
+                            </a>
+                          </p>
+                          <div
+                            class="checklist_guidance"
+                            *ngIf="
+                              guidanceIncludeList.includes(
+                                unitquestion.unit_id + '_' + question.id
+                              )
+                            "
+                          >
+                            <div
+                              *ngIf="question.interpretation"
+                              style="margin-top: 10px"
+                            >
+                              <b>Interpretation:</b>
+                              <br />
+                              {{ question.interpretation }}
+                            </div>
+                            <div *ngIf="question.expected_evidence">
+                              <b>Expected Evidence:</b>
+                              <br />
+                              {{ question.expected_evidence }}
+                            </div>
+                          </div>
+                          <div class="ans-cmt col-12 row">
+                            <div class="col-4">
+                              <h4>Answer </h4>
+                              <div class="md-form">
+                                <select
+                                  (change)="
+                                    changeFindingComment(
+                                      $event.target.value,
+                                      unitquestion.unit_id,
+                                      question.id
+                                    )
+                                  "
+                                  class="form-control"
+                                  name="qtd_{{ unitquestion.unit_id }}_{{
+                                    question.id
+                                  }}"
+                                  #qtdAnswer="ngModel"
+                                  [disabled]="userType == 1 && editQuestion[question.id]"
+                                  [(ngModel)]="
+                                    reviewcommentlist[
+                                      'qtd_' +
+                                        unitquestion.unit_id +
+                                        '_' +
+                                        question.id
+                                    ]
+                                  "
+                                  
+                                >
+                                  <option value>-- Options --</option>
+                                  <!-- <option *ngFor="let answer of answerList | keyvalue; " value="{{answer.key}}" >{{ answer.value }}</option> -->
+                                  <option
+                                    *ngFor="
+                                      let answer of question.findingans_list
+                                        | keyvalue
+                                    "
+                                    value="{{ answer.key }}"
+                                  >
+                                    {{ answer.value }}
+                                  </option>
+                                </select>
+                                <!-- <option *ngFor="let answer of question.findingans_list | keyvalue; " value="{{answer.key}}" >{{ answer.value }}</option> -->
+                                <div
+                                  class="validationerror"
+                                  *ngIf="
+                                    qtdAnswer &&
+                                    !qtdAnswer.valid &&
+                                    qtdAnswer.touched 
+                                  && !editQuestion[question.id]
+                                  "
+                                >
+                                  Please select the Answer
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-8">
+                              <h4>Finding</h4>
+                              <div class="md-form">
+                                <textarea
+                                  name="finding_{{ unitquestion.unit_id }}_{{
+                                    question.id
+                                  }}"
+                                  [disabled]="userType == 1 && editQuestion[question.id]"
+                                  #qtdFinding="ngModel"
+                                  [(ngModel)]="
+                                    reviewcommentlist[
+                                      'finding_' +
+                                        unitquestion.unit_id +
+                                        '_' +
+                                        question.id
+                                    ]
+                                  "
+                                   
+                                  type="text"
+                                  class="md-textarea form-control"
+                                  style="height: 50px"
+                                >
+                                </textarea>
+                                 
+                                <div
+                                  class="validationerror"
+                                  *ngIf="
+                                    qtdFinding &&
+                                    !qtdFinding.valid &&
+                                    qtdFinding.touched && !editQuestion[question.id]
+                                  "
+                                >
+                                  Please enter the Finding
+                                </div>
+                              </div>
+                            </div>
+
+                            <div
+                              class="col-4"
+                              *ngIf="question.file_required == 1"
+                            >
+                              <h4>
+                                Upload File
+                                <span
+                                  class="text-danger"
+                                  *ngIf="qtdAnswer.value != 3"
+                                >
+                                  *
+                                </span>
+                              </h4>
+                              <div class="md-form">
+                                <input
+                                  type="file"
+                                  
+                                  id="files"
+                                  *ngIf="
+                                    !questionfile[
+                                      unitquestion.unit_id + '_' + question.id
+                                    ]"
+                                  #qtdReviewFile="ngModel"
+                                  [disabled]="userType == 1 && editQuestion[question.id]"
+                                  (change)="
+                                    fileChange(
+                                      $event,
+                                      unitquestion.unit_id + '_' + question.id
+                                    )
+                                  "
+                                  name="qtd_file_{{ unitquestion.unit_id }}_{{
+                                    question.id
+                                  }}"
+                                  [(ngModel)]="
+                                    reviewcommentlist[
+                                      'qtd_file_' +
+                                        unitquestion.unit_id +
+                                        '_' +
+                                        question.id
+                                    ]
+                                  "
+                                />
+                                
+                                <br />
+                                <div *ngIf="
+                                    !questionfile[
+                                      unitquestion.unit_id + '_' + question.id
+                                    ]" style="font-size: 11px">
+                                  supported file formats:
+                                  <span
+                                    *ngFor="
+                                      let docs of this.errorSummary.validDocs;
+                                      let last = last
+                                    "
+                                  >
+                                    {{ docs }}
+                                    <span *ngIf="!last">,</span>
+                                  </span>
+                                </div>
+                              </div>
+                              <div
+                                class="validationerror"
+                                *ngIf="
+                                  fileErrList[
+                                    unitquestion.unit_id + '_' + question.id
+                                  ]
+                                 
+                                "
+                              >
+                                Please upload the valid file
+                              </div>
+
+                              <div
+                                *ngIf="
+                                  questionfile[
+                                    unitquestion.unit_id + '_' + question.id
+                                  ]
+                                "
+                                style="
+                                  padding: 5px;
+                                  border: 1px solid #cecece;
+                                  background-color: beige;
+                                  height: 32px;
+                                  width: 100%;
+                                "
+                              >
+                                <span
+                                  class="name-pad"
+                                  *ngIf="
+                                    question.file ==
+                                    questionfile[
+                                      unitquestion.unit_id + '_' + question.id
+                                    ].name
+                                  "
+                                >
+                                  <a
+                                    href="javascript:void(0);"
+                                    (click)="
+                                      downloadFindingFile(
+                                        question.file,
+                                        question.execution_checklist_id
+                                      );
+                                      open(downloading)
+                                    "
+                                  >
+                                    <i class="fa fa-download"></i>
+                                    {{
+                                      questionfile[
+                                        unitquestion.unit_id + "_" + question.id
+                                      ].name
+                                    }}
+                                  </a>
+                                </span>
+                                <span
+                                  class="name-pad"
+                                  *ngIf="
+                                    question.file !=
+                                    questionfile[
+                                      unitquestion.unit_id + '_' + question.id
+                                    ].name
+                                  "
+                                >
+                                  {{
+                                    questionfile[
+                                      unitquestion.unit_id + "_" + question.id
+                                    ].name
+                                  }}
+                                </span>
+                                <a
+                                  href="javascript:void(0);"
+                                  *ngIf="userType == 1 && !editQuestion[question.id]"
+                                  (click)="
+                                    removeFile(
+                                      unitquestion.unit_id + '_' + question.id
+                                    )
+                                  "
+                                  style="
+                                    color: red;
+                                    font-weight: bold;
+                                    float: right;
+                                    padding-right: 3px;
+                                  "
+                                >
+                                  X
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="clearfix"></div>
+                          <div
+                            class="col-12 row enq-view pad-right m-t-20 m-b-5"
+                          >
+                            <div
+                              class="col-12 text-primary"
+                              style="
+                                border-bottom: 1px solid #d7d7d7;
+                                font-size: 15px;
+                                padding-left: 0px;
+                              "
+                            >
+                              Reviewer Information
+                            </div>
+                          </div>
+
+                          <div
+                            class="ans-cmt col-12 row"
+                            *ngIf="qtdAnswer.value == 2"
+                          >
+                            <div class="col-4">
+                              <h4>NC Classification</h4>
+                              <div class="md-form">
+                                <select
+                                  class="form-control"
+                                  name="severity_{{ unitquestion.unit_id }}_{{
+                                    question.id
+                                  }}"
+                                  
+                                  #qtdSeverity="ngModel"
+                                  [(ngModel)]="
+                                    reviewcommentlist[
+                                      'severity_' +
+                                        unitquestion.unit_id +
+                                        '_' +
+                                        question.id
+                                    ]
+                                  "
+                                  required
+
+                                >
+                                  <option value>-- Options --</option>
+                                  <option
+                                    *ngFor="
+                                      let answer of question.answer_list
+                                        | keyvalue
+                                    "
+                                    value="{{ answer.key }}"
+                                  >
+                                    {{ answer.value }}
+                                  </option>
+                                </select>
+                                <div
+                                  class="validationerror"
+                                  *ngIf="
+                                    !qtdSeverity.valid && qtdSeverity.touched
+                                  "
+                                >
+                                  Please select the Severity
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-4">
+                              <h4>Finding Type</h4>
+                              <div class="md-form">
+                                <select
+                                  class="form-control"
+                                  name="findingType_{{
+                                    unitquestion.unit_id
+                                  }}_{{ question.id }}"
+                                  #qtdFindingType="ngModel"
+                                  [(ngModel)]="
+                                    reviewcommentlist[
+                                      'findingType_' +
+                                        unitquestion.unit_id +
+                                        '_' +
+                                        question.id
+                                    ]
+                                  "
+                                  required
+                                
+                                >
+                                  <option value>-- Options --</option>
+                                  <option
+                                    *ngFor="
+                                      let findingType of findingTypeList
+                                        | keyvalue
+                                    "
+                                    value="{{ findingType.key }}"
+                                  >
+                                    {{ findingType.value }}
+                                  </option>
+                                </select>
+                                <div
+                                  class="validationerror"
+                                  *ngIf="
+                                    !qtdFindingType.valid &&
+                                    qtdFindingType.touched
+                                  "
+                                >
+                                  Please select the Finding Type
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="ans-cmt col-12 row">
+                            <div class="col-4">
+                              <h4>Reviewer Answer</h4>
+                              <div class="md-form">
+                                <select
+                                  class="form-control"
+                                  (change)="
+                                    getReviewerAnswer(
+                                      $event.target.value,
+                                      unitquestion.unit_id + '_' + question.id
+                                    )
+                                  "
+                                  name="revieweranswer_{{
+                                    unitquestion.unit_id
+                                  }}_{{ question.id }}"
+                                  #qtdReviewerAnswer="ngModel"
+                                  [(ngModel)]="
+                                    reviewcommentlist[
+                                      'revieweranswer_' +
+                                        unitquestion.unit_id +
+                                        '_' +
+                                        question.id
+                                    ]
+                                  "
+                                  required
+                                >
+                                  <option value>-- Options --</option>
+                                  <option
+                                    *ngFor="let answer of answerList | keyvalue"
+                                    value="{{ answer.key }}"
+                                  >
+                                    {{ answer.value }}
+                                  </option>
+                                </select>
+                                
+                                <div
+                                  class="validationerror"
+                                  *ngIf="
+                                    !qtdReviewerAnswer.valid &&
+                                    (qtdReviewerAnswer.touched && errQuestion['' + question.sub_topic_id] && errQuestion['' + question.sub_topic_id]['' +question.id ])
+                                  "
+                                >
+                                  Please select the Answer
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-8">
+                              <h4>Reviewer Comment</h4>
+                              <div class="md-form">
+                                <textarea
+                                  name="reviewercomment_{{
+                                    unitquestion.unit_id
+                                  }}_{{ question.id }}"
+                                  #qtdReviewerComment="ngModel"
+                                  [(ngModel)]="
+                                    reviewcommentlist[
+                                      'reviewercomment_' +
+                                        unitquestion.unit_id +
+                                        '_' +
+                                        question.id
+                                    ]
+                                  "
+                                  [required]="
+                                    qtdReviewerAnswer.value !== undefined &&
+                                    qtdReviewerAnswer.value != '' &&
+                                    qtdReviewerAnswer.value == 2
+                                      ? true
+                                      : false
+                                  "
+                                  type="text"
+                                  class="md-textarea form-control"
+                                  style="height: 50px"
+                                ></textarea>
+                                <div
+                                class="validationerror"
+                                  *ngIf="
+                                    !qtdReviewerComment.valid &&
+                                   ( qtdReviewerComment.touched || errQuestion['' + question.sub_topic_id] && errQuestion['' + question.sub_topic_id]['' +question.id ])
+                                  "
+                                >
+                                  Please enter the comment
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  
+                </mat-expansion-panel>
+              </mat-accordion>
+              <div class="ans-cmt col-11 row" style="margin-left: 20px;" *ngIf="reviewerCorrection.length > 0 && tabIndex == questionValueList[questionValueList.length - 1]">
+              
+              <h4>Note</h4><br>
+              <div class="md-form">
+              <textarea type="text" name="reviewer_note" class="md-textarea form-control"
+              style="height: 50px; width:700px" #reviewernote="ngModel" [(ngModel)]="reviewer_note" required></textarea>
+              <div class="validationerror" *ngIf="reviewernote.invalid && reviewernote.touched">Please enter note</div>
+            </div>
+          </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <div
+          class="col-lg-12 text-center"
+          style="border-top: 1px solid #cecece"
+        >
+          <button
+            (click)="onSubmit(checklistForm, 'reportcorrection')"
+            *ngIf="reviewerCorrection.length > 0"
+            [disabled]="loading || buttonDisable"
+            class="btn btn-info btn-custom waves-effect w-md waves-light m-r-10 m-b-5 m-t-10"
+            style="background-color: #0b88b7"
+          >
+            <span
+              *ngIf="loading" 
+              class="spinner-border spinner-border-sm mr-1"
+            ></span>
+            
+            <span *ngIf="tabIndex != questionValueList[questionValueList.length - 1]; then nextLabel else submitButton"></span>
+            <ng-template #submitButton>Report Correction</ng-template>
+            <ng-template #nextLabel>Next</ng-template>
+          </button>
+
+          <button
+            [disabled]="loading || buttonDisable"
+             *ngIf="reviewerCorrection.length == 0"
+            class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10"
+            (click)="onSubmit(checklistForm, 'submit')"
+          >
+            <span
+              *ngIf="loading"
+              class="spinner-border spinner-border-sm mr-1"
+            ></span>
+            <span *ngIf="tabIndex != questionValueList[questionValueList.length - 1]; then nextLabel else submitButton"></span>
+            <ng-template #submitButton>Submit</ng-template>
+            <ng-template #nextLabel>Next</ng-template>
+          </button>
+          <!-- <button [disabled]="loading || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10" (click)="onSubmit(checklistForm)" >
+                        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                        Send to Customer
+                    </button> -->
+        </div>
+        <app-usermessage [success]="success" [error]="error"></app-usermessage>
+      </form>
+    </div>
+  </div>
+</div>
+<ng-template #downloading let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+  </div>
+  <div class="modal-body" style="font-size: 16px">
+    Please wait, your file is downloading ...
+  </div>
+</ng-template>

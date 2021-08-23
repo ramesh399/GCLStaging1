@@ -1,0 +1,656 @@
+<div class="row">
+    <div class="col-12" *ngIf="applicableforms">		
+			
+		<div class="col-12 row pad-right">
+			<div class="col-11 pad-left pad-right">
+                <button type="button" (click)="changeAuditExecutionTab('checklist')" class="btn btn-sm {{checklist_status ? 'btn-success' : 'btn-primary'}}">Checklist</button>
+                
+                <ng-container *ngIf="audit_type != 2" >
+                    <button type="button" (click)="changeAuditExecutionTab('audit_report')" class="btn btn-sm {{report_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Audit Report</button>
+                    <button type="button" *ngIf="userType!=2 && applicableforms[unit_id] && applicableforms[unit_id]['attendance_list']" (click)="changeAuditExecutionTab('attendance')" class="btn btn-sm {{attendance_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Attendance</button>
+                    <button type="button" *ngIf="userType!=2 && applicableforms[unit_id] && applicableforms[unit_id]['sampling_list']" (click)="changeAuditExecutionTab('sampling')" class="btn btn-sm {{sampling_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Sampling</button>					
+                    <button type="button" *ngIf="userType!=2 && applicableforms[unit_id] && applicableforms[unit_id]['interview_list']" (click)="changeAuditExecutionTab('interview')" class="btn btn-sm {{interview_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Interview</button>
+                    <button type="button" *ngIf="userType!=2 && applicableforms[unit_id] && applicableforms[unit_id]['clientinformation_list']" (click)="changeAuditExecutionTab('client_information')" class="btn btn-sm {{client_information_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Client Information</button>
+                    <button type="button" *ngIf="userType!=2 && applicableforms[unit_id] && applicableforms[unit_id]['environment_list']" (click)="changeAuditExecutionTab('environment')" class="btn btn-sm {{environment_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Environment</button>
+                    <button type="button" *ngIf="userType!=2 && applicableforms[unit_id] && applicableforms[unit_id]['livingwage_list']" (click)="changeAuditExecutionTab('living_wage_calc')" class="btn btn-sm {{living_wage_calc_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Living Wage Calc.</button>
+                    <button type="button" *ngIf="userType!=2 && applicableforms[unit_id] && applicableforms[unit_id]['qbs']" (click)="changeAuditExecutionTab('qbs')" class="btn btn-sm {{qbs_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">QBS</button>
+                    <button type="button" *ngIf="userType!=2 && applicableforms[unit_id] && applicableforms[unit_id]['chemical_list']" (click)="changeAuditExecutionTab('chemical_list')" class="btn btn-sm {{chemical_list_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Chemical List</button>
+                </ng-container>
+				<button type="button" (click)="changeAuditExecutionTab('audit_ncn_report')" *ngIf="applicableforms[unit_id] && applicableforms[unit_id]['ncnreport']" class="btn btn-sm {{audit_ncn_report_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Audit & NCN Report</button>
+			</div>						
+			<div class="col-1 pad-left text-right pad-right">
+				<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:audit_id}"><i class="fa fa-arrow-left text-white"></i> Back</a>
+			</div>		
+		</div>
+	
+        <ng-container *ngIf="audit_type != 2" >
+            <div class="add card-box table-responsive enq-view" *ngIf="report_status">			
+                <app-view-auditreport-files [id]="id" [audit_id]="audit_id"></app-view-auditreport-files> 
+            </div>
+            <div class="add card-box table-responsive enq-view" *ngIf="userType!=2 && attendance_status && applicableforms[unit_id]['attendance_list']">			
+                <app-audit-attendance-sheet [cond_viewonly]="1"></app-audit-attendance-sheet>  
+            </div>		
+            
+            <div class="add card-box table-responsive enq-view" *ngIf="userType!=2 && sampling_status && applicableforms[unit_id]['sampling_list']">			
+                <app-audit-sampling [cond_viewonly]="1"></app-audit-sampling>  
+            </div>	
+            
+            <div class="add card-box table-responsive enq-view lst" *ngIf="userType!=2 && interview_status && applicableforms[unit_id]['interview_list']">			
+                <app-audit-interview-employee [cond_viewonly]="1"></app-audit-interview-employee>  
+            </div>	
+            
+            <div class="add card-box table-responsive enq-view lst" *ngIf="userType!=2 && client_information_status && applicableforms[unit_id]['clientinformation_list']">			
+                <app-audit-clientinformation [cond_viewonly]="1" [app_id]="app_id" [unit_id]="unit_id" ></app-audit-clientinformation>  
+            </div>		
+            
+            <div class="add card-box table-responsive enq-view" *ngIf="userType!=2 && environment_status && applicableforms[unit_id]['environment_list']">			
+                <app-audit-environment  [cond_viewonly]="1" [app_id]="app_id" [unit_id]="unit_id"></app-audit-environment>  
+            </div>			
+                    
+            <div class="add card-box table-responsive enq-view" *ngIf="userType!=2 && living_wage_calc_status && applicableforms[unit_id]['livingwage_list']">			
+                
+                <app-audit-livingwage-viewchecklist [cond_viewonly]="1"></app-audit-livingwage-viewchecklist>
+                <!--<app-audit-livingwage-checklist [cond_viewonly]="1" ></app-audit-livingwage-checklist>  -->
+            </div>
+		
+		
+            <div class="add card-box table-responsive enq-view" *ngIf="userType!=2 && qbs_status && applicableforms[unit_id]['qbs']">			
+                <app-audit-qbs-scopeholder [cond_viewonly]="1" ></app-audit-qbs-scopeholder>  
+            </div>
+            
+            <div class="add card-box table-responsive enq-view" *ngIf="userType!=2 && chemical_list_status && applicableforms[unit_id]['chemical_list']">			
+                <app-audit-chemical-list [cond_viewonly]="1" ></app-audit-chemical-list>  
+            </div>
+        </ng-container>
+		<div class="add card-box table-responsive enq-view" *ngIf="audit_ncn_report_status && applicableforms[unit_id]['ncnreport']">			
+			<app-audit-nc [cond_viewonly]="1"></app-audit-nc>  
+		</div>
+		
+		 <div class="add card-box table-responsive enq-view" *ngIf="checklist_status">
+			<form>
+  
+				<div class="row" *ngIf="otherData">
+					<div class="col-12">
+						<div class="card-box table-responsive">
+							<div class="row col-12 m-b-5 pad-right">
+								<div class="col-8 pad-left">
+									<h4 class="page-title">{{ title }}</h4>
+									<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+								
+								</div>
+								<div class="text-right float-right col-4">
+									<!--
+									<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/audit/view-audit-plan']"  [queryParams]="{id:audit_id}" >Back</a>
+									-->
+								</div>
+							</div>
+                            <!--
+							<div class="row col-12 m-b-5 pad-right">
+								<div class="col-4 text-left pad-left">
+									<select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+										<option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+									</select>
+								</div>
+								<div class="col-4 text-left p-t-5"></div>
+								<div class="col-4 text-right pad-right">
+									Search: <input class="search-pad" type="text" name="searchTerm" [(ngModel)]="service.searchTerm"/>
+								</div>
+							</div>
+                            -->
+
+
+							<div class="col-12 pad-left">
+								<table id="datatable" class="table table-bordered" >
+									<thead>
+									<tr>
+										<th width="7%" scope="col" class="text-center">S No.</th>
+										<th width="25%" scope="col">Details</th>	
+										<!--<th width="10%" scope="col" class="text-center">Finding Type</th>    -->
+										<th width="8%" scope="col" class="text-center">NC Classification</th>
+										<th width="15%" scope="col" class="text-center">File</th>	
+										<th width="8%" scope="col" class="text-center">Status</th>
+										<th width="8%" scope="col" class="text-center" *ngIf="(auditplanStatus$ | async)>= otherData.arrAuditPlanEnumStatus['audit_completed']">Action</th>
+									</tr>
+									</thead>
+									<tbody>
+									<tr *ngFor="let finding of UnitFindings$ | async; let i=index; ">
+										<td scope="row" class="center">{{ 1+i }}</td>
+										<td>{{ finding.finding }}</td>	
+										<!--<td class="text-center">{{ finding.finding_type_label }}</td> --> 									
+										<td class="text-center">{{ finding.severity }}</td>
+										<td class="text-center"><a *ngIf="finding.file" href="javascript:void(0);" (click)="downloadFindingFile(finding.file,finding.id);open(downloading,'');" ><i class="fa fa-download"></i>&nbsp;{{ finding.file }}</a></td>
+										<td class="text-center">{{ finding.status_name }}</td>
+										<td  class="center" *ngIf="(auditplanStatus$ | async)>= otherData.arrAuditPlanEnumStatus['audit_completed']" >
+                                            
+                                            
+                                            <!--finding_type!== null-->
+											<a href="javascript:void(0);" *ngIf="finding.status!= otherData.arrChecklistEnumStatus['open']" (click)="showremediation(remediation,finding.id);" title="View" alt="View"><i class="fa fa-eye"></i> </a>
+                                            <ng-container *ngIf="(auditplanStatus$ | async)== otherData.arrAuditPlanEnumStatus['audit_completed'] || (auditplanStatus$ | async)== otherData.arrAuditPlanEnumStatus['remediation_in_progress']" >
+                                                <a href="javascript:void(0);" *ngIf="(finding.status==otherData.arrChecklistEnumStatus['open'] || finding.status==otherData.arrChecklistEnumStatus['auditor_change_request'] || finding.status==otherData.arrChecklistEnumStatus['in_progress']) && finding.answer ==2 && (userType==2 || userdetails.resource_access==1)" title="Edit" alt="Edit" [routerLink]="['/audit/audit-findings-remediation']" [queryParams]="{app_id:app_id,unit_id:unit_id,finding_id:finding.id,audit_plan_id:audit_plan_id,audit_id:audit_id,audit_plan_unit_id:audit_plan_unit_id}" class="pl-2"> <i class="fa fa-edit"></i> </a>
+                                            </ng-container>
+                                            <ng-container *ngIf="(auditplanStatus$ | async)== otherData.arrAuditPlanEnumStatus['auditor_review_in_progress']" >
+                                                <a href="javascript:void(0);" *ngIf="finding.finding_type==1 && (finding.status==otherData.arrChecklistEnumStatus['in_progress'] || finding.status==otherData.arrChecklistEnumStatus['reviewer_change_request']) && finding.answer ==2 && (userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('audit_execution') && userdetails.uid == otherData.audit_lead_auditor_id ))" class="pl-2" title="Change Status" alt="Change Status"  title="Change Status" (click)="open(auditorreviewcontent,finding.id)"><i class="fa fa-certificate"></i></a>
+                                            </ng-container>
+
+                                            <ng-container *ngIf="(auditplanStatus$ | async)== otherData.arrAuditPlanEnumStatus['reviewer_review_in_progress']">
+                                                <a href="javascript:void(0);" *ngIf="finding.finding_type==1 && finding.status==otherData.arrChecklistEnumStatus['waiting_for_approval'] && finding.answer ==2 && (userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('audit_review') && userdetails.uid == otherData.audit_reviewer ))" class="pl-2" title="Change Status" alt="Change Status"  title="Review Audit Findings" (click)="open(content,finding.id)"><i class="fa fa-flag"></i></a>
+                                            </ng-container>
+
+
+                                            
+                                            <!-- Follow up-->
+                                            <!--&& userdetails.uid == otherData.audit_lead_auditor_id )-->
+                                            <ng-container *ngIf="otherData.audit_status >= otherData.arrAuditStatusList['followup_booked']" >
+                                                 
+                                                <ng-container *ngIf="otherData.can_unit_auditor_edit == 1" >
+                                                    <ng-container *ngIf="(auditplanStatus$ | async)== otherData.arrAuditPlanEnumStatus['followup_inprocess'] || (auditplanStatus$ | async)== otherData.arrAuditPlanEnumStatus['followup_open']" >
+                                                        <a href="javascript:void(0);" *ngIf="finding.finding_type==2 && (finding.status==otherData.arrChecklistEnumStatus['in_progress'] || finding.status==otherData.arrChecklistEnumStatus['auditor_change_request']  || (finding.status==otherData.arrChecklistEnumStatus['waiting_for_approval'] && otherData.followup_unit_lead_auditor == userdetails.uid ) ) && finding.answer ==2 && (userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('audit_execution') && otherData.followup_auditors.includes(userdetails.uid) ))" class="pl-2" title="Change Status" alt="Change Status"  title="Change Status" (click)="open(followupauditorreviewcontent,finding.id)"><i class="fa fa-certificate"></i></a>
+                                                    </ng-container>
+                                                </ng-container>
+                                                
+                                                <ng-container *ngIf="(auditplanStatus$ | async)== otherData.arrAuditPlanEnumStatus['followup_waiting_for_lead_auditor']" >
+                                                    <a href="javascript:void(0);" *ngIf="finding.finding_type==2 && (finding.status==otherData.arrChecklistEnumStatus['waiting_for_approval'] || finding.status==otherData.arrChecklistEnumStatus['reviewer_change_request']) && finding.answer ==2 && (userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('audit_execution') && userdetails.uid == otherData.followup_audit_lead_auditor_id  ))" class="pl-2" title="Change Status" alt="Change Status"  title="Change Status" (click)="open(followupleadauditorreviewcontent,finding.id)"><i class="fa fa-certificate"></i></a>
+                                                </ng-container>
+
+                                                <ng-container *ngIf="(auditplanStatus$ | async)== otherData.arrAuditPlanEnumStatus['followup_reviewinprogress']" >
+                                                    <a href="javascript:void(0);" *ngIf="finding.finding_type==2 && (finding.status==otherData.arrChecklistEnumStatus['followup_waiting_for_review_approval'] || finding.status==otherData.arrChecklistEnumStatus['followup_lead_auditor_not_accepted']) && finding.answer ==2 && (userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('audit_review')  && userdetails.uid == otherData.audit_reviewer  ))" class="pl-2" title="Change Status" alt="Change Status"  title="Change Status" (click)="open(followupreviewerreviewcontent,finding.id)"><i class="fa fa-certificate"></i></a>
+                                                </ng-container>
+                                            </ng-container>
+										</td>
+										<!--
+                                        <td  class="center" >
+											<a href="javascript:void(0);" *ngIf="finding.status!= otherData.arrChecklistEnumStatus['open']" (click)="showremediation(remediation,finding.id);" title="View" alt="View"><i class="fa fa-eye"></i> </a>
+
+										   
+											
+										   
+
+										</td>
+										<td  class="center" *ngIf="(auditplanStatus$ | async)== otherData.arrAuditPlanEnumStatus['reviewer_review_in_progress']">
+											<a href="javascript:void(0);" *ngIf="finding.status!= otherData.arrChecklistEnumStatus['open']" (click)="showremediation(remediation,finding.id);" title="View" alt="View"><i class="fa fa-eye"></i> </a>
+
+										   
+											<a href="javascript:void(0);" *ngIf="finding.finding_type==1 && finding.status==otherData.arrChecklistEnumStatus['waiting_for_approval'] && finding.answer ==2 && (userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('audit_review') ))" class="pl-2" title="Change Status" alt="Change Status"  title="Review Audit Findings" (click)="open(content,finding.id)"><i class="fa fa-flag"></i></a>
+
+										
+
+                                        </td>
+                                        -->
+                                        	<!-- settle_pending_review -->
+									</tr>
+									<tr  *ngIf="(UnitFindings$ | async)?.length==0" >
+										<td colspan="6" class="center">{{ commontxt.norecords }}</td>
+									</tr>
+									</tbody>
+								</table>
+                            </div>
+                            <!--
+							<div class="d-flex justify-content-between p-2">
+								<ngb-pagination maxSize="10" rotate=true [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+									<ng-template ngbPaginationPrevious>Prev</ng-template>
+									<ng-template ngbPaginationNext>Next</ng-template>			  
+								</ngb-pagination>
+                            </div>
+                            -->
+						</div>
+					</div>
+				</div>
+			</form>
+		 </div>
+	</div>	
+</div>	
+		
+
+
+
+
+<ng-template #closefindingcontent let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+        Are you sure, do you want to close this finding?
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="checkUserSel('closefindingcontent')">Ok</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+        
+    </div>
+</ng-template>
+
+
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Reviewer Change Status</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form>
+        <div class="form-group">
+            <label for="status">Status</label>
+            <div class="input-group">
+                    <!-- [(ngModel)]="model.status"  -->
+                <select name="status" [(ngModel)]="model.status"  class="form-control select2" style="width:120px; display:inline;" >
+                        <option value="">-- Status --</option>
+                        <option value="{{ item.key }}" *ngFor="let item of otherData.arrReviewerStatusList | keyvalue" >{{ item.value }}</option>
+                        <!--
+                        <option value= "1">Approve</option>
+                        <option value= "2">Change Request</option>
+                        -->
+                </select>     
+                
+            </div>
+            <div class="validationerror" *ngIf="status_error"  >Please select the status</div>
+        </div>
+        <div class="form-group">
+            <label for="status">Comment(s)</label>
+            <div class="input-group">
+                    <!-- [(ngModel)]="model.comment"     -->
+                <textarea name="comment"  [(ngModel)]="model.comment"  rows="4" style="width:100%; display:inline;" ></textarea>
+                    
+                <div class="validationerror" *ngIf="comment_error"  >Please enter the comment</div>
+            </div>
+        </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="checkUserSel('reviewer_review')">Save</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+    </div>
+</ng-template>
+    
+<ng-template #remediation let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Corrective Action Plan</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+        <mat-tab-group *ngIf="!loading">
+            <mat-tab label="Remediation Details" *ngIf="remed_new">
+                <div class="col-sm-12 mat-accordion">
+                    <div class="mat-accordion" *ngIf="remed_new.root_cause">
+                        <div class="card-box enq-view">
+                            <table class="table-secondary m-b-15 m-t-15">
+                                <tr>
+                                    <th width="20%">Root Cause</th>
+                                    <td width="80%">{{ remed_new.root_cause }}</td>
+                                </tr>
+                                <tr>
+                                    <th width="20%">Correction</th>
+                                    <td width="80%">{{ remed_new.correction }}</td>
+                                </tr>
+                                <tr>
+                                    <th width="20%">Corrective Action</th>
+                                    <td width="80%">{{ remed_new.corrective_action }}</td>
+                                </tr>
+                                <tr>
+                                    <th width="20%">Evidence File(s)</th>
+                                    <td width="80%">
+                                        <ng-container *ngFor="let file of remed_new.evidence_file">
+                                            <a (click)="downloadFile(file.id,file.name);showdownloadingpopup(downloading);" style="color: #0b77d9;cursor: pointer;margin-right: 10px"><i class="fa fa-download"></i> {{ file.name }}</a>
+                                        </ng-container>
+                                    </td>
+                                </tr>
+                            </table>
+                    
+                        </div> 
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-12 m-t-15 nopadmat">
+                        <mat-accordion *ngFor="let remed_olddata of remed_old; index as i">
+                            <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title>
+                                        Remediation Details - {{ i+1 }}
+                                    </mat-panel-title>
+                                </mat-expansion-panel-header>
+                                <div class="mat-accordion" *ngIf="remed_olddata.root_cause">
+                                    <div class="card-box enq-view">
+
+                                        <table class="table-secondary m-b-15 m-t-15">
+                                            <tr>
+                                                <th width="20%">Root Cause</th>
+                                                <td width="80%">{{ remed_olddata.root_cause }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th width="20%">Correction</th>
+                                                <td width="80%">{{ remed_olddata.correction }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th width="20%">Corrective Action</th>
+                                                <td width="80%">{{ remed_olddata.corrective_action }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th width="20%">Evidence File(s)</th>
+                                                <td width="80%">
+                                                    <ng-container *ngIf="remed_olddata && remed_olddata.evidence_file && remed_olddata.evidence_file.length>0" >
+                                                        <ng-container *ngFor="let file of remed_olddata.evidence_file">
+                                                            <a (click)="downloadFile(file.id,file.name);showdownloadingpopup(downloading);" style="color: #0b77d9;cursor: pointer;margin-right: 10px"><i class="fa fa-download"></i> {{ file.name }}</a>
+                                                        </ng-container>
+                                                    </ng-container>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                
+                                    </div> 
+                                </div>
+                            </mat-expansion-panel>                
+                        </mat-accordion>
+                    </div>
+                </div>
+            </mat-tab>
+            <mat-tab label="Unit Auditor Comments" *ngIf="unit_auditor_comments">
+                <div class="form-group row">
+                    <div class="col-12 m-t-15 nopadmat">
+                        <mat-accordion *ngFor="let cmt of unit_auditor_comments; index as i">
+                            <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title>
+                                        Unit Auditor Comments - {{ i+1 }}
+                                    </mat-panel-title>
+                                </mat-expansion-panel-header>
+                                <div class="mat-accordion">
+                                    <div class="card-box enq-view">
+                                        <table class="table-secondary m-b-15">
+                                            <tr>
+                                                <th width="20%">Status</th>
+                                                <td width="30%">{{ cmt.status }}</td>
+                                                <th width="20%">Reviewed At</th>
+                                                <td width="30%">{{ cmt.created_at }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th width="20%">Comment</th>
+                                                <td colspan="3">{{ cmt.comment }}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </mat-expansion-panel>                
+                        </mat-accordion>
+                    </div>
+                </div>
+            </mat-tab>
+            <mat-tab label="Lead Auditor Comments" *ngIf="auditor_comments">
+                <div class="form-group row">
+                    <div class="col-12 m-t-15 nopadmat">
+                        <mat-accordion *ngFor="let cmt of auditor_comments; index as i">
+                            <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title>
+                                        Lead Auditor Comments - {{ i+1 }}
+                                    </mat-panel-title>
+                                </mat-expansion-panel-header>
+                                <div class="mat-accordion">
+                                    <div class="card-box enq-view">
+                                        <table class="table-secondary m-b-15 m-t-15">
+                                            <tr>
+                                                <th width="20%">Status</th>
+                                                <td width="30%">{{ cmt.status }}</td>
+                                                <th width="20%">Reviewed At</th>
+                                                <td width="30%">{{ cmt.created_at }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th width="20%">Comment</th>
+                                                <td colspan="3">{{ cmt.comment }}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </mat-expansion-panel>                
+                        </mat-accordion>
+                    </div>
+                </div>
+            </mat-tab>
+            <mat-tab label="Reviewer Comments" *ngIf="reviewer_comments">
+                <div class="form-group row">
+                    <div class="col-12 m-t-15 nopadmat">
+                        <mat-accordion *ngFor="let cmt of reviewer_comments; index as i">
+                            <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title>
+                                        Reviewer Comments - {{ i+1 }}
+                                    </mat-panel-title>
+                                </mat-expansion-panel-header>
+                                <div class="mat-accordion">
+                                    <div class="card-box enq-view">
+                                        <table class="table-secondary m-b-15">
+                                            <tr>
+                                                <th width="20%">Status</th>
+                                                <td width="30%">{{ cmt.status }}</td>
+                                                <th width="20%">Reviewed At</th>
+                                                <td width="30%">{{ cmt.created_at }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th width="20%">Comment</th>
+                                                <td colspan="3">{{ cmt.comment }}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </mat-expansion-panel>                
+                        </mat-accordion>
+                    </div>
+                </div>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Close</button>
+    </div>
+</ng-template>
+
+<ng-template #auditorreviewcontent let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Auditor Change Status</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form>
+        <div class="form-group">
+            <label for="status">Status</label>
+            <div class="input-group">
+                    <!-- [(ngModel)]="model.status"  -->
+                <select name="auditor_status" [(ngModel)]="model.auditor_status"  class="form-control select2" style="width:120px; display:inline;" >
+                        <option value="">-- Status --</option>
+                        <option value="{{ item.key }}" *ngFor="let item of otherData.arrAuditorStatusList | keyvalue" >{{ item.value }}</option>
+                        <!--
+                        <option value= "1">Acceptable</option>
+                        <option value= "2">Not Acceptable</option>
+                        -->
+                        
+                </select>     
+                
+            </div>
+            <div class="validationerror" *ngIf="auditor_status_error"  >Please select the status</div>
+        </div>
+        <div class="form-group">
+            <label for="status">Comment(s)</label>
+            <div class="input-group">
+                <textarea name="auditor_comment"  [(ngModel)]="model.auditor_comment"  rows="4" style="width:100%; display:inline;" ></textarea>
+                <div class="validationerror" *ngIf="auditor_comment_error"  >Please enter the comment</div>
+            </div>
+        </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="checkUserSel('auditor_review')">Save</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+    </div>
+</ng-template>
+
+<ng-template #downloading let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+        Please wait, your file is downloading ...
+    </div>
+</ng-template>
+<!--
+<ng-template #reviewapprovalcontent let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Approve Finding</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form>
+        <div class="form-group">
+            <label for="status">Status</label>
+            <div class="input-group">
+                    
+                <select name="status" [(ngModel)]="model.status"  class="form-control select2" style="width:120px; display:inline;" >
+                        <option value= "1">Approve</option>
+                </select>     
+                
+            </div>
+            <div class="validationerror" *ngIf="status_error"  >Please select the status</div>
+        </div>
+        <div class="form-group">
+            <label for="status">Comment(s)</label>
+            <div class="input-group">
+                <textarea name="comment"  [(ngModel)]="model.comment"  rows="4" style="width:100%; display:inline;" ></textarea>
+                <div class="validationerror" *ngIf="comment_error"  >Please enter the comment</div>
+            </div>
+        </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+        <button type="button" class="btn btn-success " (click)="checkUserSel('reviewer_review')">Save</button>
+    </div>
+</ng-template> -->
+
+    
+<ng-template #followupauditorreviewcontent let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Followup Auditor Change Status</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form>
+        <div class="form-group">
+            <label for="status">Status</label>
+            <div class="input-group">
+                    <!-- [(ngModel)]="model.status"  -->
+                <select name="auditor_status" [(ngModel)]="model.auditor_status"  class="form-control select2" style="width:120px; display:inline;" >
+                        <option value="">-- Status --</option>
+                        <option value="{{ item.key }}" *ngFor="let item of otherData.arrFollowupAuditorStatusList | keyvalue" >{{ item.value }}</option>
+                        <!--
+                        <option value= "1">Acceptable</option>
+                        <option value= "2">Not Acceptable</option>
+                        -->
+                        
+                </select>     
+                
+            </div>
+            <div class="validationerror" *ngIf="auditor_status_error"  >Please select the status</div>
+        </div>
+        <div class="form-group">
+            <label for="status">Comment(s)</label>
+            <div class="input-group">
+                <textarea name="auditor_comment"  [(ngModel)]="model.auditor_comment"  rows="4" style="width:100%; display:inline;" ></textarea>
+                <div class="validationerror" *ngIf="auditor_comment_error"  >Please enter the comment</div>
+            </div>
+        </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="checkUserSel('followup_auditor_review')">Save</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+    </div>
+</ng-template>
+<ng-template #followupleadauditorreviewcontent let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Followup Lead Auditor Change Status</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form>
+        <div class="form-group">
+            <label for="status">Status</label>
+            <div class="input-group">
+                    <!-- [(ngModel)]="model.status"  -->
+                <select name="auditor_status" [(ngModel)]="model.auditor_status"  class="form-control select2" style="width:120px; display:inline;" >
+                        <option value="">-- Status --</option>
+                        <option value="{{ item.key }}" *ngFor="let item of otherData.arrFollowupLeadAuditorStatusList | keyvalue" >{{ item.value }}</option>
+                        <!--
+                        <option value= "1">Acceptable</option>
+                        <option value= "2">Not Acceptable</option>
+                        -->
+                        
+                </select>     
+                
+            </div>
+            <div class="validationerror" *ngIf="auditor_status_error"  >Please select the status</div>
+        </div>
+        <div class="form-group">
+            <label for="status">Comment(s)</label>
+            <div class="input-group">
+                <textarea name="auditor_comment"  [(ngModel)]="model.auditor_comment"  rows="4" style="width:100%; display:inline;" ></textarea>
+                <div class="validationerror" *ngIf="auditor_comment_error"  >Please enter the comment</div>
+            </div>
+        </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="checkUserSel('followup_lead_auditor_review')">Save</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+    </div>
+</ng-template>
+<ng-template #followupreviewerreviewcontent let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Followup Reviewer Change Status</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form>
+        <div class="form-group">
+            <label for="status">Status</label>
+            <div class="input-group">
+                    <!-- [(ngModel)]="model.status"  -->
+                <select name="auditor_status" [(ngModel)]="model.auditor_status"  class="form-control select2" style="width:120px; display:inline;" >
+                        <option value="">-- Status --</option>
+                        <option value="{{ item.key }}" *ngFor="let item of otherData.arrFollowupReviewerStatusList | keyvalue" >{{ item.value }}</option>
+                        <!--
+                        <option value= "1">Acceptable</option>
+                        <option value= "2">Not Acceptable</option>
+                        -->
+                        
+                </select>     
+                
+            </div>
+            <div class="validationerror" *ngIf="auditor_status_error"  >Please select the status</div>
+        </div>
+        <div class="form-group">
+            <label for="status">Comment(s)</label>
+            <div class="input-group">
+                <textarea name="auditor_comment"  [(ngModel)]="model.auditor_comment"  rows="4" style="width:100%; display:inline;" ></textarea>
+                <div class="validationerror" *ngIf="auditor_comment_error"  >Please enter the comment</div>
+            </div>
+        </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="checkUserSel('followup_reviewer_review')">Save</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+    </div>
+</ng-template>

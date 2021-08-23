@@ -1,0 +1,213 @@
+<div class="review-check">
+	<div class="col-12 text-right" >
+		<a [routerLink]="['/application/apps/view']" [queryParams]="{id:this.id}" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2">Back</a>
+	</div>
+</div>	
+
+<div style="margin-bottom: 15px;">	
+<mat-accordion>
+	<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+		<mat-expansion-panel-header>
+			<mat-panel-title>
+			View Application Details
+			</mat-panel-title>
+		</mat-expansion-panel-header>
+		
+		<div class="row" *ngIf="applicationdata" >
+			<div class="col-sm-12">
+				<div class="clearfix"></div>			
+				<app-appdetail [id]="id" ></app-appdetail>							
+			</div>				
+		</div>
+
+	</mat-expansion-panel>                
+</mat-accordion>
+</div>
+<form #checklistForm="ngForm"  (ngSubmit)="onSubmit(checklistForm)">
+ 
+<div class="review-check">
+	<!--
+	<div class="col-12 text-right" >
+		<a [routerLink]="['/application/apps/view']" [queryParams]="{id:this.id}" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2">Back</a>
+	</div>	
+	-->	
+  <table class="table table-striped tempdrivenform">
+    <thead>
+        <tr>
+          <th>Application Review Questions</th>         
+        </tr>
+    </thead>
+    <tbody>
+	 
+      <tr *ngFor="let reviewchecklist of reviewchecklists; index as i ">
+			<td><p>{{ 1+i }}. {{ reviewchecklist.name }} <a href="javascript:void(0);" (click)="toggleGuidance(reviewchecklist.id)"  ><i class="fa fa-info-circle" aria-hidden="true"></i></a></p>
+			<div class="checklist_guidance" *ngIf="guidanceIncludeList.includes(reviewchecklist.id)" [innerHTML]="reviewchecklist.guidance " ></div>
+            <div class="ans-cmt col-12 row">    
+							<div class="col-4">     
+								<h4>Answer <span class="text-danger">*</span></h4>
+								<div class="row" >
+									<div class="col-10">
+
+											
+										<select class="form-control" #qtdAnswer="ngModel" name="qtd{{reviewchecklist.id}}"  [(ngModel)]="reviewcommentlist['qtd'+''+reviewchecklist.id]"  required >
+											<option value="">-- Risk Category Identified --</option>
+											<option *ngFor="let risk of riskArr; " value="{{risk.id}}" >{{ risk.name }}</option>
+										</select>
+										<div class="validationerror" *ngIf="!qtdAnswer.valid && qtdAnswer.touched">
+											Please select the Answer
+										</div>
+										
+									</div>
+								</div>
+							</div> 
+							<div class="col-8">
+								<h4>Comment</h4>
+								<div class="md-form">
+									<textarea type="text" #qtdComments="ngModel" [required]="(qtdAnswer.value !== undefined && qtdAnswer.value!='' && qtdAnswer.value!=1)?true:false" name="qtd_comments{{reviewchecklist.id}}" [(ngModel)]="reviewcommentlist['qtd_comments'+''+reviewchecklist.id]" class="md-textarea form-control" mdbInput style="height:50px"></textarea>
+								</div>
+								<div class="validationerror" *ngIf="!qtdComments.valid && qtdComments.touched">
+									Please enter the comment
+								</div>
+							</div>
+
+							
+        		</div>  
+		  	</td>
+      </tr>
+    </tbody>
+	</table>
+	
+	<div class="un-lst"><h3>Unit Reviews</h3></div> 
+		
+	<mat-accordion   *ngFor="let appunit of units; index as j " >
+		<mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false" [expanded]="true">
+			<mat-expansion-panel-header>
+				<mat-panel-title>
+				{{ appunit.name  }}
+				</mat-panel-title>
+			</mat-expansion-panel-header>
+			
+			<table class="table table-striped tempdrivenform">
+				<thead>
+					<tr>
+						<th style="font-size:14px;">Unit Review Questions</th>         
+					</tr>
+				</thead>
+				<tbody>
+					
+					<tr *ngFor="let reviewchecklist of unitReviewchecklists; index as i ">
+						<td><p>{{ 1+i }}. {{ reviewchecklist.name }} <a href="javascript:void(0);" (click)="toggleGuidance(j+''+reviewchecklist.id)"  ><i class="fa fa-info-circle" aria-hidden="true"></i></a></p>
+						<div class="checklist_guidance" *ngIf="guidanceIncludeList.includes(j+''+reviewchecklist.id)" [innerHTML]="reviewchecklist.guidance " ></div>
+						<div class="ans-cmt col-12 row">    
+										<div class="col-4">     
+											<h4>Answer <span class="text-danger">*</span></h4>
+											<div class="row" >
+												
+												<div class="col-10">
+
+													<select class="form-control" #qtdAnswer="ngModel" name="unit_qtd{{appunit.id}}_{{reviewchecklist.id}}"   [(ngModel)]="reviewcommentlist['unit_qtd'+''+appunit.id+'_'+reviewchecklist.id]"  required  >
+														<option value="">-- Risk Category Identified --</option>
+														<option *ngFor="let risk of riskArr; " value="{{risk.id}}" >{{ risk.name }}</option>
+													</select>
+													<div class="validationerror" *ngIf="!qtdAnswer.valid && qtdAnswer.touched">
+														Please select the Answer
+													</div>
+												</div>
+											</div>
+										</div> 
+										<div class="col-8">
+											<h4>Comment</h4>
+											<div class="md-form">
+												<textarea type="text" #qtdComments="ngModel" [required]="(qtdAnswer.value !== undefined && qtdAnswer.value!='' && qtdAnswer.value!=1)?true:false" name="unit_qtd_comments{{appunit.id}}_{{reviewchecklist.id}}" [(ngModel)]="reviewcommentlist['unit_qtd_comments'+''+appunit.id+'_'+reviewchecklist.id]" class="md-textarea form-control" mdbInput style="height:50px"></textarea>
+											</div>
+											<div class="validationerror" *ngIf="!qtdComments.valid && qtdComments.touched">
+												Please enter the comment
+											</div>
+										</div>
+			
+										<!--<div class="col-12 validationerror" *ngIf="unitArrayList.includes(appunit.id+'_'+reviewchecklist.id)" > Please select the answer</div>
+										<div class="col-12 validationerror" *ngIf="unitArrayList2.includes(appunit.id+'_'+reviewchecklist.id)" > Please enter the comment</div>
+										-->
+											
+							</div>  
+							</td>
+					</tr>
+				</tbody>
+			</table>
+
+		</mat-expansion-panel>                
+	</mat-accordion>
+	
+	
+</div>
+
+<div class="row m-t-15">
+		<div class="col-12">
+			<div class="card-box enq-view">
+					<h3>Status Details</h3>                     
+					<ul class="tempdrivenform" style="margin-bottom:10px;">
+							<li style="width:100%;"  ><span class="label-pad" style="width: 30%;">Status <span class="text-danger">*</span></span>  
+								<span class="label-pad" style="width:35%;" >
+									<select name="review_status" #reviewStatus="ngModel" (change)="fnCommentLabel($event.target.value)" style="margin-top:4px; " [(ngModel)]="review_status" required  class="form-control" >
+										<option value="">-- Status -- </option>
+										<option *ngFor="let status of reviewerstatus;" value="{{status.id}}">{{status.status}}</option>
+										
+										<!--<option value="1">Accept</option>
+										<option value="2">Reject</option>
+										<option value="3">More information from customer</option>-->
+									</select>
+									<div class="validationerror" *ngIf="!reviewStatus.valid && reviewStatus.touched">
+										Please select the status
+									</div>
+								</span>
+								<!--<i class="fa fa-info-circle" aria-hidden="true" *ngIf="criticalcount"></i> -->
+								
+								<!--<div class="validationerror col-12"  *ngIf="review_status_error" style="float:left; padding-bottom: 12px; line-height: 10px;" >Please select the status</div> -->
+							</li>
+							<li style="width:100%;"  ><span class="label-pad" style="width: 30%;">Review Risk Assessment Result <span class="text-danger">*</span></span>  
+								<span class="label-pad" style="width:35%;" >
+									<select name="review_result_status" #reviewResultStatus="ngModel" style="margin-top:4px; " [(ngModel)]="review_result_status" required  class="form-control" >
+										<option value="">-- Review Risk Assessment Result -- </option>
+										<option *ngFor="let reviewresult of filterReviewResultArr();" value="{{ reviewresult.id }}" >{{ reviewresult.name }}</option>
+									</select>
+									<div class="validationerror" *ngIf="!reviewResultStatus.valid && reviewResultStatus.touched">
+										Please select the review status
+									</div>
+								</span>
+								<!--<div class="validationerror col-12"  *ngIf="review_result_status_error" style="float:left; padding-bottom: 12px; line-height: 10px;" >Please select the review status</div>-->
+							</li>
+							
+							<li style="width:100%;" ><span class="label-pad" style="width: 30%;">{{ commentLabel }} </span> 
+							 	 
+								<span class="label-pad" style="width:35%;padding-bottom:5px;" >
+									<textarea class="form-control" #reviewComment="ngModel" [required]="(reviewStatus.value !== undefined && reviewStatus.value!='' && (reviewStatus.value==2 || reviewStatus.value==3))?true:false" name="review_comments" rows=4 [(ngModel)]="review_comments" style=" margin-top:10px; line-height:18px;"></textarea>
+									<div class="validationerror" *ngIf="!reviewComment.valid && reviewComment.touched">
+										Please enter the {{ commentLabel }}
+									</div>
+								</span>
+								<!-- <div class="validationerror col-12"  *ngIf="status_comment_error" style="float:left; padding-bottom: 12px; line-height: 10px;" >Please enter the {{ commentLabel }}</div>-->
+ 							</li>
+							
+				</ul>							
+			</div>
+		</div>
+</div>
+
+
+<div class="col-lg-12 text-center mb-4">
+
+
+	<button [disabled]="loading || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10">
+		<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+		Submit
+	</button>
+	<button [disabled]="loading || buttonDisable" type="button" [routerLink]="['/application/apps/view']" [queryParams]="{id:this.id}" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2 m-t-10">
+		<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+		Cancel
+	</button>
+
+	<app-usermessage [success]="success" [error]="error"  ></app-usermessage>      
+
+	
+</div>
+</form>

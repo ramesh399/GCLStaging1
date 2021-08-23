@@ -1,0 +1,2 @@
+<div *ngIf="success?.summary" class="col-12 alert alert-success mt-3 mb-0"  >{{success.summary}}</div>
+<div *ngIf="error?.summary" class="col-12 alert alert-danger mt-3 mb-0 errorSummary" [innerHtml]="error.summary"></div>

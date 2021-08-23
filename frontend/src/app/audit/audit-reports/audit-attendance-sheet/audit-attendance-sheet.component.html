@@ -1,0 +1,254 @@
+<!--
+<div class="row"  >
+    <div class="col-12">
+        <div class="card-box table-responsive">
+        	<div class="row col-12 m-b-5 pad-right">
+              	<div class="col-8 pad-left">
+                <h4 class="page-title">Audit Attendance Sheet</h4>
+                <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+                
+              	</div>
+               
+            </div>
+			-->
+			
+			<!-- <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span> -->
+			<!--
+            <div class="row col-12 m-b-5 pad-right">
+                <div class="col-4 text-left pad-left">
+                    <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                        <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+                    </select>
+                </div>
+                <div class="col-4 text-left p-t-5"></div>
+                <div class="col-4 text-right pad-right">
+                    Search: <input class="search-pad" type="text" name="searchTerm" [(ngModel)]="service.searchTerm"/>
+                </div>
+            </div>
+			-->
+
+			<!--
+			<h3>Audit Attendance Sheet</h3>	
+			-->
+			
+			<div class="col-12 row enq-view pad-right">
+				<div class="col-8 text-primary" style="border-bottom: 1px solid #d7d7d7;font-size:16px;padding-left:0px;">
+					Audit Attendance Sheet
+				</div>
+				
+				<div class="col-4 text-right pad-right" style="border-bottom: 1px solid #d7d7d7;">
+					<ng-container *ngIf="!cond_viewonly && dataloaded">
+						<div class="radio" >
+							Is it applicable?&nbsp;&nbsp;&nbsp;						
+							<input type="radio" id="yes" [checked]="this.isItApplicable?true:false" value="1" (change)="isItApp(1)"><label for="yes">Yes</label>
+							&nbsp;&nbsp;&nbsp;
+							<input type="radio" id="no" [checked]="!this.isItApplicable?true:false" value="2" (change)="isItApp(2)"><label for="no">No</label>										
+						</div>		
+					</ng-container>			
+				</div>
+			</div>
+			<div class="col-12" *ngIf="!dataloaded">
+				<span class="spinner-border spinner-border-sm mr-1"></span>
+			</div>
+			<div *ngIf="!isItApplicable && dataloaded" class="m-t-5">
+				<form  [formGroup]="remarkForm">
+					<div class="form-group row">					
+						<div class="col-12">
+							<label>Remarks <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Remarks" matTooltipClass="tooltip-text-size" aria-tooltip="Remarks" matTooltipPosition="right"></i>
+							<ng-container *ngIf="!cond_viewonly">
+								<textarea rows="5" formControlName="remark" [class.is-invalid]="rf.remark.invalid && rf.remark.touched" placeholder="Remarks" class="form-control" ></textarea>
+								<div *ngIf="rf.remark.errors" class="invalid-feedback">
+									<div *ngIf="rf.remark.errors.required">Remarks cannot be blank.</div>
+									<div *ngIf="rf.remark.hasError('whitespace')">Invalid Remarks</div>
+								</div>
+							</ng-container>
+							<ng-container *ngIf="cond_viewonly">
+								<div>{{rf.remark.value }}</div>
+							</ng-container>
+						</div>				
+					</div> 											
+					<ng-container *ngIf="!cond_viewonly">		
+						<div class="col-lg-12 text-center mt-4 mb-4">
+							<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="addRemark()">
+								<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+								{{editStatus == 1 ? 'Update' : 'Save'}}	
+							</button>
+							<!--<button [disabled]="loading['button'] || buttonDisable" type="button" (click)="remarkFormreset()"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Reset</button>-->
+							<div class="clearfix"></div>				
+						</div>
+					</ng-container>	
+				</form>
+			</div>
+			
+            <div class="col-12 pad-left m-t-5" *ngIf="isItApplicable && dataloaded">
+                <table id="datatable" class="table table-bordered" >
+                    <thead>
+						<tr>
+							<th width="5%" scope="col" class="center">S.No</th>
+							<th scope="col">Name</th>	
+							<th scope="col">Position</th>
+                            <th scope="col"  width="10%" class="center">Open</th>
+                            <th scope="col"  width="10%" class="center">Close</th>	
+							<th width="10%" class="text-center" scope="col">Action</th>	
+						</tr>
+                    </thead>
+                    <tbody>
+						<tr *ngFor="let attendance of attendances$ | async; let i=index; ">
+							<td scope="row" class="center">{{ 1+i+ service.pageNo }}</td>
+						   
+							<td><ngb-highlight [result]="attendance.name"  [term]="service.searchTerm"></ngb-highlight></td>
+							<td><ngb-highlight [result]="attendance.position"  [term]="service.searchTerm"></ngb-highlight></td>
+                            <td class="center"><ngb-highlight [result]="attendance.open_label"  [term]="service.searchTerm"></ngb-highlight></td>
+                            <td class="center"><ngb-highlight [result]="attendance.close_label"  [term]="service.searchTerm"></ngb-highlight></td>
+							<td  class="center">
+								<a href="javascript:void(0);" (click)="viewAttendance(attendanceDetails,attendance)" title="View" alt="View"> <i class="fa fa-eye"></i> </a>
+								<ng-container *ngIf="!cond_viewonly">
+									<a href="javascript:void(0);" *ngIf="(userType==1 && userdetails.rules.includes('audit_execution')) || userdetails.resource_access==1 || userdetails.rules.includes('edit_audit_attendance')" (click)="editAttendance(i,attendance)" title="Edit" alt="Edit" class="pl-2"> <i class="fa fa-edit"></i> </a>
+									<a href="javascript:void(0);" *ngIf="(userType==1 && userdetails.rules.includes('audit_execution')) || userdetails.resource_access==1 || userdetails.rules.includes('delete_audit_attendance')" (click)="removeAttendance(confirmcontent,i,attendance)" title="Delete" alt="Delete" class="pl-2"> <i class="fa fa-trash text-danger"></i> </a>
+								</ng-container>
+							</td>
+						</tr>
+						<tr  *ngIf="(attendances$ | async)?.length==0" >
+							<td colspan="6" class="center">{{ commontxt.norecords }}</td>
+						</tr>
+                    </tbody>
+                </table>
+            </div>
+			<!--
+            <div class="d-flex justify-content-between p-2">
+                <ngb-pagination maxSize="10" rotate=true [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+                    <ng-template ngbPaginationPrevious>Prev</ng-template>
+                    <ng-template ngbPaginationNext>Next</ng-template>			  
+                </ngb-pagination>
+            </div>
+			-->
+			<!--
+   		</div>
+	</div>
+</div>
+-->
+<div class="clearfix"></div>
+<ng-container *ngIf="!cond_viewonly">
+	<div class="row" *ngIf="isItApplicable  && dataloaded && ((userType==1 && userdetails.rules.includes('audit_execution')) || userdetails.resource_access==1 || userdetails.rules.includes('add_audit_attendance') || (userdetails.rules.includes('edit_audit_attendance') && attendanceData))">
+		<div class="col-12 m-t-15">
+			<!--
+			<div class="add card-box table-responsive enq-view">  
+			-->		
+				<h3>{{editStatus == 1 ? 'Update' : 'Add'}} Audit Attendance Sheet</h3>                             
+				<form  [formGroup]="form" (ngSubmit)="onSubmit()">
+					<div class="form-group row">
+						
+						<div class="col-5">
+							<label>Name <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Name" matTooltipClass="tooltip-text-size" aria-tooltip="Name" matTooltipPosition="right"></i>
+							<input type="text" formControlName="name"  class="form-control" placeholder="Name" [class.is-invalid]="f.name.invalid && f.name.touched">
+							
+							<div *ngIf="f.name.errors" class="invalid-feedback">
+								<div *ngIf="f.name.errors.required">Name is required</div>
+								<div *ngIf="f.name.hasError('whitespace')" >Invalid Name</div>
+								<div *ngIf="f.name.errors.maxlength">Name cannot exceed 255 characters</div>
+							</div>
+						</div>
+
+						<div class="col-3">
+							<label>Position <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Position" matTooltipClass="tooltip-text-size" aria-tooltip="Position" matTooltipPosition="right"></i>
+							<input type="text" formControlName="position"  class="form-control" placeholder="Position" [class.is-invalid]="f.position.invalid && f.position.touched">
+							
+							<div *ngIf="f.position.errors" class="invalid-feedback">
+								<div *ngIf="f.position.errors.required">Position is required</div>
+								<div *ngIf="f.position.hasError('whitespace')" >Invalid Position</div>
+								<div *ngIf="f.position.errors.maxlength">Position cannot exceed 255 characters</div>
+							</div>
+						</div>					
+													
+						<div class="col-2">
+							<label>Open <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Open" matTooltipClass="tooltip-text-size" aria-tooltip="Open" matTooltipPosition="right"></i>
+							<select formControlName="open" [class.is-invalid]="f.open.invalid && f.open.touched" class="form-control select2">
+								<option value="">-- Open --</option>
+								<option  *ngFor="let item of openlist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+							</select>
+							<div *ngIf="f.open.errors" class="invalid-feedback">
+								<div *ngIf="f.open.errors.required" >Open is required</div>
+							</div>
+						</div>           
+
+						<div class="col-2">
+							<label>Close </label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Close" matTooltipClass="tooltip-text-size" aria-tooltip="Close" matTooltipPosition="right"></i>
+							<select formControlName="close" [class.is-invalid]="f.close.invalid && f.close.touched" class="form-control select2">
+								<option value="">-- Close --</option>
+								<option  *ngFor="let item of closelist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+							</select>
+							<div *ngIf="f.close.errors" class="invalid-feedback">
+								<div *ngIf="f.close.errors.required" >Close is required</div>
+							</div>
+						</div> 
+						
+					</div>								
+								
+					<div class="col-lg-12 text-center mt-4 mb-4">
+						<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="addattendance()">
+							<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+							{{editStatus == 1 ? 'Update' : 'Save'}}	
+						</button>
+						<button [disabled]="loading['button'] || buttonDisable" type="button" (click)="attendanceFormreset()"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Reset</button>
+
+						<div class="clearfix"></div>
+							
+						
+					</div>
+				</form>				             
+			</div>
+		<!--	
+		</div>
+		-->
+	</div>
+</ng-container>
+<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+
+<ng-template #attendanceDetails let-modal>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+	<div class="modal-body" style="font-size:16px;">
+		<div class="card-box enq-view">	
+			<table class="table-secondary m-b-15" *ngIf="AttendanceData">
+				<tr>
+					<th width="20%">Name</th>
+					<td width="30%">{{ AttendanceData.name }}</td>
+					<th width="20%">Position</th>
+					<td width="30%">{{ AttendanceData.position }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Open</th>
+					<td width="30%">{{ AttendanceData.open_label }}</td>
+					<th width="20%">Close</th>
+					<td width="30%">{{ AttendanceData.close_label }}</td>
+				</tr>	
+				<tr>
+					<th width="20%">Created By</th>
+					<td width="30%">{{ AttendanceData.created_by_label }}</td>
+					<th width="20%">Created Date</th>
+					<td width="30%">{{ AttendanceData.created_at }}</td>
+				</tr>	
+			</table>
+		
+			<div style="text-align: center;">
+				<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="modal.dismiss('cancel click')" >Close</a>
+			</div>
+		</div>
+    </div>
+</ng-template>
+<ng-template #confirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to delete the data?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>

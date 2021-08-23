@@ -1,0 +1,63 @@
+{
+  "$schema": "./node_modules/@angular/service-worker/config/schema.json",
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "resources": {
+        "files": [
+          "/favicon.ico",
+          "/index.html",
+          "/manifest.webmanifest",
+          "/*.css",
+          "/*.js"
+        ]
+      }
+    }, {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/assets/**",
+          "/*.(eot|svg|cur|jpg|png|webp|gif|otf|ttf|woff|woff2|ani)"
+        ]
+      }
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "local-api",
+      "urls": [
+        "http://yii72.aescorp.in/yii19102301_gcl/ver1/web/audit/**"
+        , "http://yii72.aescorp.in/yii19102301_gcl/ver1/web/audit/**/**"
+        , "http://yii72.aescorp.in/yii19102301_gcl/ver1/web/audit/*"
+        , "http://yii72.aescorp.in/yii19102301_gcl/ver1/web/master/country/get-country"
+        , "http://yii72.aescorp.in/yii19102301_gcl/ver1/web/site/getyear"
+      ],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 10000000,
+        "maxAge": "7d",
+        "timeout":"10s"
+      }
+    },
+    {
+      "name": "live-api",
+      "urls": [
+        "https://ssl.gcl-intl.com/backend/web/audit/**"
+        , "https://ssl.gcl-intl.com/backend/web/audit/**/**"
+        , "https://ssl.gcl-intl.com/backend/web/audit/*"
+        , "https://ssl.gcl-intl.com/backend/web/master/country/get-country"
+        , "https://ssl.gcl-intl.com/backend/web/site/getyear"
+      ],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 10000000,
+        "maxAge": "7d",
+        "timeout":"10s"
+      }
+    }
+  ]
+}

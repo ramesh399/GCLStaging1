@@ -1,0 +1,172 @@
+<div class="col-12 row pad-right" >
+	<div class="col-8">
+		<h4 class="page-title">{{title}}</h4>
+	</div>
+	<div class="col-4 text-right pad-right">
+		<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/master/qualification-checklist/list']"><i class="fa fa-arrow-left text-white"></i> Back</a>
+	</div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="add card-box table-responsive">
+            <form  [formGroup]="form" (ngSubmit)="onSubmit()"  >
+                            				
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view">
+				
+					<div class="form-group row">
+						<div class="col-4">
+							<label>Standard</label>
+							<mat-select placeholder="Standard *" (selectionChange)="getBsectorList($event.value)" formControlName="standard" multiple class="form-control select2" [class.is-invalid]="f.standard.invalid && f.standard.touched">
+								<mat-select-trigger>
+								<span *ngIf="f.standard.value?.length == 1" >{{f.standard.value ? getSelectedValue('standard', f.standard.value): ''}}</span>
+								<span *ngIf="f.standard.value?.length > 1" class="example-additional-selection">
+									{{f.standard.value.length}} {{ 'selected' }}
+								</span>
+								</mat-select-trigger>
+								<mat-option *ngFor="let standards of standardList" [value]="standards.id">{{standards.name}}</mat-option>
+							</mat-select>
+							
+							<div *ngIf="f.standard.errors" class="invalid-feedback">
+								<div *ngIf="f.standard.errors.required" >Standard is required</div>
+								<div *ngIf="f.standard.errors.incorrect">{{ standardErrors }}</div>	
+							</div>
+							
+						</div>
+						
+						<!--
+						<div class="col-4">
+							<label>Process</label>
+							<mat-select placeholder="Process *" (selectionChange)="getBsectorList($event.value)" formControlName="process" multiple class="form-control select2" [class.is-invalid]="f.process.invalid && f.process.touched">
+								<mat-select-trigger>
+								<span *ngIf="f.process.value?.length == 1" >{{f.process.value ?  getSelectedValue('process',f.process.value) : ''}}</span>
+								<span *ngIf="f.process.value?.length > 1" class="example-additional-selection">
+									{{f.process.value.length}} {{ 'selected' }}
+								</span>
+								</mat-select-trigger>
+								<mat-option *ngFor="let processd of processList" [value]="processd.id">{{processd.name}}</mat-option>
+							</mat-select>
+							
+							<div *ngIf="f.process.errors" class="invalid-feedback">
+								<div *ngIf="f.process.errors.required" >Process is required</div>
+								<div *ngIf="f.process.errors.incorrect">{{ processErrors }}</div>	
+							</div>
+						</div>
+						-->
+						
+						<div class="col-4">
+							<label>Role</label>
+							<mat-select placeholder="Role *" formControlName="role" multiple class="form-control select2" [class.is-invalid]="f.role.invalid && f.role.touched">
+								<mat-select-trigger>
+								<span *ngIf="f.role.value?.length == 1" >{{f.role.value ? getSelectedValue('role',f.role.value) : ''}}</span>
+								<span *ngIf="f.role.value?.length > 1" class="example-additional-selection">
+									{{f.role.value.length}} {{ 'selected' }}
+								</span>
+								</mat-select-trigger>
+								<mat-option *ngFor="let roles of roleList" [value]="roles.id">{{roles.role_name}}</mat-option>
+							</mat-select>
+							
+							<div *ngIf="f.role.errors" class="invalid-feedback">
+								<div *ngIf="f.role.errors.required" >Role is required</div>
+								<div *ngIf="f.role.errors.incorrect">{{ roleErrors }}</div>	
+							</div>
+						</div>
+						
+						<div class="col-4">&nbsp;</div>
+						
+						<div class="col-4 m-t-15">
+							<label>Business Sector</label>
+							<mat-select placeholder="Business Sector *" (selectionChange)="getBsectorgroupList($event.value)" formControlName="business_sector_id" multiple class="form-control select2" [class.is-invalid]="f.business_sector_id.invalid && f.business_sector_id.touched">
+								<mat-select-trigger>
+								<span *ngIf="f.business_sector_id.value?.length == 1" >{{f.business_sector_id.value ? getSelectedValue('business_sector_id', f.business_sector_id.value): ''}}</span>
+								<span *ngIf="f.business_sector_id.value?.length > 1" class="example-additional-selection">
+									{{f.business_sector_id.value.length}} {{ 'selected' }}
+								</span>
+								</mat-select-trigger>
+								<mat-option *ngFor="let bsector of bsectorList" [value]="bsector.id">{{bsector.name}}</mat-option>
+							</mat-select>
+							
+							<div *ngIf="f.business_sector_id.errors" class="invalid-feedback">
+								<div *ngIf="f.business_sector_id.errors.required" >Business Sector is required</div>
+							</div>
+						</div>
+
+						<div class="col-4 m-t-15">
+							<label>Business Sector Group</label>
+							<mat-select placeholder="Business Sector Group *" formControlName="business_sector_group_id" multiple class="form-control select2" [class.is-invalid]="f.business_sector_group_id.invalid && f.business_sector_group_id.touched">
+								<mat-select-trigger>
+								<span *ngIf="f.business_sector_group_id.value?.length == 1" >{{f.business_sector_group_id.value ? getSelectedValue('business_sector_group_id', f.business_sector_group_id.value): ''}}</span>
+								<span *ngIf="f.business_sector_group_id.value?.length > 1" class="example-additional-selection">
+									{{f.business_sector_group_id.value.length}} {{ 'selected' }}
+								</span>
+								</mat-select-trigger>
+								<mat-option *ngFor="let bsectorgroup of bsectorgroupList" [value]="bsectorgroup.id">{{bsectorgroup.group_code}}</mat-option>
+							</mat-select>
+							
+							<div *ngIf="f.business_sector_group_id.errors" class="invalid-feedback">
+								<div *ngIf="f.business_sector_group_id.errors.required" >Business Sector Group is required</div>
+							</div>
+						</div>
+
+						<!-- <div class="col-4 m-t-15">
+							<label>Business Sector Group</label>
+							<select formControlName="business_sector_group_id" class="form-control select2" [class.is-invalid]="f.business_sector_group_id.invalid && f.business_sector_group_id.touched">
+								<option value="" >-- Business Sector Group * --</option>
+								<option *ngFor="let bsectorgroup of bsectorgroupList" value= {{bsectorgroup.id}}>{{bsectorgroup.group_code}}</option>
+							</select>
+							<div *ngIf="f.business_sector_group_id.errors" class="invalid-feedback">
+								<div *ngIf="f.business_sector_group_id.errors.required"> Business Sector Group cannot be blank.</div>								
+							</div>
+						</div> -->
+						
+						<div class="col-12 m-t-15">
+							<label>Question</label>
+							<textarea type="text" formControlName="name" [class.is-invalid]="f.name.invalid && f.name.touched " class="form-control" placeholder="Question *" ></textarea>
+							<div *ngIf="f.name.errors" class="invalid-feedback">
+								<div *ngIf="f.name.errors.required" >Question is required</div>
+								<div *ngIf="f.name.errors.incorrect">{{ nameErrors }}</div>	
+								<div *ngIf="f.name.hasError('whitespace')" >Invalid Question</div>
+							</div>
+						</div>                        
+													
+						<div class="col-12 m-t-15">
+							<label>Guidance</label>
+							<textarea formControlName="guidance" class="form-control" placeholder="Guidance" ></textarea>                                
+						</div>
+						
+						<div class="col-4 m-t-15">
+							<label>Recurring Period</label>
+							<select formControlName="recurring_period" [class.is-invalid]="f.recurring_period.invalid && f.recurring_period.touched" class="form-control select2">
+								<option value="">-- Recurring Period --</option>
+								<option *ngFor="let recurringPeriod of recurringPeriodList | keyvalue" value="{{recurringPeriod.key}}">{{recurringPeriod.value}}</option>
+							</select>
+							<div *ngIf="f.recurring_period.errors" class="invalid-feedback">
+								<div *ngIf="f.recurring_period.errors.required" >Recurring Period is required</div>
+								<div *ngIf="f.recurring_period.errors.incorrect">{{ recurring_periodErrors }}</div>	
+							</div>							
+						</div>
+						
+						<div class="col-12 m-t-20">
+							<label>File Upload Required</label>&nbsp;
+							<input type="checkbox" formControlName="file_upload_required">							
+						</div>					
+						
+					</div>								
+								
+					<div class="col-lg-12 text-center mt-4 mb-4">
+						<button [disabled]="loading || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+							<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+							Submit
+						</button>
+						<button [disabled]="loading || buttonDisable" type="button" [routerLink]="['/master/qualification-checklist/list']" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>Cancel</button>
+
+						<div class="clearfix"></div>
+							
+						<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+					</div>				
+						
+				</div>
+                 
+            </form>
+        </div>
+    </div>
+</div>

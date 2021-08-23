@@ -1,0 +1,176 @@
+<div class="row">
+	<div class="col-sm-12  p-b-10">
+		<div class="page-title-box">
+		    <div class="float-left">
+				<h4 class="page-title">Unit Wise Certified Standard Discount Details</h4>
+			</div>
+			
+			<div class="text-right float-right">
+				<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/offer/offer-generate']" [queryParams]="{id:this.id,offer_id:this.offer_id}">Back</a>
+			</div>
+		</div>	
+	</div>
+</div>
+
+<mat-accordion>
+	<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+		<mat-expansion-panel-header>
+			<mat-panel-title>
+			View Application Details
+			</mat-panel-title>
+		</mat-expansion-panel-header>
+		
+		<div class="row" *ngIf="applicationdata" >
+			<div class="col-sm-12">
+
+				<div class="clearfix"></div>			
+				<app-appdetail [id]="applicationdata.id" ></app-appdetail>				
+			
+			</div>				
+		</div>
+
+	</mat-expansion-panel>                
+</mat-accordion>
+
+
+
+<div class="clearfix"></div>
+
+<div class="row">
+    <div class="col-12" *ngIf="applicationdata">
+	    
+        <div class="add card-box table-responsive">
+           	<form #form="ngForm"  (ngSubmit)="onSubmit()">			
+				
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view">
+					<div style="font-size:16px; margin-bottom:15px; padding-bottom:5px; border-bottom:1px solid #cecece;display: inline-block; "> Offer Code : {{ applicationdata.offercode }}</div>
+					
+					<h3>Validate Certified Standard</h3>  
+					<div class="form-group row">
+						<div class="tbl-sec">
+							<table id="datatable" class="table table-bordered tab-bor col-12">
+								<tbody>	
+									
+									<ng-container *ngFor="let unit of applicationdata.appunitmanday; index as i">
+									
+										<tr>
+											<td colspan="4" class="text-left"><b>{{unit.name}}</b></td>
+										</tr>	
+										
+										
+										
+										<ng-container *ngFor="let mandaydiscount of unit.manday_discount; index as di">
+										
+										<tr *ngIf="di==0">										
+											<td class="text-left"><b>Certified Standard</b></td>
+											<td class="text-center"><b>Discount (%)</b></td>
+											<td class="text-center"><b>Status</b></td>
+										</tr>
+										
+										<tr>
+											<td class="text-left">{{mandaydiscount.standard}}</td>
+											<td class="text-right">{{mandaydiscount.discount | number :'1.2-2'}}</td>
+											<td class="text-center">		
+											<input type="radio" name="qtd_{{i}}_{{di}}_{{unit.id}}_{{mandaydiscount.standard_id}}" [(ngModel)]="validatecertifiedstandard['qtd_'+i+'_'+di+'_'+unit.id+'_'+mandaydiscount.standard_id]" [checked]="validatecertifiedstandard['qtd_'+i+'_'+di+'_'+unit.id+'_'+mandaydiscount.standard_id]=='1'?1:0" value="1" (change)="fnCalculateDiscount($event.target.value,i,di,mandaydiscount.standard_id)"><label>&nbsp;Valid</label>
+											&nbsp;&nbsp;&nbsp;
+											<input type="radio" name="qtd_{{i}}_{{di}}_{{unit.id}}_{{mandaydiscount.standard_id}}" [(ngModel)]="validatecertifiedstandard['qtd_'+i+'_'+di+'_'+unit.id+'_'+mandaydiscount.standard_id]" [checked]="validatecertifiedstandard['qtd_'+i+'_'+di+'_'+unit.id+'_'+mandaydiscount.standard_id]=='2'?1:0" value="2" (change)="fnCalculateDiscount($event.target.value,i,di,mandaydiscount.standard_id)"><label>&nbsp;Invalid</label>
+											</td>
+										</tr>
+										
+										</ng-container>
+										
+										<tr *ngIf="unit?.manday_discount?.length>0 && unit?.total_discount>0">
+											<td class="text-right"><b>Total Discount (%)</b></td>
+											<td class="text-right" width="12%"><b>{{unit.total_discount | number :'1.2-2'}}</b></td>
+											<td class="text-right" width="10%" *ngIf="unit?.manday_discount?.length>0">&nbsp;</td>
+										</tr>	
+										
+										<tr *ngIf="unit?.manday_discount?.length>0 && unit?.total_discount>unit?.maximum_discount">
+											<td class="text-right"><b>Eligible Discount (%)</b></td>
+											<td class="text-right" width="12%"><b>{{unit.eligible_discount | number :'1.2-2'}}</b></td>
+											<td class="text-right" width="20%" *ngIf="unit?.manday_discount?.length>0">&nbsp;</td>
+										</tr>
+										
+										<tr *ngIf="unit?.manday_discount?.length>0 && unit?.total_discount>0">
+											<td class="text-right"><b>Original Manday</b></td>
+											<td class="text-right" width="12%"><b>{{unit.manday | number :'1.2-2'}}</b></td>
+											<td class="text-right" width="20%" *ngIf="unit?.manday_discount?.length>0">&nbsp;</td>
+										</tr>
+										
+										<tr *ngIf="unit?.manday_discount?.length>0 && unit?.total_discount>0">
+											<td class="text-right"><b>Discount Manday</b></td>
+											<td class="text-right" width="12%"><b>{{unit.discount_manday | number :'1.2-2'}}</b></td>
+											<td class="text-right" width="20%" *ngIf="unit?.manday_discount?.length>0">&nbsp;</td>
+										</tr>
+										
+										<tr *ngIf="unit?.manday_discount?.length>0 && unit?.total_discount>0">
+											<td class="text-right"><b>Final Manday</b></td>
+											<td class="text-right" width="12%"><b>{{unit.final_manday | number :'1.2-2'}}</b></td>
+											<td class="text-right" width="20%" *ngIf="unit?.manday_discount?.length>0">&nbsp;</td>
+										</tr>
+										
+										<tr *ngIf="unit?.manday_discount?.length==0 || unit?.total_discount<=0">
+											<td class="text-right"><b>No.of Manday</b></td>
+											<td class="text-right" width="12%"><b>{{unit.manday | number :'1.2-2'}}</b></td>
+											<td class="text-right" width="20%" *ngIf="unit?.manday_discount?.length>0">&nbsp;</td>
+										</tr>
+
+										<tr>
+											<td class="text-right"><b>Manday Cost</b></td>
+											<td class="text-right" width="12%"><b>{{applicationdata?.offer_currency_code}} {{unit.manday_cost | number :'1.2-2'}}</b></td>
+											<td class="text-right" width="20%" *ngIf="unit?.manday_discount?.length>0">&nbsp;</td>
+										</tr>
+
+										<tr>
+											<td class="text-right"><b>Total Cost</b></td>
+											<td class="text-right" width="12%"><b>{{applicationdata?.offer_currency_code}} {{unit.unit_manday_cost | number :'1.2-2'}}</b></td>
+											<td class="text-right" width="20%" *ngIf="unit?.manday_discount?.length>0">&nbsp;</td>
+										</tr>
+										
+																				
+										<tr *ngIf="applicationdata?.appunitmanday?.length>1 && applicationdata?.appunitmanday?.length==(i+1)">
+											<td class="text-right"><b>Sub-Total of Manday</b></td>
+											<td class="text-right" width="12%"><b>{{this.total_manday | number :'1.2-2'}}</b></td>
+											<td class="text-right" width="20%" *ngIf="unit?.manday_discount?.length>0">&nbsp;</td>
+										</tr>
+										
+										<tr *ngIf="applicationdata?.appunitmanday?.length>1 && applicationdata?.appunitmanday?.length==(i+1)">
+											<td class="text-right"><b>Sub-Total of Certification Fee</b></td>
+											<td class="text-right" width="12%"><b>{{applicationdata?.offer_currency_code}} {{this.total_manday_cost | number :'1.2-2'}}</b></td>
+											<td class="text-right" width="20%" *ngIf="unit?.manday_discount?.length>0">&nbsp;</td>
+										</tr> 
+										
+									</ng-container>								
+									
+								</tbody>	
+							</table>
+						</div>	
+					</div>			
+				
+					
+					
+					<div class="form-group row">
+					
+						<div class="col-lg-12 text-center mt-4 mb-4">
+							
+							<button [disabled]="loading" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>Submit
+							</button>							
+							
+							<button type="button" [routerLink]="['/offer/offer-generate']" [queryParams]="{id:this.id,offer_id:this.offer_id}" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2">Cancel</button>
+
+							<div *ngIf="error" class="alert alert-danger mt-3 mb-0">{{error}}</div>
+							<div *ngIf="success" class="alert alert-success mt-3 mb-0">{{success}}</div>
+                        </div>
+						
+					</div>
+					
+					
+					
+				</div>
+				
+			</form>
+        </div>
+	</div>	
+ 
+</div>

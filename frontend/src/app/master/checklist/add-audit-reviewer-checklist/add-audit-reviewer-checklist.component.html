@@ -1,0 +1,90 @@
+<div class="col-12 row pad-right" >
+	<div class="col-8">
+		<h4 class="page-title">{{title}}</h4>
+	</div>
+	<div class="col-4 text-right pad-right">
+		<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/master/audit-reviewer-checklist/list']"><i class="fa fa-arrow-left text-white"></i> Back</a>
+	</div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="add card-box table-responsive">
+            <form  [formGroup]="form" (ngSubmit)="onSubmit()"  >                            
+				
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view">
+				
+					<div class="form-group row">
+						
+						
+						<div class="col-12">
+							<label>Question <span class="text-danger">*</span></label>
+							<textarea type="text" formControlName="name" [class.is-invalid]="f.name.invalid && f.name.touched " class="form-control" placeholder="Question" ></textarea>
+							<div *ngIf="f.name.errors" class="invalid-feedback">
+								<div *ngIf="f.name.errors.required" >Question is required</div>
+								<div *ngIf="f.name.errors.incorrect">{{ nameErrors }}</div>	
+								<div *ngIf="f.name.errors.pattern || f.name.hasError('whitespace')" >Invalid Question</div>
+							</div>
+						</div>                        
+													
+						<div class="col-12 m-t-15">
+							<label>Guidance</label>
+							<textarea formControlName="guidance" class="form-control" placeholder="Guidance" [class.is-invalid]="f.guidance.invalid && f.guidance.touched "></textarea>
+							<div *ngIf="f.guidance.errors" class="invalid-feedback">								
+								<div *ngIf="f.guidance.errors.pattern || f.guidance.hasError('whitespace')">Invalid Guidance</div>								
+							</div> 
+						</div>
+																		
+						<div class="col-6 m-t-15">
+							<label>Findings  <span class="text-danger">*</span></label>
+							<mat-select placeholder="Findings" formControlName="riskcategory" multiple class="form-control select2" [class.is-invalid]="f.riskcategory.invalid && f.riskcategory.touched">
+								<mat-select-trigger>
+								<span *ngIf="f.riskcategory.value?.length == 1" >{{f.riskcategory.value ? getSelectedValue('riskcategory', f.riskcategory.value): ''}}</span>
+								<span *ngIf="f.riskcategory.value?.length > 1" class="example-additional-selection">
+									{{f.riskcategory.value.length}} {{ 'selected' }}
+								</span>
+								</mat-select-trigger>
+								<mat-option *ngFor="let riskcategory of riskCategoryList" [value]="riskcategory.id">{{riskcategory.name}}</mat-option>
+							</mat-select>
+							
+							<div *ngIf="f.riskcategory.errors" class="invalid-feedback">
+								<div *ngIf="f.riskcategory.errors.required" >Findings is required</div>
+								<div *ngIf="f.riskcategory.errors.incorrect">{{ riskcategoryErrors }}</div>	
+							</div>							
+						</div>		
+						
+						<div class="col-6 m-t-15">
+							<label>Standard <span class="text-danger">*</span></label>
+							<mat-select placeholder="-- Standard --" formControlName="standard_id" multiple class="form-control select2" [class.is-invalid]="f.standard_id.invalid && f.standard_id.touched">
+								<mat-select-trigger>
+								<span *ngIf="f.standard_id.value?.length == 1" >{{f.standard_id.value ? getSelectedValue('standard',f.standard_id.value): ''}}</span>
+								<span *ngIf="f.standard_id.value?.length > 1" class="example-additional-selection">
+									{{f.standard_id.value.length}} {{ 'selected' }}
+								</span>
+								</mat-select-trigger>
+								<mat-option *ngFor="let item of standardList" [value]="item.id">{{item.name}}</mat-option>
+							</mat-select>  
+							<div *ngIf="f.standard_id.errors" class="invalid-feedback">
+								<div *ngIf="f.standard_id.errors.required">Standard is required</div>
+							</div>
+						</div>		
+						
+					</div>								
+								
+					<div class="col-lg-12 text-center mt-4 mb-4">
+						<button [disabled]="loading || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+							<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+							{{btnLabel}}
+						</button>
+						<button [disabled]="loading || buttonDisable" type="button" [routerLink]="['/master/audit-reviewer-checklist/list']" [queryParams]="{category:category}" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>Cancel</button>
+
+						<div class="clearfix"></div>
+							
+						<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+					</div>				
+						
+				</div>
+                 
+            </form>
+        </div>
+    </div>
+</div>

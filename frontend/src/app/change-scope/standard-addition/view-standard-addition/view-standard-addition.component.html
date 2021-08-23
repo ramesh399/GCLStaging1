@@ -1,0 +1,91 @@
+<div class="row">
+	<div class="col-sm-12">
+		<div class="col-12 row" style="padding-right:0px;" >
+            <div class="col-8">
+			     <h4 class="page-title">Standard Addition Details</h4>
+			</div>  
+            <div class="col-4 text-right" style="padding-right:0px;">
+				<a class="btn btn-secondary btn-sm active" href="#" role="button" *ngIf="id" [routerLink]="['/change-scope/standard-addition/list']" >Back to Request List</a>
+			</div>
+		</div>	
+	</div>
+</div>
+
+<div class="row" *ngIf="additiondetails" >
+    <div class="col-sm-12 mat-accordion">
+			
+        <div class="clearfix"></div>
+		
+		
+		<form #appform="ngForm"  >
+			<div class="clearfix"></div>
+			
+
+ 
+				<div class="mat-accordion">
+					<div class="card-box enq-view">
+						<h3>Addition Details</h3>
+						<table class="table-secondary m-b-15">
+							<tr>
+								<th width="20%">Company Name</th>
+								<td colspan="3">{{ additiondetails.company_name }}</td>
+							</tr>
+							<tr>
+								<th width="20%">Requested Standards</th>
+								<td width="30%">{{ additiondetails.standards }}</td>
+								<th width="20%">Status</th>
+								<td width="30%">{{ additiondetails.status }}</td>
+							</tr>
+							<tr>
+								<th width="20%">Created By</th>
+								<td width="30%">{{ additiondetails.created_by }}</td>
+								<th width="20%">Created Date</th>
+								<td width="30%">{{ additiondetails.created_at }}</td>
+							</tr>
+						</table>
+					</div>
+	
+				</div>
+
+				<div style="margin-bottom:10px; margin-top:10px;" *ngIf="new_app_id">
+					<div class="un-lst"><h3>New Application Details</h3></div>
+					<mat-accordion>
+						<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+							<mat-expansion-panel-header>
+								<mat-panel-title>
+								View Application Details
+								</mat-panel-title>
+							</mat-expansion-panel-header>
+							
+							<div class="row" *ngIf="new_app_id" >
+								<div class="col-sm-12">
+									<div class="clearfix"></div>			
+									<app-appdetail [id]="new_app_id" ></app-appdetail>							
+								</div>				
+							</div>
+						</mat-expansion-panel>                
+					</mat-accordion>
+				</div>
+
+				<div style="margin-bottom:10px; margin-top:10px;">
+					<div class="un-lst"><h3>Old Application Details</h3></div>
+					<mat-accordion>
+						<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+							<mat-expansion-panel-header>
+								<mat-panel-title>
+								View Application Details
+								</mat-panel-title>
+							</mat-expansion-panel-header>
+							
+							<div class="row" *ngIf="app_id" >
+								<div class="col-sm-12">
+									<div class="clearfix"></div>			
+									<app-appdetail [id]="app_id" ></app-appdetail>							
+								</div>				
+							</div>
+						</mat-expansion-panel>                
+					</mat-accordion>
+				</div>
+		</form>
+    </div>				
+</div>

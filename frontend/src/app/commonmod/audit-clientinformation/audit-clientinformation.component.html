@@ -1,0 +1,49 @@
+<div class="clearfix"></div>
+<div class="row" *ngIf="(userType==1 && userdetails.rules.includes('audit_execution')) || userdetails.resource_access==1 || userdetails.rules.includes('add_audit_employee') || userdetails.rules.includes('edit_audit_employee')">
+    <div class="col-12">
+			<h3>Client Information</h3> 			
+			<mat-tab-group>
+
+				<mat-tab label="General Information"> 
+					<app-audit-clientinformation-generalinfo [cond_viewonly]="cond_viewonly" [app_id]="app_id" ></app-audit-clientinformation-generalinfo>	
+				</mat-tab>	
+                <mat-tab label="Suppliers Information">
+					 <app-audit-clientinformation-supplier [cond_viewonly]="cond_viewonly" [app_id]="app_id" ></app-audit-clientinformation-supplier>
+				</mat-tab>
+                <mat-tab label="Product Controls">
+					 <app-audit-clientinformation-productcontrols [cond_viewonly]="cond_viewonly" [app_id]="app_id" [unit_id]="unit_id"></app-audit-clientinformation-productcontrols>
+				</mat-tab>
+                <mat-tab label="Checklist">
+					<ng-container *ngIf="cond_viewonly=='1'" >
+						<app-audit-clientinformation-viewchecklist [app_id]="app_id"  [cond_viewonly]="1"></app-audit-clientinformation-viewchecklist>
+					</ng-container>
+					<ng-container *ngIf="cond_viewonly!='1'" >
+						<app-audit-clientinformation-checklist [cond_viewonly]="cond_viewonly" [app_id]="app_id" ></app-audit-clientinformation-checklist>	
+					</ng-container>
+				</mat-tab>
+				
+			</mat-tab-group> 
+		<!--		
+		</div>
+		-->
+    </div>
+</div>
+<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+
+<!--
+<ng-template #confirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to delete the data?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+	</div>
+</ng-template>
+-->

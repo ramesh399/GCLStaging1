@@ -1,0 +1,126 @@
+<div class="row">
+        <div class="col-12">
+            <div class="add card-box table-responsive">
+              <!--  <form  [formGroup]="form" (ngSubmit)="onSubmit()">     -->
+                    
+                    <div class="col-12 row pad-right" >
+                        <div class="col-8">
+                        <h4 class="page-title">{{ title }}</h4>
+                        </div>
+                        <div class="col-4 text-right pad-right">
+                        <a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/master/audit-execution-checklist/list']" >Back</a>
+                        </div>
+                    </div>
+                                                    
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view">  
+						<div class="form-group row">
+							
+							<div class="tbl-sec">
+								<table id="datatable" class="table table-bordered tab-bor col-12" >
+									<thead>
+									<tr>
+										<th width="7%" scope="col" class="center">S No.</th>
+										<th width="10%" scope="col" class="center">Clause No.</th>
+										<th width="20%" scope="col">Clause</th>
+										<th width="25%" scope="col">Findings</th>	
+										<th width="8%" scope="col" class="center">Severity</th>	
+										<th width="10%" scope="col" class="center">Due Date</th>
+										<th width="10%" scope="col" class="center">Status</th>								
+										<th width="8%" scope="col" class="text-center">Action</th>
+									</tr>
+									</thead>
+									<tbody>
+										<tr >
+											<td scope="row" class="center">1</td>
+											<td class="center">2.5.6</td>
+											<td>Test Clause1</td>
+											<td>Test Findings1</td>										
+											<td class="text-center">High</td>
+											<td class="text-center">Feb 24, 2020</td>
+											<td class="text-center">In-Progress</td>
+											<td  class="center">
+												<a href="javascript:void(0);" title="Edit" alt="Edit" [routerLink]="['/master/audit-findings-remediation']"> <i class="fa fa-edit"></i> </a>
+												<a href="javascript:void(0);" class="pl-2" title="Change Status" alt="Change Status" ><i class="fa fa-flag"></i></a>
+											</td>
+										</tr>
+										<tr >
+											<td scope="row" class="center">2</td>
+											<td class="center">2.5.2</td>
+											<td>Test Clause1</td>
+											<td>Test Findings1</td>										
+											<td class="text-center">High</td>
+											<td class="text-center">Feb 24, 2020</td>
+											<td class="text-center">In-Progress</td>
+											<td  class="center">
+												<a href="javascript:void(0);" title="Edit" alt="Edit" [routerLink]="['/master/audit-findings-remediation']"> <i class="fa fa-edit"></i> </a>
+												<a href="javascript:void(0);" class="pl-2" title="Change Status" alt="Change Status" ><i class="fa fa-flag"></i></a>
+											</td>
+										</tr>
+										<tr >
+											<td scope="row" class="center">3</td>
+											<td class="center">2.5.1</td>
+											<td>Test Clause1</td>
+											<td>Test Findings1</td>										
+											<td class="text-center">High</td>
+											<td class="text-center">Feb 24, 2020</td>
+											<td class="text-center">In-Progress</td>
+											<td  class="center">
+												<a href="javascript:void(0);" title="Edit" alt="Edit" [routerLink]="['/master/audit-findings-remediation']"> <i class="fa fa-edit"></i> </a>
+												<a href="javascript:void(0);" class="pl-2" title="Change Status" alt="Change Status" ><i class="fa fa-flag"></i></a>
+											</td>
+										</tr>
+										<tr >
+											<td scope="row" class="center">4</td>
+											<td class="center">2.5.3</td>
+											<td>Test Clause1</td>
+											<td>Test Findings1</td>										
+											<td class="text-center">High</td>
+											<td class="text-center">Feb 24, 2020</td>
+											<td class="text-center">In-Progress</td>
+											<td  class="center">
+												<a href="javascript:void(0);" title="Edit" alt="Edit" [routerLink]="['/master/audit-findings-remediation']"> <i class="fa fa-edit"></i> </a>
+												<a href="javascript:void(0);" class="pl-2" title="Change Status" alt="Change Status" ><i class="fa fa-flag"></i></a>
+											</td>
+										</tr>
+										<tr >
+											<td scope="row" class="center">5</td>
+											<td class="center">2.5.1</td>
+											<td>Test Clause1</td>
+											<td>Test Findings1</td>										
+											<td class="text-center">High</td>
+											<td class="text-center">Feb 24, 2020</td>
+											<td class="text-center">In-Progress</td>
+											<td  class="center">
+												<a href="javascript:void(0);" title="Edit" alt="Edit" [routerLink]="['/master/audit-findings-remediation']"> <i class="fa fa-edit"></i> </a>
+												<a href="javascript:void(0);" class="pl-2" title="Change Status" alt="Change Status" ><i class="fa fa-flag"></i></a>
+											</td>
+										</tr>
+										<!-- <tr>
+											<td colspan="6" class="center">No Findings Added</td>
+										</tr> -->
+									</tbody>
+								</table>
+							</div>
+						
+						</div>
+																	
+							
+					</div>
+                        
+               <!-- </form>-->
+    
+                <a href="javascript:void(0);"  class="btn btn-success  m-b-5"   >
+                        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                        Send to Customer</a>
+                    
+                <a href="javascript:void(0);"  class="btn btn-success  m-b-5"   style="float:right">
+                    <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                    Finalize Remediation</a>
+                
+            </div>
+        </div>
+    </div>
+   
+    
+        
+        

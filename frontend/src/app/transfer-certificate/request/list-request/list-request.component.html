@@ -1,0 +1,195 @@
+<form>
+  
+    <div class="row">
+      <div class="col-12">
+          <div class="card-box table-responsive">
+    
+            <div class="row col-12 m-b-5 pad-right">
+              <div class="col-8 text-left pad-left">
+                <h4 class="page-title"><i class="fa fa-list-ul"></i> TC Application List</h4>
+                <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+              </div>
+              <div class="col-4 text-right pad-right"  *ngIf="userdetails.resource_access==1 || userType==2 || userdetails.rules.includes('add_tc_application') ">
+                <a class="btn btn-primary btn-sm" href="#" role="button" [routerLink]="['/transaction-certificate/request/add']"> <i class="fa fa-plus text-white"></i> Request TC</a>
+              </div>
+            </div>
+            <div class="row col-12  m-b-5 pad-right">
+				<div class="col-6" style="margin-left: 450px;">
+					<mat-select style="width: 23%;font-size:13px;" placeholder="-- OSS --" #franchiseFilter name="franchiseFilter" [(ngModel)]="service.franchiseFilter" multiple class="custom-select"  >
+						<mat-select-trigger>
+						<span *ngIf="franchiseFilter.value?.length == 1" >{{franchiseFilter.value ?  getSelectedFranchiseValue(franchiseFilter.value) : ''}}</span>
+						<span *ngIf="franchiseFilter.value?.length > 1" class="example-additional-selection">
+							{{franchiseFilter.value.length}} {{ 'selected' }}
+						</span>
+						</mat-select-trigger>
+						<mat-option *ngFor="let osp of franchiseList" [value]="osp.id">{{osp.osp_details}}</mat-option>					
+					</mat-select>
+				</div>
+			</div>
+            <div class="row col-12 m-b-5 pad-right">
+				<div class="col-2 text-left pad-left">
+					<select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+						<option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+					</select>
+				</div>
+				<div class="col-8 text-left p-t-2">
+					<select class="custom-select" style="width: 30%; font-size:13px;" name="statusFilter" [(ngModel)]="service.statusFilter">
+						<option value="">All</option>
+						<option  *ngFor="let item of statuslist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+					</select>
+					&nbsp;&nbsp;
+					<mat-select style="width: 23%;font-size:13px;" placeholder="-- Standard --" #standardFilter name="standardFilter" [(ngModel)]="service.standardFilter" multiple class="custom-select"  >
+						<mat-select-trigger>
+						<span *ngIf="standardFilter.value?.length == 1" >{{standardFilter.value ?  getSelectedValue(standardFilter.value) : ''}}</span>
+						<span *ngIf="standardFilter.value?.length > 1" class="example-additional-selection">
+						  {{standardFilter.value.length}} {{ 'selected' }}
+						</span>
+						</mat-select-trigger>
+						<mat-option *ngFor="let std of standardList" [value]="std.id">{{std.code}}</mat-option>
+					</mat-select>
+					&nbsp;
+					<mat-select style="width: 23%;font-size:13px;" placeholder="-- Brand --" #brandFilter name="brandFilter" [(ngModel)]="service.brandFilter" multiple class="custom-select"  >
+						<mat-select-trigger>
+						<span *ngIf="brandFilter.value?.length == 1" >{{brandFilter.value ?  getSelectedBrandValue(brandFilter.value) : ''}}</span>
+						<span *ngIf="brandFilter.value?.length > 1" class="example-additional-selection">
+							{{brandFilter.value.length}} {{ 'selected' }}
+						</span>
+						</mat-select-trigger>
+						<mat-option *ngFor="let br of brandList" [value]="br.id">{{br.brand_name}}</mat-option>
+					</mat-select>
+					&nbsp;
+
+				</div>
+				<div class="col-2 text-right pad-right">
+					<input class="search-pad" type="text" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+				</div>
+            </div>
+				
+            <div class="col-12 pad-left">
+                <table id="datatable" class="table table-bordered" >
+					<thead>
+						<tr>
+							<th width="5%" scope="col" class="text-center">S.No</th>
+							<!-- <th class="text-center" scope="col" (sort)="onSort($event)">Temp TC No / TC No</th> -->
+							<th scope="col" (sort)="onSort($event)">Company Name</th>
+							<th scope="col" (sort)="onSort($event)">Brand</th>
+							<th scope="col" (sort)="onSort($event)">Brand Group</th>
+							<th scope="col" *ngIf="userType==2 || userType==3 || (userType==1 && !userdetails.rules.includes('brand_management'))">OSS</th>
+							<th scope="col" (sort)="onSort($event)">Standard</th>
+							<th scope="col" >Country</th>
+							<th class="text-center" scope="col" (sort)="onSort($event)">No.of Product</th>
+							<th class="text-center" width="10%" scope="col" sortable="total_net_weight" (sort)="onSort($event)">Net Weight (kg)</th>
+							<!--<th class="text-center" scope="col" sortable="grand_total_net_weight" (sort)="onSort($event)">Net Weight Required (kg)</th>	-->
+							<!--<th class="text-center" scope="col" sortable="grand_total_used_weight" (sort)="onSort($event)">Stock Used (kg)</th>	-->
+							<!--
+							<th class="text-center" scope="col" (sort)="onSort($event)">Temp TC No</th>	
+							<th class="text-center" scope="col" (sort)="onSort($event)">TC No</th>								
+							<th class="text-center" scope="col" (sort)="onSort($event)">TC No CDS</th>
+							-->
+							<!--
+							<th scope="col" (sort)="onSort($event)" >Certification Body</th>
+							-->
+							<th scope="col" sortable="buyer_id" (sort)="onSort($event)">Buyer</th>
+							<th scope="col" sortable="status" class="text-center" (sort)="onSort($event)">Status</th>
+							<th width="10%" class="text-center" scope="col" sortable="created_at" (sort)="onSort($event)">Date</th>		
+							<th width="10%" class="text-center" scope="col"  >Approved Date</th>
+							<th width="10%" scope="col" class="text-center">Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr *ngFor="let request of requests$ | async; let i=index; ">
+							<th scope="row" class="text-center">{{  1+ i + service.pageNo }}</th>
+							<!-- <td class="text-center"><ngb-highlight [result]="request.tc_number" [term]="service.searchTerm"></ngb-highlight></td> -->
+							<td><ngb-highlight [result]="request.app_id_label" [term]="service.searchTerm"></ngb-highlight></td>
+							<td><ngb-highlight [result]="request.brand_name" [term]="service.searchTerm"></ngb-highlight></td>
+							<td><ngb-highlight [result]="request.brand_group" [term]="service.searchTerm"></ngb-highlight></td>
+							<td class="text-center" *ngIf="userType==2 || userType==3 || (userType==1 && !userdetails.rules.includes('brand_management'))">{{ request.oss_label }}</td>
+							<td><ngb-highlight [result]="request.standard_id_code_label" [term]="service.searchTerm"></ngb-highlight></td>
+							<td><ngb-highlight [result]="request.country_of_dispach_name" [term]="service.searchTerm"></ngb-highlight></td>
+							<td class="text-center"><ngb-highlight [result]="request.no_of_product" [term]="service.searchTerm"></ngb-highlight></td>
+							<td class="text-center"><ngb-highlight [result]="request.total_net_weight" [term]="service.searchTerm"></ngb-highlight></td>
+							<!--
+							<td class="text-center"><ngb-highlight [result]="request.grand_total_net_weight" [term]="service.searchTerm"></ngb-highlight></td>
+							<td class="text-center"><ngb-highlight [result]="request.grand_total_used_weight" [term]="service.searchTerm"></ngb-highlight></td>
+							-->
+							<!--
+							<td class="text-center"><ngb-highlight [result]="request.id" [term]="service.searchTerm"></ngb-highlight></td>
+							<td class="text-center"><ngb-highlight [result]="request.tc_number" [term]="service.searchTerm"></ngb-highlight></td>
+							<td class="text-center"><ngb-highlight [result]="request.tc_number_cds" [term]="service.searchTerm"></ngb-highlight></td>
+							-->							
+							<!--
+							<td><ngb-highlight [result]="request.certification_body_id_label" [term]="service.searchTerm"></ngb-highlight></td>
+							-->
+							<td><ngb-highlight [result]="request.buyer_id_label" [term]="service.searchTerm"></ngb-highlight></td>
+							<td class="text-center"><ngb-highlight [result]="request.status_label" [term]="service.searchTerm"></ngb-highlight></td>
+							<td class="text-center"><ngb-highlight [result]="request.created_at" [term]="service.searchTerm"></ngb-highlight></td>
+							<td class="text-center"><ngb-highlight [result]="request.approved_date" [term]="service.searchTerm"></ngb-highlight></td>
+							<td class="text-center">
+								<a href="javascript:void(0);" *ngIf="(!userdetails.rules.includes('brand_management'))" [routerLink]="['/transaction-certificate/request/view']" [queryParams]="{id:request.id}" title="View" alt="View"><i class="fa fa-eye"></i> </a>&nbsp;&nbsp;
+								<a href="javascript:void(0);" *ngIf="request.showedit" [routerLink]="['/transaction-certificate/request/edit']" [queryParams]="{id:request.id,app_id:request.app_id}" title="Edit" alt="Edit"><i class="fa fa-edit"></i></a>
+								<a href="javascript:void(0);" *ngIf="request.showpdf && (userdetails.resource_access==1 || userType!=1 || (userType==1 && !userdetails.rules.includes('brand_management')) ||(userType==1 && userdetails.rules.includes('brand_management') && request.brand_consent==1) ) " (click)="openmodal(downloading);DownloadFile(request.id,request.tc_filename)" class="pl-2" title="Download" alt="Download"><i class="fa fa-file-pdf-o text-danger"></i></a>	
+								<!-- <a href="javascript:void(0);" *ngIf="request.showpdf" (click)="openmodal(downloading);DownloadFile(request.id,request.tc_filename)" class="pl-2" title="Download" alt="Download"><i class="fa fa-file-pdf-o text-danger"></i></a>	 -->
+								<a href="javascript:void(0);" *ngIf="request.showdelete" (click)="open(commonModel,'delete',request.id)" class="pl-2" title="Delete" alt="Delete"><i class="fa fa-trash text-danger"></i></a>
+                				<a href="javascript:void(0);" *ngIf="request.showcopy" (click)="open(commonModel,'copy',request.id)" class="pl-2" title="Clone TC Request" alt="Clone TC Request"><i class="fa fa-copy"></i></a>	
+							</td>
+						</tr>
+						<tr  *ngIf="(requests$ | async)?.length==0" >
+							<td colspan="12" class="center">{{ commontxt.norecords }}</td>
+						</tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="row col-12 pad-left pad-right">
+				<div class="col-6">
+					<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+					<div *ngIf="!(service.loading$ | async)">
+					Displaying {{ (requests$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (requests$ | async).length }} of {{ (total$ | async) }} results.
+					</div>
+				</div>
+				<div class="col-6 pad-right text-right">						
+				<ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+					<ng-template ngbPaginationFirst>First</ng-template>
+					<ng-template ngbPaginationPrevious>Prev</ng-template>
+					<ng-template ngbPaginationNext>Next</ng-template>			  
+					<ng-template ngbPaginationLast>Last</ng-template>			  
+				</ngb-pagination>						
+				</div>
+			</div>
+			
+          </div>
+        </div>
+      </div>
+    
+    </form>
+
+    <ng-template #downloading let-modal>
+      <div class="modal-header">
+              <h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+      </div>
+      <div class="modal-body" style="font-size:16px;">
+              Please wait, your file is downloading ...
+      </div>
+    </ng-template>
+    
+    <ng-template #commonModel let-modal>
+        
+      <div class="modal-header">
+            <h4 class="modal-title" id="modal-basic-title">Message</h4>
+            <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('close')">
+          <span class="c-icon" aria-hidden="true">&times;</span>
+            </button>
+        </div>
+      
+        <div class="modal-body text-center" style="font-size:16px;padding:5px;">
+        <div class="alert alert-info" *ngIf="alertInfoMessage">{{alertInfoMessage}}</div>
+        <div class="alert alert-success" *ngIf="alertSuccessMessage">{{alertSuccessMessage}}</div>
+        <div class="alert alert-danger" *ngIf="alertErrorMessage">{{alertErrorMessage}}</div>
+      </div>	
+      
+        <div class="modal-footer text-center">
+        <button type="button" class="btn btn-success" *ngIf="okBtn" (click)="commonModalAction();">Ok</button>
+            <button type="button" class="btn btn-outline-secondary" *ngIf="cancelBtn" (click)="modal.dismiss('cancel')">Cancel</button>        
+        </div>
+      
+    </ng-template>

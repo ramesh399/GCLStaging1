@@ -1,0 +1,282 @@
+<form>
+  
+<div class="row">
+  <div class="col-12">
+      <div class="card-box table-responsive">
+     		
+		<div class="row col-12 m-b-5 pad-right">
+			<div class="col-5 pad-left">
+				<h4 class="page-title"><i class="fa fa-list-ul"></i> {{title}} </h4>
+				<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+			</div>
+			<div class="col-4 pad-left" >
+				<ng-container  *ngIf="!(service.loading$ | async)">
+					<ng-container *ngIf="(invoiceamount$ | async) as invoiceamtitem">
+						<!--*ngIf="(invoiceamount$ | async).show_payment_details==1 && !(service.loading$ | async)"-->
+						<div *ngIf="invoiceamtitem.show_payment_details==1">
+							<!--<span class="text-success">Total Paid: <b>{{(invoiceamount$ | async).currency_code}} {{ (invoiceamount$ | async).paid }}</b></span> <span class="text-danger m-l-15">Total Unpaid: <b>{{(invoiceamount$ | async).currency_code}} {{ (invoiceamount$ | async).unpaid }}</b></span>-->
+							<span class="text-success">Total Paid: <b>{{ invoiceamtitem.currency_code}} {{ invoiceamtitem.paid }}</b></span> <span class="text-danger m-l-15">Total Unpaid: <b>{{ invoiceamtitem.currency_code}} {{ invoiceamtitem.unpaid }}</b></span>
+						</div>
+					</ng-container>
+				</ng-container>
+				 
+			</div>
+			<div class="col-3 text-right pad-right"  *ngIf="addAdditionalInvoice">
+				<a class="btn btn-primary btn-sm" href="#"   role="button" [routerLink]="['/invoice/invoice-generate']" [queryParams]="{type:type}"> <i class="fa fa-plus text-white"></i> Add Additional Invoice</a>
+			</div>
+        </div>
+		
+		<div class="row col-12 m-b-5 pad-right">
+            <div class="col-2 text-left pad-left pad-right">
+				<select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+					<option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+				</select>
+            </div>
+            <div class="col-10 text-left pad-left pad-right">
+				<div class="row col-12 pad-right">
+					<div class="col-6 text-left pad-left m-t-3">
+						
+						<select style="width: 32%;font-size:13px;" class="custom-select" name="creditFilter" [(ngModel)]="service.creditFilter" *ngIf="type!=1 && type!=2">
+							<option value="">All</option>
+							<option  *ngFor="let item of creditList | keyvalue" value="{{item.key}}">{{item.value}}</option>
+						</select>	
+						&nbsp; 						
+						<ng-container *ngIf="invoiceamount$ | async as invoiceamtitem">
+							<ng-container *ngIf="invoiceamtitem.show_franchise_filter==1">
+								<select style="width: 32%;font-size:13px;" class="custom-select" #franchiseFltr="ngModel" name="franchiseFilter" [(ngModel)]="service.franchiseFilter">
+									<option value="">All OSS</option>
+									<option  *ngFor="let item of franchiseList" value="{{item.id}}">{{item.osp_details}}</option>
+								</select>	
+								&nbsp; 
+							</ng-container>
+						</ng-container>
+						<select style="width: 29%;font-size:13px;" class="custom-select" name="paymentFilter" [(ngModel)]="service.paymentFilter">
+							<option value="">All Status</option>
+							<option  *ngFor="let item of filterpaymentList | keyvalue" value="{{item.key}}">{{item.value}}</option>
+						</select>	
+					</div>					
+					<div class="col-6 text-left pad-left pad-right">
+						<input style="width: 23%; display: inline-block;" class="form-control"  type="text" placeholder="From Date" matInput [matDatepicker]="from_date" [(ngModel)]="service.from_date" name="from_date" [max]="minDate"  (click)="from_date.open()">
+						<mat-datepicker-toggle matSuffix  [for]="from_date"></mat-datepicker-toggle>
+						<mat-datepicker #from_date></mat-datepicker>
+					
+						<input  style="width: 23%; display: inline-block;" class="form-control" type="text" placeholder="To Date" matInput [matDatepicker]="to_date" (click)="to_date.open()"  name="to_date" [max]="minDate" [(ngModel)]="service.to_date" >
+						<mat-datepicker-toggle matSuffix  [for]="to_date"></mat-datepicker-toggle>
+						<mat-datepicker #to_date></mat-datepicker>			
+						
+						<input class="search-pad" style="width:137px !important;" type="text" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+					</div>
+				</div>	
+			</div>		
+			
+        </div>
+
+		<div class="col-12 pad-left" *ngIf="type==2">
+			<table id="datatable" class="table table-bordered" >
+			  <thead>
+			  <tr>
+				<th scope="col" width="5%" class="center">S.No</th>
+				<th scope="col" >Invoice Number</th>
+				<th scope="col" >Invoice Date</th>
+				<th scope="col" >Invoice To</th>
+				<th scope="col" *ngIf="type==1 || type==3">OSS</th>
+				<th scope="col" *ngIf="type==2">Company Name</th>
+
+				<th *ngIf="type!=3 && type!=4" scope="col" >Standard(s)</th>				
+				<th scope="col" >Amount</th>								
+				<th *ngIf="type!=1 && type!=2" scope="col" >Type</th>
+				<th scope="col" class="center" >Status</th>
+				<th scope="col" class="center" sortable="payment_date" (sort)="onSort($event)">Payment Date</th>
+				<th scope="col" width="10%" class="center">Action</th>
+			  </tr>
+			  </thead>
+			  <tbody>
+			  <tr *ngFor="let offer of invoices$ | async; let i=index; ">
+				 
+					<th scope="row" class="center"*ngIf="offer.invoice_status==4 || offer.invoice_status==5 || offer.invoice_status==6">{{ i+1+ service.pageNo }}</th>
+					<td *ngIf="offer.invoice_status==4 || offer.invoice_status==5 || offer.invoice_status==6"><ngb-highlight [result]="offer.invoice_number" [term]="service.searchTerm"></ngb-highlight></td>
+					<td *ngIf="offer.invoice_status==4 || offer.invoice_status==5 || offer.invoice_status==6">
+						<ngb-highlight [result]="offer.date" [term]="service.searchTerm"></ngb-highlight>
+					</td>
+					<td *ngIf="offer.invoice_status==4 || offer.invoice_status==5 || offer.invoice_status==6"><ngb-highlight [result]="offer.invoice_to" [term]="service.searchTerm"></ngb-highlight></td>
+					<!-- <td *ngIf="offer.invoice_status==4 || offer.invoice_status==5 || offer.invoice_status==6"><ngb-highlight [result]="offer.oss_company_name" [term]="service.searchTerm"></ngb-highlight></td> -->
+	
+					<td *ngIf="offer.invoice_status==4 || offer.invoice_status==5 || offer.invoice_status==6"><ngb-highlight [result]="offer.company_name" [term]="service.searchTerm"></ngb-highlight></td>
+	
+					<td *ngIf="offer.invoice_status==4 || offer.invoice_status==5 || offer.invoice_status==6" >{{ offer.standard_label }}</td>
+					<td *ngIf="offer.invoice_status==4 || offer.invoice_status==5 || offer.invoice_status==6"><ngb-highlight [result]="offer.currency+' '+offer.total_payable_amount" [term]="service.searchTerm"></ngb-highlight></td> 				
+	
+					
+					<!-- <td *ngIf="offer.invoice_status==4 || offer.invoice_status==5 || offer.invoice_status==6" ><ngb-highlight [result]="offer.credit_note_option" [term]="service.searchTerm"></ngb-highlight></td>		 -->
+	
+					<td class="center" *ngIf="offer.invoice_status==4 || offer.invoice_status==5 || offer.invoice_status==6" ><ngb-highlight [result]="offer.invoice_status_name" [term]="service.searchTerm"></ngb-highlight></td>
+					<td  class="center" *ngIf="offer.invoice_status==4 || offer.invoice_status==5 || offer.invoice_status==6"><ngb-highlight [result]="offer.payment_date" [term]="service.searchTerm"></ngb-highlight></td>
+					<td class="center" *ngIf="offer.invoice_status==4 || offer.invoice_status==5 || offer.invoice_status==6">
+						<a href="javascript:void(0);" *ngIf="offer.canGenerateInvoice" [routerLink]="['/invoice/invoice-generate']" [queryParams]="{id:offer.id,type:type}" title="Edit" alt="Edit" class="pl-2"><i class="fa fa-edit"></i> </a>
+						<a href="javascript:void(0);" *ngIf="offer.invoice_status!=0" [routerLink]="['/invoice/view-invoice']" [queryParams]="{id:offer.id,type:type}" title="View" alt="View" class="pl-2"><i class="fa fa-eye"></i> </a>
+						<a href="javascript:void(0);" *ngIf="offer.invoice_status!=0" (click)="downloadFile(offer.invoice_number,offer.id);open(downloading)" title="Download as PDF" alt="Download as PDF" class="pl-2"><i class="fa fa-file-pdf-o"></i> </a>
+						<!--<a *ngIf="offer.canUpdatePayment" href="javascript:void(0);" class="pl-2" (click)="open(updatepayment,offer.id)" title="Update Payment Status" alt="Update Payment Status"><i class="fa fa-flag"></i></a>-->
+						<input *ngIf="offer.canUpdatePayment" type="checkbox" style="margin-left: 7px;" (click)="bulkpaymentupdate(offer,$event.target.checked)">					
+					</td>
+				</tr>
+				<tr  *ngIf="(invoices$ | async)?.length==0" >
+          <td colspan="9" class="center">{{ commontxt.norecords }}</td>
+        </tr>
+			  </tbody>
+			</table>
+        </div>
+
+		<div class="col-12 pad-left" *ngIf="type!=2">
+			<table id="datatable" class="table table-bordered" >
+			  <thead>
+			  <tr>
+				<th scope="col" width="5%" class="center">S.No</th>
+				<th scope="col" >Invoice Number</th>
+				<th scope="col" >Invoice Date</th>
+				<th scope="col" >Invoice To</th>
+				<th scope="col" *ngIf="type==1 || type==3">OSS</th>
+				<th scope="col" *ngIf="type==2">Company Name</th>
+
+				<th *ngIf="type!=3 && type!=4" scope="col" >Standard(s)</th>				
+				<th scope="col" >Amount</th>								
+				<th *ngIf="type!=1 && type!=2" scope="col" >Type</th>
+				<th scope="col" class="center" >Status</th>
+				<th scope="col" class="center" sortable="payment_date" (sort)="onSort($event)">Payment Date</th>
+				<th scope="col" width="10%" class="center">Action</th>
+			  </tr>
+			  </thead>
+			  <tbody>
+			  <tr *ngFor="let offer of invoices$ | async; let i=index; ">
+				 
+					<th scope="row" class="center">{{ i+1+ service.pageNo }}</th>
+					<td><ngb-highlight [result]="offer.invoice_number" [term]="service.searchTerm"></ngb-highlight></td>
+					<td>
+						<ngb-highlight [result]="offer.date" [term]="service.searchTerm"></ngb-highlight>
+					</td>
+					<td><ngb-highlight [result]="offer.invoice_to" [term]="service.searchTerm"></ngb-highlight></td>
+					<td *ngIf="type==1 || type==3"><ngb-highlight [result]="offer.oss_company_name" [term]="service.searchTerm"></ngb-highlight></td>
+	
+					<td *ngIf="type==2"><ngb-highlight [result]="offer.company_name" [term]="service.searchTerm"></ngb-highlight></td>
+	
+					<td *ngIf="type!=3 && type!=4" >{{ offer.standard_label }}</td>
+					<td><ngb-highlight [result]="offer.currency+' '+offer.total_payable_amount" [term]="service.searchTerm"></ngb-highlight></td> 				
+	
+					
+					<td *ngIf="type!=1 && type!=2" ><ngb-highlight [result]="offer.credit_note_option" [term]="service.searchTerm"></ngb-highlight></td>		
+	
+					<td class="center" ><ngb-highlight [result]="offer.invoice_status_name" [term]="service.searchTerm"></ngb-highlight></td>
+					<td  class="center"><ngb-highlight [result]="offer.payment_date" [term]="service.searchTerm"></ngb-highlight></td>
+					<td class="center">
+						<a href="javascript:void(0);" *ngIf="offer.canGenerateInvoice" [routerLink]="['/invoice/invoice-generate']" [queryParams]="{id:offer.id,type:type}" title="Edit" alt="Edit" class="pl-2"><i class="fa fa-edit"></i> </a>
+						<a href="javascript:void(0);" *ngIf="offer.invoice_status!=0" [routerLink]="['/invoice/view-invoice']" [queryParams]="{id:offer.id,type:type}" title="View" alt="View" class="pl-2"><i class="fa fa-eye"></i> </a>
+						<a href="javascript:void(0);" *ngIf="offer.invoice_status!=0" (click)="downloadFile(offer.invoice_number,offer.id);open(downloading)" title="Download as PDF" alt="Download as PDF" class="pl-2"><i class="fa fa-file-pdf-o"></i> </a>
+						<!--<a *ngIf="offer.canUpdatePayment" href="javascript:void(0);" class="pl-2" (click)="open(updatepayment,offer.id)" title="Update Payment Status" alt="Update Payment Status"><i class="fa fa-flag"></i></a>-->
+						<input *ngIf="offer.canUpdatePayment" type="checkbox" style="margin-left: 7px;" (click)="bulkpaymentupdate(offer,$event.target.checked)">					
+					</td>
+				</tr>
+				<tr  *ngIf="(invoices$ | async)?.length==0" >
+          <td colspan="9" class="center">{{ commontxt.norecords }}</td>
+        </tr>
+			  </tbody>
+			</table>
+        </div>
+		
+        <div class="row col-12 pad-left pad-right">
+			<div class="col-6">
+				<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+				<div *ngIf="!(service.loading$ | async)">
+				Displaying {{ (invoices$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (invoices$ | async).length }} of {{ (total$ | async) }} results.
+				</div>
+			</div>
+			<div class="col-6 pad-right text-right">						
+			<ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+				<ng-template ngbPaginationFirst>First</ng-template>
+				<ng-template ngbPaginationPrevious>Prev</ng-template>
+				<ng-template ngbPaginationNext>Next</ng-template>			  
+				<ng-template ngbPaginationLast>Last</ng-template>			  
+			</ngb-pagination>						
+			</div>
+		</div>
+
+		<div class="col-12 text-right pad-right"  *ngIf="addbulkAdditional()">
+			<ng-container *ngIf="!(service.loading$ | async)">
+				<!--(invoiceamount$ | async).show_payment_details==1 && !(service.loading$ | async)-->
+				<ng-container *ngIf="invoiceamount$ | async as invoiceamtitem" >
+					<ng-container *ngIf="invoiceamtitem.show_payment_details==1" >
+						<span class="text-success">Total Amount: <b>{{ invoiceamtitem.currency_code }}  {{ totalamountselected }}</b></span>
+						&nbsp;&nbsp;&nbsp;
+					</ng-container>
+				</ng-container>
+			</ng-container>
+			<a class="btn btn-primary btn-sm" href="javascript:void(0);"  role="button"  (click)="open(updatepayment)"> Update Payment Status</a>
+		</div>
+      </div>
+    </div>
+  </div>
+
+</form>
+<ng-template #downloading let-modal>
+	<div class="modal-header">
+			<h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+			Please wait, your file is downloading ...
+	</div>
+</ng-template>
+
+<ng-template #updatepayment let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Update Payment Status</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<div class="alert alert-success" *ngIf="alertSuccessMessage">{{alertSuccessMessage}}</div>
+		<form  [formGroup]="form">
+		<div class="form-group row" *ngIf="!alertSuccessMessage">
+
+			<div class="col-6 m-t-10">
+				<label>Payment Date <span class="text-danger">*</span></label><i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Payment Date" matTooltipClass="tooltip-text-size" aria-tooltip="Payment Date" matTooltipPosition="right"></i>
+				<input type="text" formControlName="payment_date" multiple [class.is-invalid]="f.payment_date.invalid && f.payment_date.touched" class="form-control" placeholder="Payment Date" matInput [matDatepicker]="payment_date" [max]="minDate" (click)="payment_date.open()" style="width:80%; float:left;">
+				<mat-datepicker-toggle matSuffix  [for]="payment_date" style="float:left;"></mat-datepicker-toggle>
+				<mat-datepicker #payment_date></mat-datepicker>
+				<div *ngIf="f.payment_date.errors" class="invalid-feedback">
+					<div *ngIf="f.payment_date.errors.required">Payment Date is required</div>
+				</div>	
+			</div>
+
+			<div class="col-12 m-t-10">
+				<label>Payment Status <span class="text-danger">*</span></label><i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Payment Status" matTooltipClass="tooltip-text-size" aria-tooltip="Payment Status" matTooltipPosition="right"></i>
+				<select  class="form-control" formControlName="payment_status" [class.is-invalid]="f.payment_status.invalid && f.payment_status.touched" >
+					<option value="">-- Payment Status --</option>
+					<option  *ngFor="let item of paymentList | keyvalue" value="{{item.key}}">{{item.value}}</option>
+				</select>
+				<div *ngIf="f.payment_status.errors" class="invalid-feedback">
+					<div *ngIf="f.payment_status.errors.required">Payment Status is required</div>
+				</div>
+			</div>
+			
+			<div class="col-12 m-t-10">
+				<label for="status">Comment(s) <span class="text-danger">*</span></label><i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Payment Comment(s)" matTooltipClass="tooltip-text-size" aria-tooltip="Payment Comment(s)" matTooltipPosition="right"></i>
+				<div class="input-group">
+							
+					<textarea formControlName="payment_comment" rows="4" style="width:100%; display:inline;" [class.is-invalid]="f.payment_comment.invalid && f.payment_comment.touched" class="form-control"></textarea>
+				
+					<div *ngIf="f.payment_comment.errors" class="invalid-feedback">
+						<div *ngIf="f.payment_comment.errors.required">Comment is required</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		</form>
+	</div>
+	<div class="modal-footer" *ngIf="alertSuccessMessage=='' || alertSuccessMessage=== undefined">
+		<button type="button" class="btn btn-success " [disabled]="popupbtnDisable" (click)="updatepaymentstatus();">
+			<span *ngIf="popupbtnDisable" class="spinner-border spinner-border-sm mr-1"></span>Save</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">
+			<span *ngIf="popupbtnDisable" class="spinner-border spinner-border-sm mr-1"></span>Cancel</button>
+		
+	</div>
+</ng-template>

@@ -1,0 +1,1820 @@
+<div class="row" *ngIf="dashboardData">
+	<div class="col-sm-12">
+	
+		<div class="row col-12 page-title-box">
+			<div class="col-2 m-t-5"><h4 class="page-title"><i class="fa fa-dashboard"></i> {{title}}</h4></div>
+			<div class="col-10">
+				<div *ngIf="dashboardData.totalenquiries || dashboardData.offerlist || dashboardData.enquiries || dashboardChartData.pending_users || dashboardData.waiting_for_customer_audit_renewal || dashboardData.due_certificate || dashboardData.audit_nc_due || dashboardChartData.pending_actions_status">
+					<button type="button" *ngIf="dashboardData.totalenquiries" (click)="changeDashboardContent('overview')" class="btn btn-sm {{overview_status ? 'btn-success' : 'btn-primary'}}">Overview</button>
+					<button type="button" *ngIf="dashboardData.offerlist" (click)="changeDashboardContent('offer')" class="btn btn-sm {{offer_status ? 'btn-success' : 'btn-primary'}} m-l-5">Quotation</button>
+					<button type="button" *ngIf="dashboardData.totalenquiries || dashboardData.enquiries" (click)="changeDashboardContent('enquiry')" class="btn btn-sm {{enquiry_status ? 'btn-success' : 'btn-primary'}} m-l-5">Enquiries</button>
+					<button type="button" *ngIf="dashboardChartData.pending_users" (click)="changeDashboardContent('pending_users')" class="btn btn-sm {{pending_users_status ? 'btn-success' : 'btn-primary'}} m-l-5">User Actions</button>
+					<button type="button" *ngIf="dashboardChartData.pending_actions_status && dashboardChartData.pending_actions_btn_status" (click)="changeDashboardContent('pending_actions')" class="btn btn-sm {{pending_actions_status ? 'btn-success' : 'btn-primary'}} m-l-5">Pending Action</button>
+					<button type="button" *ngIf="dashboardData.waiting_for_customer_audit_renewal" (click)="changeDashboardContent('renewal_audit')" class="btn btn-sm {{renewal_audit_status ? 'btn-success' : 'btn-primary'}} m-l-5">Renewal Audit</button>
+					<button type="button" *ngIf="dashboardData.due_certificate" (click)="changeDashboardContent('due_certificate')" class="btn btn-sm {{due_certificate_status ? 'btn-success' : 'btn-primary'}} m-l-5">Due Certificate</button>
+					<button type="button" *ngIf="dashboardData.audit_nc_due" (click)="changeDashboardContent('nc_due')" class="btn btn-sm {{nc_due_status ? 'btn-success' : 'btn-primary'}} m-l-5">Pending Report</button>					
+					<!--
+					<button type="button" [routerLink]="['/master/customer-report/index']" class="btn btn-sm btn-primary m-l-5">Customer Report</button>
+					-->
+				</div>
+			</div>
+		</div>	
+		
+		<div *ngIf="dashboardData.totalenquiries && overview_status">
+			<div class="p-b-30">
+				<div class="col-md-2 col-sm-6 col-xs-12 top-report customer-number" style="padding-left:0px !important;">
+					<div class="top-report-head text-center" style="background-color:#36869b;">
+						<h4>Total Enquiries</h4>
+					</div>
+					<div class="cms top-report-content text-center" style="background-color:#3D96AE;">
+						{{dashboardData.totalenquiries}}
+						<!--
+						<div class="row text-center">
+							
+							<div class="col-xs-3 top-report-icon">
+								<i class="fa fa-envelope"></i>  
+							</div>
+							
+							<div class="col-xs-9 top-report-value">&nbsp;&nbsp;{{dashboardData.totalenquiries}}</div>
+						</div>
+						-->
+					</div>
+				</div>
+				
+				<div class="col-md-2 col-sm-6 col-xs-12 top-report customer-number">
+					<div class="top-report-head text-center"  style="background-color:#d77628;">
+						<h4>Total Customers</h4>
+					</div>
+					<div class="cms top-report-content text-center" style="background-color:#df9253;">
+						{{dashboardData.totalcustomers}}
+						<!--
+						<div class="row text-center">
+							
+							<div class="col-xs-3 top-report-icon">
+								<i class="fa fa-user"></i>  
+							</div>
+							
+							<div class="col-xs-9 top-report-value">{{dashboardData.totalcustomers}}</div>
+						</div>
+						-->
+					</div>
+				</div>
+				
+				<div class="col-md-2 col-sm-6 col-xs-12 top-report customer-number">
+					<div class="top-report-head text-center" style="background-color:#735e8d;">
+						<h4>Total Users</h4>
+					</div>
+					<div class="cms top-report-content text-center" style="background-color:#8d79a5;">
+						{{dashboardData.totalusers}}
+						<!--
+						80699B
+						<div class="row text-center">							
+							<div class="col-xs-3 top-report-icon">
+								<i class="fa fa-user"></i>  
+							</div>
+							
+							<div class="col-xs-9 top-report-value">{{dashboardData.totalusers}}</div>
+							
+							
+						</div>
+						-->
+					</div>
+				</div>
+				
+				<div class="col-md-2 col-sm-6 col-xs-12 top-report customer-number" style="padding-right:5px !important;">
+					<div class="top-report-head text-center" style="background-color:#545b62;">
+						<h4>Total OSS</h4>
+					</div>
+					<div class="cms top-report-content text-center bg-secondary">
+						{{dashboardData.totalfranchises}}
+						<!--
+						<div class="row">
+							<div class="col-xs-3 top-report-icon">
+								<i class="fa fa-user"></i>  
+							</div>							
+							<div class="col-xs-9 top-report-value">{{dashboardData.totalfranchises}}</div>
+						</div>
+						-->
+					</div>
+				</div>
+				
+				<div class="col-md-2 col-sm-6 col-xs-12 top-report customer-number" style="padding-right:5px !important;">
+					<div class="top-report-head text-center" style="background-color:#6c823e;">
+						<h4>Total Certificate</h4>
+					</div>
+					<div class="cms top-report-content text-center" style="background-color:#89a54e;">
+						{{dashboardData.totalcertification}}
+						<!--
+						<div class="row">							
+							<div class="col-xs-3 top-report-icon">
+								<i class="fa fa-user"></i>  
+							</div>							
+							<div class="col-xs-9 top-report-value">{{dashboardData.totalfranchises}}</div>
+						</div>
+						-->
+					</div>
+				</div>
+				
+				<div class="col-md-2 col-sm-6 col-xs-12 top-report customer-number" style="padding-right:5px !important;">
+					<div class="top-report-head text-center" style="background-color:#3c9974;">
+						<h4>Total TC</h4>
+					</div>
+					<div class="cms top-report-content text-center" style="background-color:#4eba8f;">
+						{{dashboardData.totaltc}}
+						<!--
+						<div class="row">							
+							<div class="col-xs-3 top-report-icon">
+								<i class="fa fa-user fa-2x"></i>  
+							</div>							
+							<div class="col-xs-9 top-report-value">{{dashboardData.totalfranchises}}</div>
+						</div>
+						-->
+					</div>
+				</div>
+				
+			</div>
+
+			<div *ngIf="dashboardData.totalenquiries" >
+		
+				<div class="clearfix"></div>
+			
+				<div class="table-matrix">
+				
+					<ul class="dashboard-items">
+						<li style="width:49.2%;margin-right:1%;">
+							<h2 class="dash-title"><span class="fa fa-pie-chart"></span> Enquiry</h2>
+							<div class="chart-div" style="padding:0px;margin-bottom: 1px;" *ngIf="enquiryChartOptions">			  
+							<highcharts-chart [Highcharts]="Highcharts" [options]="enquiryChartOptions" style="width: 100%; height: 250px; display: block;"></highcharts-chart>			  
+							</div>
+							<div class="chart-div m-t-15 text-center" *ngIf="enquiryChartOptions===undefined">
+							No Enquiry Found
+							</div>				
+						</li>
+						<li style="width:49.3%;margin-right:0px;">
+							<h2 class="dash-title"><span class="fa fa-pie-chart"></span> Application</h2>
+							<div class="chart-div" style="padding:0px;margin-bottom: 1px;" *ngIf="applicationChartOptions">			  
+							<highcharts-chart [Highcharts]="Highcharts" [options]="applicationChartOptions" style="width: 100%; height: 250px; display: block;"></highcharts-chart>		  
+							</div>
+							<div class="chart-div m-t-15 text-center" *ngIf="applicationChartOptions===undefined">
+							No Application Found
+							</div>
+						</li>		  
+					</ul>
+					
+					<div class="clearfix"></div>
+					
+					<ul class="dashboard-items">
+						<li style="width:49.2%;margin-right:1%;">
+							<h2 class="dash-title"><span class="fa fa-pie-chart"></span> Quotation</h2>
+							<div class="chart-div" style="padding:0px;margin-bottom: 1px;" *ngIf="contractChartOptions">			  
+							<highcharts-chart [Highcharts]="Highcharts" [options]="contractChartOptions" style="width: 100%; height: 250px; display: block;"></highcharts-chart>
+							</div>
+							<div class="chart-div m-t-15 text-center" *ngIf="contractChartOptions===undefined">
+							No Quotation Found
+							</div>
+						</li>
+						<li style="width:49.3%;margin-right:0px;">
+							<h2 class="dash-title"><span class="fa fa-pie-chart"></span> Invoice</h2>
+							<div class="chart-div" style="padding:0px;margin-bottom: 1px;" *ngIf="invoiceChartOptions">			  
+							<highcharts-chart [Highcharts]="Highcharts" [options]="invoiceChartOptions" style="width: 100%; height: 250px; display: block;"></highcharts-chart>
+							</div>
+							<div class="chart-div m-t-15 text-center" *ngIf="invoiceChartOptions===undefined">
+							No Invoice Found
+							</div>
+						</li>		  
+					</ul>
+					
+					<ul class="dashboard-items">
+						<li style="width:49.2%;margin-right:1%;">
+							<h2 class="dash-title"><span class="fa fa-pie-chart"></span> Audit</h2>
+							<div class="chart-div" style="padding:0px;margin-bottom: 1px;" *ngIf="auditChartOptions">			  
+							<highcharts-chart [Highcharts]="Highcharts" [options]="auditChartOptions" style="width: 100%; height: 250px; display: block;"></highcharts-chart>
+							</div>
+							<div class="chart-div m-t-15 text-center" *ngIf="auditChartOptions===undefined">
+							No Audit Found
+							</div>
+						</li>
+						<li style="width:49.3%;margin-right:0px;">
+							<h2 class="dash-title"><span class="fa fa-pie-chart"></span> Certificate</h2>
+							<div class="chart-div" style="padding:0px;margin-bottom: 1px;" *ngIf="certificationChartOptions">			  
+							<highcharts-chart [Highcharts]="Highcharts" [options]="certificationChartOptions" style="width: 100%; height: 250px; display: block;"></highcharts-chart>
+							</div>
+							<div class="chart-div m-t-15 text-center" *ngIf="certificationChartOptions===undefined">
+							No Certificate Found
+							</div>
+						</li>		  
+					</ul>
+					
+					<ul class="dashboard-items">
+						<li style="width:49.2%;margin-right:1%;">
+							<h2 class="dash-title"><span class="fa fa-pie-chart"></span> Transaction Certificate</h2>
+							<div class="chart-div" style="padding:0px;margin-bottom: 1px;" *ngIf="tcChartOptions">			  
+							<highcharts-chart [Highcharts]="Highcharts" [options]="tcChartOptions" style="width: 100%; height: 250px; display: block;"></highcharts-chart>
+							</div>
+							<div class="chart-div m-t-15 text-center" *ngIf="tcChartOptions===undefined">
+							No Transaction Certificate Found
+							</div>
+						</li>
+						<li style="width:49.3%;margin-right:0px;">
+							<h2 class="dash-title"><span class="fa fa-bar-chart"></span> Month Wise Transaction Certificate</h2>
+							<div class="chart-div" style="padding:0px;margin-bottom: 1px;" *ngIf="monthWisTCChartOptions">	
+							<highcharts-chart [Highcharts]="Highcharts" [options]="monthWisTCChartOptions" style="width: 100%; height: 250px; display: block;"></highcharts-chart>
+							</div>
+							<div class="chart-div m-t-15 text-center" *ngIf="monthWisTCChartOptions===undefined">
+							No Transaction Certificate Found
+							</div>
+						</li>		  
+					</ul>
+					
+					<ul class="dashboard-items">
+						<li style="width:49.2%;margin-right:1%;">
+							<h2 class="dash-title"><span class="fa fa-pie-chart"></span> Renewal Audit</h2>
+							<div class="chart-div" style="padding:0px;margin-bottom: 1px;" *ngIf="renewalAuditChartOptions">			  
+							<highcharts-chart [Highcharts]="Highcharts" [options]="renewalAuditChartOptions" style="width: 100%; height: 250px; display: block;"></highcharts-chart>
+							</div>
+							<div class="chart-div m-t-15 text-center" *ngIf="renewalAuditChartOptions===undefined">
+							No Audit Found for Renewal
+							</div>
+						</li>
+						<li style="width:49.3%;margin-right:0px;">
+							<h2 class="dash-title"><span class="fa fa-pie-chart"></span> Due Certificate</h2>
+							<div class="chart-div" style="padding:0px;margin-bottom: 1px;" *ngIf="dueCertificatetcChartOptions">			  
+							<highcharts-chart [Highcharts]="Highcharts" [options]="dueCertificatetcChartOptions" style="width: 100%; height: 250px; display: block;"></highcharts-chart>
+							</div>
+							<div class="chart-div m-t-15 text-center" *ngIf="dueCertificatetcChartOptions===undefined">
+							No Certificate Found
+							</div>
+						</li>		  
+					</ul>
+					
+					<!--
+					<div class="clearfix"></div>										
+					<ul class="dashboard-items" *ngIf="monthWisEnquiryChartOptions">
+						<li style="float: left;width: 100%;">
+							<h2 class="dash-title"><span class="fa ti-bar-chart"></span> Month Wise Enquiry</h2>
+							<div class="chart-div" style="padding:0px;margin-bottom: 1px;" *ngIf="monthWisEnquiryChartOptions">	
+							<highcharts-chart [Highcharts]="Highcharts" [options]="monthWisEnquiryChartOptions" style="width: 100%; height: 250px; display: block;"></highcharts-chart>
+							</div>
+						</li>					
+					</ul>
+					-->
+					
+				</div>
+				<div class="clearfix"></div>
+			</div>
+		</div>
+		
+		<div *ngIf="enquiry_status">
+			<ul class="dashboard-items">
+												
+				<li style="float: left;width: 100%;">
+					<h2 class="dash-title"><span class="fa fa-line-chart"></span> Latest {{dashboardData.enquiries.length}} Enquiries</h2>
+					<table class="table table-bordered col-12 w-auto m-t-10 m-r-10 m-l-10" style="font-size:13px;">
+						<tbody>					   						
+							<tr *ngFor="let enquiry of dashboardData.enquiries; index as i">
+								<td width="2%" scope="row" class="center" [routerLink]="['/enquiry/view']" [queryParams]="{id:enquiry.id}">{{  1+ i }}</td>
+								<td [routerLink]="['/enquiry/view']" [queryParams]="{id:enquiry.id}">
+								Company Name:&nbsp;<b>{{ enquiry.company_name }}</b>&nbsp;&nbsp;|&nbsp;&nbsp;Contact Name:&nbsp;<b>{{ enquiry.contact_name }}</b>&nbsp;&nbsp;|&nbsp;&nbsp;Telephone:&nbsp;<b>{{ enquiry.company_telephone }}</b><br>
+								Country:&nbsp;<b>{{ enquiry.company_country_id }}</b>&nbsp;&nbsp;|&nbsp;&nbsp;Standards:&nbsp;<b><span *ngFor="let standard of enquiry?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></b>&nbsp;&nbsp;|&nbsp;&nbsp;Status:&nbsp;<b><span [style.color]="enquiry.status_label_color">{{ enquiry.status }}</span></b>&nbsp;&nbsp;|&nbsp;&nbsp;Date:&nbsp;<b>{{ enquiry.created_at }}</b>
+								</td>							
+								<!--
+								<td>{{ enquiry.contact_name }}</td>
+								<td width="10%" class="text-center">{{ enquiry.created_at }}</td>
+								-->								
+								<td width="2%" class="text-center">
+									<a [routerLink]="['/enquiry/view']" [queryParams]="{id:enquiry.id}" style="color: #0b63b1;"><i class="fa fa-hand-o-right dashboard-handicon"></i></a>
+								</td>						
+							</tr> 	
+							
+							<tr *ngIf="!dashboardData.enquiries || dashboardData.enquiries.length<=0">
+								<td width="2%" scope="row" class="center">
+									<div class="chart-div m-t-15 text-center">
+									No enquiry found
+									</div>
+								</td>						
+							</tr> 		
+							
+						</tbody>
+					</table>
+					
+					<!--
+					<table class="table table-bordered w-auto m-t-10 m-r-10 m-l-10">
+						<thead>
+						<tr>
+							<th scope="col" class="center">S.No</th>
+							<th scope="col" sortable="company_name"   >Company Name</th>
+							<th scope="col" sortable="contact_name"  >Contact Name</th>
+							<th scope="col" sortable="company_telephone"  >Telephone</th>							
+							<th scope="col" sortable="company_country_id"  >Country</th>
+							<th scope="col" sortable="status"  >Status</th>							
+							<th scope="col" sortable="created_at" >Date</th>
+							<th scope="col">Action</th>
+						</tr>
+						</thead>
+						<tbody>					   						
+							<tr *ngFor="let enquiry of dashboardData.enquiries; index as i">
+								<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+								<td>{{ enquiry.company_name }}</td>
+								<td>{{ enquiry.contact_name }}</td>
+								<td>{{ enquiry.company_telephone }}</td>
+								<td>{{ enquiry.company_country_id }}</td>
+								<td width="8%">{{ enquiry.status }}</td>
+								<td width="10%">{{ enquiry.created_at }}</td>
+								<td width="5%" class="text-center">
+								<a [routerLink]="['/enquiry/view']" [queryParams]="{id:enquiry.id}"><span class="ti-eye"></span></a>
+								</td>						
+							</tr> 			
+						</tbody>
+					</table>
+					-->
+				</li>	
+				<li style="float: left;width: 100%;" *ngIf="monthWisEnquiryChartOptions" class="m-t-10">
+					<h2 class="dash-title"><span class="fa ti-bar-chart"></span> Month Wise Enquiry</h2>
+					<div class="chart-div" style="padding:0px;margin-bottom: 1px;" *ngIf="monthWisEnquiryChartOptions">	
+					<highcharts-chart [Highcharts]="Highcharts" [options]="monthWisEnquiryChartOptions" style="width: 100%; height: 250px; display: block;"></highcharts-chart>
+					</div>
+				</li>		
+			</ul>
+		</div>
+		
+		<div *ngIf="dashboardChartData.pending_users && pending_users_status">
+			<mat-tab-group>
+				<mat-tab *ngIf="dashboardChartData.pending_users" label="Approve User Roles ({{dashboardChartData.pending_users.length}})">
+					<div class="card-box enq-view m-t-20 ">	
+						<h3>Waiting for User Role Approval</h3>
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>User Details</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let user of dashboardChartData.pending_users; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/master/user/view']" [queryParams]="{id:user.id}"><span class="dashboard-title">{{ user.name }}</span></a><br><span ><b>OSS</b> : {{ user.franchise }} ({{ user.country }})</span></td>							
+								
+									<td width="5%" class="text-center"><a [routerLink]="['/master/user/view']" [queryParams]="{id:user.id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+				</mat-tab>
+				<mat-tab *ngIf="dashboardChartData.waiting_for_declaration_approval" label="Approve User Declaration(s) ({{dashboardChartData.waiting_for_declaration_approval.length}})">
+					<div class="card-box enq-view m-t-20 ">	
+						<h3>Waiting for User Declaration Approval</h3>
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>User Details</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let user of dashboardChartData.waiting_for_declaration_approval; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/master/user/view']" [queryParams]="{id:user.id,type:'declaration'}"><span class="dashboard-title">{{ user.first_name }} {{ user.last_name }}</span></a><br><span ><b>country</b> : {{ user.country }}</span></td>							
+								
+									<td width="5%" class="text-center"><a [routerLink]="['/master/user/view']" [queryParams]="{id:user.id,type:'declaration'}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+				</mat-tab>
+				<mat-tab *ngIf="dashboardChartData.waiting_for_business_group_approval" label=" Approve User Business Group(s) ({{dashboardChartData.waiting_for_business_group_approval.length}})">
+					<div class="card-box enq-view m-t-20 ">		
+						<h3>Waiting for User Business Group Approval</h3>
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>User Details</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let user of dashboardChartData.waiting_for_business_group_approval; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/master/user/view']" [queryParams]="{id:user.id,type:'bgroup'}"><span class="dashboard-title">{{ user.first_name }} {{ user.last_name }}</span></a><br><span ><b>country</b> : {{ user.country }}</span></td>							
+								
+									<td width="5%" class="text-center"><a [routerLink]="['/master/user/view']" [queryParams]="{id:user.id,type:'bgroup'}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+				</mat-tab>
+				<mat-tab *ngIf="dashboardChartData.waiting_for_standard_approval" label=" Approve User Standard(s) ({{dashboardChartData.waiting_for_standard_approval.length}})">
+					<div class="card-box enq-view m-t-20 ">	
+						<h3>Waiting for User Standard Approval</h3>
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>User Details</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let user of dashboardChartData.waiting_for_standard_approval; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/master/user/view']" [queryParams]="{id:user.id,type:'standard'}"><span class="dashboard-title">{{ user.first_name }} {{ user.last_name }}</span></a><br><span ><b>country</b> : {{ user.country }}</span></td>							
+								
+									<td width="5%" class="text-center"><a [routerLink]="['/master/user/view']" [queryParams]="{id:user.id,type:'standard'}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+				</mat-tab>
+				<mat-tab *ngIf="dashboardChartData.witness_due_date_for_standard" label="Standard Witness Expiry ({{dashboardChartData.witness_due_date_for_standard.length}})">
+					<div class="card-box enq-view m-t-20">	
+						<h3>Standard Witness Expiry</h3>
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>User Details</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let user of dashboardChartData.witness_due_date_for_standard; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/master/user/edit']" [queryParams]="{id:user.id,type:'standard'}"><span class="dashboard-title">{{ user.first_name }} {{ user.last_name }}</span></a><br><span ><b>country</b> : {{ user.country }}</span></td>							
+								
+									<td width="5%" class="text-center"><a [routerLink]="['/master/user/edit']" [queryParams]="{id:user.id,type:'standard'}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+				</mat-tab>
+			</mat-tab-group>			
+		</div>
+		
+		<div *ngIf="renewal_audit_status">
+			<div class="clearfix"></div>
+			<div class="card-box enq-view m-t-5">
+				<h3>Renewal Audit</h3>	
+				<ng-container *ngIf="dashboardData?.waiting_for_customer_audit_renewal?.length>0" >
+					<ng-container *ngFor="let customer_audit_renewal of dashboardData.waiting_for_customer_audit_renewal;index as ari">				
+						<div class="card-box enq-view{{ari>0 ? ' m-t-10' : ''}}">
+							<span style="font-size:14px;font-weight:500;" [style.color]="dashboardData.arr_color[ari]">Renewal between [{{dashboardData.arr_enum_renewal_audit[ari]}}] Days</span>
+							<table class="table table-bordered col-12" >
+								<tr>
+									<th class="text-center">S.No</th>
+									<th>Company</th>
+									<th>Standards</th>
+									<th>Contact Name</th>
+									<th>Telephone</th>
+									<th>City</th>
+									<!--<th>State</th>-->
+									<th>Country</th>
+									<th class="text-center">Remaining Day(s)</th>								
+									<th class="text-center">Action</th>
+								</tr>
+								<tbody>					   						
+									<tr *ngFor="let pendingaction of customer_audit_renewal; index as i">
+										<td  width="5%" scope="row" class="center">{{  1+ i }}</td>
+										<td><a [routerLink]="['/application/renewal-checklist']" [queryParams]="{app_id:pendingaction.app_id,audit_id:pendingaction.audit_id}" ><span class="dashboard-title">{{ pendingaction.company_name }}</span></a></td>				
+										<td width="6%" class="text-center"><span *ngFor="let standard of pendingaction?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>				
+										<td width="11%" class="text-left">{{ pendingaction.contact_name }}</td>
+										<td width="6%" class="text-left">{{ pendingaction.telephone }}</td>
+										<td width="8%" class="text-left">{{ pendingaction.city }}</td>
+										<!--<td width="12%" class="text-left">{{ pendingaction.state }}</td>-->
+										<td width="8%" class="text-left">{{ pendingaction.country }}</td>
+										<td width="9%" class="text-center" [style.color]="dashboardData.arr_color[ari]" ><b>{{ pendingaction.due_days }}</b></td>
+										<td width="6%" class="text-center"><a [routerLink]="['/application/renewal-checklist']" [queryParams]="{app_id:pendingaction.app_id,audit_id:pendingaction.audit_id}"><i class="fa fa-hand-o-right dashboard-handicon" [style.color]="dashboardData.arr_color[ari]"></i></a></td>	
+									</tr> 	
+									<ng-container *ngIf="!customer_audit_renewal || customer_audit_renewal.length <=0 " >
+										<tr>
+											<td  colspan="9" class="center">No Records Found</td>
+										</tr>
+									</ng-container>		
+								</tbody>
+							</table>					
+						</div>
+					</ng-container>
+				</ng-container>
+				<ng-container *ngIf="!dashboardData?.waiting_for_customer_audit_renewal || dashboardData?.waiting_for_customer_audit_renewal?.length<=0" >
+					<table class="table table-bordered col-12"  >
+						<tr>
+							<th class="text-center">S.No</th>
+							<th>Company</th>
+							<th>Standards</th>
+							<th>Contact Name</th>
+							<th>Telephone</th>
+							<th>City</th>
+							<!--<th>State</th>-->
+							<th>Country</th>	
+							<th class="text-center">Remaining Day(s)</th>							
+							<th class="text-center">Action</th>
+						</tr>
+						<tbody>	
+							<tr>
+								<td colspan="9" scope="row" class="center">No Records Found</td>
+							</tr>
+						</tbody>
+					</table>
+				</ng-container>
+			</div>	
+		</div>
+				
+		<div *ngIf="due_certificate_status">
+			<div class="clearfix"></div>
+			
+			<div class="card-box enq-view m-t-5">
+				<h3>Due Certificate</h3>
+				<ng-container *ngIf="dashboardData?.due_certificate.length>0" >
+					<ng-container *ngFor="let due_cert of dashboardData.due_certificate;index as ari">				
+						<div class="card-box enq-view{{ari>0 ? ' m-t-10' : ''}}">
+							<span style="font-size:14px;font-weight:500;" [style.color]="dashboardData.arr_color[ari]">Due Certificate between [{{dashboardData.arr_enum_renewal_audit[ari]}}] Days</span>
+							<table class="table table-bordered col-12" >
+								<tr>
+									<th class="text-center">S.No</th>
+									<th>Company</th>
+									<th>Standards</th>
+									<th>Contact Name</th>
+									<th>Telephone</th>
+									<th>City</th>
+									<!--<th>State</th>-->
+									<th>Country</th>
+									<th>Valid Until</th>
+									<th class="text-center">Due Day(s)</th>								
+									<th class="text-center">Action</th>
+								</tr>
+								<tbody>	
+									<ng-container *ngIf="due_cert.length>0" >
+										<tr *ngFor="let pendingaction of due_cert; index as i">
+											<td  width="2%" scope="row" class="center">{{  1+ i }}</td>
+											<td><a [routerLink]="['/certification/view-certificate']" [queryParams]="{id:pendingaction.audit_id,certificate_id:pendingaction.certificate_id}" ><span class="dashboard-title">{{ pendingaction.company_name }}</span></a></td>				
+											<td width="6%"><span *ngFor="let standard of pendingaction?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>				
+											<td width="11%" class="text-left">{{ pendingaction.contact_name }}</td>
+											<td width="6%" class="text-left">{{ pendingaction.telephone }}</td>
+											<td width="8%" class="text-left">{{ pendingaction.city }}</td>
+											<!--<td width="12%" class="text-left">{{ pendingaction.state }}</td>-->
+											<td width="8%" class="text-left">{{ pendingaction.country }}</td>
+											<td width="10%" class="text-left">{{ pendingaction.certificate_valid_until }}</td>
+											<td width="9%" class="text-center" [style.color]="dashboardData.arr_color[ari]"><b>{{ pendingaction.due_days }}</b></td>
+											<td width="6%" class="text-center"><a [routerLink]="['/certification/view-certificate']" [queryParams]="{id:pendingaction.audit_id,certificate_id:pendingaction.certificate_id}"><i class="fa fa-hand-o-right dashboard-handicon" [style.color]="dashboardData.arr_color[ari]"></i></a></td>	
+										</tr> 
+									</ng-container>
+									<ng-container *ngIf="!due_cert || due_cert.length <=0 " >
+										<tr>
+											<td  colspan="10"  scope="row" class="center">No Records Found</td>
+										</tr>
+									</ng-container>
+									
+								</tbody>
+							</table>					
+						</div>
+					</ng-container>
+				</ng-container>
+				<ng-container *ngIf="!dashboardData?.due_certificate || dashboardData?.due_certificate.length<=0" >
+					<table class="table table-bordered col-12"  >
+						<tr>
+							<th class="text-center">S.No</th>
+							<th>Company</th>
+							<th>Standards</th>
+							<th>Contact Name</th>
+							<th>Telephone</th>
+							<th>City</th>
+							<!--<th>State</th>-->
+							<th>Country</th>
+							<th>Valid Until</th>	
+							<th class="text-center">Due Day(s)</th>								
+							<th class="text-center">Action</th>
+						</tr>
+						<tbody>	
+							<tr>
+								<td  colspan="10"  scope="row" class="center">No Records Found</td>
+							</tr>	
+						</tbody>	
+					</table>
+				</ng-container>
+			</div>			
+		</div>		
+		
+
+
+		<div *ngIf="dashboardData && nc_due_status">
+			<div class="clearfix"></div>
+			
+			<div class="card-box enq-view m-t-5">
+				<h3>Report for Review</h3> 
+				 		
+					<div class="card-box enq-view">
+						<table class="table table-bordered col-12"  >
+							<tr>
+								<th class="text-center align-middle">S.No</th>
+								<th class="align-middle">Company</th>
+								<th class="align-middle">Standards</th>
+								<th class="align-middle">Contact Name</th>
+								<th class="align-middle">Telephone</th>
+								<th class="align-middle">City</th>
+								<!--<th>State</th>-->
+								<th class="align-middle">Country</th>
+								<th class="align-middle">Audit Date</th>
+								<th class="text-center align-middle">Pending Action</th>								
+								<th class="text-center align-middle">Action</th>
+							</tr>
+							<tbody>	
+								<ng-container *ngIf="dashboardData.audit_nc_due && dashboardData.audit_nc_due.length>0" >				   						
+									<tr *ngFor="let pendingaction of dashboardData.audit_nc_due; index as i">
+										<td  width="2%" scope="row" class="center align-middle">{{  1+ i }}</td>
+										<td class="align-middle"><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:pendingaction.audit_id}" ><span class="dashboard-title">{{ pendingaction.company_name }}</span></a></td>				
+										<td width="6%" class="text-center align-middle"><span *ngFor="let standard of pendingaction?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>				
+										<td width="11%" class="text-left align-middle">{{ pendingaction.contact_name }}</td>
+										<td width="6%" class="text-left align-middle">{{ pendingaction.telephone }}</td>
+										<td width="8%" class="text-left align-middle">{{ pendingaction.city }}</td>
+										<!--<td width="12%" class="text-left">{{ pendingaction.state }}</td>-->
+										<td width="8%" class="text-left align-middle">{{ pendingaction.country }}</td>
+										<td width="10%" class="text-left align-middle">{{ pendingaction.audit_completed_date }}</td>
+										<td width="6%" class="text-center align-middle"><b><span  [style.color]="pendingaction.due_days_color" >{{ pendingaction.due_days }} Days</span></b></td>
+										<td width="6%" class="text-center align-middle"><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:pendingaction.audit_id}"><i class="fa fa-hand-o-right dashboard-handicon" [style.color]="pendingaction.due_days_color"></i></a></td>	
+									</tr> 
+								</ng-container>
+								<tr *ngIf="!dashboardData.audit_nc_due || dashboardData.audit_nc_due.length<=0">
+									<td  colspan="10"  scope="row" class="center">No Records Found</td>
+								</tr>
+							</tbody>
+						</table>					
+					</div>
+				 
+			</div>			
+		</div>	
+		<!--
+		<ng-container *ngIf="dashboardData">	
+			
+			
+			
+			<mat-tab-group>
+			
+				<mat-tab *ngIf="dashboardData.totalenquiries" label="Overview ">
+					
+				</mat-tab>
+				
+				<mat-tab *ngIf="dashboardData.totalenquiries" label="Received Enquiries ({{dashboardData.enquiries.length}}) ">
+				
+					
+				
+				</mat-tab>
+				
+				<mat-tab *ngIf="dashboardChartData.pending_users" label="Pending User(s) to Assign Role(s) ({{dashboardChartData.pending_users.length}})">
+					
+				</mat-tab>
+			</mat-tab-group>
+			
+		</ng-container>	
+		-->
+				
+		<div class="clearfix"></div>
+		
+		<div *ngIf="pending_actions_status">	
+			<mat-tab-group>
+			
+				<mat-tab *ngIf="dashboardChartData.pending_actions" label="Application Waiting for OSS Review({{dashboardChartData.pending_actions.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">For Review</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let waiting_for_review of dashboardChartData.pending_actions; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/application/apps/view']" [queryParams]="{id:waiting_for_review.id}"><span class="dashboard-title">{{ waiting_for_review.company_name }}</span></a><br><span *ngFor="let standard of waiting_for_review?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>															
+									<td width="12%" class="text-center">{{ waiting_for_review.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/application/apps/view']" [queryParams]="{id:waiting_for_review.id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+					<div class="clearfix"></div>
+				</mat-tab>		
+
+				<mat-tab *ngIf="dashboardChartData.application_waiting_for_review" label="Application Waiting for Review({{dashboardChartData.application_waiting_for_review.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">For Review</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let waiting_for_review of dashboardChartData.application_waiting_for_review; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/application/apps/view']" [queryParams]="{id:waiting_for_review.id}"><span class="dashboard-title">{{ waiting_for_review.company_name }}</span></a><br><span *ngFor="let standard of waiting_for_review?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<!--
+									<td>{{ waiting_for_review.company_name }}</td>
+									<td>{{ waiting_for_review.contact_name }}</td>
+									-->
+									<td width="12%" class="text-center">{{ waiting_for_review.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/application/apps/view']" [queryParams]="{id:waiting_for_review.id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+					<div class="clearfix"></div>
+				</mat-tab>
+				
+				<mat-tab *ngIf="dashboardChartData.application_review_in_process" label="Waiting for Application Review ({{dashboardChartData.application_review_in_process.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">For Review</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let review_in_process of dashboardChartData.application_review_in_process; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/application/apps/view']" [queryParams]="{id:review_in_process.id}"><span class="dashboard-title">{{ review_in_process.company_name }}</span></a><br><span *ngFor="let standard of review_in_process?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<!--
+									<td>{{ review_in_process.company_name }}</td>
+									<td>{{ review_in_process.contact_name }}</td>
+									-->
+									<td width="12%" class="text-center">{{ review_in_process.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/application/apps/view']" [queryParams]="{id:review_in_process.id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+					<div class="clearfix"></div>
+				</mat-tab>
+				
+				<mat-tab *ngIf="dashboardChartData.application_waiting_for_approval" label="Application Waiting for Approval({{dashboardChartData.application_waiting_for_approval.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let waiting_for_approval of dashboardChartData.application_waiting_for_approval; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/application/apps/view']" [queryParams]="{id:waiting_for_approval.id}"><span class="dashboard-title">{{ waiting_for_approval.company_name }}</span></a><br><span *ngFor="let standard of waiting_for_approval?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<!--
+									<td>{{ waiting_for_approval.company_name }}</td>
+									<td>{{ waiting_for_approval.contact_name }}</td>
+									-->
+									<td width="12%" class="text-center">{{ waiting_for_approval.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/application/apps/view']" [queryParams]="{id:waiting_for_approval.id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+					<div class="clearfix"></div>
+				</mat-tab>
+				
+				<mat-tab *ngIf="dashboardChartData.application_approval_in_process" label="Waiting for Application Approval({{dashboardChartData.application_approval_in_process.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let approval_in_process of dashboardChartData.application_approval_in_process; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/application/apps/view']" [queryParams]="{id:approval_in_process.id}"><span class="dashboard-title">{{ approval_in_process.company_name }}</span></a><br><span *ngFor="let standard of approval_in_process?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%" class="text-center">{{ approval_in_process.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/application/apps/view']" [queryParams]="{id:approval_in_process.id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+					<div class="clearfix"></div>
+				</mat-tab>
+
+				<mat-tab *ngIf="dashboardChartData.waiting_for_offer_generation" label="Waiting for Quotation Generation({{dashboardChartData.waiting_for_offer_generation.length}})">
+			
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let waiting_for_offer_generation of dashboardChartData.waiting_for_offer_generation; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/offer/offer-generate']" [queryParams]="{id:waiting_for_offer_generation.id,offer_id:waiting_for_offer_generation.offer_id}"><span class="dashboard-title">{{ waiting_for_offer_generation.company_name }}</span></a><br><span *ngFor="let standard of waiting_for_offer_generation?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%" class="text-center">{{ waiting_for_offer_generation.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/offer/offer-generate']" [queryParams]="{id:waiting_for_offer_generation.id,offer_id:waiting_for_offer_generation.offer_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+
+					<div class="clearfix"></div>
+				</mat-tab>
+
+				<ng-container  *ngIf="dashboardData">
+					 
+					<mat-tab *ngIf="dashboardChartData.waiting_for_user_oss_offer_approval" label="Offer Waiting for OSS Approval ({{dashboardChartData.waiting_for_user_oss_offer_approval.length}})">
+			
+						<div class="card-box enq-view m-t-20 " >
+							<table class="table table-bordered col-12" style="font-size:13px;">
+								<tr>
+									<th class="text-center">S.No</th>
+									<th>Company Name & Standards</th>
+									<th scope="col" class="text-right">Amount</th>
+									<th class="text-center">Assigned Date</th>
+									<th class="text-center">Action</th>
+								</tr>
+								<tbody>					   						
+									<tr *ngFor="let oss_approval of dashboardChartData.waiting_for_user_oss_offer_approval; index as i">
+										<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+										<td><a [routerLink]="['/offer/view-offer']" [queryParams]="{id:oss_approval.app_id,offer_id:oss_approval.offer_id}"><span class="dashboard-title">{{ oss_approval.company_name }}</span></a><br><span *ngFor="let standard of oss_approval?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>
+										<td width="12%" class="text-right">{{ oss_approval.currency+' '+oss_approval.grand_total_fee }}</td>
+										<td width="12%" class="text-center">{{ oss_approval.created_at }}</td>
+										<td width="5%" class="text-center"><a [routerLink]="['/offer/view-offer']" [queryParams]="{id:oss_approval.app_id,offer_id:oss_approval.offer_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+									</tr> 			
+								</tbody>
+							</table>
+						</div>
+						<div class="clearfix"></div>
+					</mat-tab>
+				</ng-container>
+
+				<ng-container  *ngIf="dashboardData">
+					 
+					<mat-tab *ngIf="dashboardChartData.waiting_for_user_oss_reinitated_offer_approval" label="Re-Initiated Offer Waiting for OSS Approval ({{dashboardChartData.waiting_for_user_oss_reinitated_offer_approval.length}})">
+			
+						<div class="card-box enq-view m-t-20 " >
+							<table class="table table-bordered col-12" style="font-size:13px;">
+								<tr>
+									<th class="text-center">S.No</th>
+									<th>Company Name & Standards</th>
+									<th scope="col" class="text-right">Amount</th>
+									<th class="text-center">Assigned Date</th>
+									<th class="text-center">Action</th>
+								</tr>
+								<tbody>					   						
+									<tr *ngFor="let oss_approval of dashboardChartData.waiting_for_user_oss_reinitated_offer_approval; index as i">
+										<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+										<td><a [routerLink]="['/offer/view-offer']" [queryParams]="{id:oss_approval.app_id,offer_id:oss_approval.offer_id}"><span class="dashboard-title">{{ oss_approval.company_name }}</span></a><br><span *ngFor="let standard of oss_approval?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>
+										<td width="12%" class="text-right">{{ oss_approval.currency+' '+oss_approval.grand_total_fee }}</td>
+										<td width="12%" class="text-center">{{ oss_approval.created_at }}</td>
+										<td width="5%" class="text-center"><a [routerLink]="['/offer/view-offer']" [queryParams]="{id:oss_approval.app_id,offer_id:oss_approval.offer_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+									</tr> 			
+								</tbody>
+							</table>
+						</div>
+						<div class="clearfix"></div>
+					</mat-tab>
+				</ng-container>
+
+				<mat-tab *ngIf="dashboardChartData.waiting_for_offer_send_to_customer" label="Waiting for Quotation Send to Customer({{dashboardChartData.waiting_for_offer_send_to_customer.length}})">
+			
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th scope="col" class="text-right">Amount</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let send_to_customer of dashboardChartData.waiting_for_offer_send_to_customer; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/offer/view-offer']" [queryParams]="{id:send_to_customer.app_id,offer_id:send_to_customer.offer_id}"><span class="dashboard-title">{{ send_to_customer.company_name }}</span></a><br><span *ngFor="let standard of send_to_customer?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>
+									<td width="12%" class="text-right">{{ send_to_customer.currency+' '+send_to_customer.grand_total_fee }}</td>
+									<td width="12%" class="text-center">{{ send_to_customer.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/offer/view-offer']" [queryParams]="{id:send_to_customer.app_id,offer_id:send_to_customer.offer_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+
+					<div class="clearfix"></div>
+				</mat-tab>
+
+				
+				<mat-tab *ngIf="dashboardChartData.waiting_for_offer_approval" label="Waiting for Quotation Approval({{dashboardChartData.waiting_for_offer_approval.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Review the Quotation</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let waiting_for_offer_approval of dashboardChartData.waiting_for_offer_approval; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/offer/view-offer']" [queryParams]="{id:waiting_for_offer_approval.id,offer_id:waiting_for_offer_approval.offer_id}"><span class="dashboard-title">{{ waiting_for_offer_approval.company_name }}</span></a><br><span *ngFor="let standard of waiting_for_offer_approval?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>
+									<!--
+									<td>{{ waiting_for_offer_approval.company_name }}</td>
+									<td>{{ waiting_for_offer_approval.contact_name }}</td>
+									-->
+									<td width="12%" class="text-center">{{ waiting_for_offer_approval.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/offer/view-offer']" [queryParams]="{id:waiting_for_offer_approval.id,offer_id:waiting_for_offer_approval.offer_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>		
+					<div class="clearfix"></div>
+				</mat-tab>
+				
+				<mat-tab *ngIf="dashboardChartData.waiting_for_invoice_generation" label="Waiting for Invoice Generation({{dashboardChartData.waiting_for_invoice_generation.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name</th>
+								<th>Contact Name</th>
+								<th class="text-center">Total Fee</th>
+								<!--<th class="text-center">No. of Manday</th>-->
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let invoice_generation of dashboardChartData.waiting_for_invoice_generation; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/invoice/invoice-generate']" [queryParams]="{id:invoice_generation.id,type:invoice_generation.type}"><span class="dashboard-title">{{ invoice_generation.company_name }}</span></a></td>
+									<td width="12%">{{ invoice_generation.contact_name }}</td>
+									<td width="12%" class="text-center">{{ invoice_generation.currency }} {{ invoice_generation.total_amount }}</td>
+									<!--<td width="5%" class="text-center">{{ invoice_generation.man_day }}</td>-->
+									<td width="12%" class="text-center">{{ invoice_generation.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/invoice/invoice-generate']" [queryParams]="{id:invoice_generation.id,type:invoice_generation.type}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>	
+					<div class="clearfix"></div>
+				</mat-tab>
+				
+				<mat-tab *ngIf="dashboardChartData.waiting_for_invoice_approval" label="Waiting for Invoice Approval({{dashboardChartData.waiting_for_invoice_approval.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name</th>
+								<th>Contact Name</th>
+								<th class="text-center">Total Fee</th>
+								<!--<th class="text-center">No. of Manday</th>-->
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let invoice_approval of dashboardChartData.waiting_for_invoice_approval; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/invoice/view-invoice']" [queryParams]="{id:invoice_approval.id,type:invoice_approval.type}"><span class="dashboard-title">{{ invoice_approval.company_name }}</span></a></td>							
+									<td width="12%">{{ invoice_approval.contact_name }}</td>
+									<td width="12%" class="text-center">{{ invoice_approval.currency }} {{ invoice_approval.total_amount }}</td>
+									<!--<td width="5%" class="text-center">{{ invoice_approval.man_day }}</td>-->
+									<td width="12%" class="text-center">{{ invoice_approval.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/invoice/view-invoice']" [queryParams]="{id:invoice_approval.id,type:invoice_approval.type}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+					<div class="clearfix"></div>
+				</mat-tab>
+				
+				<mat-tab *ngIf="dashboardChartData.waiting_for_audit_plan_generation" label="Waiting for Audit Plan Creation({{dashboardChartData.waiting_for_audit_plan_generation.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name</th>
+								<th>Contact Name</th>
+								<!--<th class="text-center">Total Fee</th>-->
+								<th class="text-center">No. of Manday</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Book the Audit</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let audit_plan_generation of dashboardChartData.waiting_for_audit_plan_generation; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td>
+										<a *ngIf="audit_plan_generation.audit_type!=2" [routerLink]="['/audit/followup-audit-plan']" [queryParams]="{audit_type:audit_plan_generation.audit_type,app_id:audit_plan_generation.app_id,id:audit_plan_generation.id}"><span class="dashboard-title">{{ audit_plan_generation.company_name }}</span></a>
+										<a *ngIf="audit_plan_generation.audit_type==2" [routerLink]="['/audit/audit-plan']" [queryParams]="{audit_type:audit_plan_generation.audit_type,app_id:audit_plan_generation.app_id,id:audit_plan_generation.id}"><span class="dashboard-title">{{ audit_plan_generation.company_name }}</span></a>
+
+										<br><span *ngFor="let standard of audit_plan_generation?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>
+									<td width="12%">{{ audit_plan_generation.contact_name }}</td>
+									<!--<td width="8%" class="text-center">{{ audit_plan_generation.currency }} {{ audit_plan_generation.total_amount }}</td>-->
+									<td width="5%" class="text-center">{{ audit_plan_generation.man_day }}</td>
+									<td width="12%" class="text-center">{{ audit_plan_generation.created_at }}</td>
+									<td width="5%" class="text-center">
+										
+										<a *ngIf="audit_plan_generation.audit_type==2" [routerLink]="['/audit/followup-audit-plan']" [queryParams]="{audit_type:audit_plan_generation.audit_type,app_id:audit_plan_generation.app_id,id:audit_plan_generation.id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a>
+										<a *ngIf="audit_plan_generation.audit_type!=2" [routerLink]="['/audit/audit-plan']" [queryParams]="{audit_type:audit_plan_generation.audit_type,app_id:audit_plan_generation.app_id,id:audit_plan_generation.id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a>
+									</td>
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+					<div class="clearfix"></div>
+				</mat-tab>
+
+				<mat-tab *ngIf="dashboardChartData.waiting_for_audit_review" label="Waiting for Risk Assesment Review({{dashboardChartData.waiting_for_audit_review.length}})">
+		
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th>Contact Name</th>
+								<!--<th class="text-center">Total Fee</th>-->
+								<th class="text-center">No. of Manday</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Complete RA</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let audit_review of dashboardChartData.waiting_for_audit_review; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:audit_review.audit_id}"><span class="dashboard-title">{{ audit_review.company_name }}</span></a><br><span *ngFor="let standard of audit_review?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%">{{ audit_review.contact_name }}</td>
+									<!--<td width="8%" class="text-center">{{ audit_review.currency }} {{ audit_review.total_amount }}</td>-->
+									<td width="5%" class="text-center">{{ audit_review.man_day }}</td>
+									<td width="12%" class="text-center">{{ audit_review.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:audit_review.audit_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+				</mat-tab>
+
+				<mat-tab *ngIf="dashboardChartData.waiting_for_audit_inspection_plan" label="Waiting for Audit Plan Generation({{dashboardChartData.waiting_for_audit_inspection_plan.length}})">
+
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th>Contact Name</th>
+								<!--<th class="text-center">Total Fee</th>-->
+								<th class="text-center">No. of Manday</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let inspection_plan of dashboardChartData.waiting_for_audit_inspection_plan; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:inspection_plan.audit_id}"><span class="dashboard-title">{{ inspection_plan.company_name }}</span></a><br><span *ngFor="let standard of inspection_plan?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%">{{ inspection_plan.contact_name }}</td>
+									<!--<td width="8%" class="text-center">{{ inspection_plan.currency }} {{ inspection_plan.total_amount }}</td>-->
+									<td width="5%" class="text-center">{{ inspection_plan.man_day }}</td>
+									<td width="12%" class="text-center">{{ inspection_plan.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:inspection_plan.audit_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+					<div class="clearfix"></div>
+				</mat-tab>
+				
+				<mat-tab *ngIf="dashboardChartData.waiting_for_rejected_audit_plan_generation" label="Waiting for Rejected Audit Plan Generation({{dashboardChartData.waiting_for_rejected_audit_plan_generation.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th>Contact Name</th>
+								<!--<th class="text-center">Total Fee</th>-->
+								<th class="text-center">No. of Manday</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let waiting_for_rejected of dashboardChartData.waiting_for_rejected_audit_plan_generation; index as i">
+									<td scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/audit/audit-plan']" [queryParams]="{app_id:waiting_for_rejected.app_id,id:waiting_for_rejected.id,offer_id:waiting_for_rejected.offer_id}"><span class="dashboard-title">{{ waiting_for_rejected.company_name }}</span></a><br><span *ngFor="let standard of waiting_for_rejected?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%">{{ waiting_for_rejected.contact_name }}</td>
+									<!--<td width="8%" class="text-center">{{ waiting_for_rejected.currency }} {{ waiting_for_rejected.total_amount }}</td>-->
+									<td width="5%" class="text-center">{{ waiting_for_rejected.man_day }}</td>
+									<td width="12%" class="text-center">{{ waiting_for_rejected.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/audit/audit-plan']" [queryParams]="{app_id:waiting_for_rejected.app_id,id:waiting_for_rejected.id,offer_id:waiting_for_rejected.offer_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+				</mat-tab>
+
+				<mat-tab *ngIf="dashboardChartData.waiting_for_audit_execution" label="Conduct Audit({{dashboardChartData.waiting_for_audit_execution.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th>Contact Name</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Conduct Audit</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let audit_execution of dashboardChartData.waiting_for_audit_execution; index as i">
+									<td scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:audit_execution.audit_id}"><span class="dashboard-title">{{ audit_execution.company_name }}</span></a><br><span *ngFor="let standard of audit_execution?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%">{{ audit_execution.contact_name }}</td>
+									<td width="12%" class="text-center">{{ audit_execution.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:audit_execution.audit_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+				</mat-tab>
+
+				<mat-tab *ngIf="dashboardChartData.waiting_for_report_correction" label="Waiting For Report Correction({{dashboardChartData.waiting_for_report_correction.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th>Contact Name</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Conduct Audit</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let audit_execution of dashboardChartData.waiting_for_report_correction; index as i">
+									<td scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:audit_execution.audit_id}"><span class="dashboard-title">{{ audit_execution.company_name }}</span></a><br><span *ngFor="let standard of audit_execution?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%">{{ audit_execution.contact_name }}</td>
+									<td width="12%" class="text-center">{{ audit_execution.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:audit_execution.audit_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+				</mat-tab>
+
+				<mat-tab *ngIf="dashboardChartData.waiting_for_unit_lead_auditor_approval" label="Waiting for Unit Lead Auditor Approval({{dashboardChartData.waiting_for_unit_lead_auditor_approval.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th>Contact Name</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let auditor_approval of dashboardChartData.waiting_for_unit_lead_auditor_approval; index as i">
+									<td scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:auditor_approval.audit_id}"><span class="dashboard-title">{{ auditor_approval.company_name }}</span></a><br><span *ngFor="let standard of auditor_approval?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%">{{ auditor_approval.contact_name }}</td>
+									<td width="12%" class="text-center">{{ auditor_approval.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:auditor_approval.audit_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+				</mat-tab>
+
+				<mat-tab *ngIf="dashboardChartData.waiting_for_followup_unit_lead_auditor_approval" label="Waiting for Followup Unit Lead Auditor Approval({{dashboardChartData.waiting_for_followup_unit_lead_auditor_approval.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th>Contact Name</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let auditor_approval of dashboardChartData.waiting_for_followup_unit_lead_auditor_approval; index as i">
+									<td scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:auditor_approval.audit_id}"><span class="dashboard-title">{{ auditor_approval.company_name }}</span></a><br><span *ngFor="let standard of auditor_approval?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%">{{ auditor_approval.contact_name }}</td>
+									<td width="12%" class="text-center">{{ auditor_approval.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:auditor_approval.audit_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+				</mat-tab>
+
+				<mat-tab *ngIf="dashboardChartData.waiting_for_audit_correction" label="Waiting for Audit Correction({{dashboardChartData.waiting_for_audit_correction.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th>Contact Name</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let audit_correction of dashboardChartData.waiting_for_audit_correction; index as i">
+									<td scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:audit_correction.audit_id}"><span class="dashboard-title">{{ audit_correction.company_name }}</span></a><br><span *ngFor="let standard of audit_correction?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%">{{ audit_correction.contact_name }}</td>
+									<td width="12%" class="text-center">{{ audit_correction.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:audit_correction.audit_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+				</mat-tab>
+
+				<mat-tab *ngIf="dashboardChartData.waiting_for_audit_reviewer" label="Waiting for Audit Reviewer({{dashboardChartData.waiting_for_audit_reviewer.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th>Contact Name</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let audit_reviewer of dashboardChartData.waiting_for_audit_reviewer; index as i">
+									<td scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:audit_reviewer.audit_id}"><span class="dashboard-title">{{ audit_reviewer.company_name }}</span></a><br><span *ngFor="let standard of audit_reviewer?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%">{{ audit_reviewer.contact_name }}</td>
+									<td width="12%" class="text-center">{{ audit_reviewer.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:audit_reviewer.audit_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+				</mat-tab>
+
+				<mat-tab *ngIf="dashboardChartData.waiting_for_audit_reviewer_review" label="Waiting for Audit Reviewer Review({{dashboardChartData.waiting_for_audit_reviewer_review.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th>Contact Name</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let audit_reviewer_review of dashboardChartData.waiting_for_audit_reviewer_review; index as i">
+									<td scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:audit_reviewer_review.audit_id}"><span class="dashboard-title">{{ audit_reviewer_review.company_name }}</span></a><br><span *ngFor="let standard of audit_reviewer_review?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%">{{ audit_reviewer_review.contact_name }}</td>
+									<td width="12%" class="text-center">{{ audit_reviewer_review.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:audit_reviewer_review.audit_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+				</mat-tab>
+
+				<mat-tab *ngIf="dashboardChartData.waiting_for_nc_overdue_review" label="Waiting for NC Overdue Review({{dashboardChartData.waiting_for_nc_overdue_review.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th>Contact Name</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let nc_overdue_review of dashboardChartData.waiting_for_nc_overdue_review; index as i">
+									<td scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:nc_overdue_review.audit_id}"><span class="dashboard-title">{{ nc_overdue_review.company_name }}</span></a><br><span *ngFor="let standard of nc_overdue_review?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%">{{ nc_overdue_review.contact_name }}</td>
+									<td width="12%" class="text-center">{{ nc_overdue_review.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:nc_overdue_review.audit_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+				</mat-tab>
+
+				<mat-tab *ngIf="dashboardChartData.waiting_for_lead_auditor_remediation_approval" label="Waiting for Corrective Action Review({{dashboardChartData.waiting_for_lead_auditor_remediation_approval.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th>Contact Name</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let lead_auditor_remediation_approval of dashboardChartData.waiting_for_lead_auditor_remediation_approval; index as i">
+									<td scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:lead_auditor_remediation_approval.audit_id}"><span class="dashboard-title">{{ lead_auditor_remediation_approval.company_name }}</span></a><br><span *ngFor="let standard of lead_auditor_remediation_approval?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%">{{ lead_auditor_remediation_approval.contact_name }}</td>
+									<td width="12%" class="text-center">{{ lead_auditor_remediation_approval.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:lead_auditor_remediation_approval.audit_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+				</mat-tab>
+
+				<mat-tab *ngIf="dashboardChartData.waiting_for_audit_nc_overdue_approval" label="Waiting for NC OverDue Approval({{dashboardChartData.waiting_for_audit_nc_overdue_approval.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th>Contact Name</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let nc_overdue_approval of dashboardChartData.waiting_for_audit_nc_overdue_approval; index as i">
+									<td scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:nc_overdue_approval.audit_id}"><span class="dashboard-title">{{ nc_overdue_approval.company_name }}</span></a><br><span *ngFor="let standard of nc_overdue_approval?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%">{{ nc_overdue_approval.contact_name }}</td>
+									<td width="12%" class="text-center">{{ nc_overdue_approval.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:nc_overdue_approval.audit_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+				</mat-tab>
+
+				<mat-tab *ngIf="dashboardChartData.waiting_for_reviewer_remediation_approval" label="Waiting for Customer Corrective Review({{dashboardChartData.waiting_for_reviewer_remediation_approval.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th>Contact Name</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let reviewer_remediation_approval of dashboardChartData.waiting_for_reviewer_remediation_approval; index as i">
+									<td scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:reviewer_remediation_approval.audit_id}"><span class="dashboard-title">{{ reviewer_remediation_approval.company_name }}</span></a><br><span *ngFor="let standard of reviewer_remediation_approval?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%">{{ reviewer_remediation_approval.contact_name }}</td>
+									<td width="12%" class="text-center">{{ reviewer_remediation_approval.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:reviewer_remediation_approval.audit_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+				</mat-tab>
+
+				<mat-tab *ngIf="dashboardChartData.waiting_for_auditor_rejected_remediation_correction" label="Waiting for Rejected Remediation Correction({{dashboardChartData.waiting_for_auditor_rejected_remediation_correction.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th>Contact Name</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let rejected_remediation of dashboardChartData.waiting_for_auditor_rejected_remediation_correction; index as i">
+									<td scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:rejected_remediation.audit_id}"><span class="dashboard-title">{{ rejected_remediation.company_name }}</span></a><br><span *ngFor="let standard of rejected_remediation?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%">{{ rejected_remediation.contact_name }}</td>
+									<td width="12%" class="text-center">{{ rejected_remediation.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:rejected_remediation.audit_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+				</mat-tab>
+				
+				
+				<mat-tab *ngIf="dashboardChartData.product_addition_waiting_for_review" label="Product Waiting for Review({{dashboardChartData.product_addition_waiting_for_review.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">For Review</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let waiting_for_review of dashboardChartData.product_addition_waiting_for_review; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/change-scope/product-addition/view']" [queryParams]="{id:waiting_for_review.id}"><span class="dashboard-title">{{ waiting_for_review.company_name }}</span></a><br><span *ngFor="let standard of waiting_for_review?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<!--
+									<td>{{ waiting_for_review.company_name }}</td>
+									<td>{{ waiting_for_review.contact_name }}</td>
+									-->
+									<td width="12%" class="text-center">{{ waiting_for_review.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/change-scope/product-addition/view']" [queryParams]="{id:waiting_for_review.id,app:waiting_for_review.app_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+					<div class="clearfix"></div>
+				</mat-tab>
+				
+				<mat-tab *ngIf="dashboardChartData.audit_waiting_for_certificate_generation" label="Audit Waiting for Certificate Generation({{dashboardChartData.audit_waiting_for_certificate_generation.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">For Review</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let waiting_for_review of dashboardChartData.audit_waiting_for_certificate_generation; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/certification/view-audit-plan']" [queryParams]="{id:waiting_for_review.id}"><span class="dashboard-title">{{ waiting_for_review.company_name }}</span></a><br><span *ngFor="let standard of waiting_for_review?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%" class="text-center">{{ waiting_for_review.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/certification/view-audit-plan']" [queryParams]="{id:waiting_for_review.audit_id,certificate_id:waiting_for_review.id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+					<div class="clearfix"></div>
+				</mat-tab>
+
+				<mat-tab *ngIf="dashboardChartData.approved_suppliers" label="Approved Suppliers({{dashboardChartData.approved_suppliers.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name </th>
+								
+								<th class="text-center">For View</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let approved_suppliers of dashboardChartData.approved_suppliers; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/brand/view']" [queryParams]="{id:approved_suppliers.app_id,brand_id:approved_suppliers.brand_id,brand_approve_id:approved_suppliers.id}"><span class="dashboard-title">{{ approved_suppliers.company_name }}</span></a><br><span>{{approved_suppliers.brand_name}}</span></td>							
+									
+									<td width="5%" class="text-center"><a [routerLink]="['/brand/view']" [queryParams]="{id:approved_suppliers.app_id,brand_id:approved_suppliers.brand_id,brand_approve_id:approved_suppliers.id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+					<div class="clearfix"></div>
+				</mat-tab>
+				
+				<mat-tab *ngIf="dashboardChartData.product_addition_waiting_for_certificate_generation" label="Product Waiting for Certificate Generation({{dashboardChartData.product_addition_waiting_for_certificate_generation.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">For Review</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let waiting_for_review of dashboardChartData.product_addition_waiting_for_certificate_generation; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/certification/view-audit-plan']" [queryParams]="{id:waiting_for_review.id}"><span class="dashboard-title">{{ waiting_for_review.company_name }}</span></a><br><span *ngFor="let standard of waiting_for_review?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%" class="text-center">{{ waiting_for_review.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/certification/view-audit-plan']" [queryParams]="{id:waiting_for_review.audit_id,certificate_id:waiting_for_review.id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+					<div class="clearfix"></div>
+				</mat-tab>
+				
+				
+				
+				
+				
+				<mat-tab *ngIf="dashboardChartData.tc_waiting_for_oss_review" label="TC Waiting for OSS Review({{dashboardChartData.tc_waiting_for_oss_review.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">For Review</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let waiting_for_review of dashboardChartData.tc_waiting_for_oss_review; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/transaction-certificate/request/view']" [queryParams]="{id:waiting_for_review.id}"><span class="dashboard-title">{{ waiting_for_review.company_name }}</span></a><br><span *ngFor="let standard of waiting_for_review?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%" class="text-center">{{ waiting_for_review.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/transaction-certificate/request/view']" [queryParams]="{id:waiting_for_review.id,app:waiting_for_review.app_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+					<div class="clearfix"></div>
+				</mat-tab>
+
+
+				<mat-tab *ngIf="dashboardChartData.tc_waiting_for_review" label="TC Waiting for Review({{dashboardChartData.tc_waiting_for_review.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">For Review</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let waiting_for_review of dashboardChartData.tc_waiting_for_review; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/transaction-certificate/request/view']" [queryParams]="{id:waiting_for_review.id}"><span class="dashboard-title">{{ waiting_for_review.company_name }}</span></a><br><span *ngFor="let standard of waiting_for_review?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%" class="text-center">{{ waiting_for_review.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/transaction-certificate/request/view']" [queryParams]="{id:waiting_for_review.id,app:waiting_for_review.app_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+					<div class="clearfix"></div>
+				</mat-tab>
+				
+				
+				<mat-tab *ngIf="dashboardChartData.unit_withdraw_waiting_for_review" label="Unit Withdraw Waiting for Review({{dashboardChartData.unit_withdraw_waiting_for_review.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">For Review</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let waiting_for_review of dashboardChartData.unit_withdraw_waiting_for_review; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/change-scope/withdraw-unit/view']" [queryParams]="{id:waiting_for_review.id}"><span class="dashboard-title">{{ waiting_for_review.company_name }}</span></a><br><span *ngFor="let standard of waiting_for_review?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<!--
+									<td>{{ waiting_for_review.company_name }}</td>
+									<td>{{ waiting_for_review.contact_name }}</td>
+									-->
+									<td width="12%" class="text-center">{{ waiting_for_review.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/change-scope/withdraw-unit/view']" [queryParams]="{id:waiting_for_review.id,app:waiting_for_review.app_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+					<div class="clearfix"></div>
+				</mat-tab>
+				
+				
+				<!-- ------------- Follow Up Notification Code Start Here ------------------- -->
+				<mat-tab *ngIf="dashboardChartData.waiting_for_followup_audit_execution" label="Conduct Followup Audit({{dashboardChartData.waiting_for_followup_audit_execution.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th>Contact Name</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Conduct Audit</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let audit_execution of dashboardChartData.waiting_for_followup_audit_execution; index as i">
+									<td scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:audit_execution.audit_id}"><span class="dashboard-title">{{ audit_execution.company_name }}</span></a><br><span *ngFor="let standard of audit_execution?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%">{{ audit_execution.contact_name }}</td>
+									<td width="12%" class="text-center">{{ audit_execution.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:audit_execution.audit_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+				</mat-tab>
+
+				<mat-tab *ngIf="dashboardChartData.waiting_for_followup_audit_lead_auditor_approval" label="Waiting for Follow Up Audit Lead Auditor Approval({{dashboardChartData.waiting_for_followup_audit_lead_auditor_approval.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th>Contact Name</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let auditor_approval of dashboardChartData.waiting_for_followup_audit_lead_auditor_approval; index as i">
+									<td scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:auditor_approval.audit_id}"><span class="dashboard-title">{{ auditor_approval.company_name }}</span></a><br><span *ngFor="let standard of auditor_approval?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%">{{ auditor_approval.contact_name }}</td>
+									<td width="12%" class="text-center">{{ auditor_approval.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:auditor_approval.audit_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+				</mat-tab>
+				
+				<mat-tab *ngIf="dashboardChartData.waiting_for_followup_audit_reviewer_review" label="Waiting for Follow Up Audit Reviewer Review({{dashboardChartData.waiting_for_followup_audit_reviewer_review.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th>Contact Name</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let audit_reviewer_review of dashboardChartData.waiting_for_followup_audit_reviewer_review; index as i">
+									<td scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:audit_reviewer_review.audit_id}"><span class="dashboard-title">{{ audit_reviewer_review.company_name }}</span></a><br><span *ngFor="let standard of audit_reviewer_review?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%">{{ audit_reviewer_review.contact_name }}</td>
+									<td width="12%" class="text-center">{{ audit_reviewer_review.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:audit_reviewer_review.audit_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+				</mat-tab>			
+				
+				<mat-tab *ngIf="dashboardChartData.waiting_for_followup_audit_plan_generation" label="Waiting for Follow Up Audit Plan Creation({{dashboardChartData.waiting_for_followup_audit_plan_generation.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th>Contact Name</th>
+								<!--<th class="text-center">Total Fee</th>-->
+								<th class="text-center">No. of Manday</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Book the Audit</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let audit_plan_generation of dashboardChartData.waiting_for_followup_audit_plan_generation; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/audit/audit-plan']" [queryParams]="{app_id:audit_plan_generation.app_id,id:audit_plan_generation.id,offer_id:audit_plan_generation.offer_id}"><span class="dashboard-title">{{ audit_plan_generation.company_name }}</span></a><br><span *ngFor="let standard of audit_plan_generation?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%">{{ audit_plan_generation.contact_name }}</td>
+									<!--<td width="8%" class="text-center">{{ audit_plan_generation.currency }} {{ audit_plan_generation.total_amount }}</td>-->
+									<td width="5%" class="text-center">{{ audit_plan_generation.man_day }}</td>
+									<td width="12%" class="text-center">{{ audit_plan_generation.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/audit/followup-audit-plan']" [queryParams]="{audit_type:audit_plan_generation.audit_type,app_id:audit_plan_generation.app_id,id:audit_plan_generation.id,offer_id:audit_plan_generation.offer_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+					<div class="clearfix"></div>
+				</mat-tab>
+				
+				<mat-tab *ngIf="dashboardChartData.waiting_for_rejected_followup_audit_plan_generation" label="Waiting for Rejected Follow Up Audit Plan Generation({{dashboardChartData.waiting_for_rejected_followup_audit_plan_generation.length}})">
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th>Contact Name</th>
+								<!--<th class="text-center">Total Fee</th>-->
+								<th class="text-center">No. of Manday</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let waiting_for_rejected of dashboardChartData.waiting_for_rejected_followup_audit_plan_generation; index as i">
+									<td scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/audit/followup-audit-plan']" [queryParams]="{audit_type:waiting_for_rejected.audit_type,app_id:waiting_for_rejected.app_id,id:waiting_for_rejected.id}"><span class="dashboard-title">{{ waiting_for_rejected.company_name }}</span></a><br><span *ngFor="let standard of waiting_for_rejected?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%">{{ waiting_for_rejected.contact_name }}</td>
+									<!--<td width="8%" class="text-center">{{ waiting_for_rejected.currency }} {{ waiting_for_rejected.total_amount }}</td>-->
+									<td width="5%" class="text-center">{{ waiting_for_rejected.man_day }}</td>
+									<td width="12%" class="text-center">{{ waiting_for_rejected.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/audit/followup-audit-plan']" [queryParams]="{audit_type:waiting_for_rejected.audit_type,app_id:waiting_for_rejected.app_id,id:waiting_for_rejected.id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+				</mat-tab>
+				
+				<mat-tab *ngIf="dashboardChartData.waiting_for_followup_audit_review" label="Waiting for Follow Up Risk Assesment Review({{dashboardChartData.waiting_for_followup_audit_review.length}})">
+		
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th>Contact Name</th>
+								<!--<th class="text-center">Total Fee</th>-->
+								<th class="text-center">No. of Manday</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Complete RA</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let audit_review of dashboardChartData.waiting_for_followup_audit_review; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:audit_review.audit_id}"><span class="dashboard-title">{{ audit_review.company_name }}</span></a><br><span *ngFor="let standard of audit_review?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%">{{ audit_review.contact_name }}</td>
+									<!--<td width="8%" class="text-center">{{ audit_review.currency }} {{ audit_review.total_amount }}</td>-->
+									<td width="5%" class="text-center">{{ audit_review.man_day }}</td>
+									<td width="12%" class="text-center">{{ audit_review.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:audit_review.audit_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+				</mat-tab>
+				
+				<mat-tab *ngIf="dashboardChartData.waiting_for_followup_audit_inspection_plan" label="Waiting for Follow Up Audit Plan Generation({{dashboardChartData.waiting_for_followup_audit_inspection_plan.length}})">
+
+					<div class="card-box enq-view m-t-20 " >			
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th>Company Name & Standards</th>
+								<th>Contact Name</th>
+								<!--<th class="text-center">Total Fee</th>-->
+								<th class="text-center">No. of Manday</th>
+								<th class="text-center">Assigned Date</th>
+								<th class="text-center">Action</th>
+							</tr>
+							<tbody>					   						
+								<tr *ngFor="let inspection_plan of dashboardChartData.waiting_for_followup_audit_inspection_plan; index as i">
+									<td width="5%" scope="row" class="center">{{  1+ i }}</td>
+									<td><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:inspection_plan.audit_id}"><span class="dashboard-title">{{ inspection_plan.company_name }}</span></a><br><span *ngFor="let standard of inspection_plan?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></td>							
+									<td width="12%">{{ inspection_plan.contact_name }}</td>
+									<!--<td width="8%" class="text-center">{{ inspection_plan.currency }} {{ inspection_plan.total_amount }}</td>-->
+									<td width="5%" class="text-center">{{ inspection_plan.man_day }}</td>
+									<td width="12%" class="text-center">{{ inspection_plan.created_at }}</td>
+									<td width="5%" class="text-center"><a [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:inspection_plan.audit_id}"><i class="fa fa-hand-o-right dashboard-handicon"></i></a></td>						
+								</tr> 			
+							</tbody>
+						</table>
+					</div>
+					<div class="clearfix"></div>
+				</mat-tab>
+				<!-- ------------- Follow Up Notification Code End Here ------------------- -->					
+					
+			</mat-tab-group>
+		</div>
+		
+		<div class="clearfix"></div>
+			
+		<div class="row col-12" *ngIf="dashboardData.offerlist && offer_status" style="padding-left:0px !important;padding-right:0px !important;margin-right:0px !important;">
+			
+			<div class="col-3">
+				<div class="col-12 col-md-12 col-sm-12 col-xs-12 top-report customer-number" style="padding-left:0px !important;">
+					<div class="top-report-head text-center" style="background-color:#36869b;">
+						<h4>Quotation Amount</h4>
+					</div>
+					<div class="cms top-report-content text-center" style="background-color:#3D96AE;">
+						${{dashboardData.offer_total_payable_amount}}						
+					</div>
+				</div>
+				
+				<div class="clearfix"></div>
+				
+				<div class="col-12 col-md-12 col-sm-12 col-xs-12 top-report customer-number m-t-10" style="padding-left:0px !important;">
+					<div class="top-report-head text-center"  style="background-color:#d77628;">
+						<h4>Average Quotation</h4>
+					</div>
+					<div class="cms top-report-content text-center" style="background-color:#df9253;">
+						${{dashboardData.offer_total_payable_avg_amount}}						
+					</div>
+				</div>
+				
+			</div>
+			
+			<div class="col-9" style="padding-left:0px !important;padding-right:0px !important;">
+				<ul class="dashboard-items" *ngIf="monthWisOfferAmountChartOptions">
+					<li style="float: left;width: 100%;">
+						<h2 class="dash-title"><span class="fa ti-bar-chart"></span> Month Wise Quotation Amount</h2>
+						<div class="chart-div" style="padding:0px;margin-bottom: 1px;" *ngIf="monthWisOfferAmountChartOptions">	
+						<highcharts-chart [Highcharts]="Highcharts" [options]="monthWisOfferAmountChartOptions" style="width: 100%; height: 250px; display: block;"></highcharts-chart>
+						</div>
+					</li>					
+				</ul>					
+			</div>				
+		</div>						
+		
+		<div *ngIf="dashboardData.offerlist && offer_status">
+			<ul class="dashboard-items" *ngIf="dashboardData.offerlist">		
+				<li style="float: left;width: 100%;">
+					<h2 class="dash-title"><span class="fa fa-line-chart"></span> Latest {{dashboardData.offerlist.length}} Quotation</h2>
+					<table class="table table-bordered col-12 w-auto m-t-10 m-r-10 m-l-10" style="font-size:13px;">
+						<thead>
+							<tr>
+								<th scope="col" class="center">S.No</th>
+								<th scope="col">Company Details</th>
+								<th scope="col" class="text-right">Amount</th>																
+								<th scope="col">Action</th>
+							</tr>
+						</thead>					
+						<tbody>					   						
+							<tr *ngFor="let enquiry of dashboardData.offerlist; index as i">
+								<td width="2%" scope="row" class="center">{{ 1+ i }}</td>
+								<td>
+								<!--(click)="open(userdetails,enquiry.app_id);" style="cursor: pointer;"-->
+								Company Name:&nbsp;<span ><b>{{ enquiry.company_name }}</b></span>&nbsp;&nbsp;|&nbsp;&nbsp;Contact Name:&nbsp;<b>{{ enquiry.contact_name }}</b>&nbsp;&nbsp;|&nbsp;&nbsp;Telephone:&nbsp;<b>{{ enquiry.company_telephone }}</b><br>
+								Country:&nbsp;<b>{{ enquiry.company_country_id }}</b>&nbsp;&nbsp;|&nbsp;&nbsp;Standards:&nbsp;<b><span *ngFor="let standard of enquiry?.standards; let isLast=last;" >{{ standard }}{{isLast ? '' : ', '}}</span></b>&nbsp;&nbsp;|&nbsp;&nbsp;Status:&nbsp;<b><span [style.color]="enquiry.status_label_color">{{ enquiry.status }}</span></b>&nbsp;&nbsp;|&nbsp;&nbsp;Date:&nbsp;<b>{{ enquiry.created_at }}</b>
+								</td>
+								<td class="text-right"><b>${{ enquiry.total_payable_amount }}</b></td>
+								<td width="2%" class="text-center">
+									<a [routerLink]="['/offer/view-offer']" [queryParams]="{id:enquiry.app_id,offer_id:enquiry.id}" style="color: #0b63b1;"><i class="fa fa-hand-o-right dashboard-handicon"></i></a>
+								</td>						
+							</tr> 			
+						</tbody>
+					</table>			
+				</li>					
+			</ul>
+		</div>
+
+	</div>
+</div>	
+
+<ng-template #userdetails let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">User Details</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+	</div>
+    <div class="modal-body">
+        <app-application-report-details [app_id]="app_id"></app-application-report-details>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>
+
+
+
+		

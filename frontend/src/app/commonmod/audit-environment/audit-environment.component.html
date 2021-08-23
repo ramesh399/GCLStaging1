@@ -1,0 +1,542 @@
+<div class="col-12 pad-left pad-right">
+<!--
+<div class="row"  >
+    <div class="col-12">
+        <div class="card-box table-responsive">
+        	<div class="row col-12 m-b-5 pad-right">
+              	<div class="col-8 pad-left">
+                <h4 class="page-title">Audit Environment</h4>
+                <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+                
+              	</div>
+               
+            </div>
+        
+            <div class="row col-12 m-b-5 pad-right">
+                <div class="col-4 text-left pad-left">
+                    <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                        <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+                    </select>
+                </div>
+                <div class="col-4 text-left p-t-5"></div>
+                <div class="col-4 text-right pad-right">
+                    Search: <input class="search-pad" type="text" name="searchTerm" [(ngModel)]="service.searchTerm"/>
+                </div>
+            </div>
+					
+			<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+			-->	
+			
+			<!--
+			<h3>Water, Energy & Wastage Analysis</h3>
+			-->
+			
+			<div class="col-12 row enq-view ">
+				<div class="col-8 text-primary" style="border-bottom: 1px solid #d7d7d7;font-size:16px;padding-left:0px;">
+					Water, Energy & Wastage Analysis
+				</div>
+				
+				<div class="col-4 text-right pad-right" style="border-bottom: 1px solid #d7d7d7;">
+					<ng-container *ngIf="!cond_viewonly && dataloaded">
+						<div class="radio" >
+							Is it applicable?&nbsp;&nbsp;&nbsp;						
+							<input type="radio" id="yes" [checked]="this.isItApplicable?true:false" value="1" (change)="isItApp(1)"><label for="yes">Yes</label>
+							&nbsp;&nbsp;&nbsp;
+							<input type="radio" id="no" [checked]="!this.isItApplicable?true:false" value="2" (change)="isItApp(2)"><label for="no">No</label>										
+						</div>					
+					</ng-container>
+				</div>
+			</div>
+			<div class="col-12" *ngIf="!dataloaded">
+				<span class="spinner-border spinner-border-sm mr-1"></span>
+			</div>
+			<div *ngIf="!isItApplicable && dataloaded" class="m-t-5">
+				<form  [formGroup]="remarkForm">
+					<div class="form-group row">					
+						<div class="col-12">
+							<label>Remarks <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Remarks" matTooltipClass="tooltip-text-size" aria-tooltip="Remarks" matTooltipPosition="right"></i>
+							<ng-container *ngIf="cond_viewonly">
+								<div>{{rf.remark.value }}</div>
+							</ng-container>
+							<ng-container *ngIf="!cond_viewonly">
+								<textarea rows="5" formControlName="remark" [class.is-invalid]="rf.remark.invalid && rf.remark.touched" placeholder="Remarks" class="form-control" ></textarea>
+								<div *ngIf="rf.remark.errors" class="invalid-feedback">
+									<div *ngIf="rf.remark.errors.required">Remarks cannot be blank.</div>
+									<div *ngIf="rf.remark.hasError('whitespace')">Invalid Remarks</div>
+								</div>
+							</ng-container>
+						</div>				
+					</div> 											
+					<ng-container *ngIf="!cond_viewonly">	
+						<div class="col-lg-12 text-center mt-4 mb-4">
+							<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="addRemark()">
+								<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+								{{editStatus == 1 ? 'Update' : 'Save'}}	
+							</button>
+							<!--<button [disabled]="loading['button'] || buttonDisable" type="button" (click)="remarkFormreset()"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Reset</button>-->
+							<div class="clearfix"></div>				
+						</div>
+					</ng-container>
+				</form>
+			</div>
+			
+            <div class="col-12 pad-left m-t-5" *ngIf="isItApplicable && dataloaded">
+                <table id="datatable" class="table table-bordered" >
+                    <thead>
+						<tr>
+							<th width="3%" scope="col" class="center" style="vertical-align:middle;">S.No</th>
+							<th scope="col" style="vertical-align:middle;" width="7%" class="center">Year</th>	
+                            <th scope="col" style="vertical-align:middle;" width="10%" class="center">Water consumption (liters / kg textile)</th>
+                            <th width="10%" scope="col" style="vertical-align:middle;" class="center">Total energy consumption converted to kWh</th>
+							<th width="10%" scope="col" style="vertical-align:middle;" class="center">Total energy consumption (kWh / kg textile)</th>
+							<th width="10%" scope="col" style="vertical-align:middle;" class="center">Total COD (grams)</th>
+							<th width="10%" scope="col" style="vertical-align:middle;" class="center">COD/kg textile output (g/kg)</th>
+							<th width="10%" scope="col" style="vertical-align:middle;" class="center">Wastage / Textile Output (g/kg)</th>
+							<th width="10%" scope="col" style="vertical-align:middle;" class="center">Total Waste</th>
+							<th width="8%" scope="col" style="vertical-align:middle;" class="center">Sufficient</th>
+							<!--
+                            <th width="15%" scope="col">Created At</th>	
+							-->
+							<th width="9%" class="text-center" scope="col" style="vertical-align:middle;">Action</th>	
+						</tr>
+                    </thead>
+                    <tbody>
+						<tr *ngFor="let environment of environments$ | async; let i=index; ">
+							<td scope="row" class="center">{{ 1+i+ service.pageNo }}</td>
+						   
+						    <!--
+							water_consumption total_energy_consumption_converted_to total_energy_consumption
+							total_cod
+							cod_textile_output
+							wastage_textile_output
+							total_waste	
+							-->	
+							
+							<td class="center"><ngb-highlight [result]="environment.year"  [term]="service.searchTerm"></ngb-highlight></td>
+                            <td class="center"><ngb-highlight [result]="environment.water_consumption"  [term]="service.searchTerm"></ngb-highlight></td>
+							<td class="center"><ngb-highlight [result]="environment.total_energy_consumption_converted_to"  [term]="service.searchTerm"></ngb-highlight></td>
+							<td class="center"><ngb-highlight [result]="environment.total_energy_consumption"  [term]="service.searchTerm"></ngb-highlight></td>
+							<td class="center"><ngb-highlight [result]="environment.total_cod"  [term]="service.searchTerm"></ngb-highlight></td>
+							<td class="center"><ngb-highlight [result]="environment.cod_textile_output"  [term]="service.searchTerm"></ngb-highlight></td>
+							<td class="center"><ngb-highlight [result]="environment.wastage_textile_output"  [term]="service.searchTerm"></ngb-highlight></td>
+							<td class="center"><ngb-highlight [result]="environment.total_waste"  [term]="service.searchTerm"></ngb-highlight></td>
+							<td class="center"><ngb-highlight [result]="environment.sufficient_label"   ></ngb-highlight></td>
+							<!--
+							<td><ngb-highlight [result]="environment.year"  [term]="service.searchTerm"></ngb-highlight></td>
+                            <td><ngb-highlight [result]="environment.total_production_output"  [term]="service.searchTerm"></ngb-highlight></td>
+                            <td><ngb-highlight [result]="environment.water_consumption"  [term]="service.searchTerm"></ngb-highlight></td>
+                            <td><ngb-highlight [result]="environment.created_at"  [term]="service.searchTerm"></ngb-highlight></td>
+							-->
+							
+							<td  class="center">
+								<a href="javascript:void(0);" (click)="viewEnvironment(environmentDetails,environment)" title="View" alt="View"> <i class="fa fa-eye"></i> </a>
+								<ng-container *ngIf="!cond_viewonly">
+									<a href="javascript:void(0);" *ngIf="(userType==1 && userdetails.rules.includes('audit_execution')) || userType==2 || userdetails.resource_access==1 || userdetails.rules.includes('edit_audit_environment')" (click)="editEnvironment(i,environment)" title="Edit" alt="Edit" class="pl-2"> <i class="fa fa-edit"></i> </a>
+									<a href="javascript:void(0);" *ngIf="(userType==1 && userdetails.rules.includes('audit_execution')) || userType==2 || userdetails.resource_access==1 || userdetails.rules.includes('delete_audit_environment')" (click)="removeEnvironment(confirmcontent,i,environment)" title="Delete" alt="Delete" class="pl-2"> <i class="fa fa-trash text-danger"></i> </a>
+								</ng-container>
+							</td>
+						</tr>
+						<tr  *ngIf="(environments$ | async)?.length==0" >
+							<td colspan="11" class="center">{{ commontxt.norecords }}</td>
+						</tr>
+                    </tbody>
+                </table>
+            </div>
+			<!--
+            <div class="d-flex justify-content-between p-2">
+                <ngb-pagination maxSize="10" rotate=true [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+                    <ng-template ngbPaginationPrevious>Prev</ng-template>
+                    <ng-template ngbPaginationNext>Next</ng-template>			  
+                </ngb-pagination>
+            </div>
+   		</div>
+	</div>
+</div>
+-->
+	<div class="clearfix"></div>
+	<ng-container *ngIf="!cond_viewonly">
+		<div class="row" *ngIf="isItApplicable && dataloaded && ((userType==1 && userdetails.rules.includes('audit_execution')) || userType==2 || userdetails.resource_access==1 || userdetails.rules.includes('add_audit_environment') || (userdetails.rules.includes('edit_audit_environment') && environmentData))">
+			<div class="col-12 m-t-15">
+				<!--
+				<div class="add card-box table-responsive enq-view"> 
+				-->		
+					<h3>{{editStatus == 1 ? 'Update' : 'Add'}} Audit Environment </h3>                             
+					<form  [formGroup]="form" (ngSubmit)="onSubmit()">
+						<div class="form-group row">
+
+							<div class="col-2">
+								<br>
+								<label>Year <span class="text-danger">*</span> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Year" matTooltipClass="tooltip-text-size" aria-tooltip="Year" matTooltipPosition="right"></i></label> 
+								<!--
+								<input type="text" formControlName="year"  class="form-control" placeholder="Year" [class.is-invalid]="f.year.invalid && f.year.touched">
+								
+								<div *ngIf="f.year.errors" class="invalid-feedback">
+									<div *ngIf="f.year.errors.required">Year is required</div>
+									<div *ngIf="f.year.errors.pattern" >Invalid Year</div>
+									<div *ngIf="f.year.errors.minlength || f.year.errors.maxlength">Year Should be in 4 characters</div>
+								</div>
+								-->
+								
+								<select formControlName="year" class="form-control select2" [class.is-invalid]="f.year.invalid && f.year.touched">
+									<option value="" >-- Year --</option>
+									<option *ngFor="let years of range" value= {{years}}>{{years}}</option>
+								</select>
+								<div *ngIf="f.year.errors" class="invalid-feedback">
+									<div *ngIf="f.year.errors.required">Year cannot be blank.</div>
+								</div>
+							</div>     
+
+							<div class="col-2">
+								<label>Total textile output (kg) (not limited to GOTS) <span class="text-danger">*</span> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Total textile output (kg) (not limited to GOTS)" matTooltipClass="tooltip-text-size" aria-tooltip="Total textile output (kg) (not limited to GOTS)" matTooltipPosition="right"></i></label> 
+								<input type="text" formControlName="total_production_output"  class="form-control" placeholder="0" [class.is-invalid]="f.total_production_output.invalid && f.total_production_output.touched">
+								
+								<div *ngIf="f.total_production_output.errors" class="invalid-feedback">
+									<div *ngIf="f.total_production_output.errors.required">Total textile output (kg) (not limited to GOTS) is required</div>
+									<div *ngIf="f.total_production_output.errors.pattern" >Invalid Total textile output (kg) (not limited to GOTS) </div>
+									<div *ngIf="f.total_production_output.errors.maxlength">Total textile output (kg) (not limited to GOTS) cannot exceed 13 characters</div>
+								</div>
+							</div>
+							
+							<div class="col-2">
+								<label>Total water consumption (m3) <span class="text-danger">*</span> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Total water extruction/supplied (m3)" matTooltipClass="tooltip-text-size" aria-tooltip="Total water extruction/supplied (m3)" matTooltipPosition="right"></i></label> 
+								<input type="text" formControlName="total_water_supplied"  class="form-control" placeholder="0" [class.is-invalid]="f.total_water_supplied.invalid && f.total_water_supplied.touched">
+								
+								<div *ngIf="f.total_water_supplied.errors" class="invalid-feedback">
+									<div *ngIf="f.total_water_supplied.errors.required">Total water extruction/supplied is required</div>
+									<div *ngIf="f.total_water_supplied.errors.pattern" >Invalid Total water extruction/supplied</div>
+									<div *ngIf="f.total_water_supplied.errors.maxlength">Total water extruction/supplied cannot exceed 13 characters</div>
+								</div>
+							</div>
+							
+							<div class="col-2">
+								<label>Water Consumption <br>(liters / kg textile) <span class="text-danger">*</span> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Water consumption (liters / kg textile)" matTooltipClass="tooltip-text-size" aria-tooltip="Water consumption (liters / kg textile)" matTooltipPosition="right"></i></label> 
+								<input type="text" formControlName="water_consumption" class="form-control" placeholder="0" [class.is-invalid]="f.water_consumption.invalid && f.water_consumption.touched">
+								
+								<div *ngIf="f.water_consumption.errors" class="invalid-feedback">
+									<div *ngIf="f.water_consumption.errors.required">Water consumption (liters / kg textile)is required</div>
+									<div *ngIf="f.water_consumption.errors.pattern" >Invalid Water consumption (liters / kg textile)</div>
+									<div *ngIf="f.water_consumption.errors.maxlength">Water consumption (liters / kg textile) cannot exceed 13 characters</div>
+								</div>
+							</div>
+							
+							<div class="col-2">
+								<label>Electrical Energy <br>Consumption (kWh) <span class="text-danger">*</span> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Electrical energy consumption (kWh)" matTooltipClass="tooltip-text-size" aria-tooltip="Electrical energy consumption (kWh)" matTooltipPosition="right"></i></label> 
+								<input type="text" formControlName="electrical_energy_consumption"  class="form-control" placeholder="0" [class.is-invalid]="f.electrical_energy_consumption.invalid && f.electrical_energy_consumption.touched">
+								
+								<div *ngIf="f.electrical_energy_consumption.errors" class="invalid-feedback">
+									<div *ngIf="f.electrical_energy_consumption.errors.required">Electrical energy consumption is required</div>
+									<div *ngIf="f.electrical_energy_consumption.errors.pattern" >Invalid Electrical energy consumption</div>
+									<div *ngIf="f.electrical_energy_consumption.errors.maxlength">Electrical energy consumption cannot exceed 13 characters</div>
+								</div>
+							</div>
+							
+							<div class="col-2">
+								<label>Gas Consumption <br>(m3) <span class="text-danger">*</span> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Gas consumption (m3)" matTooltipClass="tooltip-text-size" aria-tooltip="Gas consumption (m3)" matTooltipPosition="right"></i></label> 
+								<input type="text" formControlName="gas_consumption"  class="form-control" placeholder="0" [class.is-invalid]="f.gas_consumption.invalid && f.gas_consumption.touched">
+								
+								<div *ngIf="f.gas_consumption.errors" class="invalid-feedback">
+									<div *ngIf="f.gas_consumption.errors.required">Gas consumption is required</div>
+									<div *ngIf="f.gas_consumption.errors.pattern" >Invalid Gas consumption</div>
+									<div *ngIf="f.gas_consumption.errors.maxlength">Gas consumption cannot exceed 13 characters</div>
+								</div>
+							</div>
+							
+						</div> 
+						
+						<div class="form-group row">          
+												
+							<div class="col-2">
+								<label>Oil Consumption <br>(liters) <span class="text-danger">*</span> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Oil consumption (liters)" matTooltipClass="tooltip-text-size" aria-tooltip="Oil consumption (liters)" matTooltipPosition="right"></i></label> 
+								<input type="text" formControlName="oil_consumption"  class="form-control" placeholder="0" [class.is-invalid]="f.oil_consumption.invalid && f.oil_consumption.touched">
+								
+								<div *ngIf="f.oil_consumption.errors" class="invalid-feedback">
+									<div *ngIf="f.oil_consumption.errors.required">Oil consumption is required</div>
+									<div *ngIf="f.oil_consumption.errors.pattern" >Invalid Oil consumption</div>
+									<div *ngIf="f.oil_consumption.errors.maxlength">Oil consumption cannot exceed 13 characters</div>
+								</div>
+							</div>
+							
+							<div class="col-2">
+								<label>Coal Consumption <br>(kg) <span class="text-danger">*</span> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Coal consumption (kg)" matTooltipClass="tooltip-text-size" aria-tooltip="Coal consumption (kg)" matTooltipPosition="right"></i></label> 
+								<input type="text" formControlName="coal_consumption"  class="form-control" placeholder="0" [class.is-invalid]="f.coal_consumption.invalid && f.coal_consumption.touched">
+								
+								<div *ngIf="f.coal_consumption.errors" class="invalid-feedback">
+									<div *ngIf="f.coal_consumption.errors.required">Coal consumption is required</div>
+									<div *ngIf="f.coal_consumption.errors.pattern" >Invalid Coal consumption</div>
+									<div *ngIf="f.coal_consumption.errors.maxlength">Coal consumption cannot exceed 13 characters</div>
+								</div>
+							</div>  
+
+							<div class="col-2">
+								<label>Fuelwood Consumption (kg) <span class="text-danger">*</span> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Fuelwood consumption (kg)" matTooltipClass="tooltip-text-size" aria-tooltip="Fuelwood consumption (kg)" matTooltipPosition="right"></i></label> 
+								<input type="text" formControlName="fuelwood_consumption"  class="form-control" placeholder="0" [class.is-invalid]="f.fuelwood_consumption.invalid && f.fuelwood_consumption.touched">
+								
+								<div *ngIf="f.fuelwood_consumption.errors" class="invalid-feedback">
+									<div *ngIf="f.fuelwood_consumption.errors.required">Fuelwood consumption is required</div>
+									<div *ngIf="f.fuelwood_consumption.errors.pattern" >Invalid Fuelwood consumption</div>
+									<div *ngIf="f.fuelwood_consumption.errors.maxlength">Fuelwood consumption cannot exceed 13 characters</div>
+								</div>
+							</div>
+							
+							<div class="col-2">
+								<label>Total energy consumption converted to kWh <span class="text-danger">*</span> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Total energy consumption converted to kWh" matTooltipClass="tooltip-text-size" aria-tooltip="Total energy consumption converted to kWh" matTooltipPosition="right"></i></label> 
+								<input type="text"  formControlName="total_energy_consumption_converted_to_kwh"  class="form-control" placeholder="0" [class.is-invalid]="f.total_energy_consumption_converted_to_kwh.invalid && f.total_energy_consumption_converted_to_kwh.touched">
+								
+								<div *ngIf="f.total_energy_consumption_converted_to_kwh.errors" class="invalid-feedback">
+									<div *ngIf="f.total_energy_consumption_converted_to_kwh.errors.required">Total energy consumption converted to kWh is required</div>
+									<div *ngIf="f.total_energy_consumption_converted_to_kwh.errors.pattern" >Invalid Total energy consumption converted to kWh</div>
+									<div *ngIf="f.total_energy_consumption_converted_to_kwh.errors.maxlength">Total energy consumption converted to kWh cannot exceed 13 characters</div>
+								</div>
+							</div>
+							
+							<div class="col-2">
+								<label>Total energy consumption (kWh / kg textile) <span class="text-danger">*</span> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Total energy consumption (kWh / kg textile)" matTooltipClass="tooltip-text-size" aria-tooltip="Total energy consumption (kWh / kg textile)" matTooltipPosition="right"></i></label> 
+								<input type="text"  formControlName="total_energy_consumption"  class="form-control" placeholder="0" [class.is-invalid]="f.total_energy_consumption.invalid && f.total_energy_consumption.touched">
+								
+								<div *ngIf="f.total_energy_consumption.errors" class="invalid-feedback">
+									<div *ngIf="f.total_energy_consumption.errors.required">Total energy consumption (kWh / kg textile) is required</div>
+									<div *ngIf="f.total_energy_consumption.errors.pattern" >Invalid Total energy consumption (kWh / kg textile)</div>
+									<div *ngIf="f.total_energy_consumption.errors.maxlength">Total energy consumption (kWh / kg textile) cannot exceed 13 characters</div>
+								</div>
+							</div>
+							
+							<div class="col-2">
+								<label>COD in waste water (mg/l) <span class="text-danger">*</span> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="COD (chemical oxigen demand) in waste water (mg/l)" matTooltipClass="tooltip-text-size" aria-tooltip="COD (chemical oxigen demand) in waste water (mg/l)" matTooltipPosition="right"></i></label> 
+								<input type="text" formControlName="cod_in_waste_water"  class="form-control" placeholder="0" [class.is-invalid]="f.cod_in_waste_water.invalid && f.cod_in_waste_water.touched">
+								
+								<div *ngIf="f.cod_in_waste_water.errors" class="invalid-feedback">
+									<div *ngIf="f.cod_in_waste_water.errors.required">COD (chemical oxigen demand) in waste water (mg/l) is required</div>
+									<div *ngIf="f.cod_in_waste_water.errors.pattern" >Invalid COD (chemical oxigen demand) in waste water (mg/l)</div>
+									<div *ngIf="f.cod_in_waste_water.errors.maxlength">COD (chemical oxigen demand) in waste water (mg/l) cannot exceed 13 characters</div>
+								</div>
+							</div>	
+							
+						</div>
+						
+						
+						<div class="form-group row">
+							
+
+						<div class="col-2">
+								<label>Total COD <br>(grams) <span class="text-danger">*</span> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Total COD (grams)" matTooltipClass="tooltip-text-size" aria-tooltip="Total COD (grams)" matTooltipPosition="right"></i></label> 
+								<input type="text"  formControlName="total_cod"  class="form-control" placeholder="0" [class.is-invalid]="f.total_cod.invalid && f.total_cod.touched">
+								
+								<div *ngIf="f.total_cod.errors" class="invalid-feedback">
+									<div *ngIf="f.total_cod.errors.required">Total COD (grams) is required</div>
+									<div *ngIf="f.total_cod.errors.pattern" >Invalid Total COD (grams)</div>
+									<div *ngIf="f.total_cod.errors.maxlength">Total COD (grams) cannot exceed 13 characters</div>
+								</div>
+							</div> 
+							
+							<div class="col-2">
+								<label>COD/kg textile output (g/kg) <span class="text-danger">*</span> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="COD/kg textile output (g/kg)" matTooltipClass="tooltip-text-size" aria-tooltip="COD/kg textile output (g/kg)" matTooltipPosition="right"></i></label> 
+								<input type="text"  formControlName="cod_textile_output"  class="form-control" placeholder="0" [class.is-invalid]="f.cod_textile_output.invalid && f.cod_textile_output.touched">
+								
+								<div *ngIf="f.cod_textile_output.errors" class="invalid-feedback">
+									<div *ngIf="f.cod_textile_output.errors.required">COD/kg textile output (g/kg) is required</div>
+									<div *ngIf="f.cod_textile_output.errors.pattern" >Invalid COD/kg textile output (g/kg)</div>
+									<div *ngIf="f.cod_textile_output.errors.maxlength">COD/kg textile output (g/kg) cannot exceed 13 characters</div>
+								</div>
+							</div>
+							
+							<div class="col-2">
+								<label>Wastage / Textile Output (g/kg) <span class="text-danger">*</span> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Wastage / Textile Output (g/kg)" matTooltipClass="tooltip-text-size" aria-tooltip="Wastage / Textile Output (g/kg)" matTooltipPosition="right"></i></label> 
+								<input type="text"  formControlName="wastage_textile_output"  class="form-control" placeholder="0" [class.is-invalid]="f.wastage_textile_output.invalid && f.wastage_textile_output.touched">
+								
+								<div *ngIf="f.wastage_textile_output.errors" class="invalid-feedback">
+									<div *ngIf="f.wastage_textile_output.errors.required">Wastage / Textile Output (g/kg) is required</div>
+									<div *ngIf="f.wastage_textile_output.errors.pattern" >Invalid Wastage / Textile Output (g/kg)</div>
+									<div *ngIf="f.wastage_textile_output.errors.maxlength">Wastage / Textile Output (g/kg) cannot exceed 13 characters</div>
+								</div>
+							</div>
+							
+							<div class="col-2"><br>
+								<label>Total Waste <span class="text-danger">*</span> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Total Waste" matTooltipClass="tooltip-text-size" aria-tooltip="Total Waste" matTooltipPosition="right"></i></label> 
+								<input type="text" formControlName="total_waste"  class="form-control" placeholder="0" [class.is-invalid]="f.total_waste.invalid && f.total_waste.touched">
+								
+								<div *ngIf="f.total_waste.errors" class="invalid-feedback">
+									<div *ngIf="f.total_waste.errors.required">Total Waste is required</div>
+									<div *ngIf="f.total_waste.errors.pattern" >Invalid Total Waste</div>
+									<div *ngIf="f.total_waste.errors.maxlength">Total Waste cannot exceed 13 characters</div>
+								</div>
+							</div>
+							
+							
+							<!-- <div class="col-4" *ngIf="auditor_comment_access">
+								<label>Auditor Comment <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Comments" matTooltipClass="tooltip-text-size" aria-tooltip="Comments" matTooltipPosition="right"></i>
+								<textarea formControlName="comments"  [class.is-invalid]="f.comments.invalid && f.comments.touched" rows="4" class="form-control" placeholder="Comments"></textarea>
+								<div *ngIf="f.comments.errors" class="invalid-feedback">
+									<div *ngIf="f.comments.errors.required">Comment is required</div>
+									<div *ngIf="f.comments.errors.pattern || f.comments.hasError('whitespace')" >Invalid Comment</div>
+								</div>
+							</div> -->
+
+							<div class="col-4" *ngIf="sufficient_access"><br>
+								<label>Sufficient <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Sufficient" matTooltipClass="tooltip-text-size" aria-tooltip="Sufficient" matTooltipPosition="right"></i>
+								<select formControlName="sufficient" [class.is-invalid]="f.sufficient.invalid && f.sufficient.touched" class="form-control select2">
+									<option value="">-- Sufficient --</option>
+									<option  *ngFor="let item of sufficientlist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+								</select>
+								<div *ngIf="f.sufficient.errors" class="invalid-feedback">
+									<div *ngIf="f.sufficient.errors.required" >Sufficient is required</div>
+								</div>
+							</div>
+							
+							
+						</div>              
+						
+									
+						<div class="col-lg-12 text-center mt-4 mb-4">
+							<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="addenvironment()">
+								<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+								{{editStatus == 1 ? 'Update' : 'Save'}}	
+							</button>
+							<button [disabled]="loading['button'] || buttonDisable" type="button" (click)="environmentFormreset()"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Reset</button>
+
+							<div class="clearfix"></div>
+								
+							
+						</div>
+					</form>	
+				<!--		
+				</div>
+				-->
+				
+				
+				
+			</div>
+			
+		</div>
+	</ng-container>
+	<div class="col-12 pad-left pad-right">
+		<table class="table table-bordered col-12 text-danger">
+			<tr>
+				<td>*1 m3 gas represents approx. 10 kWh</td>
+				<td>*1 liter oil represents approx. 10 kWh</td>	
+				<td>*1 kg coal represents approx. 8 kWh</td>	
+				<td>*1 kg fuelwood represents approx. 4 kWh</td>					
+			</tr>				
+		</table>
+	</div>
+</div>
+<div class="col-12 pad-left pad-right">
+	<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+</div>
+
+<ng-template #environmentDetails let-modal>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+	<div class="modal-body"  >
+		<div class="card-box enq-view">	
+			<table class="table-secondary m-b-15" *ngIf="EnvironmentData">
+				<tr>
+					<th width="20%">Year</th>
+					<td width="30%">{{ EnvironmentData.year }}</td>
+					<th width="20%">Total textile output (kg) (not limited to GOTS)</th>
+					<td width="30%">{{ EnvironmentData.total_production_output }}</td>
+				</tr>	
+				<tr>
+					<th width="20%">Total water consumption (m3)</th>
+					<td width="30%">{{ EnvironmentData.total_water_supplied }}</td>
+					<th width="20%">Water consumption (liters / kg product)</th>
+					<td width="30%">{{ EnvironmentData.water_consumption }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Electrical energy consumption (kWh)</th>
+					<td width="30%">{{ EnvironmentData.electrical_energy_consumption }}</td>
+					<th width="20%">Gas consumption (m3)</th>
+					<td width="30%">{{ EnvironmentData.gas_consumption }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Oil consumption (liters)</th>
+					<td width="30%">{{ EnvironmentData.oil_consumption }}</td>
+					<th width="20%">Coal consumption (kg)</th>
+					<td width="30%">{{ EnvironmentData.coal_consumption }}</td>
+				</tr>	
+				<tr>
+					<th width="20%">Fuelwood consumption (kg)</th>
+					<td width="30%">{{ EnvironmentData.fuelwood_consumption }}</td>
+					<th width="20%">Total energy consumption converted to kWh</th>
+					<td width="30%">{{ EnvironmentData.total_energy_consumption_converted_to }}</td>
+				</tr>	
+				<tr>
+					<th width="20%">Total energy consumption (kWh / kg product)</th>
+					<td width="30%">{{ EnvironmentData.total_energy_consumption }}</td>
+					<th width="20%">COD in waste water (mg/l)</th>
+					<td width="30%">{{ EnvironmentData.cod_in_waste_water }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Total COD (grams)</th>
+					<td width="30%">{{ EnvironmentData.total_cod }}</td>
+					<th width="20%">COD/kg textile output (g/kg)</th>
+					<td width="30%">{{ EnvironmentData.cod_textile_output }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Wastage / Textile Output (g/kg)</th>
+					<td width="30%">{{ EnvironmentData.wastage_textile_output }}</td>
+
+					<th width="20%">Total Solid Waste</th>
+					<td  width="30%">{{ EnvironmentData.total_waste }}</td>
+				</tr>
+				<tr *ngIf="sufficient_access">
+                    <th width="20%">Sufficient</th>
+					<td colspan="3">
+                        <span *ngIf="cond_viewonly">{{ EnvironmentData.sufficient_label }}</span>
+                        <form>
+                            <ng-container *ngIf="!cond_viewonly">
+                                <select name="sufficient" [(ngModel)]="model.sufficient"  class="form-control select2" (change)="changeSufficient(changeSufficientpopup,$event.target.value)" style="width: 35%;" >
+                                    <option value="">-- Sufficient --</option>
+                                    <option  *ngFor="let item of sufficientlist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+                                </select>
+                            </ng-container>
+                        </form>
+                    </td>
+                </tr>
+				<tr>
+					<th width="20%">Created By</th>
+					<td width="30%">{{ EnvironmentData.created_by_label }}</td>
+					<th width="20%">Created Date</th>
+					<td width="30%">{{ EnvironmentData.created_at }}</td>
+				</tr>	
+			</table>
+			<div style="text-align: center;">
+				<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="modal.dismiss('cancel click')" >Close</a>
+			</div>
+
+			<app-usermessage [success]="sufficientsuccess" [error]="sufficienterror"  ></app-usermessage>
+		</div>
+    </div>
+</ng-template>
+<ng-template #confirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to delete the data?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>
+<ng-template #changeSufficientpopup let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you change Sufficient?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>

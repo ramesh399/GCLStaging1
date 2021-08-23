@@ -1,0 +1,434 @@
+<div class="row"  >
+    <div class="col-12">
+        <div class="card-box table-responsive">
+        	<div class="row col-12 m-b-5 pad-right">
+              	<div class="col-8 pad-left">
+
+                <h4 class="page-title"><i class="fa fa-list-ul"></i> GCL Improvement System (GIS)</h4>
+
+                <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+                
+              	</div>
+               
+            </div>
+        
+            <div class="row col-12 m-b-5 pad-right">
+                <div class="col-10 text-left pad-left">
+                    <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                        <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+                    </select>
+					&nbsp;
+                	<select name="typeFilter" style="width: 150px;font-size:13px;" [(ngModel)]="service.typeFilter"  class="custom-select"  >
+						<option value="">-- All Type --</option>
+						<option  *ngFor="let item of typelist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+					</select>  
+					&nbsp;
+                	<select class="custom-select" style="width: auto; font-size:13px;" name="statusFilter" [(ngModel)]="service.statusFilter">
+                        <option value="">-- All Status --</option>
+						<option  *ngFor="let item of statuslist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+                    </select>
+					&nbsp;
+					<input style="width: 15%; display: inline-block;" class="form-control"  type="text" placeholder="Received From" matInput [matDatepicker]="from_date" [(ngModel)]="service.from_date" name="from_date" (click)="from_date.open()">
+					<mat-datepicker-toggle matSuffix  [for]="from_date"></mat-datepicker-toggle>
+					<mat-datepicker #from_date></mat-datepicker>
+					&nbsp;
+					<input  style="width: 15%; display: inline-block;" class="form-control" type="text" placeholder="Received To" matInput [matDatepicker]="to_date" (click)="to_date.open()"  name="to_date" [(ngModel)]="service.to_date" >
+					<mat-datepicker-toggle matSuffix  [for]="to_date"></mat-datepicker-toggle>
+					<mat-datepicker #to_date></mat-datepicker>
+                </div>             
+				<div class="col-2 text-right pad-left pad-right">
+					<input class="search-pad" type="text" style="width:178px !important;" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+				</div>
+            </div>
+
+
+
+            <div class="col-12 pad-left">
+                <table id="datatable" class="table table-bordered" >
+                    <thead>
+                    <tr>
+                        <th width="5%" scope="col" class="center">S.No</th>
+                        <th width="12%" scope="col">Type</th>	
+						<th scope="col">Title</th>
+						<th width="10%" scope="col">Date</th>
+						<th width="22%" scope="col">File</th>
+						<th class="text-center" scope="col">Status</th>	
+						<th class="text-center" scope="col">Action</th>	
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let gislogEntry of Gislog$ | async; let i=index; ">
+                        <td scope="row" class="center">{{ 1+i+ service.pageNo }}</td>                       						
+						<td><ngb-highlight [result]="gislogEntry.type_label"  [term]="service.searchTerm"></ngb-highlight></td>
+						<td><ngb-highlight [result]="gislogEntry.title"  [term]="service.searchTerm"></ngb-highlight></td>
+						<td ><ngb-highlight [result]="gislogEntry.received_date"  [term]="service.searchTerm"></ngb-highlight></td>
+						<td><a href="javascript:void(0);" *ngIf="gislogEntry.gis_file" (click)="downloadgisFile(gislogEntry.id,'gisfile',gislogEntry.gis_file);openmodal(downloading);" > <i class="fa fa-download" ></i>&nbsp;{{ gislogEntry.gis_file }}</a></td>
+						<td width="10%" class="center">{{ gislogEntry.status_label }}</td>
+						<td width="10%" class="center">
+							<a href="javascript:void(0);" (click)="viewGis(gisDetails,gislogEntry)" title="View" alt="View"> <i class="fa fa-eye"></i> </a>
+							<a href="javascript:void(0);" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('edit_gis')" (click)="editGis(i,gislogEntry)" title="Edit" alt="Edit" class="pl-2"> <i class="fa fa-edit"></i> </a>
+							<a href="javascript:void(0);" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('delete_gis')"  (click)="removeGis(confirmcontent,gislogEntry)" title="Delete" alt="Delete"  class="pl-2"> <i class="fa fa-trash text-danger"></i> </a>
+						</td>
+                    </tr>
+                    <tr  *ngIf="(Gislog$ | async)?.length==0" >
+                        <td colspan="7" class="center">{{ commontxt.norecords }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="row col-12 pad-left pad-right">
+				<div class="col-6">
+					<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+					<div *ngIf="!(service.loading$ | async)">
+					Displaying {{ (Gislog$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (Gislog$ | async).length }} of {{ (total$ | async) }} results.
+					</div>
+				</div>
+				<div class="col-6 pad-right text-right">						
+				<ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+					<ng-template ngbPaginationFirst>First</ng-template>
+					<ng-template ngbPaginationPrevious>Prev</ng-template>
+					<ng-template ngbPaginationNext>Next</ng-template>			  
+					<ng-template ngbPaginationLast>Last</ng-template>			  
+				</ngb-pagination>						
+				</div>
+			</div>
+   		</div>
+	</div>
+</div>
+
+
+
+
+<div class="row" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('add_gis') || (userdetails.rules.includes('edit_gis') && gisData)">
+    <div class="col-12">
+		<div class="col-12 pad-left">
+			<div class="add card-box table-responsive enq-view">     
+												  
+					<div class="col-12 row pad-right">
+							
+							<div class="tabDiv col-6">
+							<h3>{{editStatus == 1 ? 'Update' : 'Add'}} GCL Improvement System</h3> 
+
+								
+								<form  [formGroup]="form">
+									<div class="form-group row">
+										<div class="col-6">
+											<label>Received <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Received Date" matTooltipClass="tooltip-text-size" aria-tooltip="Received Date" matTooltipPosition="right"></i><br>
+											<input readonly  style="width: 70%; display: inline;float:left;" type="text" formControlName="received_date" class="form-control" placeholder="Date" [class.is-invalid]="f.received_date.invalid && f.received_date.touched" matInput [matDatepicker]="received_date" (click)="received_date.open()">
+											<mat-datepicker-toggle matSuffix  [for]="received_date"></mat-datepicker-toggle>
+											<mat-datepicker #received_date></mat-datepicker>
+											
+											<div *ngIf="f.received_date.errors" class="invalid-feedback">
+												<div *ngIf="f.received_date.errors.required">Received Date is required</div>
+											</div>
+										</div>
+										<div class="col-6">
+											<label>Type <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Type" matTooltipClass="tooltip-text-size" aria-tooltip="Type" matTooltipPosition="right"></i>
+											<select formControlName="type" class="form-control select2" [class.is-invalid]="f.type.invalid && f.type.touched">
+												<option value="">-- Type --</option>
+												<option  *ngFor="let item of typelist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+											</select>     
+											
+											<div *ngIf="f.type.errors" class="invalid-feedback">
+												<div *ngIf="f.type.errors.required">Type is required</div>
+											</div>
+										</div>
+									</div>
+
+									<div class="form-group row">
+										<div class="col-12">
+											<label>Title <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Title" matTooltipClass="tooltip-text-size" aria-tooltip="Title" matTooltipPosition="right"></i>
+											<input type="text" formControlName="title"  class="form-control" placeholder="Title" [class.is-invalid]="f.title.invalid && f.title.touched">
+											
+											<div *ngIf="f.title.errors" class="invalid-feedback">
+												<div *ngIf="f.title.errors.required">Title is required</div>
+												<div *ngIf="f.title.errors.pattern || f.title.hasError('whitespace')" >Invalid Title</div>
+											</div>
+										</div>
+									</div>
+
+									<div class="form-group row">
+										<div class="col-12">
+											<label>Details <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Details" matTooltipClass="tooltip-text-size" aria-tooltip="Details" matTooltipPosition="right"></i>
+											<textarea formControlName="description" placeholder="Description" [class.is-invalid]="f.description.invalid && f.description.touched" rows="4" class="form-control"></textarea>
+											<div *ngIf="f.description.errors" class="invalid-feedback">
+												<div *ngIf="f.description.errors.required">Details is required</div>
+												<div *ngIf="f.description.errors.pattern || f.description.hasError('whitespace')" >Invalid Details</div>
+											</div>
+										</div>
+									</div>
+
+									<div class="form-group row">
+										<div class="col-6">
+											<label>Status <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Status" matTooltipClass="tooltip-text-size" aria-tooltip="Status" matTooltipPosition="right"></i>
+											<select formControlName="status" class="form-control select2" [class.is-invalid]="f.status.invalid && f.status.touched">
+												<option value="">-- Status --</option>
+												<option  *ngFor="let item of statuslist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+											</select>     
+											
+											<div *ngIf="f.status.errors" class="invalid-feedback">
+												<div *ngIf="f.status.errors.required">Status is required</div>
+											</div>
+										</div>
+									</div>
+
+									<div class="form-group row">
+
+										<div class="col-12">
+											<label>File <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="File" matTooltipClass="tooltip-text-size" aria-tooltip="File" matTooltipPosition="right"></i><br>
+											<input type="file" formControlname="gis_file" (change)="gisfileChange($event)" style="width:184px"  >
+											<br><div style="font-size:11px;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs}}<span *ngIf="!last">, </span> </span></div>
+											<div *ngIf="gis_file" style="padding:5px; border:1px solid #cecece; background-color: beige; height:32px;width: 100%;">
+												<span>{{ gis_file }}</span>
+												<a href="javascript:void(0);"  (click)="removegisFile()" style="color:red; font-weight:bold;margin-right: 5px;float:right;" >X</a>
+												
+											</div>
+											<div *ngIf="gisFileErr" class="validationerror" >
+												{{gisFileErr}}
+											</div>
+										</div>
+									</div>
+
+								
+								
+								<div class="col-lg-12 text-center mt-4 mb-4">
+									<button [disabled]="loading['button']" (click)="addgis()" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+										<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+										{{editStatus == 1 ? 'Update' : 'Save'}}
+									</button>
+									&nbsp;&nbsp;
+									<button [disabled]="loading['button']" (click)="resetgis()" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2">
+										<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+										Reset
+									</button>
+										<div class="clearfix"></div>
+											
+										
+								</div>
+								
+								
+								
+								</form>
+							</div>
+							<div class="tabDiv col-6 pad-right" *ngIf="this.gisData">
+								
+								<div style="float:right;">
+									<a href="javascript:void(0);" (click)="addlog(logEntry)" title="Add Log" alt="Add Log"> <i class="fa fa-plus"></i> </a>
+								</div>							
+								<h3>Log</h3>
+								
+								<!--
+								<button [disabled]="loading['button']" (click)="addlog(logEntry)" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" style="margin-left: 5px;">
+									<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+									Add Log
+								</button>
+								-->							
+								
+								<div class="tbl-sec pl-0 pr-0">
+									<span *ngIf="loading['logdata']" class="spinner-border spinner-border-sm mr-1"></span>
+									<table *ngIf="!loading['logdata']" id="datatable" class="table table-bordered tab-bor col-12" >
+										<thead>
+										<tr>
+											<th width="5%" scope="col" class="center">S.No</th>
+											<th scope="col">Date</th>	
+											<th scope="col">Type</th>	
+											<th class="text-center" scope="col">Details</th>	
+											<th width="10%" scope="col" class="text-center">Action</th>
+										</tr>
+										</thead>
+										<tbody>
+											<tr *ngIf="gislogEntries?.length==0">
+												<td colspan="5" class="center">No logs Added</td>
+											</tr>
+											<tr *ngFor="let gislogEntry of gislogEntries; let i=index; ">
+												<td scope="row" class="center">{{  1+ i }}</td>
+												<td>{{ gislogEntry.log_date }}</td>
+												<td>{{ gislogEntry.type_label }}</td>
+												<td>{{ gislogEntry.description }}</td>
+												<!-- *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('edit_inspection_time')"-->
+												<td  class="center">
+													<a href="javascript:void(0);" (click)="editGislog(logEntry,i,gislogEntry)" title="Edit" alt="Edit" > <i class="fa fa-edit"></i> </a>
+													&nbsp;
+													<a href="javascript:void(0);" (click)="removeGislog(confirmcontent,gislogEntry)" title="Delete" alt="Delete"  > <i class="fa fa-trash text-danger"></i> </a>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						
+																		
+																			
+						
+						
+						
+							
+					</div>
+				 
+			</div>
+		</div>	
+    </div>
+</div>
+<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+<ng-template #downloading let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+        Please wait, your file is downloading ...
+    </div>
+</ng-template>
+
+<ng-template #gisDetails let-modal>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+	<div class="modal-body" style="font-size:16px;">
+		<div class="card-box enq-view">	
+			<table class="table-secondary m-b-15" *ngIf="gislogData">
+				<tr>
+					<th width="20%">Title</th>
+					<td width="30%">{{ gislogData.title }}</td>
+					<th width="20%">Received Date</th>
+					<td width="30%">{{ gislogData.received_date }}</td>
+				</tr>	
+				<tr>
+					<th width="20%">Gis File</th>
+					<td width="30%"><a href="javascript:void(0);" *ngIf="gislogData.gis_file" (click)="downloadgisFile(gislogData.id,'gisfile',gislogData.gis_file);openmodal(downloading);" > <i class="fa fa-download" ></i>&nbsp;{{ gislogData.gis_file }}</a></td>
+					<th width="20%">Type</th>
+					<td width="30%">{{ gislogData.type_label }}</td>
+				</tr>	
+				<tr>
+					<th width="20%">Status</th>
+					<td width="30%">{{ gislogData.status_label }}</td>
+					<th width="20%">Created at</th>
+					<td width="30%">{{ gislogData.created_at }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Description</th>
+					<td colspan="3">{{ gislogData.description }}</td>
+				</tr>
+			</table>
+		</div>
+        <div class="tbl-sec pl-0 pr-0" >
+        	<span *ngIf="loading['logviewdata']" class="spinner-border spinner-border-sm mr-1"></span>
+        	<ng-container >
+				<table id="datatable" class="table table-bordered tab-bor col-12" style="font-size: 13px;" >
+					<thead>
+					<tr>
+						<th colspan="4" scope="col" class="center">Logs</th>
+					</tr>
+					<tr>
+						<th width="5%" scope="col" class="center">S.No</th>
+						<th width="10%" scope="col">Log Date</th>	
+						<th width="20%" scope="col">Type</th>	
+						<th scope="col">Description</th>	
+					</tr>
+					</thead>
+					<tbody>
+						<tr *ngIf="gislogviewEntries?.length==0">
+							<td colspan="4" class="center">No Log Added</td>
+						</tr>
+						<tr *ngFor="let gislogEntry of gislogviewEntries; let i=index; ">
+							<td scope="row" class="center">{{  1+ i }}</td>
+							<td>{{ gislogEntry.log_date }}</td>
+							<td>{{ gislogEntry.type_label }}</td>
+							<td>{{ gislogEntry.description }}</td>
+						</tr>
+					</tbody>
+				</table>
+			</ng-container>
+
+			<div style="text-align: center;">
+				<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="modal.dismiss('cancel click')" >Close</a>
+			</div>
+		</div>
+    </div>
+</ng-template>
+
+<ng-template #logEntry let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">{{editLogStatus == 1 ? 'Update' : 'Add'}} Log</h4>		
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<div class="alert alert-success" *ngIf="logsuccess">{{logsuccess}}</div>
+		<div *ngIf="!logsuccess" >
+			<form [formGroup]="logForm">
+				<div class="form-group" >					
+					<div class="col-6">
+						<label for="date">Date <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Date" matTooltipClass="tooltip-text-size" aria-tooltip="Date" matTooltipPosition="right"></i><br>
+						<input readonly  style="width: 70%; display: inline;float:left;" type="text" formControlName="date" class="form-control" placeholder="Date" matInput [matDatepicker]="date" (click)="date.open()" [class.is-invalid]="sf.date.invalid && sf.date.touched">
+						<mat-datepicker-toggle matSuffix  [for]="date"></mat-datepicker-toggle>
+						<mat-datepicker #date></mat-datepicker>
+						<!--
+		                <input type="text" style="display:inline;float:left;" name="date" [(ngModel)]="model.date" class="form-control" placeholder="Date" matInput [matDatepicker]="date" (click)="date.open()">
+		                <mat-datepicker-toggle matSuffix  [for]="date" style="float:left;"></mat-datepicker-toggle>
+		                <mat-datepicker #date></mat-datepicker>
+						-->		
+						<div *ngIf="sf.date.errors" class="invalid-feedback">
+							<div *ngIf="sf.date.errors.required">Date is required</div>						
+						</div>
+					</div>			
+					<div *ngIf="date_error" class="validationerror">Date cannot be blank.</div>
+				</div>
+				
+				
+				<div class="form-group">					
+					<div class="col-6">
+						<label for="type">Type <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Type" matTooltipClass="tooltip-text-size" aria-tooltip="Type" matTooltipPosition="right"></i>
+						<select formControlName="type"  class="form-control select2" [class.is-invalid]="sf.type.invalid && sf.type.touched">
+								<option value="">-- Type --</option>
+								<option  *ngFor="let item of logtypelist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+						</select>
+						<div *ngIf="sf.type.errors" class="invalid-feedback">
+							<div *ngIf="sf.type.errors.required">Type is required</div>												
+						</div>						
+					</div>
+					<div class="validationerror" *ngIf="type_error">Please select the Type</div>
+				</div>
+			
+				<div class="form-group">
+					<div class="col-12">
+					    <label for="description">Details <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Details" matTooltipClass="tooltip-text-size" aria-tooltip="Details" matTooltipPosition="right"></i>
+						<textarea placeholder="Details" formControlName="description" rows="4" class="form-control" [class.is-invalid]="sf.description.invalid && sf.description.touched"></textarea>
+						<div *ngIf="sf.description.errors" class="invalid-feedback">
+							<div *ngIf="sf.description.errors.required">Details is required</div>
+							<div *ngIf="sf.description.errors.pattern || sf.description.hasError('whitespace')" >Invalid Details</div>							
+						</div>
+					</div> 
+					<div class="validationerror" *ngIf="description_error">Please enter the Details</div>
+					
+				</div>
+				
+			
+			</form>
+		</div>
+	</div>
+	<div class="modal-footer" *ngIf="!logsuccess">
+		<button type="button" class="btn btn-success " [disabled]="loading['logsbutton']" (click)="submitLogAction();">
+			<span *ngIf="loading['logsbutton']" class="spinner-border spinner-border-sm mr-1"></span>{{editLogStatus == 1 ? 'Update' : 'Save'}}</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">
+			<span *ngIf="loading['logsbutton']" class="spinner-border spinner-border-sm mr-1"></span>Cancel</button>
+	</div>
+</ng-template>
+
+<ng-template #confirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to delete the data?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>

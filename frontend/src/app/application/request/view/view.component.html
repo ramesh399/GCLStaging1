@@ -1,0 +1,1043 @@
+<div class="row">
+    <div class="col-12 row pad-right" >
+		<div class="col-8">
+			<h4 class="page-title">View Application</h4>
+		</div>
+		<div class="col-4 text-right pad-right">
+			<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/application/list']" >Back</a>
+		</div>
+	</div>
+</div>
+<div class="row col-12" *ngIf="apploading"><span  class="spinner-border spinner-border-sm mr-1"></span></div>
+<div class="row" *ngIf="applicationdata && !apploading">
+    <div class="col-12">
+        <div class="add card-box table-responsive details-view">
+<!--		
+<div class="row" *ngIf="applicationdata" >
+    <div class="col-sm-12 mat-accordion">
+	-->
+			<!--<app-application-product-list id="314"></app-application-product-list>-->
+			<div class="clearfix"></div>
+			
+			<div class="m-t-5" style="margin-bottom:10px;" *ngIf="applicationdata.audit_type!='1'">
+				<mat-accordion>
+					<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+						<mat-expansion-panel-header>
+							<mat-panel-title>View Parent Application Details</mat-panel-title>
+						</mat-expansion-panel-header>
+						
+						<div class="row" *ngIf="applicationdata" >
+							<div class="col-sm-12">
+								<div class="clearfix"></div>			
+								<app-appdetail [id]="applicationdata.parent_app_id" ></app-appdetail>							
+							</div>				
+						</div>
+					</mat-expansion-panel>                
+				</mat-accordion>
+			</div>
+			
+			
+			<form #appform="ngForm"  >
+				<div class="clearfix"></div>
+				
+
+	 
+					
+					<h3>Application Details</h3>
+					<table class="table-secondary m-b-15">
+						<tr>
+							<th width="20%">Number</th>
+							<td width="30%">{{ applicationdata.code }}</td>
+							<th width="20%">Created Date &amp; Time</th>
+							<td width="30%">{{ applicationdata.created_at }}</td>
+						</tr>
+						<tr>
+							<th width="20%">Created By</th>
+							<td width="30%">{{ applicationdata.created_by }}</td>
+							<th width="20%">Application Type</th>
+							<td width="30%">{{ applicationdata.audit_type_label }}</td>
+						</tr>
+						<tr>
+							<th width="20%">Status</th>
+							<td width="30%">{{ applicationdata.status }}</td>
+							<th width="20%">Tax/GST File</th>
+							<td width="30%"><a *ngIf="applicationdata.company_file" href="javascript:void(0);" (click)="downloadCompanyFile(applicationdata.company_file);open(downloading,'',appform);" ><i class="fa fa-download" ></i>&nbsp;{{ applicationdata.company_file }}</a></td>
+						</tr>
+						<tr *ngIf="applicationdata.tax_no">
+							<th width="20%">Tax no./NTN No./GST No./VAT No</th>
+							<td colspan="3">{{ applicationdata.tax_no }}</td>
+						</tr>
+					</table>
+					
+					
+					
+					<h3>Company Details</h3>
+					<table class="table-secondary m-b-15">
+						<tr>
+							<th width="20%">Company Name</th>
+							<td width="30%">{{ applicationdata.company_name }}</td>
+							<th width="20%">Postal Code</th>
+							<td width="30%">{{ applicationdata.zipcode }}</td>
+						</tr>
+						<tr>
+							<th width="20%">Address</th>
+							<td width="30%">{{ applicationdata.address }}</td>
+							<th width="20%">Country</th>
+							<td width="30%">{{ applicationdata.country_id_name }}</td>
+						</tr>
+						<tr>
+							<th width="20%">State</th>
+							<td width="30%">{{ applicationdata.state_id_name }}</td>
+							<th width="20%">City</th>
+							<td width="30%">{{ applicationdata.city }}</td>
+						</tr>
+					</table>
+					
+					<!-- <div class="mat-accordion">
+						<div class="card-box enq-view">
+							<h3>Main Contact Person</h3>
+							<ul>
+								<li><span class="label-pad">Salutation</span>   <span class="name-pad">{{ applicationdata.salutation_name }}</span></li>
+								<li><span class="label-pad">Name</span>   <span class="name-pad">{{ applicationdata.first_name }} {{ applicationdata.last_name }}</span></li>				
+								<li><span class="label-pad">Job Title</span>   <span class="name-pad">{{ applicationdata.job_title }}</span></li>				
+								<li><span class="label-pad">Telephone</span>   <span class="name-pad">{{ applicationdata.telephone }}</span></li>
+								<li><span class="label-pad">Email Address</span>   <span class="name-pad">{{ applicationdata.email_address }}</span></li>					
+							</ul>
+						</div>
+					</div> -->
+					
+					<div *ngIf="userdetails?.user_type!=2 && applicationdata?.franchise">						
+						<h3>OSS Details</h3>
+						<table class="table-secondary m-b-15">
+							<tr>
+								<th width="20%">Company Name</th>
+								<td width="30%">{{ applicationdata.franchise.company_name }}</td>
+								<th width="20%">Contact Name</th>
+								<td width="30%">{{ applicationdata.franchise.contact_name }}</td>
+							</tr>
+							<tr>
+								<th width="20%">Telephone</th>
+								<td width="30%">{{ applicationdata.franchise.company_telephone }}</td>
+								<th width="20%">Country</th>
+								<td width="30%">{{ applicationdata.franchise.company_country_name }}</td>
+							</tr>
+							<tr>
+								<th width="20%">City</th>
+								<td width="30%">{{ applicationdata.franchise.company_city }}</td>
+								<th width="20%">Email Address</th>
+								<td width="30%">{{ applicationdata.franchise.company_email }}</td>
+							</tr>
+						</table>						
+					</div>
+					 
+					<h3>Standard Information</h3>
+					<table class="table-secondary m-b-15">
+						<tr>
+							<th width="20%">Standard(s)</th>
+							<td width="80%">
+								<ul>
+									<li *ngFor="let standard of applicationdata.standards; ">
+									<span>{{ standard }}</span></li>
+								</ul>
+							</td>
+						</tr>
+					</table>	
+
+					<div class="m-b-5" *ngIf="applicationdata.applicationcertifiedbyothercb && applicationdata.applicationcertifiedbyothercb.length>0">
+						<h3>Already Certified Details</h3>
+						<table class="table table-bordered col-12">
+							<thead>
+							<tr>
+								<th scope="col" class="center" style="width: 5%;">S.No</th>
+								<th scope="col"  style="width: 12%;">Standard</th>
+								<th scope="col"  >Certification Body</th>
+								<th scope="col" class="center" style="width: 12%;">Validity Date</th>
+								<th scope="col" >Certification File</th>
+							</tr>
+							</thead>
+							<tbody>
+								<ng-container *ngFor="let application of applicationdata.applicationcertifiedbyothercb; index as i">
+									<tr>
+										<td scope="row" class="center">{{  1+ i }}</td>
+										<td >{{ application.standard_name }}</td>
+										<td >{{ application.certification_body_name }}</td>
+										<td class="center">{{ application.validity_date }}</td>
+										<td><span class="name-pad" *ngIf="application.certification_file"><a href="javascript:void(0);" (click)="downloadcertificateFile(application.id,application.certification_file);openmodal(downloading);" ><i class="fa fa-download" ></i>&nbsp;{{ application.certification_file }}</a></span></td>
+											
+									</tr> 
+									
+								</ng-container>               
+							</tbody>
+						</table>
+					</div>
+
+
+					<h3>Consultant Details</h3>
+					<table class="table-secondary m-b-15">
+						<tr>
+							<th width="20%">Consultant Name</th>
+							<td width="30%">{{ applicationdata.consultant_name }}</td>
+							<th width="20%">Consultancy Company</th>
+							<td width="30%">{{ applicationdata.consultancy_company }}</td>
+						</tr>
+					</table>
+
+					
+					<h3>Product Details</h3>
+					<table class="table table-bordered col-12 m-b-15">
+						<thead>
+						<tr>
+							<th scope="col" class="center">S.No</th>
+							<th scope="col"  >Product Category</th>
+							<th scope="col"  >Type of Product</th>
+							<th scope="col" class="center" >Wastage (%)</th>
+							<th scope="col" >Material Composition</th>
+							<th scope="col"  >Standard</th>
+							<th scope="col"  >Label Grade</th>
+						</tr>
+						</thead>
+						<tbody>
+							<ng-container *ngFor="let product of applicationdata.productDetails; index as i">
+								<tr>
+									<td scope="row" class="center"   >{{  1+ i }}</td>
+									<td >{{ product.name }}</td>
+									<td >{{ product.product_type_name }}</td>
+									<td class="center">{{ product.wastage }}</td>
+									<td >
+										{{ product.materialcompositionname }}
+									</td>
+									<td>{{ product.standard_name }}</td>
+									<td>{{ product.label_grade_name }}</td>
+								</tr> 
+								
+							</ng-container>               
+						</tbody>
+					</table>					
+
+					
+					
+										
+					<h3>Facility Details</h3>
+					<div *ngFor="let unit of applicationdata.units; index as i" style="margin-bottom:5px;" >
+					<mat-accordion >
+						<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true" [expanded]="applicationdata.app_status==arrEnumStatus['submitted']">
+							<mat-expansion-panel-header>
+								<mat-panel-title>
+								{{ unit.unit_type_name}} : {{ unit.name }}
+								</mat-panel-title>
+							</mat-expansion-panel-header>							
+							
+							<h3>{{ unit.unit_type_name}} Details</h3>
+							<table class="table-secondary m-b-15">
+								<tr>
+									<th width="20%">Name</th>
+									<td width="30%">{{ unit.name }}</td>
+									<th width="20%">Postal Code</th>
+									<td width="30%">{{ unit.zipcode }}</td>
+								</tr>
+								<tr>
+									<th width="20%">Address</th>
+									<td colspan="3">{{ unit.address }}</td>
+								</tr>
+								<tr>
+									<th width="20%">Country</th>
+									<td width="30%">{{ unit.country_id_name }}</td>
+									<th width="20%">State</th>
+									<td width="30%">{{ unit.state_id_name }}</td>
+								</tr>
+								<tr>
+									<th width="20%">City</th>
+									<td width="30%">{{ unit.city }}</td>
+									<th width="20%">No. of Employees</th>
+									<td width="30%">{{ unit.no_of_employees }}</td>
+								</tr>
+							</table>
+							
+							<h3>{{ unit.unit_type_name}} Product Details</h3>						 
+							<table class="table table-bordered col-12 m-b-15">
+								<thead>
+								<tr>
+									<th scope="col" class="center">S.No</th>
+									<th scope="col"  >Product Category</th>
+									<th scope="col"  >Type of Product</th>
+									<th scope="col" class="center" >Wastage (%)</th>
+									<th scope="col" >Material Composition</th>
+									<th scope="col"  >Standard</th>
+									<th scope="col"  >Label Grade</th>
+								</tr>
+								</thead>
+								<tbody>
+									 
+										<tr *ngFor="let product of unit?.product_details; index as is;">
+											<td scope="row" class="center"   >{{  1+ is }}</td>
+											<td >{{ product.name }}</td>
+											<td >{{ product.product_type_name }}</td>
+											<td class="center">{{ product.wastage }}</td>
+											<td >
+												{{ product.materialcompositionname }}
+											</td>
+											<td>{{ product.standard_name }}</td>
+											<td>{{ product.label_grade_name }}</td>
+										</tr> 
+											  
+								</tbody>
+							</table>
+														
+							
+							<h3>Standard Information</h3>
+							<table class="table-secondary m-b-15">
+								<tr>
+									<th width="20%">Standard(s)</th>
+									<td width="80%">
+										<ul>
+											<li *ngFor="let standard of unit.standarddetails; ">
+											<span>{{ standard.name }}</span></li>
+										</ul>
+									</td>
+								</tr>
+							</table>						
+							
+							<!--
+							<div class="row col-12 pad-left pad-right">
+								<div class="col-9">
+									<h3>Business Sector Information</h3> 
+								</div>
+								<div class="col-3">
+									<span class="blink_me text-danger fa-lg">NEXT ACTION</span>
+								</div>	
+							</div>
+							-->
+							
+							
+							
+							<div class="col-12 row enq-view pad-right">
+								<div class="col-8" style="border-bottom: 1px solid #d7d7d7;color:#0b6fc8;font-size:16px;padding-left:0px;">
+									<h3 style="border-bottom:none;">Business Sector Information</h3> 
+								</div>
+								<div class="col-4 text-right pad-right text-danger" style="border-bottom: 1px solid #d7d7d7;font-size:16px;">
+									<span class="blink_me" *ngIf="applicationdata?.app_status==arrEnumStatus['submitted']  && (userdetails.resource_access==1 || userType==3 || (userType==1 && userdetails.rules.includes('submit_for_review')))">NEXT ACTION</span>
+								</div>
+							</div>
+							<ul *ngIf="applicationdata?.app_status <= arrEnumStatus['submitted'] && userType==2">
+								<li *ngFor="let bsector of unit.bsectorsdetails | keyvalue" >
+									<div class="row col-12">
+										{{ bsector.value }}
+									</div>
+								</li>
+							</ul>
+							<table class="table table-bordered" *ngIf="(applicationdata?.app_status <= arrEnumStatus['submitted'] && applicationdata?.app_status != arrEnumStatus['pending_with_customer'] ) && userType!=2">
+								<tr *ngFor="let bsector of unit.bsectorsdetails | keyvalue">
+									<td>
+										
+										 
+										<div class="row col-12 pad-left pad-right" >
+											<div class="col-3 p-t-10">
+												<label class="text-primary">Business Sector Group for {{ bsector.value }}</label>
+											</div>
+											<div class="col-4" *ngIf="applicationdata?.app_status==arrEnumStatus['submitted']  && (userdetails.resource_access==1 || userType==3 || (userType==1 && userdetails.rules.includes('submit_for_review')))">
+												<mat-select (selectionChange)="getBusinessSectorgpUsers($event.value,unit.id,bsector.key);" [(ngModel)]="bsector_group_id['qtd_'+unit.id+'_'+bsector.key]" name="qtd_{{unit.id}}_{{bsector.key}}" #bsectorgp="ngModel" placeholder="Business Sector Group *" multiple class="form-control select2" >
+													<mat-select-trigger>
+													<span *ngIf="bsectorgp.value?.length == 1" >{{bsectorgp.value ?  '1 selected' : ''}}</span>
+													<span *ngIf="bsectorgp.value?.length > 1" class="example-additional-selection">
+														{{bsectorgp.value.length}} {{ 'selected' }}														
+													</span>
+													</mat-select-trigger>
+													<mat-option *ngFor="let bsec of unit.bsectorsusers[bsector.key]" [value]="bsec.id"  [disabled]="applicationdata.audit_type==3">{{bsec.group_code}}</mat-option>
+												</mat-select>
+											</div>
+										</div>
+										
+										<!--
+										<div class="mat-accordion col-12 pad-left pad-right m-t-10" *ngIf="applicationdata?.app_status > arrEnumStatus['submitted']">
+											<table class="table table-bordered bgsector" style="font-size:13px; line-height:27px; width:40%;">
+												<thead>
+												<tr>
+													<th class="center" width="5%">S.No</th>
+													<th width="25%">Business Sector Group</th>
+												</tr>
+												</thead>
+												<tbody>
+												<ng-container  *ngIf="unit.selunitgpsarrlists && unit.selunitgpsarrlists[unit.id] && unit.selunitgpsarrlists[unit.id][bsector.key] && unit.selunitgpsarrlists[unit.id][bsector.key].length>0">
+													<tr *ngFor="let bsec of unit.selunitgpsarrlists[unit.id][bsector.key]; index as isu;" >
+														<td class="center">{{ 1+ isu }}</td>
+														<td>{{ bsec.group_code }}</td>
+													</tr>
+												</ng-container>
+												
+												<ng-container *ngIf="!unit.selunitgpsarrlists || !unit.selunitgpsarrlists[unit.id] || !unit.selunitgpsarrlists[unit.id][bsector.key]">
+													<tr>
+														<td colspan="4" class="center">No Business Group Selected</td>
+													</tr>
+												</ng-container>
+												</tbody>
+											</table>									
+										</div>
+										-->
+
+										<div class="mat-accordion col-12 pad-left pad-right m-t-10" *ngIf="applicationdata?.app_status==arrEnumStatus['submitted']  && (userdetails.resource_access==1 || userType==3 || (userType==1 && userdetails.rules.includes('submit_for_review')))">
+											<b>Resources</b>
+											<table class="table table-bordered bgsector" style="font-size:13px; line-height:27px;">
+												<thead>
+												<tr>
+													<th class="center" width="5%">S.No</th>
+													<th width="25%">Business Sector Group</th>
+													<th>Available Auditor(s)</th>
+													<th>Available Technical Expert(s)</th>
+												</tr>
+												</thead>
+												<tbody>
+												<ng-container>
+													<tr *ngFor="let bsec of filtersectorlist(unit.id,bsector.key); index as isu;" >
+														<td class="center">{{ 1+ isu }}</td>
+														<td>{{ bsec.group_code }}</td>
+														<td>{{ bsec.users }}</td>
+														<td>{{ bsec.technicalexpert }}</td>
+													</tr>
+												</ng-container>
+												
+												<ng-container *ngIf="filtersectorlist(unit.id,bsector.key).length <=0">
+													<tr>
+														<td colspan="4" class="center">No Business Group Selected</td>
+													</tr>
+												</ng-container>
+												</tbody>
+											</table>									
+										</div>
+									</td>
+								</tr>
+							</table>
+							
+							
+							<table class="table-secondary m-b-15" *ngIf="applicationdata?.app_status > arrEnumStatus['submitted']">
+								<tr *ngFor="let bsector of unit.bsectorsdetails | keyvalue">
+									<th width="20%">{{ bsector.value }}</th>
+									<td width="80%">
+										<ng-container  *ngIf="unit.selunitgpsarrlists && unit.selunitgpsarrlists[unit.id] && unit.selunitgpsarrlists[unit.id][bsector.key] && unit.selunitgpsarrlists[unit.id][bsector.key].length>0">
+											<span *ngFor="let bsec of unit.selunitgpsarrlists[unit.id][bsector.key]; index as isu; let isLast=last;" >
+												{{ bsec.group_code }}{{isLast ? '' : ', '}}
+											</span>
+										</ng-container>										
+									</td>
+								</tr>								
+							</table>								
+							
+							
+							<!--
+							<ul class="bg-warning">
+								<li *ngFor="let bsector of unit.bsectorsdetails | keyvalue" >
+								<div class="row col-12">
+									<div class="col-4">{{ bsector.value }}</div>
+									<div class="col-4" *ngIf="applicationdata?.app_status==arrEnumStatus['submitted']  && (userdetails.resource_access==1 || userType==3 || (userType==1 && userdetails.rules.includes('submit_for_review')))">
+										<mat-select (selectionChange)="getBusinessSectorgpUsers($event.value,unit.id,bsector.key);" [(ngModel)]="bsector_group_id['qtd_'+unit.id+'_'+bsector.key]" name="qtd_{{unit.id}}_{{bsector.key}}" #bsectorgp="ngModel" placeholder="Business Sector Group *" multiple class="form-control select2" >
+											<mat-select-trigger>
+											<span *ngIf="bsectorgp.value?.length == 1" >{{bsectorgp.value ?  '1 selected' : ''}}</span>
+											<span *ngIf="bsectorgp.value?.length > 1" class="example-additional-selection">
+												{{bsectorgp.value.length}} {{ 'selected' }}														
+											</span>
+											</mat-select-trigger>
+											<mat-option *ngFor="let bsec of unit.bsectorsusers[bsector.key]" [value]="bsec.id"  [disabled]="applicationdata.audit_type==3">{{bsec.group_code}}</mat-option>
+										</mat-select>
+									</div>
+									
+								</div>
+								<div class="mat-accordion col-12" *ngIf="applicationdata?.app_status > arrEnumStatus['submitted']">
+									<table class="table table-bordered bgsector" style="font-size:13px; line-height:27px; width:40%;">
+										<thead>
+										<tr>
+											<th class="center" width="5%">S.No</th>
+											<th width="25%">Business Sector Group</th>
+										</tr>
+										</thead>
+										<tbody>
+										<ng-container  *ngIf="unit.selunitgpsarrlists && unit.selunitgpsarrlists[unit.id] && unit.selunitgpsarrlists[unit.id][bsector.key] && unit.selunitgpsarrlists[unit.id][bsector.key].length>0">
+											<tr *ngFor="let bsec of unit.selunitgpsarrlists[unit.id][bsector.key]; index as isu;" >
+												<td class="center">{{ 1+ isu }}</td>
+												<td>{{ bsec.group_code }}</td>
+											</tr>
+										</ng-container>
+										
+										<ng-container *ngIf="!unit.selunitgpsarrlists || !unit.selunitgpsarrlists[unit.id] || !unit.selunitgpsarrlists[unit.id][bsector.key]">
+											<tr>
+												<td colspan="4" class="center">No Business Group Selected</td>
+											</tr>
+										</ng-container>
+										</tbody>
+									</table>									
+								</div>
+
+								<div class="mat-accordion col-12" *ngIf="applicationdata?.app_status==arrEnumStatus['submitted']  && (userdetails.resource_access==1 || userType==3 || (userType==1 && userdetails.rules.includes('submit_for_review')))">
+									<b>Resources</b>
+									<table class="table table-bordered bgsector" style="font-size:13px; line-height:27px;">
+										<thead>
+										<tr>
+											<th class="center" width="5%">S.No</th>
+											<th width="25%">Business Sector Group</th>
+											<th>Available Auditor(s)</th>
+											<th>Available Technical Expert(s)</th>
+										</tr>
+										</thead>
+										<tbody>
+										<ng-container>
+											<tr *ngFor="let bsec of filtersectorlist(unit.id,bsector.key); index as isu;" >
+												<td class="center">{{ 1+ isu }}</td>
+												<td>{{ bsec.group_code }}</td>
+												<td>{{ bsec.users }}</td>
+												<td>{{ bsec.technicalexpert }}</td>
+											</tr>
+										</ng-container>
+										
+										<ng-container *ngIf="filtersectorlist(unit.id,bsector.key).length <=0">
+											<tr>
+												<td colspan="4" class="center">No Business Group Selected</td>
+											</tr>
+										</ng-container>
+										</tbody>
+									</table>									
+								</div>
+							
+								</li>
+							</ul>
+							-->							
+													
+							<div class="mat-accordion">								
+								<h3>{{ unit.unit_type_name}} Process Details</h3>
+								<table class="table-secondary m-b-15">
+									<tr>
+										<th width="20%">Process(es)</th>
+										<td width="80%"><span *ngFor="let prs of unit.process; let isLast=last;" >{{ prs }}{{isLast ? '' : ', '}}</span></td>
+									</tr>
+									<tr *ngIf="applicationdata.audit_type == 3">
+										<th width="20%">Process Addition</th>
+										<td width="80%"  ><span *ngFor="let prs of unit.new_process; let isLast=last;" >{{ prs }}{{isLast ? '' : ', '}}</span></td>
+									</tr>
+								</table>								
+							</div>
+							
+							<div *ngIf="unit.certified_standard">
+								<h3>{{ unit.unit_type_name}} Certified Standard Details</h3>
+								<table class="table table-bordered">
+									<thead>
+									<tr>
+										<th class="center">S.No</th>
+										<th>Standard</th>
+										<th>License Number</th>
+										<th class="center">Expiry Date</th>
+										<th>Attachment</th>
+									</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let cstandard of unit.certified_standard; index as i">
+											<td class="center">{{i+1}}</td>
+											<td>{{ cstandard.standard }}</td>
+											<td>{{ cstandard.license_number }}</td>
+											<td class="center">{{ cstandard.expiry_date }}</td>
+											<td>
+												<span *ngFor="let file of cstandard.files; let isLast=last;" >
+												
+													<a href="javascript:void(0);" (click)="downloadFile(file.id,file.name);openmodal(downloading);" ><i class="fa fa-download" ></i>&nbsp;{{ file.name }}</a>
+													
+													{{isLast ? '' : ', '}}
+											</span></td>
+										</tr>                
+									</tbody>
+								</table>
+							</div>						
+						</mat-expansion-panel>                
+					</mat-accordion>
+				</div>	
+						
+					
+				
+				<div *ngIf="applicationdata?.app_status == arrEnumStatus['osp_reject']" style="margin-top:20px;">
+					<h3>Rejected Details</h3>
+					<table class="table-secondary m-b-15">
+						<tr>
+							<th width="20%">Date</th>
+							<td width="30%">{{ applicationdata.rejected_date }}</td>
+							<th width="20%">Comments</th>
+							<td width="30%">{{ applicationdata.reject_comment }}</td>
+						</tr>
+					</table>				
+				</div>
+
+					
+					
+					
+					<div class="un-lst" *ngIf="applicationdata?.applicationreviews" ><h3>Application Review</h3></div> 
+			 
+					<mat-accordion *ngFor="let applicationreview of applicationdata.applicationreviews; index as i">
+						<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+							<mat-expansion-panel-header>
+								<mat-panel-title>
+								  Review {{ i+1 }}
+								</mat-panel-title>
+							</mat-expansion-panel-header>
+							<div class="card-box enq-view">
+							
+								<h3>Reviewer Details</h3>
+
+								<table class="table-secondary m-b-15">
+									<tr>
+										<th width="20%">Reviewer</th>
+										<td width="30%">{{ applicationreview.reviewer }}</td>
+										<th width="20%">Answer</th>
+										<td width="30%">{{ applicationreview.answer_name }}</td>
+									</tr>
+									<tr>
+										<th width="20%">Status</th>
+										<td width="30%">{{ applicationreview.status_name }}</td>
+										<th width="20%">Reviewed Date</th>
+										<td width="30%">{{ applicationreview.updated_at }}</td>
+									</tr>
+									<tr>
+										<th width="20%">Review Risk Assessment Result</th>
+										<td width="30%">{{ applicationreview.review_result_name }}</td>
+										<th width="20%">Comments</th>
+										<td width="30%">{{ applicationreview.status_comments }}</td>
+									</tr>
+								</table>
+								
+								
+								
+		
+								<div  *ngIf="userdetails?.user_type==1 || userdetails?.user_type==3" >
+									<h3 *ngIf="applicationreview?.reviewcomments.length>0">Reviewer Comments</h3>
+									
+									<div class="page-title-box">
+										<div *ngFor="let reviewcomment of applicationreview.reviewcomments; index as i">	
+											<div class="qustion">
+											<h5>{{ 1+i }}. {{ reviewcomment.question }}</h5>
+											{{ reviewcomment.answer }}
+											<p [innerHTML]="reviewcomment.comment"></p>
+											
+											</div>
+										</div>  
+									</div>
+		
+									<h3 *ngIf="applicationreview?.unitreviewcomments.length>0">Facility Review Comments</h3>
+									
+									<div class="page-title-box" *ngFor="let unitreviewcomment of applicationreview.unitreviewcomments; index as i" >
+		
+										<mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false" [expanded]="true">
+											<mat-expansion-panel-header>
+												<mat-panel-title>
+													Unit: {{ unitreviewcomment.unit_name }}
+												</mat-panel-title>
+											</mat-expansion-panel-header>
+											<div *ngFor="let unitreviewcomment of unitreviewcomment.reviews; index as j">	
+												<div class="qustion">
+													<h5>{{ 1+j }}. {{ unitreviewcomment.question }}</h5>
+													{{ unitreviewcomment.answer }}
+													<p [innerHTML]="unitreviewcomment.comment"></p>
+												</div>
+											</div>  
+										</mat-expansion-panel>
+		
+									</div>
+								</div>
+								
+								
+								
+								
+								
+							</div>
+						</mat-expansion-panel>                
+					</mat-accordion>
+					
+					<ng-container *ngIf="applicationdata?.applicationchecklistcmt && applicationdata?.applicationchecklistcmt.length>0" >
+						<div class="un-lst" *ngIf="applicationdata?.applicationchecklistcmt" ><h3>Application Checklist</h3></div> 
+
+						<mat-accordion *ngIf="applicationdata?.applicationchecklistcmt" >
+							<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+								<mat-expansion-panel-header>
+									<mat-panel-title>
+										Application Checklist Details
+									</mat-panel-title>
+								</mat-expansion-panel-header>
+								<div class="card-box enq-view">
+									<div class="page-title-box">
+										<div *ngFor="let checklistcmt of applicationdata?.applicationchecklistcmt; index as i">	
+											<div class="qustion">
+											<h5>{{ 1+i }}. {{ checklistcmt.question }}</h5>
+											<b>{{ checklistcmt.answer }}</b>
+											<p [innerHTML]="checklistcmt.comment"></p>
+											<span class="label-pad" *ngIf="checklistcmt.document">Document :</span>&nbsp;&nbsp;<span class="name-pad" *ngIf="checklistcmt.document"><a href="javascript:void(0);" (click)="downloadChecklistFile(checklistcmt.id,checklistcmt.document);openmodal(downloading);" ><i class="fa fa-download" ></i>&nbsp;{{ checklistcmt.document }}</a></span>	
+											</div>
+										</div>  
+									</div>
+								</div>
+							</mat-expansion-panel>
+						</mat-accordion>
+					</ng-container>
+					
+					<ng-container *ngIf="applicationdata?.applicationapprovals?.length>0">
+						<div class="un-lst" ><h3>Approval Details</h3></div> 
+				
+						<mat-accordion *ngFor="let applicationapproval of applicationdata.applicationapprovals; index as i">
+							<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+								<mat-expansion-panel-header>
+									<mat-panel-title>
+									Approval {{ i+1 }}
+									</mat-panel-title>
+								</mat-expansion-panel-header>
+								<div class="card-box enq-view">
+									<table class="table-secondary m-b-15">
+										<tr>
+											<th width="20%">Approver</th>
+											<td width="30%">{{ applicationapproval.approver_name }}</td>
+											<th width="20%">Status</th>
+											<td width="30%">{{ applicationapproval.status_name }}</td>
+										</tr>
+										<tr>
+											<th width="20%">Comments</th>
+											<td width="30%">{{ applicationapproval.comment }}</td>
+											<th width="20%" *ngIf="applicationapproval.status==1">Approved Date</th>
+											<td width="30%" *ngIf="applicationapproval.status==1">{{ applicationapproval.updated_at }}</td>
+											<th width="20%" *ngIf="applicationapproval.status==2">Rejected Date</th>
+											<td width="30%" *ngIf="applicationapproval.status==2">{{ applicationapproval.updated_at }}</td>
+										</tr>
+									</table>
+								</div>
+							</mat-expansion-panel>                
+						</mat-accordion>
+					</ng-container>
+					
+					
+					
+					
+					<div class="text-right m-t-10">
+						
+						<button type="button" *ngIf="applicationdata?.showedit_view && (applicationdata.app_status== arrEnumStatus['open'] || applicationdata.app_status==arrEnumStatus['pending_with_customer'] || applicationdata.app_status==arrEnumStatus['submitted']) && (userType==2 || userType==3 || userdetails.resource_access=='1' || ((userType==3 ||userType==1) && userdetails.rules.includes('update_application')) )"  [disabled]="loading" class="btn but-cust green m-b-5 m-r-5" (click)="editRedirect(applicationdata.id)" >
+									<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+							Edit</button>
+						<!-- *ngIf="(applicationdata?.app_status==arrEnumStatus['submitted'])  && (userdetails.resource_access==1 || userType==3 || ((userType==1) && userdetails.rules.includes('submit_for_review')) )"  -->
+
+						<button type="button" *ngIf="(applicationdata?.app_status==arrEnumStatus['submitted'])  && (userdetails.resource_access==1 || userType==3 || (userType==1 && userdetails.rules.includes('osp_reject')) )"  [disabled]="loading" class="btn but-cust green m-b-5 m-r-5" (click)="open(rejectOSPConfirmContent,'ospreject',appform)" >
+							<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+							Reject
+						</button>
+						
+						<button type="button" [disabled]="loading" class="btn but-cust green m-b-5 m-r-5" *ngIf="(userdetails.resource_access==1 || userType==3 || userType==2 ) && applicationdata.canChangeMaterialComp" (click)="editProduct(productEntryDetails)" style="width:320px;">
+							<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+							Change Product Material Composition
+						</button>
+
+						<button type="button" *ngIf="(applicationdata?.app_status==arrEnumStatus['submitted'])  && (userdetails.resource_access==1 || userType==3 || (userType==1 && userdetails.rules.includes('submit_for_review')) )"  [disabled]="loading" class="btn but-cust green m-b-5 m-r-5" (click)="open(submitreviewconfirmcontent,'submitforreview',appform)" >
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+						Submit for Review</button>
+
+						<button type="button" *ngIf="(applicationdata?.app_status==arrEnumStatus['review_in_process'] || applicationdata?.app_status== arrEnumStatus['pending_with_customer'] || applicationdata?.app_status==arrEnumStatus['review_completed']) && (userdetails.resource_access==1 || ((userType==3 || userType==1) && userdetails.rules.includes('assign_application_reviewer')) )" [disabled]="loading" class="btn but-cust blue m-b-5 m-r-10" (click)="open(changereviewercontent,'',appform)" >
+									<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+							Change Reviewer</button>
+
+							
+
+						<button type="button" *ngIf="(applicationdata?.app_status==arrEnumStatus['waiting_for_review'])  && (userdetails.resource_access==1 || ((userType==3 || userType==1) && userdetails.rules.includes('assign_application_reviewer')) )" [disabled]="loading" class="btn but-cust green m-b-5 m-r-5" (click)="open(content,'',appform)" >
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+						Assign Reviewer</button>
+
+						<button type="button" *ngIf="(applicationdata?.app_status==arrEnumStatus['waiting_for_review'])  && (userdetails.resource_access==1 || ((userType==3 || userType==1) && userdetails.rules.includes('application_review')) )" [disabled]="loading" class="btn but-cust green m-b-5 m-r-5" (click)="open(reviewconfirmcontent,'',appform)" >
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+						Assign as Reviewer</button>
+
+
+						 
+						
+						<!-- <button type="button" *ngIf="(applicationdata?.app_status!=arrEnumStatus['approved'] && applicationdata?.hasapprover==1 ) && (userdetails.resource_access==1 || ((userType==3 || userType==1) && userdetails.rules.includes('assign_application_approver')) )" [disabled]="loading" class="btn but-cust blue m-b-5 m-r-10" (click)="open(changeapprovercontent)" >
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+						Change Approver</button> 
+
+						
+
+						
+
+
+						<button type="button" *ngIf="(applicationdata?.app_status==arrEnumStatus['review_completed']) && (userdetails.resource_access==1 || ((userType==3 || userType==1) && userdetails.rules.includes('assign_application_approver')) ) " [disabled]="loading" class="btn but-cust green m-b-5 m-r-5" (click)="open(approvercontent)" >
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+						Assign Approver</button>
+
+						<button type="button" *ngIf="(applicationdata?.app_status==arrEnumStatus['review_completed']) && (userdetails.resource_access==1 || ((userType==3 || userType==1) && userdetails.rules.includes('application_approval')) ) " [disabled]="loading" class="btn but-cust green m-b-5" (click)="open(selfapproverconfirmcontent)" >
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+						Assign as Approver</button>
+						-->
+						<!--(applicationdata?.app_status==arrEnumStatus['review_in_process']) && (userdetails.resource_access==1 || ((userType==3 || userType==1) && userdetails.rules.includes('application_review') && -->
+						<a href="javascript:void(0);" [routerLink]="['/application/review/checklist']" [queryParams]="{id:applicationdata.id}" *ngIf="applicationdata?.showApplicationReview"  class="btn btn-success  m-b-5"   >
+							<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+							Application Review</a>
+						
+						
+							<!--(applicationdata?.app_status==arrEnumStatus['approval_in_process']) && (userdetails.resource_access==1 || ((userType==3 || userType==1) && userdetails.rules.includes('application_review') && applicationdata?.approverid==userdetails.user_id ) )-->
+						<button type="button" *ngIf="applicationdata?.showApplicationApprove" [disabled]="loading" class="btn but-cust green m-b-5" (click)="open(approverConfirmContent,'',appform)" style="width:188px;">
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+							Application Review Decision</button>
+						
+					</div>
+					
+					<div class="card-box enq-view">
+						
+					</div>
+			</form>
+		</div>
+    </div>				
+</div>
+<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+<ng-template #rejectOSPConfirmContent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Reject Application</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<form>
+		<div class="form-group">
+			<label for="status">Comment(s)</label>
+			<div class="input-group">
+						
+				<textarea name="comment" [(ngModel)]="model.reject_comment" rows="4" style="width:100%; display:inline;" ></textarea>
+				 
+				<div class="validationerror" *ngIf="reject_comment_error"  >Please enter the comment</div>
+			</div>
+		</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+		<button type="button" class="btn btn-success " (click)="checkUserSel('ospreject')">Save</button>
+	</div>
+</ng-template>
+
+
+<ng-template #submitreviewconfirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+			Are you sure, do you want to submit this application for review?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('submitforreview')">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>
+<ng-template #reviewconfirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+			Are you sure, do you want to assign this application to you as reviewer?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('selfreviewer')">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>
+
+<ng-template #selfapproverconfirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to assign this application to you as approver?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+		
+	</div>
+</ng-template>
+
+
+<ng-template #changereviewercontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Change Reviewer</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<form>
+		<div class="form-group">
+			<label for="user_id">User</label>
+			<div class="input-group">
+						
+				<select name="user_id" [(ngModel)]="model.user_id"  class="form-control select2" style="width:320px; display:inline;" >
+						<option value="">-- User --</option>
+						<option *ngFor="let user of revieweruserList" value= {{user.id}}>{{ user.first_name+' '+user.last_name }}</option>
+				</select>     
+				<div class="validationerror" *ngIf="user_id_error"  >Please select the user</div>
+			</div>
+		</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="checkUserSel('','change')">Save</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>
+
+
+
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Assign Reviewer</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form>
+        <div class="form-group">
+            <label for="user_id">User</label>
+            <div class="input-group">
+                     
+                <select name="user_id" [(ngModel)]="model.user_id"  class="form-control select2" style="width:320px; display:inline;" >
+                        <option value="">-- User --</option>
+                        <option *ngFor="let user of revieweruserList" value= {{user.id}}>{{ user.first_name+' '+user.last_name }}</option>
+                </select>     
+                <div class="validationerror" *ngIf="user_id_error"  >Please select the user</div>
+            </div>
+        </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="checkUserSel()">Save</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+    </div>
+</ng-template>
+
+<ng-template #changeapprovercontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Change Approver</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<form>
+		<div class="form-group">
+			<label for="user_id">User</label>
+			<div class="input-group">
+						
+
+				<select name="user_id" [(ngModel)]="model.approver_user_id"  class="form-control select2" style="width:320px; display:inline;" >
+						<option value="">-- User --</option>
+						<option *ngFor="let user of approveruserList" value= {{user.id}}>{{ user.first_name+' '+user.last_name }}</option>
+				</select>     
+				<div class="validationerror" *ngIf="user_id_error"  >Please select the user</div>
+			</div>
+		</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="checkUserSel('approver','change')">Save</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>
+
+<ng-template #approvercontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Assign Approver</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<form>
+		<div class="form-group">
+			<label for="user_id">User</label>
+			<div class="input-group">
+						
+
+				<select name="user_id" [(ngModel)]="model.approver_user_id"  class="form-control select2" style="width:320px; display:inline;" >
+						<option value="">-- User --</option>
+						<option *ngFor="let user of approveruserList" value= {{user.id}}>{{ user.first_name+' '+user.last_name }}</option>
+				</select>     
+				<div class="validationerror" *ngIf="user_id_error"  >Please select the user</div>
+			</div>
+		</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="checkUserSel('approver')">Save</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>
+ 
+
+<ng-template #approverConfirmContent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Approve Decision</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<form>
+		<div class="form-group">
+			<label for="status">Status <span class="text-danger">*</span></label>
+			<div class="input-group">
+						
+
+				<select name="status" [(ngModel)]="model.status"  class="form-control select2" style="width:120px; display:inline;" >
+						<option value="">-- Status --</option>
+						<option *ngFor="let status of approvalStatusList" value= {{status.id}}>{{ status.name }}</option>
+				</select>     
+				
+			</div>
+			<div class="validationerror" *ngIf="status_error"  >Please select the status</div>
+		</div>
+		<div class="form-group">
+			<label for="status">Comment(s)</label>
+			<div class="input-group">
+						
+				<textarea name="comment" [(ngModel)]="model.comment" rows="4" style="width:100%; display:inline;" ></textarea>
+				 
+				<div class="validationerror" *ngIf="comment_error"  >Please enter the comment</div>
+			</div>
+		</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="checkUserSel('statusapproval')">Save</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>
+
+<ng-template #downloading let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Please wait, your file is downloading ...
+	</div>
+</ng-template>
+
+
+<ng-template #productEntryDetails let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title"> Change Product Material Composition</h4>		
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+			<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	
+	<div class="modal-body">
+		<app-application-product-list [id]="id"></app-application-product-list>				
+	</div>
+	
+	<div class="modal-footer" >
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Close</button>
+	</div>	
+	
+</ng-template>
+		 

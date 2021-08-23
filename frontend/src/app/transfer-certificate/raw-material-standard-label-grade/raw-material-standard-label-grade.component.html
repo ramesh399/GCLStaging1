@@ -1,0 +1,178 @@
+<div class="row"  >
+    <div class="col-12">
+        <div class="card-box table-responsive">
+        	<div class="row col-12 m-b-5 pad-right">
+              	<div class="col-8 pad-left">
+                <h4 class="page-title"><i class="fa fa-list-ul"></i> {{title}}</h4>
+                <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+                
+              	</div>
+               
+            </div>
+        
+            <div class="row col-12 m-b-5 pad-right">
+                <div class="col-4 text-left pad-left">
+                    <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                        <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+                    </select>
+                </div>
+				
+                <div class="col-4 text-right">    
+					<mat-select style="width: 45%;font-size:13px;" placeholder="-- Standard --" #standardFilter name="standardFilter" [(ngModel)]="service.standardFilter" multiple class="custom-select"  >
+					<mat-select-trigger>
+					<span *ngIf="standardFilter.value?.length == 1" >{{standardFilter.value ?  getSelectedValue(standardFilter.value) : ''}}</span>
+					<span *ngIf="standardFilter.value?.length > 1" class="example-additional-selection">
+						{{standardFilter.value.length}} {{ 'selected' }}
+					</span>
+					</mat-select-trigger>
+					<mat-option *ngFor="let std of standardList" [value]="std.id">{{std.name}}</mat-option>
+					</mat-select>            	
+                </div>
+               	
+                <div class="col-4 text-right pad-right" >
+                     <input class="search-pad" type="text" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+                </div>
+            </div>
+
+
+
+            <div class="col-12 pad-left">
+                <table id="datatable" class="table table-bordered" >
+                    <thead>
+                    <tr>
+                        <th width="5%" scope="col" class="center">S.No</th>
+                        <th scope="col" sortable="name" (sort)="onSort($event)">Standard Label Grade</th>
+						<th scope="col" sortable="standard_id_label" (sort)="onSort($event)">Standard</th>	
+						<th width="12%" scope="col">Created By</th>						
+						<th width="12%" class="center" scope="col">Created Date</th>
+						<th class="text-center" scope="col">Action</th>	
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let entry of StandardLabelGrade$ | async; let i=index;">
+                        <td scope="row" class="center">{{ 1+i+ service.pageNo }}</td>                       								
+						<td><ngb-highlight [result]="entry.name"  [term]="service.searchTerm"></ngb-highlight></td>
+						<td><ngb-highlight [result]="entry.standard_id_label"  [term]="service.searchTerm"></ngb-highlight></td>
+						<td><ngb-highlight [result]="entry.created_by_label"  [term]="service.searchTerm"></ngb-highlight></td>						
+						<td><ngb-highlight [result]="entry.created_at"  [term]="service.searchTerm"></ngb-highlight></td>
+						<td  width="10%" class="center">							
+							<a href="javascript:void(0);" *ngIf="canEditData" (click)="editData(i,entry)" title="Edit" alt="Edit"> <i class="fa fa-edit"></i> </a>							
+							<a href="javascript:void(0);" *ngIf="canDeleteData" (click)="removeData(confirmcontent,i,entry)" title="Delete" alt="Delete"  class="pl-2"> <i class="fa fa-trash text-danger"></i> </a>
+						</td>
+                    </tr>
+                    <tr  *ngIf="(StandardLabelGrade$ | async)?.length==0" >
+                        <td colspan="7" class="center">{{ commontxt.norecords }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="row col-12 pad-left pad-right">
+				<div class="col-6">
+					<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+					<div *ngIf="!(service.loading$ | async)">
+					Displaying {{ (StandardLabelGrade$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (StandardLabelGrade$ | async).length }} of {{ (total$ | async) }} results.
+					</div>
+				</div>
+				<div class="col-6 pad-right text-right">						
+				<ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+					<ng-template ngbPaginationFirst>First</ng-template>
+					<ng-template ngbPaginationPrevious>Prev</ng-template>
+					<ng-template ngbPaginationNext>Next</ng-template>			  
+					<ng-template ngbPaginationLast>Last</ng-template>			  
+				</ngb-pagination>						
+				</div>
+			</div>
+   		</div>
+	</div>
+</div>
+
+
+
+
+<div class="row" *ngIf=" canAddData || (canEditData && curData)">
+    <div class="col-12">
+        <div class="add card-box table-responsive enq-view">
+                    
+			<h3>{{title}}</h3>                              			
+				
+			<form  [formGroup]="form">
+
+				<div class="form-group row">
+				    <!--
+					<div class="col-6">
+						<label>Standard <span class="text-danger">*</span></label>
+						<mat-select placeholder="-- Standard --" formControlName="standard_id" multiple class="form-control select2" [class.is-invalid]="f.standard_id.invalid && f.standard_id.touched">
+							<mat-select-trigger>
+							<span *ngIf="f.standard_id.value?.length == 1" >{{f.standard_id.value ? getSelectedValue(f.standard_id.value): ''}}</span>
+							<span *ngIf="f.standard_id.value?.length > 1" class="example-additional-selection">
+								{{f.standard_id.value.length}} {{ 'selected' }}
+							</span>
+							</mat-select-trigger>
+							<mat-option *ngFor="let item of standardList" [value]="item.id">{{item.name}}</mat-option>
+						</mat-select>  
+						<div *ngIf="f.standard_id.errors" class="invalid-feedback">
+							<div *ngIf="f.standard_id.errors.required">Standard is required</div>
+						</div>
+					</div>
+					-->
+					
+					<div class="col-6">
+						<label>Standard <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Standard" matTooltipClass="tooltip-text-size" aria-tooltip="Standard" matTooltipPosition="right"></i>
+						<select formControlName="standard_id" [class.is-invalid]="f.standard_id.invalid && f.standard_id.touched" class="form-control select2">
+							<option value="">-- Standard --</option>
+							<option *ngFor="let item of standardList" value = {{item.id}}>{{item.name}}</option>
+						</select>
+						<div *ngIf="f.standard_id.errors" class="invalid-feedback">
+							<div *ngIf="f.standard_id.errors.required" >Standard is required</div>
+						</div>	
+					</div>
+					
+					<div class="col-6">
+						<label>Name <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Label Grade Name" matTooltipClass="tooltip-text-size" aria-tooltip="Label Grade Name" matTooltipPosition="right"></i>
+						<input type="text" formControlName="name"  class="form-control" placeholder="Name" [class.is-invalid]="f.name.invalid && f.name.touched">
+						<div *ngIf="f.name.errors" class="invalid-feedback">
+							<div *ngIf="f.name.errors.required" >Name is required</div>
+							<div *ngIf="f.name.errors.pattern || f.name.hasError('whitespace')" >Invalid Name</div>
+							<div *ngIf="f.name.errors.maxlength">Name cannot exceed 255 characters</div>
+							<div *ngIf="f.name.errors.incorrect">Invalid Name</div>
+						</div>
+					</div>												
+				</div>													
+				
+				<div class="col-lg-12 text-center mt-4 mb-4">
+					<button [disabled]="loading['button']" (click)="addData()" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+						<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+						{{editStatus == 1 ? 'Update' : 'Save'}}		
+					</button>&nbsp;&nbsp;										
+					<button [disabled]="loading['button']" (click)="formReset()" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2" style="margin-left: 5px;">
+						<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+						Reset
+					</button>
+											
+					<div class="clearfix"></div>
+						
+					<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+				</div>										
+			
+			</form>				
+             
+        </div>
+    </div>
+</div>
+
+<ng-template #confirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to delete the data?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>

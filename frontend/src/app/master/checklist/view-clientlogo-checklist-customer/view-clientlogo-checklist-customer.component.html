@@ -1,0 +1,44 @@
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+        <div class="page-title-box p-b-30">
+            <h4 class="page-title">View Customer Client Logo Checklist Question Details</h4>
+            <div class="clearfix"></div>
+            <div class="text-right float-right">
+                <a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/master/clientlogo-checklist-customer/list']" >Back</a>
+            </div>
+        </div>		
+    </div>
+</div>
+
+<div class="row" *ngIf="auditreviewerdata">
+    <div class="col-12">
+                            
+        <div class="card-box enq-view enq-view-det" *ngIf="auditreviewerdata.name">
+            <h3>Name</h3>                     
+            <p>{{ auditreviewerdata.name }}</p>                
+        </div>	
+
+        <div class="card-box enq-view enq-view-det" *ngIf="auditreviewerdata.interpretation">
+            <h3>Interpretation</h3>                     
+            <p>{{ auditreviewerdata.interpretation }}</p>                
+        </div>	
+        
+
+        <div class="card-box enq-view enq-view-det" *ngIf="auditreviewerdata.standard">
+            <h3>Standard</h3>                     
+            <p>{{ auditreviewerdata.standard_label }}</p>                
+        </div>
+
+        <div class="card-box enq-view">                   
+            <ul>
+                <li><span class="label-pad">File Upload Required</span>  -  <span class="name-pad">{{ auditreviewerdata.file_upload_required_label }}</span></li>                    
+            </ul> 				
+        </div> 
+        
+        <div class="text-right">                
+            <button type="button" class="btn but-cust green m-b-5 ml-2" [routerLink]="['/master/clientlogo-checklist-customer/list']" >Back to List</button>                
+        </div>
+        
+    </div>
+</div> <!-- end row -->

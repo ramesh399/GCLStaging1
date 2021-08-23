@@ -1,0 +1,331 @@
+<!-- Page-Title -->
+<!--
+<div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box p-b-30">
+                <h4 class="page-title">Enquiry View</h4>
+                <div class="clearfix"></div>
+                <div class="text-right float-right">
+                    <a *ngIf="fromdashboard" class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="dashboardlink" (click)="clrStorageVal()">Back</a>
+                    <a *ngIf="!fromdashboard" class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/enquiry/list']" [queryParams]="{type:type}">Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+	
+	<i class="fa fa-arrow-left" aria-hidden="true"></i>
+	-->
+	
+	<div class="col-12 row pad-right" >
+		<div class="col-8">
+			<h4 class="page-title">Enquiry View</h4>
+		</div>
+		<div class="col-4 text-right pad-right">
+			<a *ngIf="fromdashboard" class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="dashboardlink" (click)="clrStorageVal()"><i class="fa fa-arrow-left text-white"></i> Back</a>
+            <a *ngIf="!fromdashboard" class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/enquiry/list']" [queryParams]="{type:type}"><i class="fa fa-arrow-left text-white"></i>  Back</a>
+		</div>
+	</div>
+
+    <form #form="ngForm" (ngSubmit)="logForm(form.value)">
+    <div class="row" *ngIf="enquirydata">
+        <div class="col-12">
+            <!-- <div class="card-box enq-view">
+                <h3>Customer Details</h3>                     
+                <ul>
+                    <li><span class="label-pad">First Name</span> -  <span class="name-pad">{{ enquirydata.first_name }}</span></li>
+                    <li><span class="label-pad">Last Name</span>  -  <span class="name-pad">{{ enquirydata.last_name }}</span></li>
+                    <li><span class="label-pad">Telephone</span> -  <span class="name-pad">{{ enquirydata.phone_code +' '+enquirydata.telephone }}</span></li>
+                    <li><span class="label-pad">E-Mail</span> -  <span class="name-pad"><a href="mailto:{{ enquirydata.email }}">{{ enquirydata.email }}</a></span></li>
+                    <li><span class="label-pad">Country</span> -  <span class="name-pad">{{ enquirydata.country_id }}</span></li>
+                    <li><span class="label-pad">State</span> -  <span class="name-pad">{{ enquirydata.state_id }}</span></li>
+                </ul>
+                
+            </div> -->
+			<div class="add card-box table-responsive details-view p-t-10">
+				<h3>Company Details</h3>
+				<table class="table-secondary m-b-15">
+					<tr>
+						<th width="20%">Company Name</th>
+						<td width="30%">{{ enquirydata.company_name }}</td>
+						<th width="20%">Contact Name</th>
+						<td width="30%">{{ enquirydata.contact_name }}</td>
+					</tr>
+					
+					<tr>
+						<th width="20%">Telephone</th>
+						<td width="30%">{{ enquirydata.company_phone_code +' '+enquirydata.company_telephone }}</td>
+						<th width="20%">E-Mail</th>
+						<td width="30%"><a href="mailto:{{ enquirydata.company_email }}">{{ enquirydata.company_email }}</a></td>
+					</tr>
+					
+					<tr>
+						<th width="20%">Website</th>
+						<td width="30%"><a target="_blank" href="{{ enquirydata.company_website }}">{{ enquirydata.company_website }}</a></td>
+						<th width="20%">Country</th>
+						<td width="30%">{{ enquirydata.company_country_id }}</td>
+					</tr>	
+					
+					<tr>
+						<th width="20%">State</th>
+						<td width="30%">{{ enquirydata.company_state_id }}</td>
+						<th width="20%">Town/City</th>
+						<td width="30%">{{ enquirydata.company_city }}</td>
+					</tr>
+					
+					<tr>
+						<th width="20%">Zipcode</th>
+						<td width="30%">{{ enquirydata.company_zipcode }}</td>
+						<th width="20%">Address</th>
+						<td width="30%">{{ enquirydata.company_address1 }}</td>
+					</tr>
+					
+					<tr>
+						<th width="20%">IP Address</th>
+						<td width="30%">{{ enquirydata.ip_address }}</td>
+						<th width="20%">Enquiry Date</th>
+						<td width="30%">{{ enquirydata.created_at }}</td>
+					</tr>					
+					
+				</table>
+				
+				<h3>Standard Information</h3>
+				<table class="table-secondary m-b-15">
+					<tr>
+						<th width="20%">Standard(s)</th>
+						<td width="80%" colspan="3">
+							<ul>
+								<li  *ngFor="let standard of enquirydata?.standards;"  >
+								<span>{{ standard.name }}</span></li>
+							</ul>   
+						</td>
+					</tr>
+				</table>	
+				
+				<h3>Other Details</h3>
+				<table class="table-secondary m-b-15">
+					<tr>
+						<th width="20%">Status</th>
+						<td width="30%">{{ enquirydata.status }}</td>
+						<th width="20%">Updated Date</th>
+						<td width="30%">{{ enquirydata.status_updated_date }}</td>
+					</tr>
+					<tr *ngIf="enquirydata.customer_id">
+						<th width="20%">Enquiry mapped to</th>
+						<td width="30%">{{ enquirydata.customer_id }}</td>
+						<th width="20%">Mapped Date & Time</th>
+						<td width="30%">{{ enquirydata.updated_at }}</td>
+					</tr>
+				</table>	
+				
+				<div *ngIf="enquirydata?.franchise_id?.company_name">
+					<h3>Assigned OSS Details</h3>
+					<table class="table-secondary m-b-15">
+						<tr>
+							<th width="20%">Company Name</th>
+							<td width="30%">{{ enquirydata.franchise_id.company_name }}</td>
+							<th width="20%">Contact Name</th>
+							<td width="30%">{{ enquirydata.franchise_id.contact_name }}</td>
+						</tr>
+						<tr>
+							<th width="20%">Company Telephone</th>
+							<td width="30%">{{ enquirydata.franchise_id.company_telephone }}</td>
+							<th width="20%">Company Country</th>
+							<td width="30%">{{ enquirydata.franchise_id.company_country }}</td>
+						</tr>
+						<tr>
+							<th width="20%">Company City</th>
+							<td width="30%">{{ enquirydata.franchise_id.company_city }}</td>
+							<th width="20%">Company Email Address</th>
+							<td width="30%">{{ enquirydata.franchise_id.company_email }}</td>
+						</tr>
+					</table>
+				</div>	
+
+				<div *ngIf="enquirydata?.status_id=='1' && (userdetails.resource_access==1 || userdetails.rules.includes('forward_enquiry'))">
+					<h3>OSS</h3>					
+					<div style="width:100%; height:52px;" *ngIf="model.sel_franchise==1"  class="ngselect"> <span class="label-pad" style="width:330px;padding-top:15px;" >Branch Office (OSS)</span> 
+						<span class="name-pad" style="display: block;padding-top: 8px;">
+
+							<ng-select  
+							[items]="franchiseList"
+							class="cusselect" 
+							bindLabel="osp_details"
+							bindValue="id"
+							 
+								
+							[multiple]="false"
+							placeholder="-- OSS --"
+							[(ngModel)]="model.franchise_id" name="franchise_id"  ></ng-select>
+							<!--
+							<select name="franchise_id" [(ngModel)]="model.franchise_id"  class="form-control select2" style="width:320px; display:inline;" >
+								<option value="">-- OSS --</option>
+								<option *ngFor="let franchise of franchiseList" value= {{franchise.id}}>{{franchise.company_name+' ( '+franchise.company_country+' )' }}</option>
+							</select> -->
+							<div class="validationerror" *ngIf="franchise_id_error && (this.model.franchise_id==null || this.model.franchise_id=='')" style="padding-bottom: 12px; line-height: 10px;" ><br><br><br><br>Please select the OSS</div>
+						</span>					
+					</div>												
+				</div>
+				
+				<div class="clearfix"></div>
+				
+				<div class="text-right m-t-15" *ngIf="enquirydata?.status_id=='1' && (userdetails.resource_access==1 || userdetails.rules.includes('forward_enquiry'))">
+					
+					<button type="button" *ngIf="enquirydata?.status_id=='1'" [disabled]="loading" class="btn but-cust blue m-b-5" (click)="open(content)" >
+							<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+						Existing Customer?</button>
+					<button type="button" *ngIf="enquirydata?.status_id=='1'" [disabled]="loading" class="btn but-cust green m-b-5 ml-2" (click)="open(confirmContent)" >
+							
+					<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+					New Customer?
+					
+					</button>
+					
+					<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="dashboardlink" (click)="clrStorageVal()" *ngIf="enquirydata?.status_id!='1' && fromdashboard">Back</a>
+					<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/enquiry/list']" [queryParams]="{type:type}" *ngIf="enquirydata?.status_id!='1' && !fromdashboard">Back</a>
+				   
+					<button type="button" *ngIf="enquirydata?.status_id=='1'"  [disabled]="loading" class="btn but-cust grey m-b-5 ml-2" (click)="open(confirmArchive,'archive')" >
+						<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>Archive
+					</button>
+				</div>
+				<div class="card-box enq-view">
+					<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+				</div>
+				
+			</div>
+			
+			<!--
+            <div class="card-box enq-view">
+                <h3>Company Details</h3>                     
+                <ul>
+                    <li><span class="label-pad">Company Name</span> -  <span class="name-pad">{{ enquirydata.company_name }}</span></li>
+                    <li><span class="label-pad">Contact Name</span>  -  <span class="name-pad">{{ enquirydata.contact_name }}</span></li>
+                    <li><span class="label-pad">Telephone</span> -  <span class="name-pad">{{ enquirydata.company_phone_code +' '+enquirydata.company_telephone }}</span></li>
+                    <li><span class="label-pad">E-Mail</span> -  <span class="name-pad"><a href="mailto:{{ enquirydata.company_email }}">{{ enquirydata.company_email }}</a></span></li>
+                    <li><span class="label-pad">Website</span> -  <span class="name-pad"><a target="_blank" href="{{ enquirydata.company_website }}">{{ enquirydata.company_website }}</a></span></li>
+                    <li><span class="label-pad">Country</span> -  <span class="name-pad">{{ enquirydata.company_country_id }}</span></li>
+					<li><span class="label-pad">State</span> -  <span class="name-pad">{{ enquirydata.company_state_id }}</span></li>
+                                        
+                    <li><span class="label-pad">Town/City</span> -  <span class="name-pad">{{ enquirydata.company_city }}</span></li>
+                    <li><span class="label-pad">Zipcode</span> -  <span class="name-pad">{{ enquirydata.company_zipcode }}</span></li>
+					<li><span class="label-pad">Address</span> -  <span class="name-pad">{{ enquirydata.company_address1 }}</span></li>										
+                </ul>                
+            </div>
+			
+			
+            <div class="card-box enq-view lst">
+                <h3>Standard Information</h3>                       
+                <ul>
+                    <li  *ngFor="let standard of enquirydata?.standards;"  >
+                    <span>{{ standard.name }}</span></li>
+                </ul>                       
+            </div>
+			
+                   
+									
+			<div class="card-box enq-view">
+                <h3>Other Details</h3>                     
+                <ul>
+                    <li><span class="label-pad">Status</span> -  <span class="name-pad">{{ enquirydata.status }}</span></li>
+                    <li><span class="label-pad">Status Updated Date</span> -  <span class="name-pad">{{ enquirydata.status_updated_date }}</span></li>
+					<li *ngIf="enquirydata?.status_id!='1'"><span class="label-pad">Enquiry mapped to </span> -  <span class="name-pad">{{ enquirydata.customer_id }}</span></li>
+                    <li *ngIf="enquirydata?.status_id!='1'"><span class="label-pad">Mapped Date & Time </span> -  <span class="name-pad">{{ enquirydata.updated_at }}</span></li>
+                </ul>							
+            </div>
+			
+			<div class="card-box enq-view" *ngIf="enquirydata?.franchise_id?.company_name">
+                <h3>Assigned OSS Details</h3>                     
+                <ul>
+					<li><span class="label-pad">Company Name </span> -  <span class="name-pad">{{ enquirydata.franchise_id.company_name }}</span></li>
+                    <li><span class="label-pad">Contact Name</span> -  <span class="name-pad">{{ enquirydata.franchise_id.contact_name }}</span></li>
+                    <li><span class="label-pad">Company Telephone</span> -  <span class="name-pad">{{ enquirydata.franchise_id.company_telephone }}</span></li>
+                    <li><span class="label-pad">Company Country</span> -  <span class="name-pad">{{ enquirydata.franchise_id.company_country }}</span></li>	
+					<li><span class="label-pad">Company City</span> -  <span class="name-pad">{{ enquirydata.franchise_id.company_city }}</span></li>
+                    <li><span class="label-pad">Company Email Address</span> -  <span class="name-pad">{{ enquirydata.franchise_id.company_email }}</span></li>						
+                </ul>							 
+            </div>
+			-->
+            
+
+        </div>
+    </div> <!-- end row --> 
+    </form>
+
+
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Map to Existing Customer</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form>
+        <div class="form-group">
+            <label for="customer_id">Customer</label>
+            <div class="input-group">
+                
+                <ng-select  
+                 
+                            [items]="customerList"
+                            class="customselectfull" 
+                            bindLabel="display_company_name"
+                            bindValue="id"                           
+                            [multiple]="false"
+                            placeholder="-- Customer --"
+                            [(ngModel)]="model.customer_id" name="customer_id"  ></ng-select>
+
+                <!--<select name="customer_id" [(ngModel)]="model.customer_id"  class="form-control select2" style="width:320px; display:inline;" >
+                        <option value="">-- Customer --</option>
+                        <option *ngFor="let customer of customerList" value= {{customer.id}}>{{customer.company_name+' ( '+customer.company_country+' )' }}</option>
+                </select>     -->
+                <div class="validationerror" *ngIf="customer_id_error && (this.model.customer_id=='' || this.model.customer_id==null)"  >Please select the customer</div>
+            </div>
+        </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="checkUserSel()">Save</button>
+
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+    </div>
+</ng-template>
+
+
+<ng-template #confirmContent let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+         
+           Are you sure, do you want to create new Customer?
+         
+    </div>
+    <div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('Create')">Ok</button>
+
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+    </div>
+</ng-template>
+
+
+<ng-template #confirmArchive let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+            
+            Are you sure, do you want to archive this enquiry?
+            
+    </div>
+    <div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('Archive')">Ok</button>
+
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+    </div>
+</ng-template>

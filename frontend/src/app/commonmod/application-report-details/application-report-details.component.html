@@ -1,0 +1,49 @@
+<div class="col-sm-12">
+    <div class="row col-12 page-title-box">
+        <div class="col-10">
+            <div>
+                <button type="button" (click)="changeDashboardContent('application')" class="btn btn-sm {{application_status ? 'btn-success' : 'btn-primary'}}">Application</button>
+                <button type="button" (click)="changeDashboardContent('offer')" class="btn btn-sm {{offer_status ? 'btn-success' : 'btn-primary'}} m-l-5">Quotation</button>
+                <button type="button" (click)="changeDashboardContent('certificate')" class="btn btn-sm {{certificate_status ? 'btn-success' : 'btn-primary'}} m-l-5">Certificate</button>
+                <button type="button" (click)="changeDashboardContent('tc')" class="btn btn-sm {{tc_status ? 'btn-success' : 'btn-primary'}} m-l-5">TC</button>
+            </div>
+        </div>
+    </div>	
+
+    <div *ngIf="application_status">
+        <span *ngIf="apploading" class="spinner-border spinner-border-sm mr-1"></span>
+        <div *ngFor="let id of app_ids;">
+            <mat-accordion>
+                <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                        View Application Details
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    
+                    <div class="row" >
+                        <div class="col-sm-12">
+                            <div class="clearfix"></div>			
+                            <app-appdetail [id]="id" ></app-appdetail>							
+                        </div>				
+                    </div>
+        
+                </mat-expansion-panel>                
+            </mat-accordion>
+        </div>
+    </div>
+
+    <div *ngIf="offer_status">
+        <h3>Quotation Details</h3>
+    </div>
+
+    <div *ngIf="certificate_status">
+        <h3>Certificate Details</h3>
+    </div>
+
+    <div *ngIf="tc_status">
+        <h3>TC Details</h3>
+    </div>
+
+
+</div>

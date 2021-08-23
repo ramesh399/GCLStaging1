@@ -1,0 +1,302 @@
+<div class="row"  >
+    <div class="col-12">
+        <div class="card-box table-responsive">
+        	<div class="row col-12 m-b-5 pad-right">
+              	<div class="col-8 pad-left">
+                <h4 class="page-title"><i class="fa fa-list-ul"></i> {{title}}</h4>
+                <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+                
+              	</div>
+               
+            </div>
+        
+            <div class="row col-12 m-b-5 pad-right">
+                <div class="col-4 text-left pad-left">
+                    <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                        <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+                    </select>
+                </div>
+                <div class="col-4 text-right">
+                	<!--
+				    <ng-container >
+                	<select class="custom-select" style="width: auto; font-size:13px;" name="statusFilter" [(ngModel)]="service.statusFilter">
+                        <option value="">All</option>
+						<option  *ngFor="let item of statuslist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+                    </select>
+					</ng-container>
+					-->
+                </div>
+               	
+                <div class="col-4 text-right pad-right" >
+                    <input class="search-pad" type="text" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+                </div>
+            </div>
+
+
+
+            <div class="col-12 pad-left">
+                <table id="datatable" class="table table-bordered" >
+                    <thead>
+                    <tr>
+                        <th width="5%" scope="col" class="center">S.No</th>
+                        <th scope="col" sortable="name" (sort)="onSort($event)" >Name</th>
+						<th scope="col" sortable="client_number" (sort)="onSort($event)" >License Number</th>					
+						<th scope="col" >Address</th>						
+						<th class="text-center" sortable="city" scope="col" (sort)="onSort($event)" >City</th>	
+						<th width="12%" scope="col" >Created By</th>						
+						<th width="12%" scope="col" class="center" >Created Date</th>						
+						<th class="text-center" scope="col">Action</th>	
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let entry of Buyer$ | async; let i=index;">
+                        <td scope="row" class="center">{{ 1+i+ service.pageNo }}</td>                       								
+						<td><ngb-highlight [result]="entry.name"  [term]="service.searchTerm"></ngb-highlight></td>						
+						<td><ngb-highlight [result]="entry.client_number"  [term]="service.searchTerm"></ngb-highlight></td>										
+						<td><ngb-highlight [result]="entry.address"  [term]="service.searchTerm"></ngb-highlight></td>
+						<td><ngb-highlight [result]="entry.city"  [term]="service.searchTerm"></ngb-highlight></td>	
+						<td><ngb-highlight [result]="entry.created_by_label"  [term]="service.searchTerm"></ngb-highlight></td>						
+						<td class="center"><ngb-highlight [result]="entry.created_at"  [term]="service.searchTerm"></ngb-highlight></td>						
+						<td  width="10%" class="center">
+							<a href="javascript:void(0);" (click)="showDetails(DownloadDetails,entry)" title="View" alt="View"><i class="fa fa-eye"></i></a>							
+							<a href="javascript:void(0);" *ngIf="canEditData" (click)="editData(i,entry)" title="Edit" alt="Edit" class="pl-2"> <i class="fa fa-edit"></i> </a>							
+							<a href="javascript:void(0);" *ngIf="canDeleteData" (click)="removeData(confirmcontent,i,entry)" title="Delete" alt="Delete"  class="pl-2"> <i class="fa fa-trash text-danger"></i> </a>
+						</td>
+                    </tr>
+                    <tr  *ngIf="(Buyer$ | async)?.length==0" >
+                        <td colspan="8" class="center">{{ commontxt.norecords }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="row col-12 pad-left pad-right">
+				<div class="col-6">
+					<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+					<div *ngIf="!(service.loading$ | async)">
+					Displaying {{ (Buyer$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (Buyer$ | async).length }} of {{ (total$ | async) }} results.
+					</div>
+				</div>
+				<div class="col-6 pad-right text-right">						
+				<ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+					<ng-template ngbPaginationFirst>First</ng-template>
+					<ng-template ngbPaginationPrevious>Prev</ng-template>
+					<ng-template ngbPaginationNext>Next</ng-template>			  
+					<ng-template ngbPaginationLast>Last</ng-template>			  
+				</ngb-pagination>						
+				</div>
+			</div>
+   		</div>
+	</div>
+</div>
+
+
+
+
+<div class="row" *ngIf="canAddData || (canEditData && curData &&  editStatus == 1)">
+    <div class="col-12">
+        <div class="add card-box table-responsive enq-view">
+                    
+			<h3>{{title}}</h3>                              			
+				
+			<form  [formGroup]="form">
+
+				<div class="form-group row">
+				
+					<div class="col-6">
+						<label>Name <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Name" matTooltipClass="tooltip-text-size" aria-tooltip="Name" matTooltipPosition="right"></i>
+						<input type="text" formControlName="name"  class="form-control" placeholder="Name" [class.is-invalid]="f.name.invalid && f.name.touched">
+						<div *ngIf="f.name.errors" class="invalid-feedback">
+							<div *ngIf="f.name.errors.required">Name is required</div>
+							<div *ngIf="f.name.errors.maxlength">Name cannot exceed 255 characters</div>
+							<div *ngIf="f.name.errors.pattern || f.name.hasError('whitespace')">Invalid Name</div>
+							<div *ngIf="f.name.errors.incorrect">{{ nameErrors }}</div>
+						</div>
+					</div>
+					
+					<div class="col-6">
+						<label>Address <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Address" matTooltipClass="tooltip-text-size" aria-tooltip="Address" matTooltipPosition="right"></i>
+						<textarea formControlName="address" placeholder="Address"  [class.is-invalid]="f.address.invalid && f.address.touched" rows="2" class="form-control"></textarea>
+						<div *ngIf="f.address.errors" class="invalid-feedback">
+							<div *ngIf="f.address.errors.required">Address is required</div>
+							<div *ngIf="f.address.errors.pattern || f.address.hasError('whitespace')">Invalid Address</div>
+						</div>
+					</div>
+					
+													
+				</div>
+				
+				<div class="form-group row">
+				
+					<div class="col-3">
+						<label>Country <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Country" matTooltipClass="tooltip-text-size" aria-tooltip="Country" matTooltipPosition="right"></i>
+						<select formControlName="country_id" class="form-control select2" (change)="getStateList($event.target.value)" [class.is-invalid]="f.country_id.invalid && f.country_id.touched">
+							<option value="" >-- Country --</option>
+							<option *ngFor="let country of countryList" value= {{country.id}}>{{country.name}}</option>
+						</select>
+						<div *ngIf="f.country_id.errors" class="invalid-feedback">
+							<div *ngIf="f.country_id.errors.required" >Country is required</div>
+						</div>
+					</div>
+				
+					<div class="col-3">
+						<label>State </label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="State" matTooltipClass="tooltip-text-size" aria-tooltip="State" matTooltipPosition="right"></i>
+						<select formControlName="state_id" class="form-control select2" [class.is-invalid]="f.state_id.invalid && f.state_id.touched ">
+							<option value="" >-- State --</option>
+							<option *ngFor="let states of stateList" value= {{states.id}}>{{states.name}}</option>
+						</select>
+						<div *ngIf="f.state_id.errors" class="invalid-feedback">
+							<div *ngIf="f.state_id.errors.required"> State cannot be blank.</div>										
+						</div>
+					</div>
+					
+					<div class="col-3">
+						<label>City <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="City" matTooltipClass="tooltip-text-size" aria-tooltip="City" matTooltipPosition="right"></i>
+						<input type="text" formControlName="city"  class="form-control" placeholder="City" [class.is-invalid]="f.city.invalid && f.city.touched">
+						<div *ngIf="f.city.errors" class="invalid-feedback">
+							<div *ngIf="f.city.errors.required">City is required</div>
+							<div *ngIf="f.city.errors.maxlength">City cannot exceed 50 characters</div>
+							<div *ngIf="f.city.errors.pattern || f.city.hasError('whitespace')">Invalid City</div>
+						</div>
+					</div>
+					<div class="col-3">
+						<label>Post/Zip Code <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Post/Zip Code" matTooltipClass="tooltip-text-size" aria-tooltip="Post/Zip Code" matTooltipPosition="right"></i>
+						<input type="text" class="form-control" formControlName="zipcode" [class.is-invalid]="f.zipcode.invalid && f.zipcode.touched" placeholder="Post/Zip Code" > 
+						<div *ngIf="f.zipcode.errors" class="invalid-feedback">
+							<div *ngIf="f.zipcode.errors.required">Post/Zip Code cannot be blank.</div>
+							<div *ngIf="f.zipcode.errors.maxlength">Post/Zip Code cannot exceed 15 characters</div>
+							<div *ngIf="f.zipcode.errors.pattern || f.zipcode.hasError('whitespace')">Invalid Post/Zip Code</div>
+						</div>
+					</div>	
+				</div>	
+
+
+				<div class="form-group row">
+					<!--
+					<div class="col-6">
+						<label>Post/Zip Code <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" formControlName="zipcode" [class.is-invalid]="f.zipcode.invalid && f.zipcode.touched" placeholder="Post/Zip Code" > 
+						<div *ngIf="f.zipcode.errors" class="invalid-feedback">
+							<div *ngIf="f.zipcode.errors.required">Post/Zip Code cannot be blank.</div>
+							<div *ngIf="f.zipcode.errors.maxlength">Post/Zip Code cannot exceed 15 characters</div>
+							<div *ngIf="f.zipcode.errors.pattern || f.zipcode.hasError('whitespace')">Invalid Post/Zip Code</div>
+						</div>
+					</div>		-->			
+					
+					<div class="col-4">
+						<label>License Number</label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="License Number" matTooltipClass="tooltip-text-size" aria-tooltip="License Number" matTooltipPosition="right"></i>
+						<input type="text" formControlName="client_number"  class="form-control" placeholder="License Number" [class.is-invalid]="f.client_number.invalid && f.client_number.touched">
+						<div *ngIf="f.client_number.errors" class="invalid-feedback">
+							<div *ngIf="f.client_number.errors.maxlength">License Number cannot exceed 50 characters</div>
+							<div *ngIf="f.client_number.errors.pattern || f.client_number.hasError('whitespace')">Invalid License Number</div>
+						</div>
+					</div>
+					<div class="col-4">
+						<label>Email </label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Email" matTooltipClass="tooltip-text-size" aria-tooltip="Email" matTooltipPosition="right"></i>
+						<input type="text" formControlName="email" [class.is-invalid]="f.email.invalid && f.email.touched " class="form-control" placeholder="Email" >
+						<div *ngIf="f.email.errors" class="invalid-feedback">
+							<div *ngIf="f.email.errors.required" >Email is required</div>
+							<div *ngIf="f.email.errors.maxlength">Email cannot exceed 255 characters</div>
+							<div *ngIf="f.email.errors.email">Email must be a valid email address</div>
+							<div *ngIf="f.email.hasError('whitespace')">Invalid Email</div>
+						</div>
+					</div>
+
+					<div class="col-4">
+						<label>Contact Number </label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Contact Number" matTooltipClass="tooltip-text-size" aria-tooltip="Contact Number" matTooltipPosition="right"></i>
+						<input type="text" class="form-control" formControlName="phonenumber" [class.is-invalid]="f.phonenumber.invalid && f.phonenumber.touched" class="form-control" placeholder="Contact Number" >                                                                      
+						<div *ngIf="f.phonenumber.errors" class="invalid-feedback">
+							<div *ngIf="f.phonenumber.errors.required"> Contact Number is required</div>
+							<div *ngIf="f.phonenumber.errors.minlength">Contact Number must be at least 8 characters</div>
+							<div *ngIf="f.phonenumber.errors.maxlength">Contact Number cannot exceed 15 characters</div>
+							<div *ngIf="f.phonenumber.errors.pattern || f.phonenumber.hasError('whitespace')">Invalid Contact Number</div>
+						</div>
+					</div>	
+				</div>
+				
+				 						
+				
+				<div class="col-lg-12 text-center mt-4 mb-4">
+					<button [disabled]="loading['button']" (click)="addData()" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+						<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+						{{editStatus == 1 ? 'Update' : 'Save'}}		
+					</button>&nbsp;&nbsp;										
+					<button [disabled]="loading['button']" (click)="formReset()" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2" style="margin-left: 5px;">
+						<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+						{{userType == 2 ? 'Reset' : 'Close'}}	
+					</button>
+											
+					<div class="clearfix"></div>
+						
+					<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+				</div>										
+			
+			</form>				
+             
+        </div>
+    </div>
+</div>
+
+<ng-template #confirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to delete the data?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>
+
+<ng-template #DownloadDetails let-modal>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+    <div class="modal-body" style="font-size:16px;">
+        <div class="card-box enq-view">
+			<table class="table-secondary m-b-15" *ngIf="downloadData">
+				<tr>
+					<th width="20%">Title</th>
+					<td width="30%">{{ downloadData.name }}</td>
+					<th width="20%">Client Number</th>
+					<td width="30%">{{ downloadData.client_number }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Email</th>
+					<td width="30%">{{ downloadData.email }}</td>
+					<th width="20%">Contact Number</th>
+					<td width="30%">{{ downloadData.phonenumber }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Address</th>
+					<td width="30%">{{ downloadData.address }}</td>
+					<th width="20%">Country</th>
+					<td width="30%">{{ downloadData.country_id_label }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Zipcode</th>
+					<td width="30%">{{ downloadData.zipcode }}</td>
+					<th width="20%">Created Date</th>
+					<td width="30%">{{ downloadData.created_at }}</td>
+				</tr>
+			</table>
+			
+			<div style="text-align: center;">
+				<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="modal.dismiss('cancel click')" >Close</a>
+			</div>
+		</div>
+    </div>
+</ng-template>
+<ng-template #downloading let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+        Please wait, your file is downloading ...
+    </div>
+</ng-template>

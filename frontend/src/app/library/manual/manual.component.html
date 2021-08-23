@@ -1,0 +1,465 @@
+<div class="row"  >
+    <div class="col-12">
+        <div class="card-box table-responsive">
+        	<div class="row col-12 m-b-5 pad-right">
+              	<div class="col-8 pad-left">
+                <h4 class="page-title"><i class="fa fa-list-ul"></i> {{title}}</h4>
+                <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+                
+              	</div>
+               
+            </div>
+        
+            <div class="row col-12 m-b-5 pad-right">
+                <div class="col-3 text-left pad-left">
+                    <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                        <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+                    </select>
+                </div>
+                <div class="col-5 text-center">
+				    <ng-container *ngIf="source_file_status$ | async">
+					<mat-select style="width: 150px;font-size:13px;" placeholder="-- Role --" #roleFilter name="roleFilter" [(ngModel)]="service.roleFilter" multiple class="custom-select" *ngIf="userdetails.resource_access==1">
+						<mat-select-trigger>
+						<span *ngIf="roleFilter.value?.length == 1" >{{roleFilter.value ?  getSelectedRoleValue(roleFilter.value) : ''}}</span>
+						<span *ngIf="roleFilter.value?.length > 1" class="example-additional-selection">
+							{{roleFilter.value.length}} {{ 'selected' }}
+						</span>
+						</mat-select-trigger>
+						<mat-option *ngFor="let role of roleList" [value]="role.id">{{role.role_name}}</mat-option>
+					</mat-select>
+					&nbsp;
+                	<select class="custom-select" style="width: auto; font-size:13px;" name="statusFilter" [(ngModel)]="service.statusFilter">
+                        <option value="">All</option>
+						<option  *ngFor="let item of statuslist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+                    </select>
+					</ng-container>
+                </div>
+               	
+                <div class="col-4 text-right pad-right" >
+                    <input class="search-pad" type="text" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+                </div>
+            </div>
+
+
+
+            <div class="col-12 pad-left">
+                <table id="datatable" class="table table-bordered" >
+                    <thead>
+                    <tr>
+                        <th width="3%" scope="col" class="center">S.No</th>
+                        <th scope="col" *ngIf="type!='webinars'">Title</th>
+						<th scope="col" *ngIf="type==='webinars'">Webinar/Training</th>					
+						<th scope="col" *ngIf="type!='webinars'">Description</th>
+						<th scope="col" class="text-center" *ngIf="type!='standards' && type!='webinars'">Version</th>
+						
+						<th scope="col" *ngIf="source_file_status$ | async">Source File(s)</th>
+						<th scope="col" *ngIf="view_file_status$ | async">{{ (source_file_status$ | async) ? 'View' : '' }} File(s)</th>						
+						<th width="10%" class="text-center" scope="col">Date</th>
+						<th width="5%" class="text-center" scope="col" *ngIf=" canAddData || (canEditData && curData)">Status</th>	
+						<th width="7%" class="text-center" scope="col">Action</th>	
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let entry of Manual$ | async; let i=index; ">
+                        <td scope="row" class="center">{{ 1+i+ service.pageNo }}</td>                       								
+
+						<td *ngIf="type!='webinars'"><ngb-highlight [result]="entry.title"  [term]="service.searchTerm"></ngb-highlight></td>
+						
+						<!--<td *ngIf="type==='webinars'"><ngb-highlight [result]="entry.description"  [term]="service.searchTerm"></ngb-highlight></td>-->
+						<td><ngb-highlight [result]="entry.description"  [term]="service.searchTerm"></ngb-highlight></td>
+										
+						<td width="5%" class="text-center" *ngIf="type!='standards' && type!='webinars'"><ngb-highlight [result]="entry.version"  [term]="service.searchTerm"></ngb-highlight></td>
+						<!--<td><ngb-highlight [result]="entry.description"  [term]="service.searchTerm"></ngb-highlight></td>-->
+						<td *ngIf="source_file_status$ | async">
+							<ng-container *ngFor="let ditem of entry.documents; last as isLast;">
+								<div style="padding-bottom:6px"><a href="javascript:void(0);" *ngIf="ditem.name" (click)="downloadFile(ditem.id,ditem.name,'source');openmodal(downloading)" > <i class="fa fa-download" ></i>&nbsp;{{ ditem.name }}</a>
+								</div>
+							</ng-container>							
+						</td>					
+
+						<td *ngIf="view_file_status$ | async">
+							<ng-container *ngFor="let ditem of entry.viewdocuments; last as isLast;">
+								<div  style="padding-bottom:6px"><a href="javascript:void(0);" *ngIf="ditem.name" (click)="downloadFile(ditem.id,ditem.name,'view');openmodal(downloading)" > <i class="fa fa-download" ></i>&nbsp;{{ ditem.name }}</a></div>
+							</ng-container>							
+						</td>						
+						<td class="center"><ngb-highlight [result]="entry.document_date"  [term]="service.searchTerm"></ngb-highlight></td>
+						<td class="center" *ngIf=" canAddData || (canEditData && curData)"><ngb-highlight [result]="entry.status_label"  [term]="service.searchTerm"></ngb-highlight></td>
+						<td width="4%" class="center" *ngIf="userType==2">
+							<a href="javascript:void(0);" (click)="showDetails(DownloadDetails,entry)" title="View" alt="View"><i class="fa fa-eye"></i></a>
+						</td>
+						<td  width="8%" class="center" *ngIf="userType!=2">						
+							<a href="javascript:void(0);" (click)="showDetails(DownloadDetails,entry)" title="View" alt="View"><i class="fa fa-eye"></i></a>
+							<a href="javascript:void(0);" *ngIf="canEditData" (click)="editData(i,entry)" title="Edit" alt="Edit" class="pl-2"> <i class="fa fa-edit"></i> </a>							
+							<a href="javascript:void(0);" *ngIf="canDeleteData" (click)="removeData(confirmcontent,i,entry)" title="Delete" alt="Delete" class="pl-2"> <i class="fa fa-trash text-danger"></i> </a>
+						</td>
+                    </tr>
+                    <tr  *ngIf="(Manual$ | async)?.length==0" >
+                        <td colspan="7" class="center">{{ commontxt.norecords }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="row col-12 pad-left pad-right">
+				<div class="col-6">
+					<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+					<div *ngIf="!(service.loading$ | async)">
+					Displaying {{ (Manual$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (Manual$ | async).length }} of {{ (total$ | async) }} results.
+					</div>
+				</div>
+				<div class="col-6 pad-right text-right">						
+				<ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+					<ng-template ngbPaginationFirst>First</ng-template>
+					<ng-template ngbPaginationPrevious>Prev</ng-template>
+					<ng-template ngbPaginationNext>Next</ng-template>			  
+					<ng-template ngbPaginationLast>Last</ng-template>			  
+				</ngb-pagination>						
+				</div>
+			</div>
+   		</div>
+	</div>
+</div>
+
+
+
+
+<div class="row" *ngIf=" canAddData || (canEditData && curData)">
+    <div class="col-12">
+		<div class="col-12 pad-left">
+			<div class="add card-box table-responsive enq-view">
+						
+				<h3>{{editStatus == 1 ? 'Update' : 'Add'}} {{title}}</h3>                              			
+					
+				<form  [formGroup]="form">
+
+					<div class="form-group row">
+					
+						<div class="col-4" *ngIf="type!='webinars'">
+							<label>Title <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Title" matTooltipClass="tooltip-text-size" aria-tooltip="Title" matTooltipPosition="right"></i>
+							<input type="text" formControlName="title"  class="form-control" placeholder="Title" [class.is-invalid]="f.title.invalid && f.title.touched">
+							<div *ngIf="f.title.errors" class="invalid-feedback">
+								<div *ngIf="f.title.errors.required">Title is required</div>
+								<div *ngIf="f.title.errors.maxlength">Title cannot exceed 255 characters</div>
+								<div *ngIf="f.title.errors.pattern || f.title.hasError('whitespace')">Invalid Title</div>
+							</div>
+						</div>
+						
+						<div class="col-4" *ngIf="type!='standards' && type!='webinars'">
+							<label>Version <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Version" matTooltipClass="tooltip-text-size" aria-tooltip="Version" matTooltipPosition="right"></i>
+							<input type="text" formControlName="version"  class="form-control" placeholder="Version" [class.is-invalid]="f.version.invalid && f.version.touched">
+							<div *ngIf="f.version.errors" class="invalid-feedback">
+								<div *ngIf="f.version.errors.required">Version is required</div>
+								<div *ngIf="f.version.errors.maxlength">Version cannot exceed 10 characters</div>
+								<div *ngIf="f.version.errors.pattern || f.version.hasError('whitespace')">Invalid Version</div>
+							</div>
+						</div>
+						
+						<div class="col-4" *ngIf="type=='standards'">
+							<label>Standard <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Standard" matTooltipClass="tooltip-text-size" aria-tooltip="Standard" matTooltipPosition="right"></i>
+							<mat-select placeholder="Standard" formControlName="standards" multiple class="form-control select2" [class.is-invalid]="f.standards.invalid && f.standards.touched">
+								<mat-select-trigger>
+								<span *ngIf="f.standards.value?.length == 1" >{{f.standards.value ? getSelectedStandardValue(f.standards.value): ''}}</span>
+								<span *ngIf="f.standards.value?.length > 1" class="example-additional-selection">
+									{{f.standards.value.length}} {{ 'selected' }}
+								</span>
+								</mat-select-trigger>
+								<mat-option *ngFor="let item of standardList" [value]="item.id">{{item.name}}</mat-option>
+							</mat-select>  
+							<div *ngIf="f.standards.errors" class="invalid-feedback">
+								<div *ngIf="f.standards.errors.required">Standard is required</div>
+							</div>
+						</div>
+						
+						<div class="col-4">
+							<label>Date <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Date" matTooltipClass="tooltip-text-size" aria-tooltip="Date" matTooltipPosition="right"></i><br>
+							<input style="width: 70%; display: inline;float:left;" type="text" formControlName="document_date" class="form-control" placeholder="Date" [class.is-invalid]="f.document_date.invalid && f.document_date.touched" matInput [matDatepicker]="document_date" (click)="document_date.open()">
+							<mat-datepicker-toggle matSuffix  [for]="document_date" style="float:left;"></mat-datepicker-toggle>
+							<mat-datepicker #document_date></mat-datepicker>
+							<div *ngIf="f.document_date.errors" style="float:left;" class="invalid-feedback">
+								<div *ngIf="f.document_date.errors.required">Date is required</div>
+							</div>								
+						</div>
+						
+					</div>
+					
+					<div class="form-group row" *ngIf="type==='webinars'">
+						<div class="col-12">
+							<label>Webinar/Training</label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Webinar/Training" matTooltipClass="tooltip-text-size" aria-tooltip="Webinar/Training" matTooltipPosition="right"></i>
+							<textarea formControlName="description"  [class.is-invalid]="f.description.invalid && f.description.touched" rows="2" class="form-control"></textarea>
+							<div *ngIf="f.description.errors" class="invalid-feedback">
+								<div *ngIf="f.description.errors.required">Webinar/Training is required</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="form-group row">
+						
+						<div class="col-4">
+							<label>Reviewer <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Reviewer" matTooltipClass="tooltip-text-size" aria-tooltip="Reviewer" matTooltipPosition="right"></i>
+							<select formControlName="reviewer" class="form-control select2"  [class.is-invalid]="f.reviewer.invalid && f.reviewer.touched">
+								<option value="">-- Reviewer --</option>
+								<option  *ngFor="let item of reviewerList | keyvalue" value="{{item.key}}">{{item.value}}</option>
+							</select>     
+							<div *ngIf="f.reviewer.errors" class="invalid-feedback">
+								<div *ngIf="f.reviewer.errors.required">Reviewer is required</div>
+							</div>
+						</div>
+						
+						<div class="col-4">
+							<label>User Role <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="User Role" matTooltipClass="tooltip-text-size" aria-tooltip="User Role" matTooltipPosition="right"></i>
+							<mat-select placeholder="-- User Role --" formControlName="access" multiple class="form-control select2" [class.is-invalid]="f.access.invalid && f.access.touched">
+								<mat-select-trigger>
+								<span *ngIf="f.access.value?.length == 1" >{{f.access.value ? getSelectedValue(f.access.value): ''}}</span>
+								<span *ngIf="f.access.value?.length > 1" class="example-additional-selection">
+									{{f.access.value.length}} {{ 'selected' }}
+								</span>
+								</mat-select-trigger>
+								<mat-option *ngFor="let item of accessList" [value]="item.id">{{item.name}}</mat-option>
+							</mat-select>  
+							<div *ngIf="f.access.errors" class="invalid-feedback">
+								<div *ngIf="f.access.errors.required">User Role is required</div>
+							</div>
+						</div>
+						
+						<div class="col-4">
+							<label>Status <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Status" matTooltipClass="tooltip-text-size" aria-tooltip="Status" matTooltipPosition="right"></i>
+							<select formControlName="status" class="form-control select2" [class.is-invalid]="f.status.invalid && f.status.touched" >
+								<option value="">-- Status --</option>
+								<option  *ngFor="let item of statuslist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+							</select>     
+							<div *ngIf="f.status.errors" class="invalid-feedback">
+								<div *ngIf="f.status.errors.required">Status is required</div>
+							</div>
+						</div>
+						
+					</div>
+					
+					<div class="form-group row" *ngIf="type!='webinars'">
+						<div class="col-12">
+							<label>Description <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Description" matTooltipClass="tooltip-text-size" aria-tooltip="Description" matTooltipPosition="right"></i>
+							<textarea formControlName="description"  [class.is-invalid]="f.description.invalid && f.description.touched" rows="2" class="form-control"></textarea>
+							<div *ngIf="f.description.errors" class="invalid-feedback">
+								<div *ngIf="f.description.errors.required">Description is required</div>
+								<div *ngIf="f.description.errors.pattern || f.description.hasError('whitespace')">Invalid Description</div>
+							</div>
+						</div>
+					</div>				
+
+
+					<div class="form-group row">
+
+						<div class="col-6">
+							<label>Source File(s) <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Source" matTooltipClass="tooltip-text-size" aria-tooltip="Source" matTooltipPosition="right"></i><br>
+							<input type="file" formControlname="file" (change)="fileChange($event)" style="width:184px"  >
+							<br><div style="font-size:11px;" >Supported file formats: <span *ngFor="let docs of this.userService.validDocs; let last=last;">{{ docs}}<span *ngIf="!last">, </span> </span></div>
+							<div *ngIf="fileErr" class="validationerror" >
+								{{fileErr}}
+							</div>
+							<ng-container *ngIf="files && files.length>0" >
+								<ng-container  *ngFor="let fileitem of files; index as i" >
+									<div *ngIf="fileitem.deleted==0" style="padding:5px; border:1px solid #cecece; background-color: beige; height:32px;width: 100%;" class="m-b-5">
+										<span>{{ fileitem.name }}</span>
+										<a href="javascript:void(0);"  (click)="removeFile(i)" style="color:red; font-weight:bold;margin-right: 5px;float:right;" >X</a>
+									</div>
+								</ng-container>
+							</ng-container>						
+						</div>
+						
+						<div class="col-6">
+							<label>View File(s) <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="View" matTooltipClass="tooltip-text-size" aria-tooltip="View" matTooltipPosition="right"></i><br>
+							<input type="file" formControlname="viewfile" (change)="viewFileChange($event)" style="width:184px"  >
+							<br><div style="font-size:11px;" >Supported file formats: <span *ngFor="let docs of this.userService.validDocs; let last=last;">{{ docs}}<span *ngIf="!last">, </span> </span></div>
+							<div *ngIf="viewErr" class="validationerror" >
+								{{viewErr}}
+							</div>
+							<ng-container *ngIf="viewfiles && viewfiles.length>0" >
+								<ng-container  *ngFor="let fileitem of viewfiles; index as i" >
+									<div *ngIf="fileitem.deleted==0" style="padding:5px; border:1px solid #cecece; background-color: beige; height:32px;width: 100%;" class="m-b-5">
+										<span>{{ fileitem.name }}</span>
+										<a href="javascript:void(0);"  (click)="removeViewFile(i)" style="color:red; font-weight:bold;margin-right: 5px;float:right;" >X</a>
+									</div>
+								</ng-container>
+							</ng-container>						
+						</div>
+						
+					</div>					
+					
+					<div class="col-lg-12 text-center mt-4 mb-4">
+						<button [disabled]="loading['button']" (click)="addData()" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+							<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+							{{editStatus == 1 ? 'Update' : 'Save'}}		
+						</button>&nbsp;&nbsp;
+						<button *ngIf="editStatus == 1 && type!='standards' && type!='webinars'" [disabled]="loading['button']" (click)="addNewVersion()" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+							<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+							New Version			
+						</button>					
+						<button [disabled]="loading['button']" (click)="formReset()" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2" style="margin-left: 5px;">
+							<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+							Reset
+						</button>
+												
+						<div class="clearfix"></div>
+							
+						<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+					</div>										
+				
+				</form>				
+				 
+			</div>
+		</div>	
+    </div>
+</div>
+
+<ng-template #confirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to delete the data?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>
+
+<ng-template #DownloadDetails let-modal>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+    <div class="modal-body" style="font-size:16px;">
+		
+		
+		<div class="card-box enq-view">	
+			<table class="table-secondary m-b-15" *ngIf="downloadData">
+				<tr>
+					<th width="20%">Title</th>
+					<td width="30%">{{ downloadData.title }}</td>
+					<th width="20%">Version</th>
+					<td width="30%">{{ downloadData.version }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Date</th>
+					<td width="30%">{{ downloadData.document_date }}</td>
+					<th width="20%">Reviewer</th>
+					<td width="30%">{{ downloadData.reviewer_label }}</td>
+				</tr>
+				
+				<tr *ngIf="userdetails.resource_access=='1'">
+					<th width="20%">User Role</th>
+					<td width="30%">{{ downloadData.access_label ? downloadData.access_label.join(', ') : 'NA' }}</td>
+					<th width="20%">Status</th>
+					<td width="30%">{{ downloadData.status_label }}</td>
+				</tr>
+				
+				<tr *ngIf="userdetails.resource_access!='1'">					
+					<th width="20%">Status</th>
+					<td colspan="3">{{ downloadData.status_label }}</td>
+				</tr>
+				
+				<tr *ngIf="type=='standards'">
+					<th width="20%">Standards</th>
+					<td colspan="3">
+						<ng-container *ngFor="let item of downloadData.standard_name; let ix = index;">
+							<span *ngIf="ix>0" class="label-pad">&nbsp;</span> 
+							<span class="name-pad">{{ item }}</span><br>
+						</ng-container>
+					</td>
+				</tr>
+				
+				<tr>
+					<th width="20%">{{type==='webinars' ? 'Webinar/Training' : 'Description'}}</th>
+					<td colspan="3">{{ downloadData.description }}</td>
+				</tr>
+				
+				<tr *ngIf="source_file_status$ | async">
+					<th width="20%">Source File(s)</th>
+					<td colspan="3">
+						<ng-container *ngFor="let item of downloadData.documents; let ix = index;">
+							<a href="javascript:void(0);" *ngIf="item.name" (click)="downloadFile(item.id,item.name,'source');openmodal(downloading)" > <i class="fa fa-download" ></i>&nbsp;{{ item.name }}</a><br>
+						</ng-container>
+					</td>
+				</tr>
+				
+				<tr *ngIf="view_file_status$ | async">
+					<th width="20%">{{ (source_file_status$ | async) ? 'View' : '' }} File(s)</th>
+					<td colspan="3">
+						<ng-container *ngFor="let item of downloadData.viewdocuments; let ix = index;">
+							<a href="javascript:void(0);" *ngIf="item.name" (click)="downloadFile(item.id,item.name,'view');openmodal(downloading)" > <i class="fa fa-download" ></i>&nbsp;{{ item.name }}</a><br>
+						</ng-container>
+					</td>
+				</tr>				
+				
+				<tr>
+					<th width="20%">Created By</th>
+					<td width="30%">{{ downloadData.created_by_label }}</td>
+					<th width="20%">Created Date</th>
+					<td width="30%">{{ downloadData.created_at }}</td>
+				</tr>	
+			</table>
+			
+			<div style="text-align: center;">
+				<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="modal.dismiss('cancel click')" >Close</a>
+			</div>
+			
+		</div>
+		
+		<!--
+        <div class="card-box enq-view">
+						
+			<ul *ngIf="downloadData">
+				<li *ngIf="type!='webinars'"><span class="label-pad">Title</span>   <span class="name-pad">{{ downloadData.title }}</span></li>
+				<li *ngIf="type!='standards' && type!='webinars'"><span class="label-pad">Version</span>   <span class="name-pad">{{ downloadData.version }}</span></li>
+				<li><span class="label-pad">Date</span>   <span class="name-pad">{{ downloadData.document_date }}</span></li>
+				<li><span class="label-pad">Reviewer</span>   <span class="name-pad">{{ downloadData.reviewer_label }}</span></li>
+				<li *ngIf="userdetails.resource_access=='1'"><span class="label-pad">User Role</span>   <span class="name-pad">{{ downloadData.access_label.join(', ') }}</span></li>
+				<li  *ngIf="type!='standards'"><span class="label-pad">Status</span>   <span class="name-pad">{{ downloadData.status_label }}</span></li>
+				<li  *ngIf="type=='standards'" style="width:100%;"><span class="label-pad">Status</span>   <span class="name-pad">{{ downloadData.status_label }}</span></li>
+
+				<li style="width:100%;" *ngIf="type=='standards'">
+					<span class="label-pad">Standards</span>
+					<ng-container *ngFor="let item of downloadData.standard_name; let ix = index;">
+						<span *ngIf="ix>0" class="label-pad">&nbsp;</span> 
+						<span class="name-pad">{{ item }}</span><br>
+					</ng-container>  					
+				</li>
+				<li style="width:100%;"><span class="label-pad">{{type==='webinars' ? 'Webinar/Training' : 'Description'}}</span>   <span class="name-pad">{{ downloadData.description }}</span></li>				
+				<li style="width:100%;" *ngIf="source_file_status$ | async"><span class="label-pad">Source File(s)</span>   
+					<ng-container *ngFor="let item of downloadData.documents; let ix = index;">
+						<span *ngIf="ix>0" class="label-pad">&nbsp;</span> 
+						<span class="name-pad">
+							<a href="javascript:void(0);" *ngIf="item.name" (click)="downloadFile(item.id,item.name,'source');openmodal(downloading)" > <i class="fa fa-download" ></i>&nbsp;{{ item.name }}</a>
+						</span><br>
+					</ng-container>
+				</li>
+				<li style="width:100%;" *ngIf="view_file_status$ | async"><span class="label-pad">{{ (source_file_status$ | async) ? 'View' : '' }} File(s)</span>   
+					<ng-container *ngFor="let item of downloadData.viewdocuments; let ix = index;">
+						<span *ngIf="ix>0" class="label-pad">&nbsp;</span> 
+						<span class="name-pad">
+							<a href="javascript:void(0);" *ngIf="item.name" (click)="downloadFile(item.id,item.name,'view');openmodal(downloading)" > <i class="fa fa-download" ></i>&nbsp;{{ item.name }}</a>
+						</span><br>
+					</ng-container>
+				</li>				
+				<li><span class="label-pad">Created By</span>   <span class="name-pad">{{ downloadData.created_by_label }}</span></li>
+				<li><span class="label-pad">Created Date</span>   <span class="name-pad">{{ downloadData.created_at }}</span></li>
+				
+			</ul>
+			<div style="text-align: center;">
+				<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="modal.dismiss('cancel click')" >Close</a>
+			</div>
+		</div>
+		-->
+		
+    </div>
+</ng-template>
+<ng-template #downloading let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+        Please wait, your file is downloading ...
+    </div>
+</ng-template>

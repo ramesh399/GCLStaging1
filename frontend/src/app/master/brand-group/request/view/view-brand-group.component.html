@@ -1,0 +1,63 @@
+
+<div class="col-12 row pad-right">
+    <div class="col-8">
+        <h4 class="page-title">View Brand Group Details</h4>
+    </div>
+    <div class="col-4 text-right pad-right">
+        <a class="btn btn-secondary btn-sm active" href="#" role="button"
+            [routerLink]="['/master/brand-group/request/list']"><i class="fa fa-arrow-left text-white"></i> Back</a>
+    </div>
+</div>
+
+<div class="row" *ngIf="userdata">
+    <div class="col-12">
+        <div class="add card-box table-responsive details-view p-t-10">
+            <h3>Brand Group Details</h3>
+            <table class="table-secondary m-b-15">
+                <tr>
+                    <th width="20%">Company/Group Name</th>
+                    <td width="30%">{{ userdata.company_name }}</td>
+                    <th width="20%">Contact Name</th>
+                    <td width="30%">{{ userdata.contact_name }}</td>
+                </tr>
+                <tr>
+                    <th width="20%">Telephone</th>
+                    <td width="30%">{{ userdata.company_telephone }}</td>
+                    <th width="20%">E-Mail</th>
+                    <td width="30%"><a href="mailto:{{ userdata.company_email }}">{{ userdata.company_email }}</a></td>
+                </tr>
+                <tr>
+                    <th width="20%">Website</th>
+                    <td width="30%"><a target="_blank" href="{{ userdata.company_website }}">{{ userdata.company_website
+                            }}</a></td>
+                    <th width="20%">Country</th>
+                    <td width="30%">{{ userdata.company_country }}</td>
+                </tr>
+                <tr>
+                    <th width="20%">State</th>
+                    <td width="30%">{{ userdata.company_state }}</td>
+                    <th width="20%">Address Line1</th>
+                    <td width="30%">{{ userdata.company_country }}</td>
+                </tr>
+                <tr>
+                    <th width="20%">Address Line2</th>
+                    <td width="30%">{{ userdata.company_address2 }}</td>
+                    <th width="20%">Town/City</th>
+                    <td width="30%">{{ userdata.company_city }}</td>
+                </tr>
+                <tr>
+                    <th width="20%">Zipcode</th>
+                    <td width="30%">{{ userdata.company_zipcode }}</td>
+                    <th width="20%">Is it Headquarters</th>
+                    <td width="30%">{{ userdata.headquarters }}</td>
+                </tr>
+               
+                <tr>
+                    <th width="20%">Created By</th>
+                    <td width="30%">{{ userdata.created_by }}</td>
+                    <th width="20%">Created Date</th>
+                    <td width="30%">{{ userdata.created_at }}</td>
+                </tr>
+            </table>
+    </div>
+</div>

@@ -1,0 +1,195 @@
+<div class="row"  >
+    <div class="col-12">
+        <div class="card-box table-responsive">
+        	<div class="row col-12 m-b-5 pad-right">
+              	<div class="col-8 pad-left">
+                <h4 class="page-title"><i class="fa fa-list-ul"></i> FAQ</h4>
+                <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+                
+              	</div>
+               
+            </div>
+        
+            <div class="row col-12 m-b-5 pad-right">
+                <div class="col-4 text-left pad-left">
+                    <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                        <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+                    </select>
+                </div>
+                <div class="col-4 text-left">
+					<mat-select style="width: 150px;font-size:13px;" placeholder="-- Role --" #roleFilter name="roleFilter" [(ngModel)]="service.roleFilter" multiple class="custom-select" *ngIf="userdetails.resource_access==1">
+						<mat-select-trigger>
+						<span *ngIf="roleFilter.value?.length == 1" >{{roleFilter.value ?  getSelectedRoleValue(roleFilter.value) : ''}}</span>
+						<span *ngIf="roleFilter.value?.length > 1" class="example-additional-selection">
+							{{roleFilter.value.length}} {{ 'selected' }}
+						</span>
+						</mat-select-trigger>
+						<mat-option *ngFor="let role of roleList" [value]="role.id">{{role.role_name}}</mat-option>
+					</mat-select>
+				</div>
+                <div class="col-4 text-right pad-right">
+                    <input class="search-pad" type="text" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+                </div>
+            </div>
+
+
+
+            <div class="col-12 pad-left">
+                <table id="datatable" class="table table-bordered" >
+                    <thead>
+                    <tr>
+                        <th width="5%" scope="col" class="center">S.No</th>
+                        <th scope="col">Question</th>	
+						<th width="10%" class="text-center" scope="col">Action</th>	
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let faqEntry of faqs$ | async; let i=index; ">
+                        <td scope="row" class="center">{{ 1+i+ service.pageNo }}</td>
+                       
+								
+						<td><ngb-highlight [result]="faqEntry.question"  [term]="service.searchTerm"></ngb-highlight></td>
+						<td  class="center">
+                            <a href="javascript:void(0);" (click)="viewFaq(faqDetails,faqEntry)" title="View" alt="View"> <i class="fa fa-eye"></i> </a>
+							<a *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('edit_faq')" href="javascript:void(0);" (click)="editFaq(i,faqEntry)" title="Edit" alt="Edit" class="pl-2"> <i class="fa fa-edit"></i> </a>
+							<a *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('delete_faq')" href="javascript:void(0);" (click)="removeFaq(confirmcontent,i,faqEntry)" title="Delete" alt="Delete" class="pl-2"> <i class="fa fa-trash text-danger"></i> </a>
+						</td>
+                    </tr>
+                    <tr  *ngIf="(faqs$ | async)?.length==0" >
+                        <td colspan="3" class="center">{{ commontxt.norecords }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="row col-12 pad-left pad-right">
+				<div class="col-6">
+					<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+					<div *ngIf="!(service.loading$ | async)">
+					Displaying {{ (faqs$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (faqs$ | async).length }} of {{ (total$ | async) }} results.
+					</div>
+				</div>
+				<div class="col-6 pad-right text-right">						
+				<ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+					<ng-template ngbPaginationFirst>First</ng-template>
+					<ng-template ngbPaginationPrevious>Prev</ng-template>
+					<ng-template ngbPaginationNext>Next</ng-template>			  
+					<ng-template ngbPaginationLast>Last</ng-template>			  
+				</ngb-pagination>						
+				</div>
+			</div>
+   		</div>
+	</div>
+</div>
+<div class="row" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('add_faq') || (userdetails.rules.includes('edit_faq') && faqData)">
+    <div class="col-12">
+		<div class="col-12 pad-left">
+			<div class="add card-box table-responsive enq-view">
+						  
+					 <h3>{{editStatus == 1 ? 'Update' : 'Add'}} FAQ</h3>                              
+				   
+						<form  [formGroup]="form" (ngSubmit)="onSubmit()">
+							<div class="form-group row">
+								
+								<div class="col-4">
+									<label>User Role <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="User Role" matTooltipClass="tooltip-text-size" aria-tooltip="User Role" matTooltipPosition="right"></i>
+									<mat-select placeholder="-- User Role --" formControlName="user_access_id" multiple class="form-control select2" [class.is-invalid]="f.user_access_id.invalid && f.user_access_id.touched">
+										<mat-select-trigger>
+										<span *ngIf="f.user_access_id.value?.length == 1" >{{f.user_access_id.value ? getSelectedValue(f.user_access_id.value): ''}}</span>
+										<span *ngIf="f.user_access_id.value?.length > 1" class="example-additional-selection">
+											{{f.user_access_id.value.length}} {{ 'selected' }}
+										</span>
+										</mat-select-trigger>
+										<mat-option *ngFor="let item of accessList" [value]="item.id">{{item.name}}</mat-option>
+									</mat-select>  
+									<div *ngIf="f.user_access_id.errors" class="invalid-feedback">
+										<div *ngIf="f.user_access_id.errors.required">User Role is required</div>
+									</div>
+								</div>
+
+								<div class="col-12 m-t-15">
+									<label>Question <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Question" matTooltipClass="tooltip-text-size" aria-tooltip="Question" matTooltipPosition="right"></i>
+									<textarea type="text" formControlName="question" [class.is-invalid]="f.question.invalid && f.question.touched " class="form-control" placeholder="Question *" ></textarea>
+									<div *ngIf="f.question.errors" class="invalid-feedback">
+										<div *ngIf="f.question.errors.required" >Question is required</div>
+										<div *ngIf="f.question.hasError('whitespace')" >Invalid Question</div>
+									</div>
+								</div>                        
+															
+								<div class="col-12 m-t-15">
+									<label>Answer <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Answer" matTooltipClass="tooltip-text-size" aria-tooltip="Answer" matTooltipPosition="right"></i>
+									<textarea type="text" formControlName="answer" [class.is-invalid]="f.answer.invalid && f.answer.touched " class="form-control" placeholder="Answer *" ></textarea>
+									<div *ngIf="f.answer.errors" class="invalid-feedback">
+										<div *ngIf="f.answer.errors.required" >Answer is required</div>
+										<div *ngIf="f.answer.hasError('whitespace')" >Invalid Answer</div>
+									</div>                                
+								</div>                                
+								
+							</div>								
+										
+							<div class="col-lg-12 text-center mt-4 mb-4">
+								<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="addfaq()">
+									<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+									{{editStatus == 1 ? 'Update' : 'Save'}}	
+								</button>
+								<button [disabled]="loading['button'] || buttonDisable" type="button"  (click)="faqFormreset()"   class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Reset</button>
+
+								<div class="clearfix"></div>
+									
+								
+							</div>				
+						</form>	
+					
+				 
+			</div>
+		</div>	
+    </div>
+</div>
+<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+<ng-template #faqDetails let-modal>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+	<div class="modal-body" style="font-size:16px;">
+		<div class="card-box enq-view">	
+			<table class="table-secondary m-b-15" *ngIf="FaqData">
+				<tr *ngIf="userType==1 && userdetails.resource_access== '1'">
+					<th width="20%">User Role</th>
+					<td colspan="3">{{ FaqData.access_id_label }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Question</th>
+					<td colspan="3">{{ FaqData.question }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Answer</th>
+					<td colspan="3">{{ FaqData.answer }}</td>
+				</tr>								
+				<tr>
+					<th width="20%">Created By</th>
+					<td width="30%">{{ FaqData.created_by_label }}</td>
+					<th width="20%">Created Date</th>
+					<td width="30%">{{ FaqData.created_at }}</td>
+				</tr>				
+			</table>			
+            <div style="text-align: center;">
+                <a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="modal.dismiss('cancel click')" >Close</a>
+            </div>
+		</div>
+    </div>
+</ng-template>
+<ng-template #confirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to delete the data?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>

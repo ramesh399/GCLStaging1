@@ -1,0 +1,31 @@
+<div class="col-12 m-t-15">
+    <h3>Interview Requirements</h3>
+    <form #checklistForm="ngForm"  >
+        <div class="review-check">
+            <table class="table table-striped tempdrivenform">
+                <tbody>
+                    <tr *ngFor="let requirement of interviewrequirements; index as i ">
+                        <td><p>{{ 1+i }}. {{ requirement.question }} </p>
+                            <div class="ans-cmt col-12 row">    
+                                <div class="col-4">     
+                                    <h4>Answer <span class="text-danger">*</span></h4>
+                                    <div class="row" >
+                                        <div class="col-10">
+    
+                                            <ng-container>{{ answerArr[requirement.answer] }}</ng-container>
+                                        </div>
+                                    </div>
+                                </div> 
+                                <div class="col-8">
+                                    <h4>Comment</h4>
+                                    
+                                    <ng-container>{{ requirement.comment }}</ng-container>
+                                </div>												
+                            </div>  
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </form>
+</div>

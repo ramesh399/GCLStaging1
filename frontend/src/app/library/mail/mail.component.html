@@ -1,0 +1,370 @@
+<div class="row"  >
+    <div class="col-12">
+        <div class="card-box table-responsive">
+        	<div class="row col-12 m-b-5 pad-right">
+              	<div class="col-8 pad-left">
+                <h4 class="page-title"><i class="fa fa-list-ul"></i> Internal - Emails</h4>
+                <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+                
+              	</div>
+               
+            </div>
+        
+            <div class="row col-12 m-b-5 pad-right">
+                <div class="col-4 text-left pad-left">
+                    <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                        <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+                    </select>
+                </div>
+                <div class="col-4 text-left">
+					<input style="width: 35%; display: inline-block;" class="form-control"  type="text" placeholder="Mail Sent From" matInput [matDatepicker]="from_date" [(ngModel)]="service.from_date" name="from_date" (click)="from_date.open()">
+					<mat-datepicker-toggle matSuffix  [for]="from_date"></mat-datepicker-toggle>
+					<mat-datepicker #from_date></mat-datepicker>
+					&nbsp;
+					<input  style="width: 35%; display: inline-block;" class="form-control" type="text" placeholder="Mail Sent To" matInput [matDatepicker]="to_date" (click)="to_date.open()"  name="to_date" [(ngModel)]="service.to_date" >
+					<mat-datepicker-toggle matSuffix  [for]="to_date"></mat-datepicker-toggle>
+					<mat-datepicker #to_date></mat-datepicker>
+				</div>
+                <div class="col-4 text-right pad-right">
+                    <input class="search-pad" type="text" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+                </div>
+            </div>
+
+
+
+            <div class="col-12 pad-left">
+                <table id="datatable" class="table table-bordered" >
+                    <thead>
+						<tr>
+							<th width="5%" scope="col" class="center">S.No</th>
+							<th scope="col">Subject</th>
+							<th width="15%" scope="col">Status</th>
+							<th width="15%" scope="col">Date Sent</th>	
+							<th width="15%" scope="col">Mail Sent</th>						
+							<th width="12%" class="text-center" scope="col">Action</th>	
+						</tr>
+                    </thead>
+                    <tbody>
+						<tr *ngFor="let mailEntry of mails$ | async; let i=index; ">
+							<td scope="row" class="center">{{ 1+i+ service.pageNo }}</td>
+						   
+									
+							<td><ngb-highlight [result]="mailEntry.subject"  [term]="service.searchTerm"></ngb-highlight></td>
+							<td><ngb-highlight [result]="mailEntry.status_label"  [term]="service.searchTerm"></ngb-highlight></td>
+							<td><ngb-highlight [result]="mailEntry.sent_date"  [term]="service.searchTerm"></ngb-highlight></td>
+							<td><ngb-highlight [result]="mailEntry.mail_sent_at"  [term]="service.searchTerm"></ngb-highlight></td>
+							<td  class="center">
+								<a href="javascript:void(0);" (click)="viewMail(mailDetails,mailEntry)" title="View" alt="View"> <i class="fa fa-eye"></i> </a>
+								<a *ngIf="(userdetails.resource_access==1 || userdetails.rules.includes('edit_email')) && mailEntry.status==2" href="javascript:void(0);" (click)="editMail(mailEntry)" title="Edit" alt="Edit" class="pl-2"  > <i class="fa fa-edit"></i> </a>
+								<a *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('delete_email')"  href="javascript:void(0);" (click)="removeMail(confirmcontent,mailEntry)" title="Delete" alt="Delete" class="pl-2"> <i class="fa fa-trash text-danger"></i> </a>
+							</td>
+						</tr>
+						<tr  *ngIf="(mails$ | async)?.length==0" >
+							<td colspan="6" class="center">{{ commontxt.norecords }}</td>
+						</tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="row col-12 pad-left pad-right">
+				<div class="col-6">
+					<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+					<div *ngIf="!(service.loading$ | async)">
+					Displaying {{ (mails$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (mails$ | async).length }} of {{ (total$ | async) }} results.
+					</div>
+				</div>
+				<div class="col-6 pad-right text-right">						
+				<ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+					<ng-template ngbPaginationFirst>First</ng-template>
+					<ng-template ngbPaginationPrevious>Prev</ng-template>
+					<ng-template ngbPaginationNext>Next</ng-template>			  
+					<ng-template ngbPaginationLast>Last</ng-template>			  
+				</ngb-pagination>						
+				</div>
+			</div>
+   		</div>
+	</div>
+</div>
+<div class="row" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('add_email') || (userdetails.rules.includes('edit_email') && mailData)">
+    <div class="col-12">
+		<div class="col-12 pad-left">
+			<div class="add card-box table-responsive enq-view">                      
+				<h3>Internal - Email</h3>                             
+				<form  [formGroup]="form" (ngSubmit)="onSubmit()">
+					
+						
+					<div class="form-group row">
+						<div class="col-12">
+							<label>Subject <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Subject" matTooltipClass="tooltip-text-size" aria-tooltip="Subject" matTooltipPosition="right"></i>
+							<input type="text" formControlName="subject" [class.is-invalid]="f.subject.invalid && f.subject.touched" class="form-control" placeholder="Subject *" >
+							<div *ngIf="f.subject.errors" class="invalid-feedback">
+								<div *ngIf="f.subject.errors.required" >Subject is required</div>
+								<div *ngIf="f.subject.errors.pattern || f.subject.hasError('whitespace')" >Invalid Subject</div>
+								<div *ngIf="f.subject.errors.maxlength">Subject cannot exceed 255 characters</div>
+							</div>						
+						</div>
+					</div>
+					<div class="form-group row">
+						<div class="col-12">
+							<label>Body <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Body" matTooltipClass="tooltip-text-size" aria-tooltip="Body" matTooltipPosition="right"></i>
+							<textarea type="text" formControlName="body_content" [class.is-invalid]="f.body_content.invalid && f.body_content.touched " rows="8" class="form-control" placeholder="Body" ></textarea>
+							<div *ngIf="f.body_content.errors" class="invalid-feedback">
+								<div *ngIf="f.body_content.errors.required" >Body is required</div>
+								<div *ngIf="f.body_content.errors.pattern || f.body_content.hasError('whitespace')" >Invalid Body</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group row">
+						<div class="col-3">
+							<label>Partners <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Partners" matTooltipClass="tooltip-text-size" aria-tooltip="Partners" matTooltipPosition="right"></i>
+							<select formControlName="partners" [class.is-invalid]="f.partners.invalid && f.partners.touched" class="form-control select2">
+								<option value="">-- Partners --</option>
+								<option  *ngFor="let item of partnerslist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+							</select>
+							<div *ngIf="f.partners.errors" class="invalid-feedback">
+								<div *ngIf="f.partners.errors.required" >Partners is required</div>
+							</div>	
+						</div>
+
+						<div class="col-3">
+							<label>Auditors <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Auditors" matTooltipClass="tooltip-text-size" aria-tooltip="Auditors" matTooltipPosition="right"></i>
+							<select formControlName="auditors" [class.is-invalid]="f.auditors.invalid && f.auditors.touched" class="form-control select2">
+								<option value="">-- Auditors --</option>
+								
+								<option  *ngFor="let item of auditorslist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+							</select>
+							<div *ngIf="f.auditors.errors" class="invalid-feedback">
+								<div *ngIf="f.auditors.errors.required" >Auditors is required</div>
+							</div>
+						</div>                        
+												
+					
+						<div class="col-3">
+							<label>Clients</label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Clients" matTooltipClass="tooltip-text-size" aria-tooltip="Clients" matTooltipPosition="right"></i>
+							<mat-select placeholder="--Clients --" formControlName="clients" multiple class="form-control select2" [class.is-invalid]="f.clients.invalid && f.clients.touched">
+								<mat-select-trigger>
+								<span *ngIf="f.clients.value?.length == 1" >{{f.clients.value ? getSelectedValue(f.clients.value): ''}}</span>
+								<span *ngIf="f.clients.value?.length > 1" class="example-additional-selection">
+									{{f.clients.value.length}} {{ 'selected' }}
+								</span>
+								</mat-select-trigger>
+								<mat-option *ngFor="let item of clientslist" [value]="item.id">{{item.name}}</mat-option>
+							</mat-select>  
+							<div *ngIf="f.clients.errors" class="invalid-feedback">
+								<div *ngIf="f.clients.errors.required" >Clients is required</div>
+							</div>
+						</div>  
+					
+						<div class="col-3">
+							<label>Consultants <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Consultants" matTooltipClass="tooltip-text-size" aria-tooltip="Consultants" matTooltipPosition="right"></i>
+							<select formControlName="consultants" [class.is-invalid]="f.consultants.invalid && f.consultants.touched" class="form-control select2">
+								<option value="">-- Consultants --</option>
+								<option  *ngFor="let item of consultantslist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+							</select>
+							<div *ngIf="f.consultants.errors" class="invalid-feedback">
+								<div *ngIf="f.consultants.errors.required" >Consultants is required</div>
+							</div>
+						</div>  
+					
+					</div>  
+					<div class="form-group row">
+						<div class="col-3">
+							<label>Subscribers <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Subscribers" matTooltipClass="tooltip-text-size" aria-tooltip="Subscribers" matTooltipPosition="right"></i>
+							<select formControlName="subscribers" [class.is-invalid]="f.subscribers.invalid && f.subscribers.touched" class="form-control select2">
+								<option value="">-- Subscribers --</option>
+								<option  *ngFor="let item of subscriberslist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+							</select>
+							<div *ngIf="f.subscribers.errors" class="invalid-feedback">
+								<div *ngIf="f.subscribers.errors.required" >Subscribers is required</div>
+							</div>
+						</div> 
+						
+						<div class="col-3">
+							<label>Signature <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Signature" matTooltipClass="tooltip-text-size" aria-tooltip="Signature" matTooltipPosition="right"></i>
+							<select formControlName="signature_id" [class.is-invalid]="f.signature_id.invalid && f.signature_id.touched" class="form-control select2">
+								<option value="">-- Signature --</option>
+								<option  *ngFor="let item of signaturelist" value="{{item.id}}">{{item.title}}</option>
+							</select>
+							<div *ngIf="f.signature_id.errors" class="invalid-feedback">
+								<div *ngIf="f.signature_id.errors.required" >Signature is required</div>
+							</div>
+						</div> 
+						
+						<div class="col-3">
+							<label>Status <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Status" matTooltipClass="tooltip-text-size" aria-tooltip="Status" matTooltipPosition="right"></i>
+							<select formControlName="status" [class.is-invalid]="f.status.invalid && f.status.touched" class="form-control select2" (change)="statusChange($event.target.value)">
+								<option value="">-- Status --</option>
+								<option  *ngFor="let item of statuslist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+							</select>
+							<div *ngIf="f.status.errors" class="invalid-feedback">
+								<div *ngIf="f.status.errors.required" >Status is required</div>
+							</div>
+						</div> 
+						
+						<div class="col-3" *ngIf="isShowSentDate">
+							<label>Date Sent </label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Date Sent" matTooltipClass="tooltip-text-size" aria-tooltip="Date Sent" matTooltipPosition="right"></i><br>
+							<input  style="width: 80%; display: inline;float:left;" type="text" formControlName="sent_date" class="form-control" placeholder="Sent Date" [class.is-invalid]="f.sent_date.invalid && f.sent_date.touched" matInput [matDatepicker]="sent_date" (click)="sent_date.open()">
+							<mat-datepicker-toggle matSuffix  [for]="sent_date"></mat-datepicker-toggle>
+							<mat-datepicker #sent_date></mat-datepicker>
+							
+							<div *ngIf="f.sent_date.errors" class="invalid-feedback">
+								<div *ngIf="f.sent_date.errors.required">Date Sent is required</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-group row">
+						<div class="col-6">
+							<label>Attachment</label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Attachment" matTooltipClass="tooltip-text-size" aria-tooltip="Attachment" matTooltipPosition="right"></i><br>
+							<input type="file" formControlname="attachment" (change)="attachmentChange($event)" style="width:184px"  >
+							<br><div style="font-size:11px;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs }}<span *ngIf="!last">, </span> </span></div>
+							<div *ngIf="attachment" style="padding:5px; border:1px solid #cecece; background-color: beige; height:32px;width: 100%;">
+								<span>{{ attachment }}</span>
+								<a href="javascript:void(0);"  (click)="removeattachment()" style="color:red; font-weight:bold;margin-right: 5px;float:right;" >X</a>
+								
+							</div>
+							<div *ngIf="attachmentFileErr" class="validationerror" >
+								{{attachmentFileErr}}
+							</div>
+
+						</div>
+					</div>
+								
+					<div class="col-lg-12 text-center mt-4 mb-4">
+						<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="addmail()">
+							<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+							{{ submitbuttontitle }}
+						</button>
+
+						<button [disabled]="loading['button'] || buttonDisable" type="button" (click)="mailFormreset()"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Reset</button>
+						
+						<button *ngIf="showpreview" [disabled]="loading['button'] || buttonDisable" type="button" (click)="mailPreview(previewMail)"  class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Preview</button>
+							
+						<div class="clearfix"></div>
+							
+						
+					</div>
+				</form>				             
+			</div>
+		</div>	
+    </div>
+</div>
+<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+<ng-template #downloading let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+        Please wait, your file is downloading ...
+    </div>
+</ng-template>
+<ng-template #mailDetails let-modal>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+	<div class="modal-body" style="font-size:16px;overflow: overlay;">
+		<div class="card-box enq-view">	
+			<table class="table-secondary m-b-15" *ngIf="MailData">
+				<tr>
+					<th width="20%">Subject</th>
+					<td width="30%">{{ MailData.subject }}</td>
+					<th width="20%">Partners</th>
+					<td width="30%">{{ MailData.partners_label }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Auditors</th>
+					<td width="30%">{{ MailData.auditors_label }}</td>
+					<th width="20%">Clients</th>
+					<td width="30%">{{ MailData.clients_label }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Signature</th>
+					<td width="30%">{{ MailData.signature_label }}</td>
+					<th width="20%">Consultants</th>
+					<td width="30%">{{ MailData.consultants_label }}</td>
+				</tr>	
+				<tr>
+					<th width="20%">Subscribers</th>
+					<td width="30%">{{ MailData.subscribers_label }}</td>
+					<th width="20%">Attachment</th>
+					<td width="30%"><a href="javascript:void(0);" *ngIf="MailData.attachment" (click)="downloadFile(MailData.id,'attachment',MailData.attachment);openmodal(downloading);" > <i class="fa fa-download" ></i>&nbsp;{{ MailData.attachment }}</a></td>
+				</tr>
+				<tr>
+					<th width="20%">Status</th>
+					<td width="30%">{{ MailData.status_label }}</td>
+					<th width="20%">Date Sent</th>
+					<td width="30%">{{ MailData.sent_date }}</td>
+				</tr>
+				<!--
+				<tr>
+					<th width="20%">Status</th>
+					<td width="30%">{{ MailData.status_label }}</td>
+					<th width="20%">Date Sent</th>
+					<td width="30%">{{ MailData.sent_date }}</td>
+				</tr>
+				-->
+				<tr>
+					<th width="20%">Mail Sent</th>
+					<td width="30%">{{ MailData.mail_sent_at }}</td>
+					<th width="20%">Created at</th>
+					<td width="30%">{{ MailData.created_at }}</td>
+				</tr>	
+				<tr>
+					<th width="20%">Body Content</th>
+					<td colspan="3">{{ MailData.body_content }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Signature Image</th>
+					<td colspan="3"><img [src]="MailData.signature_logo" ></td>
+				</tr>
+			</table>
+			<div style="text-align: center;">
+				<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="modal.dismiss('cancel click')" >Close</a>
+			</div>
+		</div>
+    </div>
+</ng-template>
+<ng-template #previewMail let-modal>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+	<div class="modal-body mt-4 mb-4" style="font-size:13px;">
+		<div class="card-box enq-view"  *ngIf="previewsubjectcontent">	
+			<table >
+				<tr><td style="padding:3px;" width="20%"><label>Subject</label></td><td style="padding:3px; vertical-align: top;">{{ previewsubjectcontent }}</td></tr>
+				<tr><td style="padding:3px;" valign="top"><label>Body</label></td><td style="padding:3px;  vertical-align: top;" [innerHTML]="previewbodycontent"></td></tr>
+			</table>
+			<!--<ul>
+                <li style="width:100%" *ngIf="previewsubjectcontent">
+                	<div  ><span class="label-pad">Subject</span></div>
+                	<div  >  {{ previewsubjectcontent }} </div></li>
+                <li style="width:100%"  *ngIf="previewbodycontent">
+                	<div  ><span class="label-pad">Body</span></div>
+                	<div   [innerHTML]="previewbodycontent"></div></li>
+
+            </ul>-->
+			<!--
+			<div style="text-align: center;" *ngIf="previewsubjectcontent"><label>Subject : </label>{{ previewsubjectcontent }}</div>
+			<div class="mt-4" *ngIf="previewbodycontent" [innerHTML]="previewbodycontent"></div>
+				-->
+			<div style="text-align: center;" class="mt-4">
+				<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="modal.dismiss('cancel click')" >Close</a>
+			</div>
+		</div>
+    </div>
+</ng-template>
+<ng-template #confirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to delete the data?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>

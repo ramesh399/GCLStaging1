@@ -1,0 +1,41 @@
+<!-- Page-Title -->
+<div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box p-b-30">
+				<h4 class="page-title">{{title}}</h4>
+				<div class="clearfix"></div>
+				<div class="text-right float-right">
+					<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/master/audit-planning-checklist/list']" [queryParams]="{category:category}">Back</a>
+				</div>
+			</div>		
+        </div>
+    </div>
+
+    <div class="row" *ngIf="auditplanningdata">
+        <div class="col-12">
+			
+			<table class="table-secondary m-b-15">
+				<tr *ngIf="auditplanningdata.name">
+					<th width="20%">Name</th>
+					<td colspan="80%">{{ auditplanningdata.name }}</td>
+				</tr>
+				<tr *ngIf="auditplanningdata.guidance">
+					<th width="20%">Guidance</th>
+					<td colspan="80%">{{ auditplanningdata.guidance }}</td>
+				</tr>
+				<tr *ngIf="auditplanningdata.risk_category_label">
+					<th width="20%">Risk Category</th>
+					<td colspan="80%">{{ auditplanningdata.risk_category_label }}</td>
+				</tr>
+				<tr *ngIf="auditplanningdata.audit_type">
+					<th width="20%">Audit Type</th>
+					<td colspan="80%">{{ auditplanningdata.audit_type_label }}</td>
+				</tr>
+			</table>
+			
+            <!-- <div class="text-right">                
+                <button type="button" class="btn but-cust green m-b-5 ml-2" [routerLink]="['/master/audit-planning-checklist/list']" [queryParams]="{category:category}">Back to List</button>                
+            </div> -->
+			
+        </div>
+    </div> <!-- end row -->

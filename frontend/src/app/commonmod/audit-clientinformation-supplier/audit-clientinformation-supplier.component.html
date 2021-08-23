@@ -1,0 +1,286 @@
+<div class="col-12 row enq-view m-t-10">
+    <div class="col-8 text-primary" style="border-bottom: 1px solid #d7d7d7;font-size:16px; ">
+        Supplier Information
+    </div>
+    
+    <div class="col-4 text-right pad-right" style="border-bottom: 1px solid #d7d7d7;">
+        <ng-container *ngIf="!cond_viewonly && dataloaded">
+            <div class="radio" >
+                Is it applicable?&nbsp;&nbsp;&nbsp;						
+                <input type="radio" id="yes" [checked]="this.isItApplicable?true:false" value="1" (change)="isItApp(1)"><label for="yes">Yes</label>
+                &nbsp;&nbsp;&nbsp;
+                <input type="radio" id="no" [checked]="!this.isItApplicable?true:false" value="2" (change)="isItApp(2)"><label for="no">No</label>										
+            </div>					
+        </ng-container>
+    </div>
+</div>
+<div class="col-12" *ngIf="!dataloaded">
+    <span class="spinner-border spinner-border-sm mr-1"></span>
+</div>
+
+<div *ngIf="!isItApplicable && dataloaded" class="m-t-5 col-12">
+    <form  [formGroup]="remarkForm">
+        <div class="form-group row">					
+            <div class="col-12">
+                <label>Remarks <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Remarks" matTooltipClass="tooltip-text-size" aria-tooltip="Remarks" matTooltipPosition="right"></i>
+                <ng-container *ngIf="cond_viewonly">
+                    <div>{{rf.remark.value }}</div>
+                </ng-container>
+                <ng-container *ngIf="!cond_viewonly">
+                    <textarea rows="5" formControlName="remark" [class.is-invalid]="rf.remark.invalid && rf.remark.touched" placeholder="Remarks" class="form-control" ></textarea>
+                    <div *ngIf="rf.remark.errors" class="invalid-feedback">
+                        <div *ngIf="rf.remark.errors.required">Remarks cannot be blank.</div>
+                        <div *ngIf="rf.remark.hasError('whitespace')">Invalid Remarks</div>
+                    </div>
+                </ng-container>
+            </div>				
+        </div> 											
+        <ng-container *ngIf="!cond_viewonly">	
+            <div class="col-lg-12 text-center mt-4 mb-4">
+                <button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="addRemark()">
+                    <span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+                    {{editRemarkStatus == 1 ? 'Update' : 'Save'}}	
+                </button>
+                <div class="clearfix"></div>				
+            </div>
+        </ng-container>
+    </form>
+</div>
+
+<div class="col-12 m-t-15"  *ngIf="isItApplicable && dataloaded" >
+    <!--<h3>Supplier Information</h3>	-->
+    <div class="text-info"><strong>How many raw materials suppliers are involved in your production process:</strong></div>
+    
+    <div class="col-12 pad-left pad-right">
+        <table id="datatable" class="table table-bordered" >
+            <thead>
+                <tr>
+                    <th width="5%" scope="col" class="center">S.No</th>
+                    <th scope="col" width="30%">Supplier Name</th>	
+                    <th scope="col" width="32%">Products & Composition</th>
+                    <!--<th scope="col" class="center">Available in GOTS database?</th>-->
+                    
+                    <th scope="col" width="10%" class="center" *ngIf="sufficient_access">Sufficient</th>
+                    <th width="10%" class="text-center" scope="col">Action</th>	
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let supplier of supplierdetails; let i=index; ">
+                    <td scope="row" class="center">{{ 1+i }}</td>
+                
+                    <td><ngb-highlight [result]="supplier.supplier_name"  ></ngb-highlight></td>
+                    <td><ngb-highlight [result]="supplier.products_composition"   ></ngb-highlight></td>
+                    <!--<td class="center"><ngb-highlight [result]="supplier.available_label"  ></ngb-highlight></td>-->
+                    <!--
+                    <td><ngb-highlight [result]="supplier.sufficient_label"  [term]="service.searchTerm"></ngb-highlight></td>
+                    -->
+                    <td class="center" *ngIf="sufficient_access"><ngb-highlight [result]="supplier.sufficient_label" ></ngb-highlight></td>
+                    <td  class="center">
+                        <a href="javascript:void(0);" (click)="viewSupplier(supplierDetails,supplier)" title="View" alt="View"> <i class="fa fa-eye"></i> </a>
+
+                        <ng-container *ngIf="!cond_viewonly">
+                            <a href="javascript:void(0);" *ngIf="(userType==1 && userdetails.rules.includes('audit_execution')) || userType==2 || userdetails.resource_access==1 || userdetails.rules.includes('edit_audit_supplier')" (click)="editSupplier(i,supplier)" title="Edit" alt="Edit" class="pl-2"> <i class="fa fa-edit"></i> </a>
+                            <a href="javascript:void(0);" *ngIf="(userType==1 && userdetails.rules.includes('audit_execution')) || userType==2 || userdetails.resource_access==1 || userdetails.rules.includes('delete_audit_supplier')" (click)="removeSupplier(confirmcontent,i,supplier)" title="Delete" alt="Delete" class="pl-2"> <i class="fa fa-trash text-danger"></i> </a>
+                        </ng-container>                        
+                    </td>
+                </tr>
+                <tr  *ngIf="supplierdetails?.length==0" >
+                    <td colspan="6" class="center">No Supplier Information Added</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="clearfix"></div>
+    <ng-container *ngIf="!cond_viewonly">
+        <div class="row" *ngIf="(userType==1 && userdetails.rules.includes('audit_execution')) || userType==2 || userdetails.resource_access==1 || userdetails.rules.includes('add_audit_supplier') || (userdetails.rules.includes('edit_audit_supplier') && supplierData)">
+            <div class="col-12 m-t-15">
+                <!--
+                <div class="add card-box table-responsive enq-view">  
+                -->		
+                <h3>{{editStatus == 1 ? 'Update' : 'Add'}} Suppliers Information</h3>                             
+                <form  [formGroup]="supplierform">
+                    <div class="form-group row">
+                        
+                        <div class="col-6">
+                            <label>Supplier Name <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Supplier Name" matTooltipClass="tooltip-text-size" aria-tooltip="Supplier Name" matTooltipPosition="right"></i>
+                            <input type="text" formControlName="supplier_name"  class="form-control" placeholder="Supplier Name" [class.is-invalid]="sf.supplier_name.invalid && sf.supplier_name.touched">
+                            
+                            <div *ngIf="sf.supplier_name.errors" class="invalid-feedback">
+                                <div *ngIf="sf.supplier_name.errors.required">Supplier Name is required</div>
+                                <div *ngIf="sf.supplier_name.hasError('whitespace')" >Invalid Supplier Name</div>
+                                <div *ngIf="sf.supplier_name.errors.maxlength">Supplier Name cannot exceed 255 characters</div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <label>Products & Composition <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Products & Composition" matTooltipClass="tooltip-text-size" aria-tooltip="Products & Composition" matTooltipPosition="right"></i>
+                            <input type="text" formControlName="products_composition"  class="form-control" placeholder="Products & Composition" [class.is-invalid]="sf.products_composition.invalid && sf.products_composition.touched">
+                            
+                            <div *ngIf="sf.products_composition.errors" class="invalid-feedback">
+                                <div *ngIf="sf.products_composition.errors.required">Products & Composition is required</div>
+                                <div *ngIf="sf.products_composition.hasError('whitespace')" >Invalid Products & Composition</div>
+                            </div>
+                        </div>
+                    </div> 
+
+
+                    <div class="form-group row">
+                        <div class="col-12">
+                            <label>Supplier Address (full address, phone no, e-mail) <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Supplier Address (full address, phone no, e-mail)" matTooltipClass="tooltip-text-size" aria-tooltip="Supplier Address (full address, phone no, e-mail)" matTooltipPosition="right"></i>
+                            <textarea formControlName="supplier_address"  [class.is-invalid]="sf.supplier_address.invalid && sf.supplier_address.touched" rows="4" class="form-control" placeholder="Supplier Address (full address, phone no, e-mail)"></textarea>
+                            <div *ngIf="sf.supplier_address.errors" class="invalid-feedback">
+                                <div *ngIf="sf.supplier_address.errors.required">Supplier Address is required</div>
+                                <div *ngIf="sf.supplier_address.errors.pattern || sf.supplier_address.hasError('whitespace')" >Invalid Supplier Address</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <!--
+                        <div class="col-6">
+                            <label>Is it Applicable <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Is it Applicable" matTooltipClass="tooltip-text-size" aria-tooltip="Is it Applicable" matTooltipPosition="right"></i>
+                            <select formControlName="is_applicable" [class.is-invalid]="sf.is_applicable.invalid && sf.sufficient.touched" class="form-control select2">
+                                <option value="">-- Applicable --</option>
+                                <option  *ngFor="let item of applicablelist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+                            </select>
+                            <div *ngIf="sf.is_applicable.errors" class="invalid-feedback">
+                                <div *ngIf="sf.is_applicable.errors.required" >Is it Applicable is required</div>
+                            </div>
+                        </div> 
+                         <div class="col-4">
+                            <label>Validity <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Validity" matTooltipClass="tooltip-text-size" aria-tooltip="Validity" matTooltipPosition="right"></i>
+                            <input type="text" formControlName="validity"  class="form-control" placeholder="Validity" [class.is-invalid]="sf.validity.invalid && sf.validity.touched">
+                            
+                            <div *ngIf="sf.validity.errors" class="invalid-feedback">
+                                <div *ngIf="sf.validity.errors.required">Validity is required</div>
+                                <div *ngIf="sf.validity.hasError('whitespace')" >Invalid Validity</div>
+                            </div>
+                        </div> -->
+                        <!--
+                        <div class="col-4">
+                            <label>Available in GOTS database? <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Available in GOTS database?" matTooltipClass="tooltip-text-size" aria-tooltip="Available in GOTS database?" matTooltipPosition="right"></i>
+                            <select formControlName="available_in_gots_database" [class.is-invalid]="sf.available_in_gots_database.invalid && sf.available_in_gots_database.touched" class="form-control select2">
+                                <option value="">-- Available in GOTS database? --</option>
+                                <option  *ngFor="let item of availablelist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+                            </select>
+                            <div *ngIf="sf.available_in_gots_database.errors" class="invalid-feedback">
+                                <div *ngIf="sf.available_in_gots_database.errors.required" >Available in GOTS database? is required</div>
+                            </div>
+                        </div>
+                        -->
+                        
+                        <div class="col-6" *ngIf="sufficient_access">
+                            <label>Sufficient <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Sufficient" matTooltipClass="tooltip-text-size" aria-tooltip="Sufficient" matTooltipPosition="right"></i>
+                            <select formControlName="sufficient" [class.is-invalid]="sf.sufficient.invalid && sf.sufficient.touched" class="form-control select2">
+                                <option value="">-- Sufficient --</option>
+                                <option  *ngFor="let item of sufficientlist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+                            </select>
+                            <div *ngIf="sf.sufficient.errors" class="invalid-feedback">
+                                <div *ngIf="sf.sufficient.errors.required" >Sufficient is required</div>
+                            </div>
+                        </div> 
+                    
+                        
+                    </div>								
+                                
+                    <div class="col-lg-12 text-center mt-4 mb-4">
+                        <button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="addsupplier()">
+                            <span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+                            {{editStatus == 1 ? 'Update' : 'Save'}}	
+                        </button>
+                        <button [disabled]="loading['button'] || buttonDisable" type="button" (click)="supplierFormreset()"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Reset</button>
+
+                        <div class="clearfix"></div>
+                            
+                        
+                    </div>
+                </form>				             
+            </div>
+            <!--	
+            </div>
+            -->
+        </div>
+    </ng-container>
+    
+</div>
+<div class="col-12 m-b-10" >
+    <app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+</div>
+
+<ng-template #supplierDetails let-modal>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+	<div class="modal-body"  >
+		<div class="card-box enq-view">	
+            <table class="table-secondary m-b-15" *ngIf="SupplierData">
+				<tr>
+					<th width="20%">Supplier Name</th>
+					<td width="30%">{{ SupplierData.supplier_name }}</td>
+					<th width="20%">Products & Composition</th>
+					<td width="30%">{{ SupplierData.products_composition }}</td>
+                </tr>	
+                <tr>
+					<th width="20%">Supplier Address</th>
+					<td colspan="3">{{ SupplierData.supplier_address }}</td>
+                </tr>
+                <tr *ngIf="sufficient_access">
+                    <th width="20%">Sufficient</th>
+					<td colspan="3">
+                        <span *ngIf="cond_viewonly">{{ SupplierData.sufficient_label }}</span>
+                        <form>
+                            <ng-container *ngIf="!cond_viewonly">
+                                <select name="sufficient" [(ngModel)]="model.sufficient"  class="form-control select2" (change)="changeSufficient(changeSufficientpopup,$event.target.value)" style="width: 35%;" >
+                                    <option value="">-- Sufficient --</option>
+                                    <option  *ngFor="let item of sufficientlist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+                                </select>
+                            </ng-container>
+                        </form>
+                    </td>
+                </tr>	
+                <tr>
+					<th width="20%">Created By</th>
+					<td width="30%">{{ SupplierData.created_by_label }}</td>
+					<th width="20%">Created Date</th>
+					<td width="30%">{{ SupplierData.created_at }}</td>
+                </tr>	
+            </table>
+			<div style="text-align: center;">
+				<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="modal.dismiss('cancel click')" >Close</a>
+            </div>
+            <app-usermessage [success]="suppliersuccess" [error]="suppliererror"  ></app-usermessage>
+		</div>
+    </div>
+</ng-template>
+<ng-template #confirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to delete the data?
+	</div>
+	<div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>
+<ng-template #changeSufficientpopup let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you change Sufficient?
+	</div>
+	<div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>

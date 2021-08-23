@@ -1,0 +1,926 @@
+<div class="col-12 row pad-right" >
+	<div class="col-8">
+		<h4 class="page-title">{{title}}</h4>
+	</div>
+	<div class="col-4 text-right pad-right">
+		<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/master/standard/list']"><i class="fa fa-arrow-left text-white"></i> Back</a>
+	</div>
+</div>
+<div class="row">
+    <div class="col-12"> 
+        <div class="add card-box table-responsive">
+            <form  [formGroup]="form" (ngSubmit)="onSubmit()"  >
+                                                                  
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view">
+					
+					<div class="form-group">
+						
+						<div class="col-8">
+							<label>Standard Type <span class="text-danger">*</span></label>
+							<div class="radio" >
+								<input   type="radio" formControlName="type" id="regulatory" [checked]="this.standard_type=='2'?1:0" value="2"><label for="regulatory">Regulatory Standard</label>
+								&nbsp;&nbsp;&nbsp;
+								<input   type="radio" formControlName="type" id="nonregulatory" [checked]="this.standard_type=='1'?1:0" value="1"><label for="nonregulatory">Non-Regulatory Standard</label>
+							</div>
+							<div *ngIf="f.type.errors" class="invalid-feedback">
+								<div *ngIf="f.type.errors.required" >Type is required</div>
+								<div *ngIf="f.type.errors.incorrect">{{ typeErrors }}</div>
+							</div>	
+							<div *ngIf="typeErrors" class="validationerror" >
+								{{ typeErrors }} 
+							</div>
+						</div>
+						
+						<div class="col-6">
+							<label>Name <span class="text-danger">*</span></label>
+							<input type="text" formControlName="name" [class.is-invalid]="f.name.invalid &&
+							f.name.touched " class="form-control" placeholder="Name" >
+							<div *ngIf="f.name.errors" class="invalid-feedback">
+								<div *ngIf="f.name.errors.required" >Name is required</div>
+								<div *ngIf="f.name.errors.pattern || f.name.hasError('whitespace')" >Invalid Name</div>
+								<div *ngIf="f.name.errors.maxlength">Name cannot exceed 255 characters</div>
+								<div *ngIf="f.name.errors.incorrect">{{ nameErrors }}</div>
+							</div>							
+						</div> 
+
+						<div class="col-6 m-t-15">
+							<label>Code <span class="text-danger">*</span></label>
+							<input type="text" formControlName="code" [class.is-invalid]="f.code.invalid && f.code.touched " class="form-control" placeholder="Code" >
+							<div *ngIf="f.code.errors" class="invalid-feedback">
+								<div *ngIf="f.code.errors.required" >Code is required</div>
+								<div *ngIf="f.code.errors.pattern || f.code.hasError('whitespace')" >Invalid Code</div>
+								<div *ngIf="f.code.errors.maxlength">Code cannot exceed 50 characters</div>
+								<div *ngIf="f.code.errors.incorrect">{{ codeErrors }}</div>
+							</div>							
+						</div>		
+
+						<div class="col-6 m-t-15">
+							<label>Short Code <span class="text-danger">*</span></label>
+							<input type="text" formControlName="short_code" [class.is-invalid]="f.short_code.invalid && f.short_code.touched " class="form-control" placeholder="Short Code" >
+							<div *ngIf="f.short_code.errors" class="invalid-feedback">
+								<div *ngIf="f.short_code.errors.required" >Short Code is required</div>
+								<div *ngIf="f.short_code.errors.pattern || f.short_code.hasError('whitespace')" >Invalid Short Code</div>
+								<div *ngIf="f.short_code.errors.maxlength">Short Code cannot exceed 3 characters</div>
+								<div *ngIf="f.short_code.errors.incorrect">{{ short_codeErrors }}</div>
+							</div>							
+						</div>	
+						
+						<div class="col-6 m-t-15">
+							<label>Version <span class="text-danger">*</span></label>
+							<input type="text" class="form-control" formControlName="version" [class.is-invalid]="f.version.invalid && f.version.touched" class="form-control" placeholder="Version" >    
+							<div *ngIf="f.version.errors" class="invalid-feedback">
+								<div *ngIf="f.version.errors.required">Version cannot be blank.</div>
+								<div *ngIf="f.version.errors.maxlength">Version cannot exceed 15 characters</div>
+								<div *ngIf="f.version.errors.pattern || f.version.hasError('whitespace')">Invalid Version</div>
+							</div>                            
+						</div>	
+
+						<div class="col-6 m-t-15">
+							<label>License Number <span class="text-danger">*</span></label>
+							<input type="text" class="form-control" formControlName="license_number" [class.is-invalid]="f.license_number.invalid && f.license_number.touched" class="form-control" placeholder="Licence Number" >    
+							<div *ngIf="f.license_number.errors" class="invalid-feedback">
+								<div *ngIf="f.license_number.errors.required">License Number cannot be blank.</div>								
+								<div *ngIf="f.license_number.errors.pattern || f.license_number.hasError('whitespace')">Invalid License Number</div>
+							</div>                            
+						</div>						
+						
+						<div class="col-6 m-t-15">
+							<label>Priority <span class="text-danger">*</span></label>
+							<input type="text" class="form-control" formControlName="priority" [class.is-invalid]="f.priority.invalid && f.priority.touched" class="form-control" placeholder="Priority" >    
+							<div *ngIf="f.priority.errors" class="invalid-feedback">
+								<div *ngIf="f.priority.errors.required">Priority cannot be blank.</div>	
+								<div *ngIf="f.priority.errors.maxlength">Name cannot exceed 5 characters</div>
+								<div *ngIf="f.priority.errors.pattern || f.priority.hasError('whitespace')">Invalid Priority</div>
+							</div>                            
+						</div>
+
+						<div class="col-8 m-t-15">
+							<label>Description</label>
+							<textarea formControlName="description" class="form-control" placeholder="Description" [class.is-invalid]="f.description.invalid && f.description.touched "></textarea>                                
+							<div *ngIf="f.description.errors" class="invalid-feedback">								
+								<div *ngIf="f.description.errors.pattern || f.description.hasError('whitespace')">Invalid Description</div>								
+							</div>
+						</div>
+													
+						<div class="col-lg-12 text-center mt-4 mb-4">
+							<button [disabled]="loading || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+								{{btnLabel}}
+							</button>
+							<button [disabled]="loading || buttonDisable" type="button" [routerLink]="['/master/standard/list']" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2">
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+								Cancel
+							</button>
+
+							<div class="clearfix"></div>
+							
+							<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+						</div>
+						
+					</div>
+						
+				</div>
+			</form>
+        </div>	
+		 
+		<!--	
+
+		
+		<div class="cs-pgm" style="background-color:#ffffff !important;">      
+				
+			<div class="form-group row">
+				
+				
+				<div  style="width:100%;">
+					<h3>Audit Planning</h3>
+					
+					<table id="datatable" class="table table-bordered tab-bor col-12" >
+						<thead>
+							<tr>                                        
+								<th scope="col" width="60%" style="vertical-align:middle;">Premier Mills in Singanallur - GOTS, OCS, RCS</th> 
+								<th scope="col" width="20%" style="vertical-align:middle;">Quotation Manday: 3 Day(s)</th>
+								<th scope="col" width="20%" style="vertical-align:middle;">Actual Manday: 3 Day(s)</th>
+								<th scope="col" width="5%" style="vertical-align:middle;"><i class="fa fa-close"></i></th>
+							</tr>
+						</thead>
+						<tbody>                                             
+							<tr style="background-color:#ffffff !important;">	
+								<td colspan="4" width="100%">
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view ">				
+										<div class="form-group row">														
+											<div class="col-3">
+												<label>Date(s)</label><br>
+												<input style="width: 70%; display: inline;" matInput [matDatepicker]="completed_date" class="form-control"  placeholder="Date *">
+												<mat-datepicker-toggle matSuffix  [for]="completed_date"></mat-datepicker-toggle>
+												<mat-datepicker #completed_date></mat-datepicker>														
+											</div>
+											
+											<div class="col-3">
+												<label>Lead Auditor</label>
+												<mat-select placeholder="Lead Auditor *" multiple class="form-control select2">
+													<mat-select-trigger>																
+													</mat-select-trigger>																
+												</mat-select>
+											</div>
+											
+											<div class="col-3">
+												<label>Technical Expert</label>
+												<mat-select placeholder="Technical Expert" multiple class="form-control select2">
+													<mat-select-trigger>																
+													</mat-select-trigger>																
+												</mat-select>
+											</div>	
+											
+											<div class="col-3">
+												<label>Translator</label>
+												<mat-select placeholder="Translator" multiple class="form-control select2">
+													<mat-select-trigger>																
+													</mat-select-trigger>																
+												</mat-select>
+											</div>																											
+										</div>
+									</div>
+									
+									<table class="table-bordered tab-bor col-12" align="center" style="width:98%;">
+										<thead>
+										<tr class="bg-primary text-white">
+											<th width="5%" scope="col" class="center">S.No</th>
+											<th scope="col">Auditor</th>
+											<th scope="col">Date(s)</th>
+											<th scope="col" class="text-center">Manday</th>
+											<th width="8%" scope="col" class="center">Action</th>
+										</tr>
+										</thead>
+										<tbody>														
+											<tr>
+												<td scope="row" class="center">1</td>
+												<td>William</td>
+												<td>25/01/2020 & 26/01/2020</td>
+												<td align="center">2</td>
+												<td class="center">
+													<a href="javascript:void(0);"  title="Edit" alt="Edit"> <i class="fa fa-edit"></i> </a>
+													&nbsp;&nbsp;
+													<a href="javascript:void(0);"  title="Delete" alt="Delete"> <i class="fa fa-trash text-danger"></i> </a>
+												</td>
+											</tr>
+											<tr style="background-color:#ffffff !important;">
+												<td scope="row" class="center">2</td>
+												<td>Michael</td>
+												<td>25/01/2020</td>
+												<td align="center">1</td>
+												<td  class="center">
+													<a href="javascript:void(0);"  title="Edit" alt="Edit"> <i class="fa fa-edit"></i> </a>
+													&nbsp;&nbsp;
+													<a href="javascript:void(0);"  title="Delete" alt="Delete"> <i class="fa fa-trash text-danger"></i> </a>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+									
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view m-t-15">				
+										<div class="form-group row">														
+											<div class="col-4">
+												<label>Auditor</label>
+												<mat-select placeholder="Auditor *" multiple class="form-control select2">
+													<mat-select-trigger>																
+													</mat-select-trigger>																
+												</mat-select>														
+											</div>
+											
+											<div class="col-5">
+												<label>Date(s)</label><br>
+												<input style="width: 70%; display: inline;" matInput [matDatepicker]="completed_date1" class="form-control"  placeholder="Date *">
+												<mat-datepicker-toggle matSuffix  [for]="completed_date1"></mat-datepicker-toggle>
+												<mat-datepicker #completed_date1></mat-datepicker>
+											</div>	
+
+											<div class="col-3" style="padding-top:25px;">
+												<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="addTax()">+Add</a>
+												&nbsp;
+												<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="resetTax()">Reset</a>
+											</div>														
+										</div>
+									</div>	
+								</td>																																					
+							</tr>		
+						</tbody>
+					</table>	
+					
+					<table id="datatable" class="table table-bordered tab-bor col-12" >
+						<thead>
+							<tr>                                        
+								<th scope="col" width="60%" style="vertical-align:middle;">Premier Mills in Hosur - RCS, OCS</th> 
+								<th scope="col" width="20%" style="vertical-align:middle;">Quotation Manday: 2 Day(s)</th>
+								<th scope="col" width="20%" style="vertical-align:middle;">Actual Manday: 2 Day(s)</th> 
+								<th scope="col" width="5%" style="vertical-align:middle;"><i class="fa fa-edit"></i></th>	
+							</tr>
+						</thead>
+						<tbody>                                             
+							<tr style="background-color:#ffffff !important;display:none;">	
+								<td colspan="3" width="100%">
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view ">				
+										<div class="form-group row">														
+											<div class="col-3">
+												<label>Date(s)</label><br>
+												<input style="width: 70%; display: inline;" matInput [matDatepicker]="completed_date2" class="form-control"  placeholder="Date *">
+												<mat-datepicker-toggle matSuffix  [for]="completed_date2"></mat-datepicker-toggle>
+												<mat-datepicker #completed_date2></mat-datepicker>														
+											</div>
+											
+											<div class="col-3">
+												<label>Lead Auditor</label>
+												<mat-select placeholder="Lead Auditor *" multiple class="form-control select2">
+													<mat-select-trigger>																
+													</mat-select-trigger>																
+												</mat-select>
+											</div>
+											
+											<div class="col-3">
+												<label>Technical Expert</label>
+												<mat-select placeholder="Technical Expert" multiple class="form-control select2">
+													<mat-select-trigger>																
+													</mat-select-trigger>																
+												</mat-select>
+											</div>	
+											
+											<div class="col-3">
+												<label>Translator</label>
+												<mat-select placeholder="Translator" multiple class="form-control select2">
+													<mat-select-trigger>																
+													</mat-select-trigger>																
+												</mat-select>
+											</div>																											
+										</div>
+									</div>
+									
+									<table class="table-bordered tab-bor col-12" align="center" style="width:98%;">
+										<thead>
+										<tr class="bg-primary text-white">
+											<th width="5%" scope="col" class="center">S.No</th>
+											<th scope="col">Auditor</th>
+											<th scope="col">Date(s)</th>
+											<th scope="col" align="center">Manday</th>
+											<th width="8%" scope="col" class="center">Action</th>
+										</tr>
+										</thead>
+										<tbody>														
+											<tr>
+												<td scope="row" class="center">1</td>
+												<td>Benjamin</td>
+												<td>26/01/2020</td>
+												<td align="center">1</td>
+												<td  class="center">
+													<a href="javascript:void(0);"  title="Edit" alt="Edit"> <i class="fa fa-edit"></i> </a>
+													&nbsp;&nbsp;
+													<a href="javascript:void(0);"  title="Delete" alt="Delete"> <i class="fa fa-trash text-danger"></i> </a>
+												</td>
+											</tr>
+											<tr style="background-color:#ffffff !important;">
+												<td scope="row" class="center">2</td>
+												<td>Logan</td>
+												<td>25/01/2020</td>
+												<td align="center">1</td>
+												<td  class="center">
+													<a href="javascript:void(0);"  title="Edit" alt="Edit"> <i class="fa fa-edit"></i> </a>
+													&nbsp;&nbsp;
+													<a href="javascript:void(0);"  title="Delete" alt="Delete"> <i class="fa fa-trash text-danger"></i> </a>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+									
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view m-t-15">				
+										<div class="form-group row">														
+											<div class="col-4">
+												<label>Auditor</label>
+												<mat-select placeholder="Auditor *" multiple class="form-control select2">
+													<mat-select-trigger>																
+													</mat-select-trigger>																
+												</mat-select>														
+											</div>
+											
+											<div class="col-5">
+												<label>Date(s)</label><br>
+												<input style="width: 70%; display: inline;" matInput [matDatepicker]="completed_date3" class="form-control"  placeholder="Date *">
+												<mat-datepicker-toggle matSuffix  [for]="completed_date3"></mat-datepicker-toggle>
+												<mat-datepicker #completed_date3></mat-datepicker>
+											</div>	
+
+											<div class="col-3" style="padding-top:25px;">
+												<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="addTax()">+Add</a>
+												&nbsp;
+												<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="resetTax()">Reset</a>
+											</div>														
+										</div>
+									</div>	
+								</td>																																					
+							</tr>		
+						</tbody>
+					</table>
+					
+					<table id="datatable" class="table table-bordered tab-bor col-12">
+						<thead>
+							<tr>                                        
+								<th scope="col" width="60%" style="vertical-align:middle;">Premier Mills in Pollachi - OCS</th> 
+								<th scope="col" width="20%" style="vertical-align:middle;">Quotation Manday: 1 Day</th>
+								<th scope="col" width="20%" style="vertical-align:middle;">Actual Manday: 1 Day</th> 
+								<th scope="col" width="5%" style="vertical-align:middle;"><i class="fa fa-edit"></i></th>
+							</tr>
+						</thead>
+						<tbody>                                             
+							<tr style="background-color:#ffffff !important;display:none;">	
+								<td colspan="3" width="100%">
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view ">				
+										<div class="form-group row">														
+											<div class="col-3">
+												<label>Date(s)</label><br>
+												<input style="width: 70%; display: inline;" matInput [matDatepicker]="completed_date4" class="form-control"  placeholder="Date *">
+												<mat-datepicker-toggle matSuffix  [for]="completed_date4"></mat-datepicker-toggle>
+												<mat-datepicker #completed_date4></mat-datepicker>														
+											</div>
+											
+											<div class="col-3">
+												<label>Lead Auditor</label>
+												<mat-select placeholder="Lead Auditor *" multiple class="form-control select2">
+													<mat-select-trigger>																
+													</mat-select-trigger>																
+												</mat-select>
+											</div>
+											
+											<div class="col-3">
+												<label>Technical Expert</label>
+												<mat-select placeholder="Technical Expert" multiple class="form-control select2">
+													<mat-select-trigger>																
+													</mat-select-trigger>																
+												</mat-select>
+											</div>	
+											
+											<div class="col-3">
+												<label>Translator</label>
+												<mat-select placeholder="Translator" multiple class="form-control select2">
+													<mat-select-trigger>																
+													</mat-select-trigger>																
+												</mat-select>
+											</div>																											
+										</div>
+									</div>
+									
+									<table class="table-bordered tab-bor col-12" align="center" style="width:98%;">
+										<thead>
+										<tr class="bg-primary text-white">
+											<th width="5%" scope="col" class="center">S.No</th>
+											<th scope="col">Auditor</th>
+											<th scope="col">Date(s)</th>
+											<th scope="col">Manday</th>
+											<th width="8%" scope="col" class="center">Action</th>
+										</tr>
+										</thead>
+										<tbody>														
+											<tr>
+												<td scope="row" class="center">1</td>
+												<td>James</td>
+												<td>26/01/2020</td>
+												<td align="center">1</td>
+												<td  class="center">
+													<a href="javascript:void(0);"  title="Edit" alt="Edit"> <i class="fa fa-edit"></i> </a>
+													&nbsp;&nbsp;
+													<a href="javascript:void(0);"  title="Delete" alt="Delete"> <i class="fa fa-trash text-danger"></i> </a>
+												</td>
+											</tr>													
+										</tbody>
+									</table>
+									
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view m-t-15">				
+										<div class="form-group row">														
+											<div class="col-4">
+												<label>Auditor</label>
+												<mat-select placeholder="Auditor *" multiple class="form-control select2">
+													<mat-select-trigger>																
+													</mat-select-trigger>																
+												</mat-select>														
+											</div>
+											
+											<div class="col-5">
+												<label>Date(s)</label><br>
+												<input style="width: 70%; display: inline;" matInput [matDatepicker]="completed_date5" class="form-control"  placeholder="Date *">
+												<mat-datepicker-toggle matSuffix  [for]="completed_date5"></mat-datepicker-toggle>
+												<mat-datepicker #completed_date5></mat-datepicker>
+											</div>	
+
+											<div class="col-3" style="padding-top:25px;">
+												<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="addTax()">+Add</a>
+												&nbsp;
+												<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="resetTax()">Reset</a>
+											</div>														
+										</div>
+									</div>	
+								</td>																																					
+							</tr>		
+						</tbody>
+					</table>
+					
+					<table id="datatable" class="table table-bordered tab-bor col-12">
+						<thead>
+							<tr>                                        
+								<th scope="col" width="60%" style="vertical-align:middle;">Application Lead Auditor Details</th> 								
+							</tr>
+						</thead>
+						<tbody>                                             
+							<tr style="background-color:#ffffff !important;">	
+								<td width="100%">
+									<div class="col-6 m-t-15">
+										<label>Application Lead Auditor</label>
+										<mat-select placeholder="Application Lead Auditor *" multiple class="form-control select2">
+											<mat-select-trigger>																
+											</mat-select-trigger>																
+										</mat-select>							
+									</div>
+									<div class="col-lg-12 error">
+									Note: Application Lead Auditor will be automatically loaded from Unit Lead Auditor.
+									</div>
+								</td>																																					
+							</tr>		
+						</tbody>
+					</table>	
+					
+				 
+				</div>
+			</div>
+		</div>	
+	-->
+		
+		<!--
+		<div class="cs-pgm" style="background-color:#ffffff !important;">      
+				
+			<div class="form-group row">
+				
+				
+				<div  style="width:100%;">
+					<h3>Audit Planning</h3>
+					
+					<table id="datatable" class="table table-bordered tab-bor col-12" >
+						<thead>
+							<tr>                                        
+								<th scope="col" width="60%" style="vertical-align:middle;">Premier Mills in Singanallur - GOTS, OCS, RCS</th> 
+								<th scope="col" width="20%" style="vertical-align:middle;">Quotation Manday: 3 Day(s)</th>
+								<th scope="col" width="20%" style="vertical-align:middle;">Actual Manday: 3 Day(s)</th> 										
+							</tr>
+						</thead>
+						<tbody>                                             
+							<tr style="background-color:#ffffff !important;">	
+								<td colspan="3" width="100%">
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view ">				
+										<div class="form-group row">														
+											<div class="col-3">
+												<label>Date(s)</label><br>
+												<input style="width: 70%; display: inline;" matInput [matDatepicker]="completed_date" class="form-control"  placeholder="Date *">
+												<mat-datepicker-toggle matSuffix  [for]="completed_date"></mat-datepicker-toggle>
+												<mat-datepicker #completed_date></mat-datepicker>														
+											</div>
+											
+											<div class="col-3">
+												<label>Lead Auditor</label>
+												<mat-select placeholder="Lead Auditor *" multiple class="form-control select2">
+													<mat-select-trigger>																
+													</mat-select-trigger>																
+												</mat-select>
+											</div>
+											
+											<div class="col-3">
+												<label>Technical Expert</label>
+												<mat-select placeholder="Technical Expert" multiple class="form-control select2">
+													<mat-select-trigger>																
+													</mat-select-trigger>																
+												</mat-select>
+											</div>	
+											
+											<div class="col-3">
+												<label>Translator</label>
+												<mat-select placeholder="Translator" multiple class="form-control select2">
+													<mat-select-trigger>																
+													</mat-select-trigger>																
+												</mat-select>
+											</div>																											
+										</div>
+									</div>
+									
+									<table class="table-bordered tab-bor col-12" align="center" style="width:98%;">
+										<thead>
+										<tr class="bg-primary text-white">
+											<th width="5%" scope="col" class="center">S.No</th>
+											<th scope="col">Auditor</th>
+											<th scope="col">Date(s)</th>
+											<th width="8%" scope="col" class="center">Action</th>
+										</tr>
+										</thead>
+										<tbody>														
+											<tr>
+												<td scope="row" class="center">1</td>
+												<td>William</td>
+												<td>25/01/2020 & 26/01/2020</td>
+												<td  class="center">
+													<a href="javascript:void(0);"  title="Edit" alt="Edit"> <i class="fa fa-edit"></i> </a>
+													&nbsp;&nbsp;
+													<a href="javascript:void(0);"  title="Delete" alt="Delete"> <i class="fa fa-trash text-danger"></i> </a>
+												</td>
+											</tr>
+											<tr style="background-color:#ffffff !important;">
+												<td scope="row" class="center">2</td>
+												<td>Michael</td>
+												<td>25/01/2020</td>
+												<td  class="center">
+													<a href="javascript:void(0);"  title="Edit" alt="Edit"> <i class="fa fa-edit"></i> </a>
+													&nbsp;&nbsp;
+													<a href="javascript:void(0);"  title="Delete" alt="Delete"> <i class="fa fa-trash text-danger"></i> </a>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+									
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view m-t-15">				
+										<div class="form-group row">														
+											<div class="col-4">
+												<label>Auditor</label>
+												<mat-select placeholder="Auditor *" multiple class="form-control select2">
+													<mat-select-trigger>																
+													</mat-select-trigger>																
+												</mat-select>														
+											</div>
+											
+											<div class="col-5">
+												<label>Date(s)</label><br>
+												<input style="width: 70%; display: inline;" matInput [matDatepicker]="completed_date1" class="form-control"  placeholder="Date *">
+												<mat-datepicker-toggle matSuffix  [for]="completed_date1"></mat-datepicker-toggle>
+												<mat-datepicker #completed_date1></mat-datepicker>
+											</div>	
+
+											<div class="col-3" style="padding-top:25px;">
+												<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="addTax()">+Add</a>
+												&nbsp;
+												<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="resetTax()">Reset</a>
+											</div>														
+										</div>
+									</div>	
+								</td>																																					
+							</tr>		
+						</tbody>
+					</table>	
+					
+					<table id="datatable" class="table table-bordered tab-bor col-12" >
+						<thead>
+							<tr>                                        
+								<th scope="col" width="60%" style="vertical-align:middle;">Premier Mills in Hosur - RCS, OCS</th> 
+								<th scope="col" width="20%" style="vertical-align:middle;">Quotation Manday: 2 Day(s)</th>
+								<th scope="col" width="20%" style="vertical-align:middle;">Actual Manday: 2 Day(s)</th> 										
+							</tr>
+						</thead>
+						<tbody>                                             
+							<tr style="background-color:#ffffff !important;">	
+								<td colspan="3" width="100%">
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view ">				
+										<div class="form-group row">														
+											<div class="col-3">
+												<label>Date(s)</label><br>
+												<input style="width: 70%; display: inline;" matInput [matDatepicker]="completed_date2" class="form-control"  placeholder="Date *">
+												<mat-datepicker-toggle matSuffix  [for]="completed_date2"></mat-datepicker-toggle>
+												<mat-datepicker #completed_date2></mat-datepicker>														
+											</div>
+											
+											<div class="col-3">
+												<label>Lead Auditor</label>
+												<mat-select placeholder="Lead Auditor *" multiple class="form-control select2">
+													<mat-select-trigger>																
+													</mat-select-trigger>																
+												</mat-select>
+											</div>
+											
+											<div class="col-3">
+												<label>Technical Expert</label>
+												<mat-select placeholder="Technical Expert" multiple class="form-control select2">
+													<mat-select-trigger>																
+													</mat-select-trigger>																
+												</mat-select>
+											</div>	
+											
+											<div class="col-3">
+												<label>Translator</label>
+												<mat-select placeholder="Translator" multiple class="form-control select2">
+													<mat-select-trigger>																
+													</mat-select-trigger>																
+												</mat-select>
+											</div>																											
+										</div>
+									</div>
+									
+									<table class="table-bordered tab-bor col-12" align="center" style="width:98%;">
+										<thead>
+										<tr class="bg-primary text-white">
+											<th width="5%" scope="col" class="center">S.No</th>
+											<th scope="col">Auditor</th>
+											<th scope="col">Date(s)</th>
+											<th width="8%" scope="col" class="center">Action</th>
+										</tr>
+										</thead>
+										<tbody>														
+											<tr>
+												<td scope="row" class="center">1</td>
+												<td>Benjamin</td>
+												<td>26/01/2020</td>
+												<td  class="center">
+													<a href="javascript:void(0);"  title="Edit" alt="Edit"> <i class="fa fa-edit"></i> </a>
+													&nbsp;&nbsp;
+													<a href="javascript:void(0);"  title="Delete" alt="Delete"> <i class="fa fa-trash text-danger"></i> </a>
+												</td>
+											</tr>
+											<tr style="background-color:#ffffff !important;">
+												<td scope="row" class="center">2</td>
+												<td>Logan</td>
+												<td>25/01/2020</td>
+												<td  class="center">
+													<a href="javascript:void(0);"  title="Edit" alt="Edit"> <i class="fa fa-edit"></i> </a>
+													&nbsp;&nbsp;
+													<a href="javascript:void(0);"  title="Delete" alt="Delete"> <i class="fa fa-trash text-danger"></i> </a>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+									
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view m-t-15">				
+										<div class="form-group row">														
+											<div class="col-4">
+												<label>Auditor</label>
+												<mat-select placeholder="Auditor *" multiple class="form-control select2">
+													<mat-select-trigger>																
+													</mat-select-trigger>																
+												</mat-select>														
+											</div>
+											
+											<div class="col-5">
+												<label>Date(s)</label><br>
+												<input style="width: 70%; display: inline;" matInput [matDatepicker]="completed_date3" class="form-control"  placeholder="Date *">
+												<mat-datepicker-toggle matSuffix  [for]="completed_date3"></mat-datepicker-toggle>
+												<mat-datepicker #completed_date3></mat-datepicker>
+											</div>	
+
+											<div class="col-3" style="padding-top:25px;">
+												<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="addTax()">+Add</a>
+												&nbsp;
+												<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="resetTax()">Reset</a>
+											</div>														
+										</div>
+									</div>	
+								</td>																																					
+							</tr>		
+						</tbody>
+					</table>
+					
+					<table id="datatable" class="table table-bordered tab-bor col-12">
+						<thead>
+							<tr>                                        
+								<th scope="col" width="60%" style="vertical-align:middle;">Premier Mills in Pollachi - OCS</th> 
+								<th scope="col" width="20%" style="vertical-align:middle;">Quotation Manday: 1 Day</th>
+								<th scope="col" width="20%" style="vertical-align:middle;">Actual Manday: 1 Day</th> 										
+							</tr>
+						</thead>
+						<tbody>                                             
+							<tr style="background-color:#ffffff !important;">	
+								<td colspan="3" width="100%">
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view ">				
+										<div class="form-group row">														
+											<div class="col-3">
+												<label>Date(s)</label><br>
+												<input style="width: 70%; display: inline;" matInput [matDatepicker]="completed_date4" class="form-control"  placeholder="Date *">
+												<mat-datepicker-toggle matSuffix  [for]="completed_date4"></mat-datepicker-toggle>
+												<mat-datepicker #completed_date4></mat-datepicker>														
+											</div>
+											
+											<div class="col-3">
+												<label>Lead Auditor</label>
+												<mat-select placeholder="Lead Auditor *" multiple class="form-control select2">
+													<mat-select-trigger>																
+													</mat-select-trigger>																
+												</mat-select>
+											</div>
+											
+											<div class="col-3">
+												<label>Technical Expert</label>
+												<mat-select placeholder="Technical Expert" multiple class="form-control select2">
+													<mat-select-trigger>																
+													</mat-select-trigger>																
+												</mat-select>
+											</div>	
+											
+											<div class="col-3">
+												<label>Translator</label>
+												<mat-select placeholder="Translator" multiple class="form-control select2">
+													<mat-select-trigger>																
+													</mat-select-trigger>																
+												</mat-select>
+											</div>																											
+										</div>
+									</div>
+									
+									<table class="table-bordered tab-bor col-12" align="center" style="width:98%;">
+										<thead>
+										<tr class="bg-primary text-white">
+											<th width="5%" scope="col" class="center">S.No</th>
+											<th scope="col">Auditor</th>
+											<th scope="col">Date(s)</th>
+											<th width="8%" scope="col" class="center">Action</th>
+										</tr>
+										</thead>
+										<tbody>														
+											<tr>
+												<td scope="row" class="center">1</td>
+												<td>James</td>
+												<td>26/01/2020</td>
+												<td  class="center">
+													<a href="javascript:void(0);"  title="Edit" alt="Edit"> <i class="fa fa-edit"></i> </a>
+													&nbsp;&nbsp;
+													<a href="javascript:void(0);"  title="Delete" alt="Delete"> <i class="fa fa-trash text-danger"></i> </a>
+												</td>
+											</tr>													
+										</tbody>
+									</table>
+									
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view m-t-15">				
+										<div class="form-group row">														
+											<div class="col-4">
+												<label>Auditor</label>
+												<mat-select placeholder="Auditor *" multiple class="form-control select2">
+													<mat-select-trigger>																
+													</mat-select-trigger>																
+												</mat-select>														
+											</div>
+											
+											<div class="col-5">
+												<label>Date(s)</label><br>
+												<input style="width: 70%; display: inline;" matInput [matDatepicker]="completed_date5" class="form-control"  placeholder="Date *">
+												<mat-datepicker-toggle matSuffix  [for]="completed_date5"></mat-datepicker-toggle>
+												<mat-datepicker #completed_date5></mat-datepicker>
+											</div>	
+
+											<div class="col-3" style="padding-top:25px;">
+												<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="addTax()">+Add</a>
+												&nbsp;
+												<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="resetTax()">Reset</a>
+											</div>														
+										</div>
+									</div>	
+								</td>																																					
+							</tr>		
+						</tbody>
+					</table>
+					
+					<div class="col-6 m-t-15">
+						<label>Application Lead Auditor</label>
+						<mat-select placeholder="Application Lead Auditor *" multiple class="form-control select2">
+							<mat-select-trigger>																
+							</mat-select-trigger>																
+						</mat-select>							
+					</div>
+					<div class="col-lg-12 error">
+					Note: Application Lead Auditor will be automatically loaded from Unit Lead Auditor.
+					</div>
+					
+					<!--
+					<table id="datatable" class="table table-bordered tab-bor col-12" >
+						<thead>
+						<tr>                                        
+							<th scope="col" style="vertical-align:middle;">Unit Name </th>
+							<th scope="col" style="vertical-align:middle;">Standard</th>
+							<th scope="col" style="vertical-align:middle;">Dates</th>
+							<th scope="col" style="vertical-align:middle;">Auditor</th>
+							<th scope="col" style="vertical-align:middle;">Lead Auditor</th>
+							<th scope="col" style="vertical-align:middle;">Quotation Mandays</th>
+							<th scope="col" style="vertical-align:middle;">Actual Manday</th>                                       
+						</tr>
+						</thead>
+						<tbody>                                             
+							<tr style="background-color:#ffffff !important;">								
+								<td rowspan="3">Premier Mills in Singanallur</td>
+								<td width="15%" rowspan="3">GOTS, OCS, RCS</td>
+								<td><input type="text" class="form-control"></td>											
+								<td width="15%">
+									<select class="form-control select2">
+										<option value="">-- Auditor --</option>													
+									</select>
+								</td>
+								<td width="15%" rowspan="3">
+									<select class="form-control select2">
+										<option value="">-- Lead Auditor --</option>													
+									</select>
+								</td>
+								<td rowspan="3"><input type="text" class="form-control"></td>
+								<td rowspan="3"><input type="text" class="form-control"></td>																		
+							</tr>
+							<tr style="background-color:#ffffff !important;">					
+								<td><input type="text" class="form-control"></td>
+								<td width="15%">
+									<select class="form-control select2">
+										<option value="">-- Auditor --</option>													
+									</select>
+								</td>																																				
+							</tr>
+							<tr style="background-color:#ffffff !important;">								
+								<td><input type="text" class="form-control"></td>
+								<td width="15%">
+									<select class="form-control select2">
+										<option value="">-- Auditor --</option>													
+									</select>
+								</td>																																					
+							</tr>
+							
+							<tr style="background-color:#ffffff !important;">								
+								<td rowspan="2">Premier Mills in Hosur</td>
+								<td width="15%" rowspan="2">RCS, OCS</td>											
+								<td><input type="text" class="form-control"></td>
+								<td width="15%">
+									<select class="form-control select2">
+										<option value="">-- Auditor --</option>													
+									</select>
+								</td>
+								<td width="15%" rowspan="2">
+									<select class="form-control select2">
+										<option value="">-- Lead Auditor --</option>													
+									</select>
+								</td>
+								<td rowspan="2"><input type="text" class="form-control"></td>
+								<td rowspan="2"><input type="text" class="form-control"></td>											
+							</tr>
+							<tr style="background-color:#ffffff !important;">									
+								<td><input type="text" class="form-control"></td>
+								<td width="15%">
+									<select class="form-control select2">
+										<option value="">-- Auditor --</option>													
+									</select>
+								</td>																										
+							</tr>									
+							
+							<tr>								
+								<td>Premier Mills in Pollachi</td> 
+								<td width="15%">OCS</td>											
+								<td><input type="text" class="form-control"></td>
+								<td width="15%">
+									<select class="form-control select2">
+										<option value="">-- Auditor --</option>													
+									</select>
+								</td>
+								<td width="15%">
+									<select class="form-control select2">
+										<option value="">-- Lead Auditor --</option>													
+									</select>
+								</td>
+								<td><input type="text" class="form-control"></td>
+								<td><input type="text" class="form-control"></td>											
+							</tr>										
+						</tbody>
+					</table>					
+				</div>
+			</div>
+		</div>
+		-->
+		              
+          
+    </div>
+</div>

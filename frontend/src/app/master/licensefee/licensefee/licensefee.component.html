@@ -1,0 +1,108 @@
+<div class="row">
+    <div class="col-12">
+        <div class="add card-box table-responsive">
+            <form  [formGroup]="form" (ngSubmit)="onSubmit()">               
+                                  
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view">
+
+					
+											
+					<h3><i class="fa fa-list-ul"></i> License Fee Details</h3>  
+					<div class="form-group row">
+						
+						<div class="tbl-sec">
+							<table id="datatable" class="table table-bordered tab-bor col-12" >
+								<thead>
+								<tr>
+									<th width="5%" scope="col" class="center">S.No</th>
+									<th scope="col">Standard</th>
+									<th width="15%" class="text-right" scope="col">License Fee</th>
+									<th width="18%" class="text-right" scope="col">Subsequent License Fee</th>									
+									<th width="8%" scope="col" class="center">Action</th>
+								</tr>
+								</thead>
+								<tbody>
+									<tr *ngIf="licenseFeesEntries.length==0">
+										<td colspan="5" class="center">No License Fee Added</td>
+									</tr>
+									<tr *ngFor="let licenseFeeEntry of licenseFeesEntries; let i=index; ">
+										<td scope="row" class="center">{{  1+ i }}</td>
+										<td>{{ licenseFeeEntry.standard_name }}</td>
+										<td class="text-right">{{ licenseFeeEntry.license_fee }}</td>	
+										<td class="text-right">{{ licenseFeeEntry.subsequent_license_fee }}</td>										
+										<td  class="center">
+											<a href="javascript:void(0);" (click)="editLicenseFee(licenseFeeEntry.standard_id)" title="Edit" alt="Edit" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('edit_license_fee')"> <i class="fa fa-edit"></i> </a>
+											<!--
+											&nbsp;&nbsp;
+											<a href="javascript:void(0);" (click)="removeLicenseFee(licenseFeeEntry.standard_id)" > <i class="fa fa-trash"></i> </a>
+											-->
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						
+						<div class="row col-12 prd-lab" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('add_license_fee') || (userdetails.rules.includes('edit_license_fee') && f.standard_id.value)">
+							
+							<div class="col-3">
+								<label>Standard <span class="text-danger">*</span></label>
+								<select formControlName="standard_id" class="form-control select2" (change)="checkLicenseFee();">
+									<option value="" >-- Standard --</option>
+									<option *ngFor="let standard of licenseFeeStandardList" value= {{standard.id}}>{{standard.name}}</option>
+								</select>
+								<div *ngIf="standard_idErrors" class="validationerror" >
+									{{ standard_idErrors }} 
+								</div>
+							</div>
+							
+														
+							<div class="col-3">
+								<label>License Fee <span class="text-danger">*</span></label>
+								<input type="text" formControlName="license_fee"  class="form-control" placeholder="License Fee" (change)="checkLicenseFee();">
+								<div *ngIf="license_feeErrors" class="validationerror" >
+									{{ license_feeErrors }} 
+								</div>
+							</div>	
+
+							<div class="col-3">
+								<label>Subsequent License Fee</label>
+								<input type="text" formControlName="subsequent_license_fee"  class="form-control" placeholder="Subsequent License Fee" (change)="checkLicenseFee();">
+								<div *ngIf="subsequent_license_feeErrors" class="validationerror" >
+									{{ subsequent_license_feeErrors }} 
+								</div>
+							</div>							
+							
+							<div class="col-3" style="padding-top:25px;">
+								<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="addLicenseFee()">{{ editStatus ? 'Update' : 'Add' }} License Fee</a>
+								&nbsp;
+								<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="resetLicenseFee()">Reset</a>
+							</div>
+							
+							<div class="col-12" style="padding-left:10px;" *ngIf="licenseFeeIncompleteErrors" class="validationerror" >{{ licenseFeeIncompleteErrors }}</div>
+						
+						</div>
+						
+					</div>
+																	
+																		
+					<div class="col-lg-12 text-center mt-4 mb-4">
+						<button [disabled]="loading" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+							<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+							{{ editStatus ? 'Update' : 'Submit' }}
+						</button>
+												
+						<div class="clearfix"></div>
+							
+						<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+					</div>
+					
+					<div class="col-lg-12 error">
+					Note: After completing your actions, please click "Submit" button to store the data.
+					</div>
+						
+				</div>
+                 
+            </form>
+        </div>
+    </div>
+</div>

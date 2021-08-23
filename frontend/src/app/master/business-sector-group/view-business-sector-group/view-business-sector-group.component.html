@@ -1,0 +1,40 @@
+<!-- Page-Title -->
+<div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box p-b-30">
+				<h4 class="page-title">View Business Sector Group Details</h4>
+				<div class="clearfix"></div>
+				<div class="text-right float-right">
+					<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/master/business-sector-group/list']" >Back</a>
+				</div>
+			</div>		
+        </div>
+    </div>
+
+    <div class="row" *ngIf="bsectorgroup">
+        <div class="col-12">
+            
+            <table class="table-secondary m-b-15">
+                <tr *ngIf="bsectorgroup.group_code">
+                    <th width="20%">Business Sector Group Code</th>
+                    <td width="30%">{{ bsectorgroup.group_code }}</td>
+                    <th width="20%">Business Sector</th>
+                    <td width="30%">{{ bsectorgroup.bsector }}</td>
+                </tr>
+                <tr *ngIf="bsectorgroup.standard">
+                    <th width="20%">Standard</th>
+                    <td width="30%">{{ bsectorgroup.standard }}</td>
+                    <th width="20%">Business Sector Group Details</th>
+                    <td width="30%">{{ bsectorgroup.group_details }}</td>
+                </tr>
+            </table>
+			
+           
+			
+			
+            <div class="text-right">                
+                <button type="button" class="btn but-cust green m-b-5 ml-2" [routerLink]="['/master/business-sector-group/list']" >Back to List</button>                
+            </div>
+			
+        </div>
+    </div> <!-- end row -->

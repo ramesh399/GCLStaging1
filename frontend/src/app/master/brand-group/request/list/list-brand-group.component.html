@@ -1,0 +1,195 @@
+
+<form>
+  
+    <div class="row">
+      <div class="col-12">
+          <div class="card-box table-responsive">
+                   
+            <div class="row col-12 m-b-5 pad-right">
+              <div class="col-8 pad-left">
+                <h4 class="page-title"><i class="fa fa-list-ul"></i> Brand Group List</h4>
+                <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+              </div>
+              <div class="col-4 text-right pad-right">
+                <a *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('add_franchise')" class="btn btn-primary btn-sm" href="#" role="button" [routerLink]="['/master/brand-group/request/add']" ><i class="fa fa-plus text-white"></i> Add Brand Group</a>
+              </div>
+            </div>
+            
+            <div class="row col-12 m-b-5 pad-right">
+                <div class="col-3 text-left pad-left">
+                  <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                    <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+                  </select>
+                  </div>
+                  <div class="col-5 text-left">
+                    <mat-select style="width: 45%;font-size:13px;" placeholder="-- Country --" #countryFilter name="countryFilter" [(ngModel)]="service.countryFilter" multiple class="custom-select"  >
+                        <mat-select-trigger>
+                        <span *ngIf="countryFilter.value?.length == 1" >{{countryFilter.value ?  getSelectedCountryValue(countryFilter.value) : ''}}</span>
+                        <span *ngIf="countryFilter.value?.length > 1" class="example-additional-selection">
+                            {{countryFilter.value.length}} {{ 'selected' }}
+                        </span>
+                        </mat-select-trigger>
+                        <mat-option *ngFor="let std of countryList" [value]="std.id">{{std.name}}</mat-option>
+                    </mat-select>				
+                  </div>
+              <div class="col-4 text-right pad-right">
+                <input class="search-pad" type="text" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+              </div>
+            </div>
+    
+            <div class="col-12 pad-left" >
+                <table id="datatable" class="table table-bordered" >
+                  <thead>
+                  <tr>
+                      <th width="3%" scope="col" class="center">S.No</th>
+                      <!-- <th scope="col" sortable="t.registration_id" (sort)="onSort($event)">GCL ID</th> -->
+                      <th scope="col" sortable="usercompanyinfo.company_name" (sort)="onSort($event)" >Company/Group Name</th>
+                     
+                      <!--
+                      <th scope="col" sortable="usercompanyinfo.contact_name" (sort)="onSort($event)" >Contact Name</th>
+                      -->
+                      <th scope="col" sortable="companycountry.name" (sort)="onSort($event)" >Country</th>
+                      <th scope="col" >Telephone</th>
+                      <th scope="col" >Email</th>
+                      <th width="10%" class="center" scope="col" sortable="created_at" (sort)="onSort($event)"  >Date</th>
+                      <th width="13%" class="center" scope="col">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let brand of brands$ | async; let i=index; ">
+                      <th scope="row" class="center">{{  1+ i + service.pageNo }}</th>
+                      <!-- <td><ngb-highlight [result]="brand.registration_id" [term]="service.searchTerm"></ngb-highlight></td> -->
+                      <td><ngb-highlight [result]="brand.company_name" [term]="service.searchTerm"></ngb-highlight></td> 
+                      <td><ngb-highlight [result]="brand.company_country" [term]="service.searchTerm"></ngb-highlight></td>
+                      <td><ngb-highlight [result]="brand.company_telephone" [term]="service.searchTerm"></ngb-highlight></td>
+                      <!--
+                      <td><ngb-highlight [result]="franchise.company_telephone" [term]="service.searchTerm"></ngb-highlight></td>
+                      -->
+                      <td><a href="mailto:{{ brand.company_email }}"><ngb-highlight [result]="brand.company_email" [term]="service.searchTerm"></ngb-highlight></a></td>
+                      <td class="center"><ngb-highlight [result]="brand.created_at" [term]="service.searchTerm"></ngb-highlight></td>
+                        <td class="text-center">
+                            <a href="javascript:void(0);" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('view_brand')" [routerLink]="['/master/brand-group/request/view']" [queryParams]="{id:brand.id}" title="View" alt="View"><i class="fa fa-eye"></i></a>
+                            <a href="javascript:void(0);" [routerLink]="['/master/brand-group/request/edit']" [queryParams]="{id:brand.id}" class="pl-2" title="Edit" alt="Edit" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('edit_franchise')"><i class="fa fa-edit"></i></a>
+                            
+                          <!-- <a href="javascript:void(0);" *ngIf="franchise.showRoyaltyFee" [routerLink]="['/master/franchise/add-royalty']" [queryParams]="{franchise_id:franchise.id}" title="Add Royalty Fee" alt="Add Royalty Fee" class="pl-2"><i class="fa fa-money"></i></a>
+    
+                            <a href="javascript:void(0);" *ngIf="franchise.login_status && userType == 1"
+                             (click)="ChangePassword(Credentials,franchise.id)" title="Change Password" alt="Change Password" class="pl-2"><i class="fa fa-key"></i></a>
+                            
+                            <a href="javascript:void(0);" *ngIf="franchise.status==0 && (userdetails.resource_access==1 || userdetails.rules.includes('deactivate_franchise'))" (click)="open(commonModel,'deactivate',franchise.id)" class="pl-2" title="Active" alt="Active"> {{ userType }}<i class="fa fa-toggle-on text-success"></i></a>	
+                            <a href="javascript:void(0);" *ngIf="franchise.status==1 && (userdetails.resource_access==1 || userdetails.rules.includes('activate_franchise'))" (click)="open(commonModel,'activate',franchise.id)" class="pl-2" title="In-active" alt="In-active"><i class="fa fa-toggle-off text-danger"></i></a>	 -->
+                            <a href="javascript:void(0);" *ngIf="(userdetails.resource_access==1 || userdetails.rules.includes('delete_franchise'))" (click)="open(commonModel,'delete',brand.id)" class="pl-2" title="Delete" alt="Delete"><i class="fa fa-trash text-danger"></i></a>	
+                        </td>
+                    </tr>
+                    <tr  *ngIf="(brands$ | async)?.length==0" >
+                        <td colspan="10" class="center">{{ commontxt.norecords }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+            </div>
+    
+            <div class="row col-12 pad-left pad-right">
+                <div class="col-6">
+                    <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+                    <div *ngIf="!(service.loading$ | async)">
+                    Displaying {{ (brands$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (brands$ | async).length }} of {{ (total$ | async) }} results.
+                    </div>
+                </div>
+                <div class="col-6 pad-right text-right">						
+                <ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+                    <ng-template ngbPaginationFirst>First</ng-template>
+                    <ng-template ngbPaginationPrevious>Prev</ng-template>
+                    <ng-template ngbPaginationNext>Next</ng-template>			  
+                    <ng-template ngbPaginationLast>Last</ng-template>			  
+                </ngb-pagination>						
+                </div>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    
+    </form>
+    
+    
+    <ng-template #commonModel let-modal>
+        
+        <div class="modal-header">
+                    <h4 class="modal-title" id="modal-basic-title">Message</h4>
+                    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('close')">
+                <span class="c-icon" aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+        
+            <div class="modal-body text-center" style="font-size:16px;padding:5px;">
+            <div class="alert alert-info" *ngIf="alertInfoMessage">{{alertInfoMessage}}</div>
+            <div class="alert alert-success" *ngIf="alertSuccessMessage">{{alertSuccessMessage}}</div>
+            <div class="alert alert-danger" *ngIf="alertErrorMessage">{{alertErrorMessage}}</div>
+        </div>	
+        
+            <div class="modal-footer text-center">
+            <button type="button" class="btn btn-success" *ngIf="okBtn" (click)="commonModalAction();">Ok</button>
+                    <button type="button" class="btn btn-outline-secondary" *ngIf="cancelBtn" (click)="modal.dismiss('cancel')">Cancel</button>        
+            </div>
+        
+    </ng-template>
+    
+    <ng-template #Credentials let-modal>
+        <div class="modal-header">
+            <h4 class="modal-title" id="modal-basic-title">Change Password</h4>
+            <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span class="c-icon" aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        
+        <div class="modal-body text-center" style="font-size:16px;padding:5px;">
+            <div class="alert alert-info" *ngIf="alertInfoMessage">{{alertInfoMessage}}</div>
+            <div class="alert alert-success" *ngIf="alertSuccessMessage">{{alertSuccessMessage}}</div>
+            <div class="alert alert-danger" *ngIf="alertErrorMessage">{{alertErrorMessage}}</div>
+        </div>
+        
+        <div *ngIf="!alertSuccessMessage" class="modal-body">
+            <form  [formGroup]="roleform">	
+                
+                <div class="form-group row">
+                    <div class="col-12">
+                        <label>New Password <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Password" matTooltipClass="tooltip-text-size" aria-tooltip="Password" matTooltipPosition="right"></i>
+                        <input type="password" formControlName="user_password"  class="form-control" placeholder="Password" [class.is-invalid]="rf.user_password.invalid && rf.user_password.touched">
+                        <div *ngIf="rf.user_password.errors" class="invalid-feedback">
+                            <div *ngIf="rf.user_password.errors.required">Password is required</div>
+                            <div *ngIf="rf.user_password.errors.minlength">Password must be at least 6 characters</div>
+                            <div *ngIf="rf.user_password.errors.maxlength">Password cannot exceed 25 characters</div>
+                            <div *ngIf="rf.user_password.errors.pattern || rf.user_password.hasError('whitespace')">Please enter valid Password</div>
+                            <div *ngIf="rf.user_password.errors.cannotContainSpace">Password can not contain space.</div>
+                        </div>
+                    </div>
+                </div>			
+                
+                <div class="clearfix"></div>
+    
+                <div class="form-group row">
+                    <div class="col-12">
+                        <label>Confirm Password <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Confirm Password" matTooltipClass="tooltip-text-size" aria-tooltip="Confirm Password" matTooltipPosition="right"></i>
+                        <input type="password" formControlName="user_confirm_password"  class="form-control" placeholder="Password" [class.is-invalid]="rf.user_confirm_password.invalid && rf.user_confirm_password.touched">
+                        <div *ngIf="rf.user_confirm_password.errors" class="invalid-feedback">
+                            <div *ngIf="rf.user_confirm_password.errors.required">Confirm Password is required</div>
+                            <div *ngIf="rf.user_confirm_password.errors.minlength">Confirm Password must be at least 6 characters</div>
+                            <div *ngIf="rf.user_confirm_password.errors.maxlength">Confirm Password cannot exceed 25 characters</div>
+                            <div *ngIf="rf.user_confirm_password.errors.pattern || rf.user_confirm_password.hasError('whitespace')">Please enter valid Password</div>
+                            <div *ngIf="rf.user_confirm_password.errors.cannotContainSpace">Password can not contain space.</div>
+                            <div *ngIf="rf.user_confirm_password.errors.mustMatch">Passwords must match</div>
+                        </div>
+                    </div>
+                </div>		
+                        
+            </form>
+            
+        </div>
+        <div *ngIf="!alertSuccessMessage" class="modal-footer">
+            <button type="button" [disabled]="loading" class="btn btn-success " (click)="SaveCredentials()">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>Save</button>
+    
+            <button type="button" [disabled]="loading" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>Cancel</button>
+        </div>
+    </ng-template>

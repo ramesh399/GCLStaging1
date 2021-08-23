@@ -1,0 +1,223 @@
+<div class="row"  >
+    <div class="col-12">
+        <div class="card-box table-responsive">
+        	<div class="row col-12 m-b-5 pad-right">
+              	<div class="col-8 pad-left">
+                    <h4 class="page-title"><i class="fa fa-list-ul"></i> TC Royalty Fee</h4>
+                    <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+              	</div>
+            </div>
+            <!--
+            <div class="row col-12 m-b-5 pad-right">
+                <div class="col-4 text-left pad-left">
+                    <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                        <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+                    </select>
+                </div>
+				
+                <div class="col-4 text-right">                	
+                </div>
+               	
+                <div class="col-4 text-right pad-right" >
+                    <input class="search-pad" type="text" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+                </div>
+            </div>
+            -->
+
+
+            <div class="col-12 pad-left">
+                <table id="datatable" class="table table-bordered" >
+                    <thead>
+                    <tr>
+                        <th width="5%" scope="col" class="center">S.No</th>                        
+                        <th scope="col">Standard</th>	
+                        <th width="15%" scope="col">Single Domestic Invoice for OSS to Customer</th>
+                        <th width="15%" scope="col">Single Export Invoice for OSS to Customer</th>						
+						<th width="15%" scope="col">Multiple Domestic Invoice for OSS to Customer</th>
+                        <th width="15%" scope="col">Multiple Export Invoice for OSS to Customer</th>
+						<th width="15%" scope="col">Single Invoice for HQ to OSS</th>
+                        <th width="15%" scope="col">Multiple Invoice for HQ to OSS</th>	
+                        <th width="10%" scope="col">Created Date</th>
+						<th width="8%" class="text-center" scope="col">Action</th>	
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let entry of addRoyalty$ | async; let i=index;">
+                        <td scope="row" class="center">{{ 1+i+ service.pageNo }}</td>                       														
+                        <td><ngb-highlight [result]="entry.standard_id_label"  [term]="service.searchTerm"></ngb-highlight></td>
+                        <td><ngb-highlight [result]="entry.single_domestic_invoice_fee_for_oss_to_customer"  [term]="service.searchTerm"></ngb-highlight></td> 
+                        <td><ngb-highlight [result]="entry.single_export_invoice_fee_for_oss_to_customer"  [term]="service.searchTerm"></ngb-highlight></td> 
+                        <td><ngb-highlight [result]="entry.multiple_domestic_invoice_fee_for_oss_to_customer"  [term]="service.searchTerm"></ngb-highlight></td> 
+						<td><ngb-highlight [result]="entry.multiple_export_invoice_fee_for_oss_to_customer"  [term]="service.searchTerm"></ngb-highlight></td> 
+						
+						<td><ngb-highlight [result]="entry.single_invoice_fee_for_hq_to_oss"  [term]="service.searchTerm"></ngb-highlight></td> 
+                        <td><ngb-highlight [result]="entry.multiple_invoice_fee_for_hq_to_oss"  [term]="service.searchTerm"></ngb-highlight></td>                        
+						<td><ngb-highlight [result]="entry.created_at"  [term]="service.searchTerm"></ngb-highlight></td>						
+						<td  width="10%" class="center">							
+							<a href="javascript:void(0);" *ngIf="standardRights.edit_tc_fee" (click)="editData(i,entry)" title="Edit" alt="Edit" > <i class="fa fa-edit"></i> </a>
+							&nbsp;&nbsp;
+							<a href="javascript:void(0);" *ngIf="standardRights.delete_tc_fee"  (click)="removeData(confirmcontent,i,entry)" title="Delete" alt="Delete"  > <i class="fa fa-trash text-danger"></i> </a>
+						</td>
+                    </tr>
+                    <tr  *ngIf="(addRoyalty$ | async)?.length==0" >
+                        <td colspan="8" class="center">{{ commontxt.norecords }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <!--<td><ngb-highlight [result]="entry.created_by_label"  [term]="service.searchTerm"></ngb-highlight></td>-->
+            </div>
+            <!--
+            <div class="row col-12 pad-left pad-right">
+				<div class="col-6">
+					<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+					<div *ngIf="!(service.loading$ | async)">
+					Displaying {{ (addRoyalty$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (addRoyalty$ | async).length }} of {{ (total$ | async) }} results.
+					</div>
+				</div>
+				<div class="col-6 pad-right text-right">						
+				<ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+					<ng-template ngbPaginationFirst>First</ng-template>
+					<ng-template ngbPaginationPrevious>Prev</ng-template>
+					<ng-template ngbPaginationNext>Next</ng-template>			  
+					<ng-template ngbPaginationLast>Last</ng-template>			  
+				</ngb-pagination>						
+				</div>
+            </div>
+            -->
+   		</div>
+	</div>
+</div>
+
+
+
+<div class="row" *ngIf=" standardRights.add_tc_fee || (standardRights.edit_tc_fee && curData)">
+    <div class="col-12">
+              
+        <h3>{{editStatus == 1 ? 'Update' : 'Add'}} TC Royalty Fee</h3>                              			
+            
+        <form  [formGroup]="form">
+
+            <div class="form-group row">
+                <div class="col-4">
+                    <label>Standard <span class="text-danger">*</span></label>
+                    <mat-select placeholder="-- Standard --" formControlName="standard_id" multiple class="form-control select2" [class.is-invalid]="f.standard_id.invalid && f.standard_id.touched">
+                        <mat-select-trigger>
+                        <span *ngIf="f.standard_id.value?.length == 1" >{{f.standard_id.value ? getSelectedValue(f.standard_id.value): ''}}</span>
+                        <span *ngIf="f.standard_id.value?.length > 1" class="example-additional-selection">
+                            {{f.standard_id.value.length}} {{ 'selected' }}
+                        </span>
+                        </mat-select-trigger>
+                        <mat-option *ngFor="let item of standardList" [value]="item.id">{{item.name}}</mat-option>
+                    </mat-select>  
+                    <div *ngIf="f.standard_id.errors" class="invalid-feedback">
+                        <div *ngIf="f.standard_id.errors.required">Standard is required</div>
+                        <div *ngIf="f.standard_id.errors.incorrect">{{ standard_idErrors }}</div>
+                    </div>
+                </div>
+				
+				<div class="col-4">
+                    <label>Single Domestic Invoice for OSS to Customer <span class="text-danger">*</span></label>
+                    <input type="text" formControlName="single_domestic_invoice_fee_for_oss_to_customer" [class.is-invalid]="f.single_domestic_invoice_fee_for_oss_to_customer.invalid &&	f.single_domestic_invoice_fee_for_oss_to_customer.touched " class="form-control" placeholder="Multiple Export Invoice for OSS to Customer" >
+                    <div *ngIf="f.single_domestic_invoice_fee_for_oss_to_customer.errors" class="invalid-feedback">
+                        <div *ngIf="f.single_domestic_invoice_fee_for_oss_to_customer.errors.required">Single Domestic Invoice Fee is required</div>
+                        <div *ngIf="f.single_domestic_invoice_fee_for_oss_to_customer.errors.pattern">Single Domestic Invoice Fee</div>
+                        <div *ngIf="f.single_domestic_invoice_fee_for_oss_to_customer.errors.maxlength">Single Domestic Invoice Fee cannot exceed 10 characters</div>
+                    </div>
+                </div>
+				
+				<div class="col-4">
+                    <label>Single Export Invoice for OSS to Customer <span class="text-danger">*</span></label>
+                    <input type="text" formControlName="single_export_invoice_fee_for_oss_to_customer" [class.is-invalid]="f.single_export_invoice_fee_for_oss_to_customer.invalid &&	f.single_export_invoice_fee_for_oss_to_customer.touched " class="form-control" placeholder="Multiple Export Invoice for OSS to Customer" >
+                    <div *ngIf="f.single_export_invoice_fee_for_oss_to_customer.errors" class="invalid-feedback">
+                        <div *ngIf="f.single_export_invoice_fee_for_oss_to_customer.errors.required">Single Export Invoice Fee is required</div>
+                        <div *ngIf="f.single_export_invoice_fee_for_oss_to_customer.errors.pattern">Single Export Invoice Fee</div>
+                        <div *ngIf="f.single_export_invoice_fee_for_oss_to_customer.errors.maxlength">Single Export Invoice Fee cannot exceed 10 characters</div>
+                    </div>
+                </div>
+				
+            </div> 
+			
+            <div class="form-group row">
+				
+				<div class="col-4">
+                    <label>Multiple Domestic Invoice for OSS to Customer <span class="text-danger">*</span></label>
+                    <input type="text" formControlName="multiple_domestic_invoice_fee_for_oss_to_customer" [class.is-invalid]="f.multiple_domestic_invoice_fee_for_oss_to_customer.invalid &&	f.multiple_domestic_invoice_fee_for_oss_to_customer.touched " class="form-control" placeholder="Multiple Export Invoice for OSS to Customer" >
+                    <div *ngIf="f.multiple_domestic_invoice_fee_for_oss_to_customer.errors" class="invalid-feedback">
+                        <div *ngIf="f.multiple_domestic_invoice_fee_for_oss_to_customer.errors.required">Multiple Domestic Invoice Fee is required</div>
+                        <div *ngIf="f.multiple_domestic_invoice_fee_for_oss_to_customer.errors.pattern">Multiple Domestic Invoice Fee</div>
+                        <div *ngIf="f.multiple_domestic_invoice_fee_for_oss_to_customer.errors.maxlength">Multiple Domestic Invoice Fee cannot exceed 10 characters</div>
+                    </div>
+                </div>
+				
+				<div class="col-4">
+                    <label>Multiple Export Invoice for OSS to Customer <span class="text-danger">*</span></label>
+                    <input type="text" formControlName="multiple_export_invoice_fee_for_oss_to_customer" [class.is-invalid]="f.multiple_export_invoice_fee_for_oss_to_customer.invalid &&	f.multiple_export_invoice_fee_for_oss_to_customer.touched " class="form-control" placeholder="Multiple Export Invoice for OSS to Customer" >
+                    <div *ngIf="f.multiple_export_invoice_fee_for_oss_to_customer.errors" class="invalid-feedback">
+                        <div *ngIf="f.multiple_export_invoice_fee_for_oss_to_customer.errors.required">Multiple Export Invoice Fee is required</div>
+                        <div *ngIf="f.multiple_export_invoice_fee_for_oss_to_customer.errors.pattern">Multiple Export Invoice Fee</div>
+                        <div *ngIf="f.multiple_export_invoice_fee_for_oss_to_customer.errors.maxlength">Multiple Export Invoice Fee cannot exceed 10 characters</div>
+                    </div>
+                </div>
+				
+				<div class="col-4">
+                    <label>Single Invoice for HQ to OSS <span class="text-danger">*</span></label>
+                    <input type="text" formControlName="single_invoice_fee_for_hq_to_oss" [class.is-invalid]="f.single_invoice_fee_for_hq_to_oss.invalid &&	f.single_invoice_fee_for_hq_to_oss.touched " class="form-control" placeholder="Single Invoice for HQ to OSS" >
+                    <div *ngIf="f.single_invoice_fee_for_hq_to_oss.errors" class="invalid-feedback">
+                        <div *ngIf="f.single_invoice_fee_for_hq_to_oss.errors.required">Single Invoice Fee is required</div>
+                        <div *ngIf="f.single_invoice_fee_for_hq_to_oss.errors.pattern">Invalid Single Invoice Fee</div>
+                        <div *ngIf="f.single_invoice_fee_for_hq_to_oss.errors.maxlength">Single Invoice Fee cannot exceed 10 characters</div>
+                    </div>
+                </div>
+				
+			</div>	
+
+			<div class="form-group row">								
+				
+				<div class="col-4">
+                    <label>Multiple Invoice for HQ to OSS <span class="text-danger">*</span></label>
+                    <input type="text" formControlName="multiple_invoice_fee_for_hq_to_oss" [class.is-invalid]="f.multiple_invoice_fee_for_hq_to_oss.invalid &&	f.multiple_invoice_fee_for_hq_to_oss.touched " class="form-control" placeholder="Multiple Invoice for HQ to OSS" >
+                    <div *ngIf="f.multiple_invoice_fee_for_hq_to_oss.errors" class="invalid-feedback">
+                        <div *ngIf="f.multiple_invoice_fee_for_hq_to_oss.errors.required">Multiple Invoice Fee is required</div>
+                        <div *ngIf="f.multiple_invoice_fee_for_hq_to_oss.errors.pattern">Invalid Multiple Invoice Fee</div>
+                        <div *ngIf="f.multiple_invoice_fee_for_hq_to_oss.errors.maxlength">Multiple Invoice Fee cannot exceed 10 characters</div>
+                    </div>
+                </div>	
+				
+			</div>		
+                      
+            <div class="col-lg-12 text-center mt-4 mb-4">
+                <button [disabled]="loading['button']" (click)="addData()" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+                    <span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+                    {{editStatus == 1 ? 'Update' : 'Save'}}		
+                </button>&nbsp;&nbsp;										
+                <button [disabled]="loading['button']" (click)="formReset()" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2" style="margin-left: 5px;">
+                    <span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+                    Reset
+                </button>
+                                        
+                <div class="clearfix"></div>
+                    
+                <app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+            </div>										
+        
+        </form>				  
+       
+    </div>
+</div>
+
+<ng-template #confirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to delete the data?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>

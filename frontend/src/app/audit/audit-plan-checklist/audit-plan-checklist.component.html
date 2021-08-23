@@ -1,0 +1,270 @@
+<div class="row">
+    <div class="col-12">
+		
+		<div class="col-12 row pad-left pad-right" >
+			<div class="col-8">
+				<h4 class="page-title">Audit Plan Review Checklist</h4>
+			</div>
+			<div class="col-4 text-right pad-right">
+				<a class="btn btn-secondary btn-sm active" href="#" role="button"  [routerLink]="['/audit/view-audit-plan']"  [queryParams]="{id:id}" >Back</a>
+			</div>
+		</div>
+			
+        <div class="add card-box table-responsive">
+            
+            <div class="m-b-5">
+                <mat-accordion>
+                    <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                            View Audit Plan Details
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        
+                        <div class="row" *ngIf="id" >
+                            <div class="col-sm-12">
+                                <div class="clearfix"></div>            
+                                <app-auditdetail [id]="id" ></app-auditdetail>                            
+                            </div>              
+                        </div>
+
+                    </mat-expansion-panel>                
+                </mat-accordion>
+            </div>
+
+            <div class="col-12 pad-left pad-right text-right m-b-5" *ngIf="(applicableforms['environment_list'] || applicableforms['clientinformation_list']) && applicableforms['audit_type'] != 2" >
+                <button type="button" class="btn but-cust green m-b-5"  (click)="open(applicableformsTemplate)" style="width:188px;">Client Information</button>
+            </div>
+
+             
+            <form #checklistForm="ngForm"   >
+                <div class="pad-left pad-right col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view reviewquestion">
+                   
+                    <div class="col-12" *ngIf="this.loadingInfo?.questions">
+                        <span class="spinner-border spinner-border-sm mr-1"></span>
+                    </div>
+                    <div *ngIf="questionList?.length" style="border:1px solid #cfcfcf;">
+                            
+                        <table  class="table table-striped tempdrivenform" style="margin-bottom:0px;">
+                            
+                            <tbody>
+                            
+                                <tr *ngFor="let question of questionList; index as j ">
+                                    <td><p>{{ 1+j }}. {{ question.name }} <a href="javascript:void(0);" (click)="toggleGuidance(question.id)" *ngIf="question.guidance"  ><i class="fa fa-info-circle" aria-hidden="true"></i></a></p>
+                                        <div class="checklist_guidance" *ngIf="guidanceIncludeList.includes(question.id)" [innerHTML]="question.guidance " ></div>
+                                        <div class="ans-cmt col-12 row">    
+                                            <div class="col-4">     
+                                                <h4>Answer</h4>
+                                                <div class="row" >
+                                                    <div class="col-10">
+                                                        
+                                                        <select class="form-control" name="qtd{{question.id}}" #qtdAnswer="ngModel" [(ngModel)]="reviewcommentlist['qtd'+question.id]"  required >
+                                                            <option value="">-- Options --</option>
+                                                            <option *ngFor="let answer of question.answers | keyvalue; " value="{{answer.key}}" >{{ answer.value }}</option>
+                                                        </select>
+                                                        <div class="validationerror" *ngIf="!qtdAnswer.valid && qtdAnswer.touched">
+                                                            Please select the Answer
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                            </div>
+                                            <div class="col-8">
+                                                <h4>Comment</h4>
+                                                <div class="md-form">
+                                                    <textarea type="text" #qtdComment="ngModel" name="qtd_comments{{question.id}}" [(ngModel)]="reviewcommentlist['qtd_comments'+question.id]" class="md-textarea form-control" required  mdbInput style="height:50px"></textarea>
+                                                </div>
+                                                <div class="validationerror" *ngIf="!qtdComment.valid && qtdComment.touched">
+                                                    Please enter the comment
+                                                </div>
+                                            </div>
+                                        </div>  
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="un-lst"><h3>Unit Reviews</h3></div> 
+
+                <mat-accordion   *ngFor="let appunit of units; index as j " >
+                    <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false" [expanded]="true">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                            {{ appunit.name  }}
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        
+                        <table class="table table-striped tempdrivenform">
+                            <thead>
+                                <tr>
+                                    <th style="font-size:14px;">Unit Review Questions</th>         
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                                <tr *ngFor="let reviewchecklist of unitquestionList; index as i ">
+                                    <td><p>{{ 1+i }}. {{ reviewchecklist.name }} <a href="javascript:void(0);" (click)="toggleGuidance(j+''+reviewchecklist.id)"  ><i class="fa fa-info-circle" aria-hidden="true"></i></a></p>
+                                        <div class="checklist_guidance" *ngIf="guidanceIncludeList.includes(j+''+reviewchecklist.id)" [innerHTML]="reviewchecklist.guidance " ></div>
+                                        <div class="ans-cmt col-12 row">    
+                                            <div class="col-4">     
+                                                <h4>Answer</h4>
+                                                <div class="row" >
+                                                    
+                                                    <div class="col-10">
+
+                                                        <select class="form-control" #qtdAnswer="ngModel" name="unit_qtd{{appunit.id}}_{{reviewchecklist.id}}"   [(ngModel)]="reviewcommentlist['unit_qtd'+''+appunit.id+'_'+reviewchecklist.id]"  required  >
+                                                            <option value="">-- Risk Category Identified --</option>
+                                                            <option *ngFor="let answer of reviewchecklist.answers | keyvalue;" value="{{answer.key}}" >{{ answer.value }}</option>
+                                                        </select>
+                                                        <div class="validationerror" *ngIf="!qtdAnswer.valid && qtdAnswer.touched">
+                                                            Please select the Answer
+                                                        </div>
+                                                        
+
+                                                    </div>
+                                                </div>
+                                            </div> 
+                                            <div class="col-8">
+                                                <h4>Comment</h4>
+                                                <div class="md-form">
+                                                    <textarea type="text" #qtdComments="ngModel" [required]="(qtdAnswer.value !== undefined && qtdAnswer.value!='' && qtdAnswer.value!=1)?true:false" name="unit_qtd_comments{{appunit.id}}_{{reviewchecklist.id}}" [(ngModel)]="reviewcommentlist['unit_qtd_comments'+''+appunit.id+'_'+reviewchecklist.id]" class="md-textarea form-control" mdbInput style="height:50px"></textarea>
+                                                </div>
+                                                <div class="validationerror" *ngIf="!qtdComments.valid && qtdComments.touched">
+                                                    Please enter the comment
+                                                </div>
+                                            </div>
+                
+                                            <!--<div class="col-12 validationerror" *ngIf="unitArrayList.includes(appunit.id+'_'+reviewchecklist.id)" > Please select the answer</div>
+                                            <div class="col-12 validationerror" *ngIf="unitArrayList2.includes(appunit.id+'_'+reviewchecklist.id)" > Please enter the comment</div>
+                                            -->
+                                                        
+                                        </div>  
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </mat-expansion-panel>                
+                </mat-accordion>
+
+                <div class="row m-t-15">
+                    <div class="col-12">
+                        <div class="card-box enq-view">
+                            <h3>Status Details</h3>                     
+                            <ul class="tempdrivenform" style="margin-bottom:10px;">
+                               <!-- <li style="width:100%;"  ><span class="label-pad" style="width: 30%;">Status</span>  
+                                    <span class="label-pad" style="width:35%;" >
+                                        <select name="review_status" #reviewStatus="ngModel" (change)="fnCommentLabel($event.target.value)" style="margin-top:4px; " [(ngModel)]="review_status" required  class="form-control" >
+                                            <option value="">-- Status -- </option>
+                                            <option *ngFor="let status of reviewerstatus | keyvalue;" value="{{status.key}}">{{status.value}}</option>
+                                        </select>
+                                        <div class="validationerror" *ngIf="!reviewStatus.valid && reviewStatus.touched">
+                                            Please select the status
+                                        </div>
+                                    </span>
+                                </li>-->
+                                <li style="width:100%;"  ><span class="label-pad" style="width: 30%;">Audit Plan Review Result</span>  
+                                    <span class="label-pad" style="width:35%;" >
+                                        <select name="review_result_status" #reviewResultStatus="ngModel" style="margin-top:4px; " [(ngModel)]="review_result_status" required  class="form-control" >
+                                            <option value="">-- Review Result -- </option>
+                                            <option *ngFor="let reviewresult of reviewResultArr | keyvalue;" value="{{ reviewresult.key }}" >{{ reviewresult.value }}</option>
+                                        </select>
+                                        <div class="validationerror" *ngIf="!reviewResultStatus.valid && reviewResultStatus.touched">
+                                            Please select the review result
+                                        </div>
+                                    </span>
+                                </li>
+                                
+                                <li style="width:100%;" ><span class="label-pad" style="width: 30%;">{{ commentLabel }} </span> 
+                                        
+                                    <span class="label-pad" style="width:35%;padding-bottom:5px;" >
+                                        <textarea class="form-control" #reviewComment="ngModel" name="review_comments" rows=4 [(ngModel)]="review_comments" style=" margin-top:10px; line-height:18px;"></textarea>
+                                        <div class="validationerror" *ngIf="!reviewComment.valid && reviewComment.touched">
+                                            Please enter the {{ commentLabel }}
+                                        </div>
+                                    </span>
+                                </li>
+                                        
+                            </ul>							
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-12 text-center">
+                    <button [disabled]="loading || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10" (click)="onSubmit(checklistForm)" >
+                        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                        Submit
+                    </button>                    
+                </div>
+                <app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+                
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<ng-template #applicableformsTemplate let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Client Information</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body" >
+        <div class="row" *ngIf="applicableforms['environment_list'] || applicableforms['clientinformation_list']">								
+            <div class="col-12">									
+                <!--<div class="un-lst"><h3>Audit Report Details</h3></div> -->
+                <div>				
+					<button type="button" (click)="changeOfferTab('audit_report')" class="btn btn-sm {{report_status ? 'btn-success' : 'btn-primary'}}">Audit Report</button>
+                    <button type="button" *ngIf="applicableforms['clientinformation_list']" (click)="changeOfferTab('generalinfo')" class="btn btn-sm {{generalinfo_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">General Information</button>
+                    <button type="button" *ngIf="applicableforms['clientinformation_list']" (click)="changeOfferTab('supplierinfo')" class="btn btn-sm {{supplierinfo_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Suppliers Information</button>
+                    <button type="button" *ngIf="applicableforms['clientinformation_list']" (click)="changeOfferTab('checklist')" class="btn btn-sm {{checklist_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Checklist</button>
+                    <ng-container *ngIf="units && units.length>0 && (applicableforms['environment_list'] || applicableforms['clientinformation_list'])">
+                        <ng-container *ngFor="let unitdata of units; let i=index; " >
+                            <ng-container *ngIf="applicableforms[unitdata.id] && (applicableforms[unitdata.id]['clientinformation_list'] || applicableforms[unitdata.id]['environment_list'])">
+                                <button type="button" (click)="changeOfferTab('unit',unitdata.id)" class="btn btn-sm {{unittab[unitdata.id] ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">{{ unitdata.name }}</button>
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
+                    <!--<button type="button" (click)="changeOfferTab('unit')" class="btn btn-sm {{interview_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Unit 1</button>-->
+                </div>
+            </div>
+        </div>
+		
+		<div class="add card-box table-responsive enq-view" *ngIf="report_status">			
+			<app-view-auditreport-files [id]="app_id" [audit_id]="id"></app-view-auditreport-files> 
+		</div>
+		
+        <div class="add card-box table-responsive enq-view" style="padding:0px;" *ngIf="generalinfo_status && applicableforms['clientinformation_list']">
+            <app-audit-clientinformation-generalinfo [app_id]="app_id" [audit_id]="id"  ></app-audit-clientinformation-generalinfo>
+        </div>
+        <div class="add card-box table-responsive enq-view" style="padding:0px;" *ngIf="supplierinfo_status && applicableforms['clientinformation_list']">
+            <app-audit-clientinformation-supplier [app_id]="app_id" [audit_id]="id" ></app-audit-clientinformation-supplier>
+        </div>
+        <div class="add card-box table-responsive enq-view" style="padding:0px;" *ngIf="checklist_status && applicableforms['clientinformation_list']">
+            <app-audit-clientinformation-checklist [app_id]="app_id" [audit_id]="id" ></app-audit-clientinformation-checklist>
+        </div>
+        <ng-container *ngIf="units && units.length>0">
+            <ng-container *ngFor="let unitdata of units; let i=index; " >
+                <div class="add card-box table-responsive enq-view" style="padding:0px;" *ngIf="unittab[unitdata.id] && (applicableforms[unitdata.id]['clientinformation_list'] || applicableforms[unitdata.id]['environment_list'])">
+                    <mat-tab-group>
+                        <mat-tab label="Product Controls" *ngIf="applicableforms[unitdata.id]['clientinformation_list']"> 
+                            <app-audit-clientinformation-productcontrols [app_id]="app_id"  [audit_id]="id" [unit_id]="unitdata.id"></app-audit-clientinformation-productcontrols>
+                        </mat-tab>	
+                        <mat-tab label="Environment Data" *ngIf="applicableforms[unitdata.id]['environment_list']">
+                            <div class="col-12" >
+                                <app-audit-environment [app_id]="app_id" [audit_id]="id"  [unit_id]="unitdata.id" ></app-audit-environment>
+                            </div>
+                        </mat-tab>
+                    </mat-tab-group> 
+                </div>
+            </ng-container>
+        </ng-container>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary"  (click)="modal.dismiss('cancel click')">Close</button>
+    </div>
+</ng-template>

@@ -1,0 +1,80 @@
+<div class="col-12 m-t-15">
+    <!--<h3>Audit Report Details</h3>  -->
+    <div class="col-12" *ngIf="!dataloaded">
+        <span class="spinner-border spinner-border-sm mr-1"></span>
+    </div>
+    
+    <div *ngIf="!offerdata || (offerdata && dataloaded && !offerdata.reconciliation_report_file && !offerdata.reconciliation_report_file)">
+        <div  class="col-12 alert alert-primary" >No Audit Report Found</div>
+    </div>
+
+    <div *ngIf="offerdata && offerdata.reconciliation_report_file" >
+        <h3>Reconciliation Details</h3> 
+        <table class="table-secondary m-b-15" *ngIf="dataloaded">
+            <!--
+            <tr>
+                <th width="20%">Quotation</th>
+                <td colspan="3"><a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offerlist_id,offerdata.quotation_file,'quotation');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.quotation_file }}</a></td>
+            </tr>  
+            <tr *ngFor="let processorfile of offerdata.processor_files; let i=index;">
+                <th width="20%">Processor File for {{processorfile.unit_name}}</th>
+                <td colspan="3"><a href="javascript:void(0);" (click)="downloadUploadedProcessorFile(offerdata.offerlist_id,processorfile.unit_id,processorfile.id,processorfile.processor_file);openmodal(downloading);" ><i class="fa fa-download"></i> {{ processorfile.processor_file }}</a></td>
+            </tr>  
+            
+            <tr *ngIf="offerdata.risk_assessment_file">
+                <th width="20%">Risk Assessment</th>
+                <td colspan="3"><a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offerlist_id,offerdata.risk_assessment_file,'risk_assessment_file');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.risk_assessment_file }}</a></td>
+            </tr>  
+            -->
+            
+            <tr *ngIf="offerdata.reconciliation_report_file">
+                <th width="20%">Annual Volume Reconciliation</th>
+                <td colspan="3"><a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offerlist_id,offerdata.reconciliation_report_file,'reconciliation_report_file');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.reconciliation_report_file }}</a></td>
+            </tr>
+            <tr *ngIf="offerdata.volume_reconciliation_formula">
+                <th width="20%">Volume Reconciliation Formula</th>
+                <td colspan="3">{{ offerdata.volume_reconciliation_formula }}</td>
+            </tr>  
+            
+        </table>
+    </div>
+    <div *ngIf="offerdata && (offerdata.content_claim_standard_file || offerdata.chemical_declaration_file || offerdata.social_declaration_file || offerdata.environmental_declaration_file)" >
+        <h3 class="m-t-10">Declarations</h3>
+        <table class="table-secondary m-b-15" *ngIf="dataloaded">
+            
+            <tr *ngIf="offerdata.content_claim_standard_file">
+                <th width="20%">Content Claim Standard</th>
+                <td colspan="3"><a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offerlist_id,offerdata.content_claim_standard_file,'content_claim_standard_file');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.content_claim_standard_file }}</a></td>
+            </tr>
+            <tr *ngIf="offerdata.chemical_declaration_file">
+                <th width="20%">Chemical Declaration</th>
+                <td colspan="3"><a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offerlist_id,offerdata.chemical_declaration_file,'chemical_declaration_file');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.chemical_declaration_file }}</a></td>
+            </tr>
+            <tr *ngIf="offerdata.social_declaration_file">
+                <th width="20%">Social Declaration</th>
+                <td colspan="3"><a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offerlist_id,offerdata.social_declaration_file,'social_declaration_file');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.social_declaration_file }}</a></td>
+            </tr>
+            <tr *ngIf="offerdata.environmental_declaration_file">
+                <th width="20%">Environmental Declaration</th>
+                <td colspan="3"><a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offerlist_id,offerdata.environmental_declaration_file,'environmental_declaration_file');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.environmental_declaration_file }}</a></td>
+            </tr>
+            <!--<tr *ngIf="offerdata.environmental_report_file">
+                <th width="20%">Environmental Report</th>
+                <td colspan="3"><a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offerlist_id,offerdata.environmental_report_file,'environmental_report_file');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.environmental_report_file }}</a></td>
+            </tr>
+            <tr *ngIf="offerdata.chemical_list_file">
+                <th width="20%">Chemical List</th>
+                <td colspan="3"><a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offerlist_id,offerdata.chemical_list_file,'chemical_list_file');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.chemical_list_file }}</a></td>
+            </tr> -->
+        </table>
+    </div>
+</div>
+<ng-template #downloading let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Please wait, your file is downloading ...
+	</div>
+</ng-template>
+    

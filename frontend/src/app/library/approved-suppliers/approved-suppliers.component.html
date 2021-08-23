@@ -1,0 +1,321 @@
+<div class="row"  >
+    <div class="col-12">
+        <div class="card-box table-responsive">
+        	<div class="row col-12 m-b-5 pad-right">
+              	<div class="col-8 pad-left">
+                <h4 class="page-title"><i class="fa fa-list-ul"></i> Approved Suppliers</h4>
+                <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+                
+              	</div>
+               
+            </div>
+        
+            <div class="row col-12 m-b-5 pad-right">
+                <div class="col-4 text-left pad-left">
+                    <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                        <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+                    </select>
+                </div>
+                <div class="col-4 text-left p-t-5"></div>
+                <div class="col-4 text-right pad-right">
+                    <input class="search-pad" type="text" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+                </div>
+            </div>
+
+
+
+            <div class="col-12 pad-left">
+                <table id="datatable" class="table table-bordered" >
+                    <thead>
+						<tr>
+							<th width="5%" scope="col" class="center">S.No</th>
+                            <th scope="col">Country</th>
+                            <th scope="col">Supplier Name</th>	
+                            <th scope="col">Contact Person</th> 
+                            <th scope="col">Email</th>  
+                            <th width="10%" class="text-center" scope="col">Action</th>	
+						</tr>
+                    </thead>
+                    <tbody>
+						<tr *ngFor="let supplierEntry of approvedsuppliers$ | async; let i=index; ">
+							<td scope="row" class="center">{{ 1+i+ service.pageNo }}</td>
+						   
+									
+                            <td><ngb-highlight [result]="supplierEntry.country_name"  [term]="service.searchTerm"></ngb-highlight></td>
+                            <td><ngb-highlight [result]="supplierEntry.supplier_name"  [term]="service.searchTerm"></ngb-highlight></td>
+                            <td><ngb-highlight [result]="supplierEntry.contact_person"  [term]="service.searchTerm"></ngb-highlight></td>
+                            <td><ngb-highlight [result]="supplierEntry.email"  [term]="service.searchTerm"></ngb-highlight></td>
+							<td  class="center">
+								<a href="javascript:void(0);" (click)="viewApprovedSupplier(approvedsupplierDetails,supplierEntry)" title="View" alt="View"> <i class="fa fa-eye"></i> </a>
+								<a *ngIf="(userType==1 && (userdetails.resource_access==1 || userdetails.rules.includes('edit_approved_supplier'))) || userType==3" href="javascript:void(0);" (click)="editApprovedSupplier(i,supplierEntry)" title="Edit" alt="Edit" class="pl-2"> <i class="fa fa-edit"></i> </a>
+								<a *ngIf="(userType==1 && (userdetails.resource_access==1 || userdetails.rules.includes('delete_approved_supplier'))) || userType==3" href="javascript:void(0);" (click)="removeSupplier(confirmcontent,i,supplierEntry)" title="Delete" alt="Delete" class="pl-2"> <i class="fa fa-trash text-danger"></i> </a>
+							</td>
+						</tr>
+						<tr  *ngIf="(approvedsuppliers$ | async)?.length==0" >
+							<td colspan="6" class="center">{{ commontxt.norecords }}</td>
+						</tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="row col-12 pad-left pad-right">
+				<div class="col-6">
+					<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+					<div *ngIf="!(service.loading$ | async)">
+					Displaying {{ (approvedsuppliers$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (approvedsuppliers$ | async).length }} of {{ (total$ | async) }} results.
+					</div>
+				</div>
+				<div class="col-6 pad-right text-right">						
+				<ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+					<ng-template ngbPaginationFirst>First</ng-template>
+					<ng-template ngbPaginationPrevious>Prev</ng-template>
+					<ng-template ngbPaginationNext>Next</ng-template>			  
+					<ng-template ngbPaginationLast>Last</ng-template>			  
+				</ngb-pagination>						
+				</div>
+			</div>
+   		</div>
+	</div>
+</div>
+<div class="row" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('add_approved_supplier') || (userdetails.rules.includes('edit_approved_supplier') && approvedsupplierData) || userType==3" >
+    <div class="col-12">
+		<div class="col-12 pad-left">
+			<div class="add card-box table-responsive enq-view">                      
+				<h3>{{editStatus == 1 ? 'Update' : 'Add'}} Approved Suppliers</h3>                             
+				<form  [formGroup]="form" (ngSubmit)="onSubmit()">
+					<div class="form-group row">
+						<div class="col-4">
+							<label>Country <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Country" matTooltipClass="tooltip-text-size" aria-tooltip="Country" matTooltipPosition="right"></i>
+							<select formControlName="country_id" class="form-control select2" [class.is-invalid]="f.country_id.invalid && f.country_id.touched ">
+								<option value="" >-- Country --</option>
+								<option *ngFor="let country of countryList" value= {{country.id}}>{{country.name}}</option>
+							</select>
+							<div *ngIf="f.country_id.errors" class="invalid-feedback">
+								<div *ngIf="f.country_id.errors.required">Country is required</div>								
+							</div>
+						</div>
+						
+						<div class="col-4">
+							<label>Supplier Name <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Supplier Name" matTooltipClass="tooltip-text-size" aria-tooltip="Supplier Name" matTooltipPosition="right"></i>
+							<input type="text" formControlName="supplier_name" [class.is-invalid]="f.supplier_name.invalid && f.supplier_name.touched " class="form-control" placeholder="Supplier Name" >
+							<div *ngIf="f.supplier_name.errors" class="invalid-feedback">									
+								<div *ngIf="f.supplier_name.errors.required">Supplier Name is required</div>                            
+								<div *ngIf="f.supplier_name.errors.maxlength">Supplier Name cannot exceed 255 characters</div>
+								<div *ngIf="f.supplier_name.errors.pattern || f.supplier_name.hasError('whitespace')" >Invalid Supplier Name</div>
+							</div>
+						</div>
+													
+						<div class="col-4">
+							<label>Address <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Address" matTooltipClass="tooltip-text-size" aria-tooltip="Address" matTooltipPosition="right"></i>
+							<textarea type="text" formControlName="address" [class.is-invalid]="f.address.invalid && f.address.touched " class="form-control" placeholder="Address" ></textarea>
+							<div *ngIf="f.address.errors" class="invalid-feedback">
+								<div *ngIf="f.address.errors.required">Address is required</div>
+								<div *ngIf="f.address.errors.pattern || f.address.hasError('whitespace')" >Invalid Address</div>							
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group row">
+						<div class="col-4">
+							<label>Contact Person <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Contact Person" matTooltipClass="tooltip-text-size" aria-tooltip="Contact Person" matTooltipPosition="right"></i>
+							<input type="text" formControlName="contact_person" [class.is-invalid]="f.contact_person.invalid && f.contact_person.touched " class="form-control" placeholder="Contact Person" >
+							<div *ngIf="f.contact_person.errors" class="invalid-feedback">									
+								<div *ngIf="f.contact_person.errors.required">Contact Person is required</div>
+								<div *ngIf="f.contact_person.errors.pattern">Invalid Contact Person</div>
+								<div *ngIf="f.contact_person.errors.maxlength">Contact Person cannot exceed 255 characters</div>
+								<div *ngIf="f.contact_person.errors.pattern || f.contact_person.hasError('whitespace')" >Invalid Contact Person</div>
+							</div>
+						</div>
+
+						<div class="col-4">
+							<label>Email <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Email" matTooltipClass="tooltip-text-size" aria-tooltip="Email" matTooltipPosition="right"></i>
+							<input type="text" formControlName="email" [class.is-invalid]="f.email.invalid && f.email.touched " class="form-control" placeholder="Email" >
+							<div *ngIf="f.email.errors" class="invalid-feedback">
+								<div *ngIf="f.email.errors.required" >Email is required</div>
+								<div *ngIf="f.email.errors.maxlength">Email cannot exceed 255 characters</div>
+								<div *ngIf="f.email.errors.email">Email must be a valid email address</div>                            
+								<div *ngIf="f.email.errors.pattern || f.email.hasError('whitespace')" >Invalid Email</div>
+							</div>
+						</div>
+
+						<div class="col-4">
+							<label>Phone <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Telephone" matTooltipClass="tooltip-text-size" aria-tooltip="Telephone" matTooltipPosition="right"></i>
+							<input type="text" class="form-control" formControlName="phone" [class.is-invalid]="f.phone.invalid && f.phone.touched" class="form-control" placeholder="Phone" >
+							<div *ngIf="f.phone.errors" class="invalid-feedback">
+								<div *ngIf="f.phone.errors.required"> Telephone cannot be blank.</div>
+								<div *ngIf="f.phone.errors.minlength">Telephone must be at least 8 characters</div>
+								<div *ngIf="f.phone.errors.maxlength">Telephone cannot exceed 15 characters</div>
+								<div *ngIf="f.phone.errors.pattern || f.phone.hasError('whitespace')">Invalid Telephone Number</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group row">
+						<div class="col-4">
+							<label>Accreditation <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Accreditation" matTooltipClass="tooltip-text-size" aria-tooltip="Accreditation" matTooltipPosition="right"></i>
+							<input type="text" class="form-control" formControlName="accreditation" [class.is-invalid]="f.accreditation.invalid && f.accreditation.touched" class="form-control" placeholder="Accreditation" >
+							<div *ngIf="f.accreditation.errors" class="invalid-feedback">
+								<div *ngIf="f.accreditation.errors.required">Accreditation cannot be blank.</div>
+								<div *ngIf="f.accreditation.errors.maxlength">Accreditation cannot exceed 255 characters</div>                                                        
+								<div *ngIf="f.accreditation.errors.pattern || f.accreditation.hasError('whitespace')">Invalid Accreditation</div>
+							</div>
+						</div>
+
+						<div class="col-4">
+							<label>Certificate No. <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Certificate No." matTooltipClass="tooltip-text-size" aria-tooltip="Certificate No." matTooltipPosition="right"></i>
+							<input type="text" class="form-control" formControlName="certificate_no" [class.is-invalid]="f.certificate_no.invalid && f.certificate_no.touched" class="form-control" placeholder="Certificate No." >
+							<div *ngIf="f.certificate_no.errors" class="invalid-feedback">
+								<div *ngIf="f.certificate_no.errors.required">Certificate No. cannot be blank.</div>
+								<div *ngIf="f.certificate_no.errors.maxlength">Certificate No. cannot exceed 255 characters</div>                                                        
+								<div *ngIf="f.certificate_no.errors.pattern || f.certificate_no.hasError('whitespace')">Invalid Certificate No.</div>
+							</div>
+						</div>
+
+						<div class="col-4">
+							<label>Scope of Accreditation <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Scope of Accreditation" matTooltipClass="tooltip-text-size" aria-tooltip="Scope of Accreditation" matTooltipPosition="right"></i>
+							<input type="text" class="form-control" formControlName="scope_of_accreditation" [class.is-invalid]="f.scope_of_accreditation.invalid && f.scope_of_accreditation.touched" class="form-control" placeholder="Scope of Accreditation" >
+							<div *ngIf="f.scope_of_accreditation.errors" class="invalid-feedback">
+								<div *ngIf="f.scope_of_accreditation.errors.required">Scope of Accreditation cannot be blank.</div>
+								<div *ngIf="f.scope_of_accreditation.errors.maxlength">Scope of Accreditation cannot exceed 255 characters</div>                            
+								<div *ngIf="f.scope_of_accreditation.errors.pattern || f.scope_of_accreditation.hasError('whitespace')">Invalid Scope of Accreditation</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group row">
+						<div class="col-4">
+							<label>Acc. Exp. Date <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Accreditation Expiry Date" matTooltipClass="tooltip-text-size" aria-tooltip="Accreditation Expiry Date" matTooltipPosition="right"></i><br>
+							<input  style="width: 70%; display: inline;float:left;" type="text" formControlName="accreditation_expiry_date" class="form-control" placeholder="Accreditation Expiry Date" [class.is-invalid]="f.accreditation_expiry_date.invalid && f.accreditation_expiry_date.touched" matInput [matDatepicker]="accreditation_expiry_date" (click)="accreditation_expiry_date.open()">
+							<mat-datepicker-toggle matSuffix  [for]="accreditation_expiry_date"></mat-datepicker-toggle>
+							<mat-datepicker #accreditation_expiry_date></mat-datepicker>
+							
+							<div *ngIf="f.accreditation_expiry_date.errors" class="invalid-feedback">
+								<div *ngIf="f.accreditation_expiry_date.errors.required">Acc. Exp. Date is required</div>
+							</div>
+						</div>
+
+						<div class="col-4">
+							<label>Status <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Status" matTooltipClass="tooltip-text-size" aria-tooltip="Status" matTooltipPosition="right"></i>
+							<select formControlName="status" class="form-control select2" [class.is-invalid]="f.status.invalid && f.status.touched">
+								<option value="">-- Status --</option>
+								<option  *ngFor="let item of statuslist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+							</select>     
+							
+							<div *ngIf="f.status.errors" class="invalid-feedback">
+								<div *ngIf="f.status.errors.required">Status is required</div>
+							</div>
+						</div>
+						
+					   
+
+						<div class="col-4">
+							<label>Upload File <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Upload File" matTooltipClass="tooltip-text-size" aria-tooltip="Upload File" matTooltipPosition="right"></i><br>
+							<input type="file" formControlname="supplier_file" (change)="supplierFileChange($event)" style="width:184px"  >
+							<br><div style="font-size:11px;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs }}<span *ngIf="!last">, </span> </span></div>
+							<div *ngIf="supplier_file" style="padding:5px; border:1px solid #cecece; background-color: beige; height:32px;width: 100%;">
+								<span>{{ supplier_file }}</span>
+								<a href="javascript:void(0);"  (click)="removeSupplierFile()" style="color:red; font-weight:bold;margin-right: 5px;float:right;" >X</a>
+								
+							</div>
+							<div *ngIf="supplierFileErr" class="validationerror" >
+								{{supplierFileErr}}
+							</div>
+						</div>	
+					</div>								
+								
+					<div class="col-lg-12 text-center mt-4 mb-4">
+						<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="addapprovedsupplier()">
+							<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+							{{editStatus == 1 ? 'Update' : 'Save'}}
+						</button>
+						<button [disabled]="loading['button'] || buttonDisable" type="button" (click)="supplierFormreset()"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Reset</button>
+
+						<div class="clearfix"></div>
+							
+						
+					</div>
+				</form>				             
+			</div>
+		</div>
+    </div>
+</div>
+<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+<ng-template #downloading let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+        Please wait, your file is downloading ...
+    </div>
+</ng-template>
+<ng-template #approvedsupplierDetails let-modal>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+	<div class="modal-body" style="font-size:16px;">
+		<div class="card-box enq-view">	
+			<table class="table-secondary m-b-15" *ngIf="ApprovedsupplierData">
+				<tr>
+					<th width="20%">Country</th>
+					<td width="30%">{{ ApprovedsupplierData.country_name }}</td>
+					<th width="20%">Supplier Name</th>
+					<td width="30%">{{ ApprovedsupplierData.supplier_name }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Address</th>
+					<td width="30%">{{ ApprovedsupplierData.address }}</td>
+					<th width="20%">Contact Person</th>
+					<td width="30%">{{ ApprovedsupplierData.contact_person }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Email</th>
+					<td width="30%">{{ ApprovedsupplierData.email }}</td>
+					<th width="20%">Phone</th>
+					<td width="30%">{{ ApprovedsupplierData.phone }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Accreditation</th>
+					<td width="30%">{{ ApprovedsupplierData.accreditation }}</td>
+					<th width="20%">Certificate No.</th>
+					<td width="30%">{{ ApprovedsupplierData.certificate_no }}</td>
+				</tr>	
+				<tr>
+					<th width="20%">Scope of Accreditation</th>
+					<td width="30%">{{ ApprovedsupplierData.scope_of_accreditation }}</td>
+					<th width="20%">Supplier File</th>
+					<td width="30%"><a href="javascript:void(0);" *ngIf="ApprovedsupplierData.supplier_file" (click)="downloadFile(ApprovedsupplierData.id,'supplier_file',ApprovedsupplierData.supplier_file);openmodal(downloading);" > <i class="fa fa-download" ></i>&nbsp;{{ ApprovedsupplierData.supplier_file }}</a></td>
+				</tr>
+				<tr>
+					<th width="20%">Acc. Exp. Date</th>
+					<td width="30%">{{ ApprovedsupplierData.accreditation_expiry_date }}</td>
+					<th width="20%">Status</th>
+					<td width="30%">{{ ApprovedsupplierData.status_label }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Created by</th>
+					<td width="30%">{{ ApprovedsupplierData.created_by_label }}</td>
+					<th width="20%">Created at</th>
+					<td width="30%">{{ ApprovedsupplierData.created_at }}</td>
+				</tr>	
+			</table>
+			<div style="text-align: center;">
+				<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="modal.dismiss('cancel click')" >Close</a>
+			</div>
+		</div>
+    </div>
+</ng-template>
+<ng-template #confirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to delete the data?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>

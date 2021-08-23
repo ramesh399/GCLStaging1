@@ -1,0 +1,129 @@
+<!-- Top Bar Start -->
+<div class="topbar">
+	<div class="clear-fix"></div>
+    <!-- LOGO -->
+    <div class="topbar-left">
+        <div class="text-center">
+            <a  *ngIf="authservice.authenticateIsOnline" [routerLink]="logoURL" class="logo" title="GCL International" alt="GCL International"><img src="assets/images/logo.png" title="GCL International" alt="GCL International" ></a>
+            <a  *ngIf="!authservice.authenticateIsOnline" href="javascript:void(0);" class="logo" title="GCL International" alt="GCL International"><img src="assets/images/logo.png" title="GCL International" alt="GCL International" ></a>            
+        </div>
+    </div>
+    <!-- Button mobile view to collapse sidebar menu -->
+    <nav class="navbar-custom">
+
+        <ul class="list-inline float-right mb-0">
+			<li class="list-inline-item dropdown notification-list noti-pad" style="padding-top:26px;padding-right:10px;color:#ffffff;">
+			{{ nameWithRole }}
+            </li>
+            <li class="list-inline-item dropdown notification-list user-dp" *ngIf="authservice.authenticateIsOnline">
+                <a class="nav-link dropdown-toggle waves-effect waves-light nav-user userLink" data-toggle="dropdown" href="javascript:void(0);" role="button"
+                   aria-haspopup="false" aria-expanded="false"> 
+                    <img src="assets/images/user-image.jpg" alt="user" class="rounded-circle"><font class="usr-name">{{ displayName }}<!-- <span class="admin-usr">Administrator</span> --></font>
+                    <span>
+                        <i class="material-icons">keyboard_arrow_down</i>
+                      </span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right profile-dropdown " aria-labelledby="Preview">
+                    <!-- item-->
+
+                    <a *ngIf="userdetails.user_type==2 || userdetails.user_type==3" href="javascript:void(0);" [routerLink]="['/profile/view']"  class="dropdown-item notify-item" title="Profile" alt="Profile">
+                        <i class="mdi mdi-account-star-variant"></i> <span>Profile</span>
+                    </a>
+					
+					<a *ngIf="userdetails.user_type==1" href="javascript:void(0);" [routerLink]="['/master/user/view']" [queryParams]="{id:userdetails.uid}" class="dropdown-item notify-item" title="Profile" alt="Profile">					
+                        <i class="mdi mdi-account-star-variant"></i> <span>Profile</span>
+                    </a>
+					
+					<a *ngIf="userdetails.user_type==1" href="javascript:void(0);" [routerLink]="['/master/user/edit']" [queryParams]="{id:userdetails.uid}" class="dropdown-item notify-item" title="Edit Profile" alt="Edit Profile">					
+                        <i class="mdi mdi-account-star-variant"></i> <span>Edit Profile</span>
+                    </a>
+
+                    <!-- item-->
+                    <a href="javascript:void(0);" *ngIf="userdetails.is_headquarters==1 && (userdetails.user_type==3 || (userdetails.user_type==1 && userdetails.resource_access==1))" [routerLink]="['/master/settings']"  class="dropdown-item notify-item" title="Settings" alt="Settings">
+                        <i class="mdi mdi-settings"></i> <span>Settings</span>
+                    </a>
+
+                    <!-- item-->
+                    <a href="javascript:void(0);" *ngIf="userdetails.user_type == 2 || userdetails.resource_access == 1" [routerLink]="['/change-password']" class="dropdown-item notify-item" title="Change Password" alt="Change Password">
+                        <i class="mdi mdi-lock-open"></i> <span>Change Password</span>
+                    </a>
+
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item notify-item" (click)="open(logoutConfirm)" title="Logout" alt="Logout">
+                        <i class="mdi mdi-logout"></i> <span>Logout</span>
+                    </a>
+
+                </div>
+            </li>    
+			
+			<!--
+			<li class="list-inline-item dropdown notification-list noti-pad">
+                <a class="nav-link dropdown-toggle arrow-none waves-light waves-effect" data-toggle="dropdown" href="#" role="button"
+                   aria-haspopup="false" aria-expanded="false">
+                   <img src="assets/images/bell-ico.png" alt="Logout">
+                    <span class="badge badge-pink noti-icon-badge">4</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right dropdown-arrow dropdown-menu-lg" aria-labelledby="Preview">
+                    
+                    <div class="dropdown-item noti-title">
+                        <h5 class="font-16"><span class="badge badge-danger float-right">5</span>Notification</h5>
+                    </div>
+
+                    
+                    <a href="javascript:void(0);" class="dropdown-item notify-item">
+                        <div class="notify-icon bg-info"><i class="mdi mdi-account"></i></div>
+                        <p class="notify-details">New user enquired.<small class="text-muted">1 min ago</small></p>
+                    </a>
+                    
+                    
+                    <a [routerLink]="['/notification']" class="dropdown-item notify-item notify-all" title="View All" alt="View All">
+                        View All
+                    </a>
+
+                </div>
+            </li>
+			-->
+			            
+            <li class="list-inline-item notification-list logout"  >
+                <a href="javascript:void(0);" class="tool-link" *ngIf="authservice.authenticateIsOnline">
+                    <img src="assets/images/logout-ico.png" (click)="open(logoutConfirm)" title="Logout" alt="Logout">
+                </a>
+              </li>
+
+        </ul>
+
+        <ul class="list-inline menu-left mb-0">
+            <li class="float-left">
+                <button class="button-menu-mobile open-left waves-light waves-effect">
+                    <i class="mdi mdi-menu"></i>
+                </button>
+            </li>
+            <!-- <li class="hide-phone app-search">
+                <form role="search" class="">
+                    <input type="text" placeholder="Search..." class="form-control">
+                    <a href=""><i class="fa fa-search"></i></a>
+                </form>
+            </li> -->
+        </ul>
+    </nav>
+</div>
+<!-- Top Bar End -->
+
+<!-- Modal for Logout Confirmation Start -->
+<ng-template #logoutConfirm let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+			<span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body text-center" style="font-size:16px;">Are you sure, do you want to logout?</div>
+    <div class="modal-footer text-center">	
+        <button type="button" class="btn btn-success " (click)="logout();modal.dismiss('ok');">Ok</button> 	
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel')">Cancel</button>
+               
+    </div>
+</ng-template>
+<!-- Modal for Logout Confirmation End  -->
+
+

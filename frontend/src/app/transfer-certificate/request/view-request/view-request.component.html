@@ -1,0 +1,761 @@
+<div class="col-12 row pad-right">
+	<div class="col-8">
+		<h4 class="page-title">{{title}}</h4>
+	</div>
+	<div class="col-4 text-right pad-right">
+		<a *ngIf="!type && type!=1 && type!=2" class="btn btn-secondary btn-sm active" href="#" role="button"
+			[routerLink]="['/transaction-certificate/request/list']"><i class="fa fa-arrow-left text-white"></i>
+			Back</a>
+		<a *ngIf="type==1" class="btn btn-secondary btn-sm active" href="#" role="button"
+			[routerLink]="['/transaction-certificate/approved-tc-applications']"><i
+				class="fa fa-arrow-left text-white"></i> Back</a>
+		<a *ngIf="type==2" class="btn btn-secondary btn-sm active" href="#" role="button"
+			[routerLink]="['/transaction-certificate/invoices-for-generation']"><i
+				class="fa fa-arrow-left text-white"></i> Back</a>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-12">
+		<div class="add card-box table-responsive">
+
+			<span *ngIf="!resultdata?.requestdata" class="spinner-border spinner-border-sm mr-1"></span>
+			<ng-container *ngIf="resultdata?.requestdata">
+				<div class="col-12 row enq-view pad-right">
+					<div class="col-12 text-primary"
+						style="border-bottom: 1px solid #d7d7d7;font-size:16px;padding-left:0px;">
+						TC Request
+					</div>
+				</div>
+
+				<div *ngIf="resultdata?.requestdata && tc_request_view" class="mat-accordion m-t-10">
+					<div class="card-box enq-view">
+						<table class="table-secondary m-b-15">
+							<tr>
+								<th width="20%">Company</th>
+								<td width="30%">
+									{{ resultdata?.requestdata?.app_id_label }},<br>
+									{{ resultdata.requestdata.app_address }}
+								</td>
+								<th width="20%">Last Processor</th>
+								<td width="30%">
+									{{ resultdata?.requestdata?.unit_id_label }},<br>
+									{{ resultdata.requestdata.unit_address }}
+								</td>
+							</tr>
+							<tr>
+								<th width="20%">Certification Program</th>
+								<td width="30%">{{ resultdata?.requestdata?.standard_id_code_label }}</td>
+								<th width="20%">Status</th>
+								<td width="30%">{{ resultdata?.requestdata?.request_status_label }}</td>
+							</tr>
+							<tr>
+								<th width="20%">Buyer</th>
+								<td width="30%">
+									{{ resultdata.requestdata.buyer_id_label }},<br>{{
+									resultdata.requestdata.buyer_address }}<br>
+									License Number: {{ resultdata.requestdata.buyer_license_number }}
+								</td>
+								<th width="20%">Inspection Body</th>
+								<td width="30%">
+									{{ resultdata.requestdata.inspection_body_id_label }},<br>{{
+									resultdata.requestdata.inspection_body_address }}
+								</td>
+							</tr>
+							<tr>
+								<th width="20%">TC No. {{ resultdata?.requestdata?.request_status!='7' ? 'Temp' : ''}}
+								</th>
+								<td width="30%">{{ resultdata?.requestdata?.request_status!='7' ?
+									resultdata.requestdata.id : resultdata.requestdata.tc_number }}</td>
+								<!--
+								<th width="20%">TC No.</th>
+								<td width="30%">{{ resultdata.requestdata.tc_number ? resultdata.requestdata.tc_number : '-' }}</td>
+								-->
+								<th width="20%">TC No. CDS</th>
+								<td width="30%">{{ resultdata.requestdata.tc_number_cds ?
+									resultdata.requestdata.tc_number_cds : '-' }}</td>
+							</tr>
+							<tr>
+								<th width="20%">Country of Dispatch</th>
+								<td width="30%">{{ resultdata.requestdata.country_of_dispach_label }}</td>
+								<th width="20%">USDA Nop Complaint</th>
+								<td width="30%">{{ resultdata.requestdata.usda_nop_compliant_label }}</td>
+							</tr>
+							<tr>
+								<th width="20%">IFOAM Standard</th>
+								<td width="30%" [innerHTML]="resultdata.requestdata?.ifoam_standard_id_label"></td>
+								<th width="20%">Identification Code</th>
+								<td width="30%">{{ resultdata.requestdata.comments }}</td>
+							</tr>
+							<tr>
+								<th width="20%">Created By</th>
+								<td width="30%">{{ resultdata?.requestdata?.created_by_label }}</td>
+								<th width="20%">Created Date</th>
+								<td width="30%">{{ resultdata?.requestdata?.created_at }}</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+
+				<div *ngIf="resultdata?.requestdata" class="col-12 row enq-view pad-right">
+					<div class="col-12 text-primary"
+						style="border-bottom: 1px solid #d7d7d7;font-size:16px;padding-left:0px;">
+						Products on TC
+					</div>
+				</div>
+
+				<div *ngIf="resultdata?.requestdata" class="card-box enq-view m-t-10">
+					<table class="table table-bordered col-12" style="font-size:13px;">
+						<thead>
+							<tr>
+								<th scope="col" class="center" style="vertical-align:middle;">S.No</th>
+								<th scope="col" style="vertical-align:middle; width:15%;">Product Details</th>
+								<th scope="col" style="vertical-align:middle;">Trade Name / Technical Details</th>
+								<th scope="col" style="vertical-align:middle;">Packaging Details</th>
+								<!--
+								<th scope="col" class="text-center" style="vertical-align:middle;">Net Weight (kg)</th>
+								<th scope="col" class="text-center" style="vertical-align:middle;">Product Wastage (%)</th>	
+								<th scope="col" class="text-center" style="vertical-align:middle;">Wastage Weight (kg)</th>	
+								-->
+								<th scope="col" style="vertical-align:middle;">Invoice and Transport Details</th>
+								<th scope="col" class="text-center" style="vertical-align:middle;">Raw Material Required
+									(kg)</th>
+								<th scope="col" class="text-center" style="vertical-align:middle;">Raw Material Used
+									(kg)</th>
+								<th scope="col" class="text-center" style="vertical-align:middle;">Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							<ng-container *ngIf="resultdata?.requestproduct?.length>0">
+								<tr *ngFor="let product of resultdata?.requestproduct; index as i">
+									<td scope="row" class="center">{{ 1+ i }}</td>
+									<td [innerHTML]="product.product_name"></td>
+									<td [innerHTML]="product.trade_name"></td>
+									<td [innerHTML]="product.packed_in"></td>
+									<td [innerHTML]="product.invoice_details"></td>
+									<!--	
+									<td class="text-right">{{ product.net_weight }}</td>
+									<td class="text-right">{{ product.wastage_percentage }}</td>
+									<td class="text-right">{{ product.wastage_weight }}</td>	
+									-->
+									<td class="text-right">{{ product.total_net_weight }}</td>
+									<td class="text-right">{{ product.total_used_weight }}</td>
+									<td width="8%" class="text-center">
+										<a href="javascript:void(0);" (click)="viewProduct(productDetails,product)"
+											title="View Product" alt="View Product"> <i class="fa fa-eye"></i>
+										</a>&nbsp;
+									</td>
+								</tr>
+							</ng-container>
+							<tr *ngIf="resultdata?.requestproduct?.length==0">
+								<td colspan="11" class="center">{{ commontxt.norecords }}</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<table class="table-secondary m-t-10 m-b-15" *ngIf="resultdata?.requestproduct?.length>0">
+						<tr>
+							<th width="20%">Total Raw Material Required (kg)</th>
+							<td width="30%">{{ resultdata?.requestdata?.grand_total_net_weight }}</td>
+							<th width="20%">Total Raw Material Used (kg)</th>
+							<td width="30%">{{ resultdata?.requestdata?.grand_total_used_weight }}</td>
+						</tr>
+					</table>
+
+				</div>
+
+				<div class="clearfix"></div>
+
+				<div class="col-12 row enq-view pad-right m-t-15"
+					*ngIf="resultdata?.requestevidence?.sales_invoice_with_packing_list?.length>0">
+					<div class="col-8 text-primary"
+						style="border-bottom: 1px solid #d7d7d7;font-size:16px;padding-left:0px;">
+						Evidence for TC
+					</div>
+					<div class="col-4 text-right pad-right text-primary"
+						style="border-bottom: 1px solid #d7d7d7;font-size:16px;">
+						&nbsp;
+					</div>
+				</div>
+
+				<div class="card-box enq-view m-t-10"
+					*ngIf="resultdata?.requestevidence?.sales_invoice_with_packing_list?.length>0">
+					<table class="table-secondary m-b-15">
+						<tr>
+							<th width="20%">Sales Invoice with Packing List</th>
+							<td width="80%">
+								<ng-container
+									*ngFor="let salefile of resultdata?.requestevidence.sales_invoice_with_packing_list">
+									<span class="name-pad" style="padding-right: 20px;"><a href="javascript:void(0);"
+											(click)="downloadEvidenceFile(salefile.id,'sales_invoice_with_packing_list',salefile.name);openmodal(downloading);">
+											<i class="fa fa-download"></i>&nbsp;{{ salefile.name }}</a></span>
+								</ng-container>
+							</td>
+						</tr>
+						<tr>
+							<th width="20%">Transport Document</th>
+							<td width="80%">
+								<ng-container *ngFor="let salefile of resultdata?.requestevidence.transport_document">
+									<span class="name-pad" style="padding-right: 20px;"><a href="javascript:void(0);"
+											*ngIf="resultdata?.requestevidence.transport_document"
+											(click)="downloadEvidenceFile(salefile.id,'transport_document',salefile.name);openmodal(downloading);">
+											<i class="fa fa-download"></i>&nbsp;{{ salefile.name }}</a>
+									</span>
+								</ng-container>
+							</td>
+						</tr>
+						<tr *ngIf="resultdata?.requestevidence?.mass_balance_sheet?.length>0">
+							<th width="20%">Mass Balance Sheet ( QCS )</th>
+							<td width="80%">
+								<ng-container *ngFor="let salefile of resultdata?.requestevidence.mass_balance_sheet">
+									<span class="name-pad" style="padding-right: 20px;"><a href="javascript:void(0);"
+											(click)="downloadEvidenceFile(salefile.id,'mass_balance_sheet',salefile.name);openmodal(downloading);">
+											<i class="fa fa-download"></i>&nbsp;{{ salefile.name }}</a>
+									</span>
+								</ng-container>
+							</td>
+						</tr>
+						<tr *ngIf="resultdata?.requestevidence?.test_report?.length>0">
+							<th width="20%">Test Report</th>
+							<td width="80%">
+								<ng-container *ngFor="let salefile of resultdata?.requestevidence.test_report">
+									<span class="name-pad" style="padding-right: 20px;"><a href="javascript:void(0);"
+											(click)="downloadEvidenceFile(salefile.id,'test_report',salefile.name);openmodal(downloading);">
+											<i class="fa fa-download"></i>&nbsp;{{ salefile.name }}</a>
+									</span>
+								</ng-container>
+							</td>
+						</tr>
+					</table>
+
+				</div>
+
+				<div class="clearfix"></div>
+
+				<div class="col-12 row enq-view pad-right" *ngIf="reviewdata?.reviewer">
+					<div class="col-12 text-primary"
+						style="border-bottom: 1px solid #d7d7d7;font-size:16px;padding-left:0px;">
+						TC Review Details
+					</div>
+				</div>
+				<div class="mat-accordion m-t-10" *ngIf="reviewdata?.reviewer">
+					<div class="card-box enq-view">
+						<table class="table-secondary m-b-15">
+							<tr>
+								<th width="20%">Reviewer</th>
+								<td width="30%">{{ reviewdata.reviewer.reviewer }}</td>
+								<th width="20%">Assigned at</th>
+								<td width="30%">{{ reviewdata.reviewer.assigned_date }}</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+
+				<div class="clearfix"></div>
+
+				<div class="col-lg-12 text-right">
+					<ng-container class="text-right m-t-10"
+						*ngIf="request_status==enumstatus['waiting_for_review']
+						 && (resource_access==1 || (userType==1 && userdetails.rules.includes('application_review')) || userdetails.role_name == 'TC Reviewer' )">
+						<button type="button" [disabled]="loading['assignReviewer'] || buttonDisable"
+							class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10"
+							(click)="openmodal(reviewconfirmcontent)">
+							<span *ngIf="loading['assignReviewer']"
+								class="spinner-border spinner-border-sm mr-1"></span>
+							Assign as Reviewer</button>
+						&nbsp;&nbsp;
+					</ng-container>
+					<ng-container *ngIf="resultdata?.requestdata?.showedit">
+						<button [disabled]="loading['assignReviewer'] || loading['reviewstatus'] || buttonDisable"
+							[routerLink]="['/transaction-certificate/request/edit']"
+							[queryParams]="{id:resultdata?.requestdata?.id}"
+							class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10">
+							<span *ngIf="loading['reviewstatus'] || loading['assignReviewer']"
+								class="spinner-border spinner-border-sm mr-1"></span>
+							Edit TC Application
+						</button>
+						&nbsp;&nbsp;
+					</ng-container>
+					<ng-container
+						*ngIf="resultdata?.requestdata?.request_status!=enumstatus['rejected'] && resultdata?.requestdata?.request_status>enumstatus['open']">
+						<button [disabled]="loading['assignReviewer'] || loading['reviewstatus'] || buttonDisable"
+							(click)="openmodal(downloading);DownloadFile(id,resultdata.requestdata.tc_filename);"
+							class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10">
+							<span *ngIf="loading['reviewstatus'] || loading['assignReviewer']"
+								class="spinner-border spinner-border-sm mr-1"></span>
+							{{resultdata.requestdata.request_status!=enumstatus['approved'] ? 'View Draft TC' : 'View
+							TC' }}
+						</button>
+					</ng-container>
+				</div>
+
+				<div class="clearfix"></div>
+
+				<!--  -->
+				<div
+					*ngIf="overall_input_status == 1 && 
+					(((userType==3 || resource_access==1 || 
+					(userType==1 && userdetails.rules.includes('assign_as_oss_review_for_tc'))) 
+					&& (request_status==enumstatus['waiting_for_osp_review'] 
+					|| request_status==enumstatus['pending_with_osp'])) 
+					|| (( (resultdata.requestdata.reviewer_id==userdetails.uid && 
+					 userType==1) || resource_access==1) && request_status==enumstatus['review_in_process'])
+					  || (enumstatus['review_in_process'] && userdetails.role_name == 'TC Reviewer' ) && request_status==enumstatus['review_in_process'])">
+					<form #declarationForm="ngForm" (ngSubmit)="onSubmit(declarationForm,'declaration')">
+						<div class="row m-t-15">
+							<div class="col-12">
+								<div class="card-box enq-view">
+									<h3>Declaration Details</h3>
+									<ul class="tempdrivenform" style="margin-bottom:10px;">
+										<li style="width:100%;">
+											Declaration of the body issuing the certificate for Box 14 <span
+												class="text-danger">*</span>
+											<textarea class="form-control" required #declarationComment="ngModel"
+												name="declaration_comments" rows=4 [(ngModel)]="declaration_comments"
+												style="margin-bottom:10px;line-height:18px;"></textarea>
+											<div class="validationerror"
+												*ngIf="!declarationComment.valid && declarationComment.touched">
+												<div *ngIf="declarationComment.errors.required">Declaration of the body
+													issuing the certificate is required</div>
+												<div *ngIf="declarationComment.errors.maxlength">Declaration of the body
+													issuing the certificate cannot exceed 588 characters</div>
+											</div>
+										</li>
+
+										<li style="width:100%;"
+											*ngIf="resultdata.requestdata.show_additional_declaration">
+											Additional declarations for Box 15 <span class="text-danger">*</span>
+											<textarea class="form-control" required #additionalComment="ngModel"
+												name="additional_comments" rows=4 [(ngModel)]="additional_comments"
+												style="margin-bottom:10px;line-height:18px;"></textarea>
+											<div class="validationerror"
+												*ngIf="!additionalComment.valid && additionalComment.touched">
+												<div *ngIf="additionalComment.errors.required">Additional declarations
+													is required</div>
+												<div *ngIf="additionalComment.errors.maxlength">Additional declarations
+													cannot exceed 310 characters</div>
+											</div>
+										</li>
+
+										<li style="width:100%;">
+											Standard declarations for Box 20 <span class="text-danger">*</span>
+											<textarea class="form-control" required #standardDeclaration="ngModel"
+												name="standard_declaration" rows=4 [(ngModel)]="standard_declaration"
+												style="margin-bottom:10px;line-height:18px;"></textarea>
+											<div class="validationerror"
+												*ngIf="!standardDeclaration.valid && standardDeclaration.touched">
+												<div *ngIf="standardDeclaration.errors.required">Standard declarations
+													is required</div>
+											</div>
+										</li>
+									</ul>
+									<div class="row col-12 error">
+										Note: Before submitting your action, please verify the "Declaration Details".
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-lg-12 text-center">
+							<button [disabled]="loading['declaration'] || buttonDisable"
+								class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10">
+								<span *ngIf="loading['declaration']"
+									class="spinner-border spinner-border-sm mr-1"></span>
+								{{ ((resultdata?.requestdata?.oss_declaration_update_status==1 &&
+								(request_status==enumstatus['waiting_for_osp_review'] ||
+								request_status==enumstatus['pending_with_osp'])) ||
+								(resultdata?.requestdata?.reviewer_declaration_update_status==1 &&
+								request_status==enumstatus['review_in_process'])) ? 'Update Declaration' : 'Submit
+								Declaration' }}
+							</button>
+						</div>
+					</form>
+				</div>
+
+
+				<div class="clearfix"></div>
+				<!--  -->    
+				<div
+					*ngIf="((resultdata?.requestdata?.oss_declaration_update_status==1 
+					&& (request_status==enumstatus['waiting_for_osp_review'] 
+					|| request_status==enumstatus['pending_with_osp'])) 
+					|| (resultdata?.requestdata?.reviewer_declaration_update_status==1 && request_status==enumstatus['review_in_process'])) 
+					&& overall_input_status == 1 && (((userType==3 || resource_access==1 ||
+					 (userType==1 && userdetails.rules.includes('assign_as_oss_review_for_tc'))) 
+					 && (request_status==enumstatus['waiting_for_osp_review'] || request_status==enumstatus['pending_with_osp'])) 
+					 || (( (resultdata.requestdata.reviewer_id==userdetails.uid &&  userType==1) 
+					 || resource_access==1) && request_status==enumstatus['review_in_process'] && userdetails.user_role_id != 25) ||  (enumstatus['review_in_process'] && userdetails.role_name == 'TC Reviewer' ))">
+					<form #reviewForm="ngForm" (ngSubmit)="onSubmit(reviewForm,'review')">
+						<div class="row m-t-15">
+							<div class="col-12">
+								<div class="card-box enq-view">
+									<h3>Status Details</h3>
+									<ul class="tempdrivenform" style="margin-bottom:10px;">
+										<li style="width:100%;"><span class="label-pad" style="width: 30%;">Status <span
+													class="text-danger">*</span></span>
+											<span class="label-pad" style="width:35%;">
+												<select name="review_status" #reviewStatus="ngModel"
+													style="margin-top:4px; " [(ngModel)]="review_status" required
+													class="form-control">
+													<option value="">-- Status -- </option>
+													<option *ngFor="let status of reviewerstatus | keyvalue"
+														value="{{status.key}}">{{status.value}}</option>
+
+												</select>
+												<span *ngIf="loading?.status"
+													class="spinner-border spinner-border-sm mr-1"></span>
+												<div class="validationerror"
+													*ngIf="!reviewStatus.valid && reviewStatus.touched">
+													Please select the status
+												</div>
+											</span>
+										</li>
+
+										<li style="width:100%;"><span class="label-pad"
+												style="width: 30%;">Comments</span>
+
+											<span class="label-pad" style="width:35%;padding-bottom:5px;">
+												<textarea class="form-control" #reviewComment="ngModel"
+													[required]="(reviewStatus.value !== undefined && reviewStatus.value!='' && (reviewStatus.value==2 || reviewStatus.value==3))?true:false"
+													name="review_comments" rows=4 [(ngModel)]="review_comments"
+													style=" margin-top:10px; line-height:18px;"></textarea>
+												<div class="validationerror"
+													*ngIf="!reviewComment.valid && reviewComment.touched">
+													Please enter the Comments
+												</div>
+											</span>
+
+										</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-lg-12 text-center mb-4">
+							<button [disabled]="loading['reviewstatus'] || buttonDisable"
+								class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10">
+								<span *ngIf="loading['reviewstatus']"
+									class="spinner-border spinner-border-sm mr-1"></span>
+								Submit
+							</button>
+							<button [disabled]="loading['reviewstatus'] || buttonDisable" type="button"
+								(click)="resetStatusDetails()"
+								class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2 m-t-10">
+								<span *ngIf="loading['reviewstatus']"
+									class="spinner-border spinner-border-sm mr-1"></span>
+								Reset
+							</button>
+						</div>
+					</form>
+				</div>
+
+				<div class="clearfix"></div>
+				<div style="margin-bottom:10px;" *ngIf="reviewdata?.osp_reviews">
+					<div class="un-lst">
+						<h3>OSS Review Details</h3>
+					</div>
+					<mat-accordion *ngFor="let additionreview of reviewdata.osp_reviews; index as i">
+						<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+							<mat-expansion-panel-header>
+								<mat-panel-title>
+									Review {{ i+1 }}
+								</mat-panel-title>
+							</mat-expansion-panel-header>
+							<div class="card-box enq-view">
+
+								<h3>Review Details</h3>
+								<table class="table-secondary m-b-15">
+									<tr>
+										<th width="20%">Reviewer</th>
+										<td width="30%">{{ additionreview.created_by }}</td>
+										<th width="20%">Reviewed At</th>
+										<td width="30%">{{ additionreview.created_at }}</td>
+									</tr>
+									<tr>
+										<th width="20%">Status</th>
+										<td colspan="3">{{ additionreview.status_label }}</td>
+									</tr>
+									<tr>
+										<th width="20%">Review Comment</th>
+										<td colspan="3">{{ additionreview.comment }}</td>
+									</tr>
+								</table>
+							</div>
+						</mat-expansion-panel>
+					</mat-accordion>
+				</div>
+
+				<div class="clearfix"></div>
+				<div style="margin-bottom:10px; margin-top:10px;" *ngIf="reviewdata?.reviewer_reviews">
+					<div class="un-lst">
+						<h3>Reviewer Review Details</h3>
+					</div>
+
+					<mat-accordion *ngFor="let additionreview of reviewdata.reviewer_reviews; index as i">
+						<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+							<mat-expansion-panel-header>
+								<mat-panel-title>
+									Review {{ i+1 }}
+								</mat-panel-title>
+							</mat-expansion-panel-header>
+							<div class="card-box enq-view">
+
+								<h3>Review Details</h3>
+
+								<table class="table-secondary m-b-15">
+									<tr>
+										<th width="20%">Reviewer</th>
+										<td width="30%">{{ additionreview.created_by }}</td>
+										<th width="20%">Reviewed At</th>
+										<td width="30%">{{ additionreview.created_at }}</td>
+									</tr>
+									<tr>
+										<th width="20%">Status</th>
+										<td colspan="3">{{ additionreview.status_label }}</td>
+									</tr>
+									<tr>
+										<th width="20%">Review Comment</th>
+										<td colspan="3">{{ additionreview.comment }}</td>
+									</tr>
+								</table>
+							</div>
+						</mat-expansion-panel>
+					</mat-accordion>
+				</div>
+
+			</ng-container>
+
+			<div class="col-12 text-center" *ngIf="request_status && request_status==enumstatus['rejected']">
+				<button (click)="open(commonModel,'copy',resultdata.requestdata.id)"
+					[disabled]="loading['declaration'] || buttonDisable"
+					class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10">
+					<span *ngIf="loading['declaration']" class="spinner-border spinner-border-sm mr-1"></span>
+					Clone TC Request
+				</button>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<ng-template #reviewconfirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+			<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to assign this as reviewer?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="assignReviewer()">Ok</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>
+<ng-template #downloading let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Please wait, your file is downloading ...
+	</div>
+</ng-template>
+<ng-template #productDetails let-modal>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')"
+		style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+	<div class="modal-body" style="font-size:16px;">
+		<div class="card-box enq-view">
+			<h3>Product Details</h3>
+			<table class="table-secondary m-b-15">
+				<tr>
+					<th width="20%">Product Name</th>
+					<td colspan="3">{{ viewproductData.product_name }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Trade Name / Technical Specification</th>
+					<td colspan="3">{{ viewproductData.trade_name }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Packed In</th>
+					<td width="30%">{{ viewproductData.packed_in }}</td>
+					<th width="20%">Wastage Percentage</th>
+					<td width="30%">{{ viewproductData.wastage_percentage }} %</td>
+				</tr>
+				<tr>
+					<th width="20%">Gross Weight</th>
+					<td width="30%">{{ viewproductData.gross_weight }} kg</td>
+					<th width="20%">Net Weight</th>
+					<td width="30%">{{ viewproductData.net_weight }} kg</td>
+				</tr>
+				<tr>
+					<th width="20%">Certified Weight</th>
+					<td width="30%">{{ viewproductData.certified_weight }} kg</td>
+					<th width="20%">Wastage Weight</th>
+					<td width="30%">{{ viewproductData.wastage_weight }} kg</td>
+				</tr>
+				<tr>
+					<th width="20%">Consignee</th>
+					<td width="30%">{{ viewproductData.consignee_id_label }}</td>
+					<th width="20%">Additional Weight</th>
+					<td width="30%">{{ viewproductData.additional_weight }} kg</td>
+				</tr>
+				<tr>
+					<th width="20%">Units (Pcs/M)</th>
+					<td width="30%">{{ viewproductData.unit_information?viewproductData.unit_information:'NA' }}</td>
+					<th width="20%">Raw Material Required</th>
+					<td width="30%">{{ viewproductData.total_net_weight }} kg</td>
+				</tr>
+				<tr>
+					<th width="20%">Purchase Order No.</th>
+					<td width="30%">{{ viewproductData.purchase_order_no }}</td>
+					<th width="20%">Raw Material Used</th>
+					<td width="30%">{{ viewproductData.total_used_weight }} kg</td>
+				</tr>
+				<tr>
+					<th width="20%">Purchase Order Date</th>
+					<td width="30%">{{ viewproductData.purchase_order_date }}</td>
+					<th width="20%">Invoice No.</th>
+					<td width="30%">{{ viewproductData.invoice_no }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Invoice Date</th>
+					<td width="30%">{{ viewproductData.invoice_date }}</td>
+					<th width="20%">Transport By</th>
+					<td width="30%">{{ viewproductData.transport_id_label }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Transport Document No.</th>
+					<td width="30%">{{ viewproductData.transport_document_no }}</td>
+					<th width="20%">Transport Document Date</th>
+					<td width="30%">{{ viewproductData.transport_document_date }}</td>
+				</tr>
+
+				<tr>
+					<th width="20%">Transport Company Name</th>
+					<td width="30%">{{ viewproductData.transport_company_name }}</td>
+					<th width="20%">Vehicle/Container No.</th>
+					<td width="30%">{{ viewproductData.vehicle_container_no }}</td>
+				</tr>
+
+				<!--
+				<tr>
+					<th width="20%">Trade Name / Technical Specification</th>
+					<td colspan="3">{{ viewproductData.trade_name }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Packed In</th>
+					<td width="30%">{{ viewproductData.packed_in }}</td>
+					<th width="20%">Wastage Percentage</th>
+					<td width="30%">{{ viewproductData.wastage_percentage }} %</td>
+				</tr>
+				<tr>
+					<th width="20%">Gross Weight</th>
+					<td width="30%">{{ viewproductData.gross_weight }} kg</td>
+					<th width="20%">Net Weight</th>
+					<td width="30%">{{ viewproductData.net_weight }} kg</td>
+				</tr>
+				<tr>
+					<th width="20%">Certified Weight</th>
+					<td width="30%">{{ viewproductData.certified_weight }} kg</td>
+					<th width="20%">Wastage Weight</th>
+					<td width="30%">{{ viewproductData.wastage_weight }} kg</td>
+				</tr>
+				<tr>
+					<th width="20%">Raw Material Required</th>
+					<td width="30%">{{ viewproductData.total_net_weight }} kg</td>
+					<th width="20%">Stock Used</th>
+					<td width="30%">{{ viewproductData.total_used_weight }} kg</td>
+				</tr>
+				-->
+			</table>
+
+			<div *ngIf="viewproductData?.materialused" class="enq-view">
+				<h3>Stock from Raw Material</h3>
+				<table class="table table-bordered col-12" style="font-size:13px;">
+					<thead>
+						<tr>
+							<th scope="col" width="2%" class="center">S.No</th>
+							<th scope="col" width="15%">Supplier Name</th>
+							<th scope="col" width="14%">Trade Name</th>
+							<th scope="col" width="14%">Product Name</th>
+							<th scope="col" width="10%">Lot Number</th>
+							<th scope="col" width="11%">TC Number</th>
+							<th scope="col" width="18%" class="text-right">Raw Material Net Weight (kg)</th>
+						</tr>
+					</thead>
+					<tbody>
+						<ng-container *ngIf="viewproductData?.materialused?.length>0">
+							<tr *ngFor="let stditem of viewproductData?.materialused; index as i">
+								<td valign="middle" width="3%" scope="row" class="center">{{ 1+ i }}</td>
+								<td valign="middle">{{ stditem.supplier_name }}</td>
+								<td valign="middle">{{ stditem.trade_name }}</td>
+								<td style="vertical-align:middle;">{{ stditem.product_name }}</td>
+								<td style="vertical-align:middle;">{{ stditem.lot_number }}</td>
+								<td style="vertical-align:middle;">
+									<ng-container *ngIf="stditem.tc_attachment">
+										<a href="javascript:void(0);"
+											(click)="downloadRawmaterialFile(stditem.raw_material_id,'tc_attachment',stditem.tc_attachment);openmodal(downloading);">
+											<i class="fa fa-download"></i>&nbsp;{{ stditem.tc_number }}</a><br>
+									</ng-container>
+									<ng-container *ngIf="stditem.invoice_attachment">
+										<a href="javascript:void(0);"
+											(click)="downloadRawmaterialFile(stditem.raw_material_id,'invoice_attachment',stditem.invoice_attachment);openmodal(downloading);">
+											<i class="fa fa-download"></i>&nbsp;{{ stditem.invoice_attachment }}</a><br>
+									</ng-container>
+									<ng-container *ngIf="stditem.declaration_attachment">
+										<a href="javascript:void(0);"
+											(click)="downloadRawmaterialFile(stditem.raw_material_id,'declaration_attachment',stditem.declaration_attachment);openmodal(downloading);">
+											<i class="fa fa-download"></i>&nbsp;{{ stditem.declaration_attachment }}</a><br>
+									</ng-container>
+									<ng-container *ngIf="!stditem.tc_attachment">{{ stditem.tc_number }}</ng-container>
+
+								</td>
+								<td valign="middle" class="text-right">{{ stditem.used_weight }} kg</td>
+							</tr>
+							<tr>
+								<td colspan="6" valign="middle" class="text-right text-primary"><b>Total Used Weight</b>
+								</td>
+								<td valign="middle" class="text-right text-primary"><b>{{
+										viewproductData?.totalweightusedfrommaterial }} kg</b></td>
+							</tr>
+						</ng-container>
+						<tr *ngIf="viewproductData?.materialused?.length==0">
+							<td colspan="7" class="center">{{ commontxt.norecords }}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div style="text-align: center;">
+				<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button"
+					(click)="modal.dismiss('cancel click')">Close</a>
+			</div>
+		</div>
+	</div>
+</ng-template>
+
+<ng-template #commonModel let-modal>
+
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Message</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('close')">
+			<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+
+	<div class="modal-body text-center" style="font-size:16px;padding:5px;">
+		<div class="alert alert-info" *ngIf="alertInfoMessage">{{alertInfoMessage}}</div>
+		<div class="alert alert-success" *ngIf="alertSuccessMessage">{{alertSuccessMessage}}</div>
+		<div class="alert alert-danger" *ngIf="alertErrorMessage">{{alertErrorMessage}}</div>
+	</div>
+
+	<div class="modal-footer text-center">
+		<button type="button" class="btn btn-success" *ngIf="okBtn" (click)="commonModalAction();">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" *ngIf="cancelBtn"
+			(click)="modal.dismiss('cancel')">Cancel</button>
+	</div>
+
+</ng-template>

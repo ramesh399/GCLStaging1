@@ -1,0 +1,1825 @@
+<div class="row" *ngIf="offerdata">
+	<div class="col-sm-12  p-b-10">
+		<div class="page-title-box">
+			<div class="float-left">
+				<h4 class="page-title">View Quotation Details</h4>
+			</div>
+
+			<div class="text-right float-right">
+				<a class="btn btn-secondary btn-sm active" href="#" role="button"
+					*ngIf="offerdata.offer.offer_status!=offerdata.offerenumstatus['finalized']"
+					[routerLink]="['/offer/generate-list']">Back</a>
+				<a class="btn btn-secondary btn-sm active" href="#" role="button"
+					*ngIf="offerdata.offer.offer_status==offerdata.offerenumstatus['finalized']"
+					[routerLink]="['/offer/offer-list']">Back</a>
+			</div>
+		</div>
+	</div>
+</div>
+<div style="margin-bottom:10px;">
+	<mat-accordion>
+		<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+			<mat-expansion-panel-header>
+				<mat-panel-title>
+					View Application Details
+				</mat-panel-title>
+			</mat-expansion-panel-header>
+
+			<div class="row" *ngIf="applicationdata">
+				<div class="col-sm-12">
+					<div class="clearfix"></div>
+					<app-appdetail [id]="applicationdata.id"></app-appdetail>
+				</div>
+
+
+			</div>
+
+		</mat-expansion-panel>
+		<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+			<mat-expansion-panel-header>
+				<mat-panel-title>
+					Quotation Details
+				</mat-panel-title>
+			</mat-expansion-panel-header>
+
+			<div class="card-box enq-view" *ngFor="let unit of offerdata?.units; index as i">
+			
+				<!-- 
+			                    <h3>{{ unit.unit_name }} [<ng-container *ngFor="let std of unit.standard; let stdi=index;">{{std.standard_name}} <span *ngIf="stdi+1!=unit.standard.length">,</span></ng-container>]</h3>
+			                    -->
+				<div class="un-lst">
+					<h3>{{ unit.name }} </h3>
+						 <!-- [<ng-container *ngFor="let std of unit.standarddetails; let stdi=index;">
+							{{std.name}}<span *ngIf="stdi+1!=unit.standarddetails.length">, </span></ng-container>]</h3> -->
+				</div>
+			
+				<!-- New Button Code Start Here ------- -->
+			
+			
+				<!--
+			                    <div *ngIf="unit.followup_status" >				
+			                        <button type="button" (click)="changeAuditTab('normal',unit.id)" class="btn btn-sm {{normalcontentstatus[unit.id] ? 'btn-success' : 'btn-primary'}}">Normal</button>
+			                        <button type="button" (click)="changeAuditTab('followup',unit.id)" class="btn btn-sm {{followupcontentstatus[unit.id] ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Follow-Up</button>
+			                    </div>
+			                    -->
+				<!--{{unit.followup_status?'card-box':'' }}-->
+				<div class="add pad-left pad-right table-responsive enq-view col-12">
+			
+			
+			
+					<table class="table-secondary m-b-15">
+						 
+						 
+						<tr>
+							<th width="20%">Adjusted Manday(s)</th>
+							<td width="30%">{{offerdata?.manday[i].adjusted_manday}}</td>
+							<th width="20%">Final Manday(s)</th>
+							<td width="30%">{{ offerdata?.manday[i].final_manday_withtrans
+								}}</td>
+						</tr>
+						<tr>
+							
+							<th width="20%">Adjusted Manday Comments</th>
+							<td width="30%">{{ offerdata?.manday[i].adjusted_manday_comment }}</td>
+								<th width="20%">Translator Required</th>
+								<td width="30%">{{ offerdata?.manday[i].translator_required === "true" ? "Yes": "No" }}</td>
+						</tr>
+						 
+					</table>			
+
+			
+				</div>
+			
+			
+			</div>
+
+		</mat-expansion-panel>
+	</mat-accordion>
+</div>
+<!-- 
+<div style="margin-bottom:10px;">
+	<mat-accordion>
+		<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+			<mat-expansion-panel-header>
+				<mat-panel-title>
+				View Product Details
+				</mat-panel-title>
+			</mat-expansion-panel-header>
+			
+			<div class="row" *ngIf="applicationdata" >
+				<div class="col-sm-12">
+					<div class="clearfix"></div>
+					<app-application-product-list [id]="applicationdata.id" [standard_id]="applicationdata.standard_ids"></app-application-product-list>							
+				</div>	
+
+						
+			</div>
+
+		</mat-expansion-panel>                
+	</mat-accordion>
+</div> 
+
+<div style="margin-bottom:10px;">
+	<mat-accordion>
+		<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+			<mat-expansion-panel-header>
+				<mat-panel-title>
+				View Product List Details
+				</mat-panel-title>
+			</mat-expansion-panel-header>
+			
+			<div class="row" *ngIf="applicationdata" >
+				<div class="col-sm-12">
+					<div class="clearfix"></div>
+					<app-application-product-detail-list [id]="applicationdata.id" [standard_id]="applicationdata.standard_ids"></app-application-product-detail-list>							
+				</div>	
+
+						
+			</div>
+
+		</mat-expansion-panel>                
+	</mat-accordion>
+</div> 
+ -->
+<div class="clearfix"></div>
+
+
+<div class="row">
+	<div class="col-sm-12">
+
+		<div class="clearfix"></div>
+
+		<div class="mat-accordion">
+			<span *ngIf="!offerdata" class="spinner-border spinner-border-sm mr-1"></span>
+			<div class="add card-box table-responsive" *ngIf="offerdata">
+
+				<div class="col-sm-12">
+					<div style="text-align: left;width:48%;float:left;display: inline-block;">
+						<img src="{{weburl}}/images/header-img.jpg" border="0">
+
+					</div>
+					<div style="width:50%;float:right;display: inline-block;">
+						<div style="border: 1px solid #d7d7d7;padding:5px;">
+							<b>GCL INTERNATIONAL LTD</b><br>
+							level 1| Devonshire House|One Mayfair Place London | W1J 8AJ| United Kingdom
+						</div>
+						<div>
+							<p>Quotation Number: {{ offerdata.offer.offer_code }} <br>
+								Date: {{offerdata.offer.updated_at}}</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="clearfix"></div>
+				<div class="col-sm-12 p-t-10">
+					<div class="text-center">
+						<h4>QUOTATION/PROFORMA INVOICE</h4>
+					</div>
+					<table style="border-collapse: collapse;border: 1px solid #d7d7d7;width:100%;">
+						<tr>
+							<td style="border: 1px solid #d7d7d7;padding-left:5px;" class="font-bold" colspan="5">
+								<u>Part 1 - Company Details</u></td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #d7d7d7;width:25%;padding-left:5px;">Company Name</td>
+							<td style="border: 1px solid #d7d7d7;width:2%;" class="text-center">:</td>
+							<td style="border: 1px solid #d7d7d7;padding-left:5px;" colspan="3">
+								{{offerdata.company_name}}</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #d7d7d7;padding-left:5px;">Company Address</td>
+							<td style="border: 1px solid #d7d7d7;" class="text-center">:</td>
+							<td style="border: 1px solid #d7d7d7;padding-left:5px;" colspan="3">{{offerdata.address}},
+								{{offerdata.city}} - {{offerdata.zipcode}}, {{offerdata.country_id_name}}</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #d7d7d7;width:25%;padding-left:5px;">Attention</td>
+							<td style="border: 1px solid #d7d7d7;width:2%;" class="text-center">:</td>
+							<td style="border: 1px solid #d7d7d7;padding-left:5px;">{{offerdata.first_name}}
+								{{offerdata.last_name}}</td>
+							<td style="border: 1px solid #d7d7d7;width:25%;padding-left:5px;">Standard(s) :</td>
+							<td style="border: 1px solid #d7d7d7;padding-left:5px;">
+								<span *ngFor="let standard of offerdata?.standards; let isLast=last;">{{ standard }}
+									{{isLast ? '' : ', '}}</span>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #d7d7d7;width:25%;padding-left:5px;">Email</td>
+							<td style="border: 1px solid #d7d7d7;width:2%;" class="text-center">:</td>
+							<td style="border: 1px solid #d7d7d7;padding-left:5px;">{{offerdata.email_address}}</td>
+							<td style="border: 1px solid #d7d7d7;width:25%;padding-left:5px;">Phone:</td>
+							<td style="border: 1px solid #d7d7d7;padding-left:5px;">{{offerdata.telephone}}</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #d7d7d7;width:25%;padding-left:5px;">Unit(s) Name</td>
+							<td style="border: 1px solid #d7d7d7;width:2%;" class="text-center">:</td>
+							<td style="border: 1px solid #d7d7d7;padding-left:5px;">
+								<span *ngFor="let unit of offerdata?.units; let isLast=last;">{{ unit.name }} {{isLast ?
+									'' : ', '}}</span>
+							</td>
+							<td style="border: 1px solid #d7d7d7;width:25%;padding-left:5px;">No.of Unit(s)</td>
+							<td style="border: 1px solid #d7d7d7;padding-left:5px;">{{offerdata.units.length}}</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #d7d7d7;width:25%;padding-left:5px;">Audit Type</td>
+							<td style="border: 1px solid #d7d7d7;width:2%;" class="text-center">:</td>
+							<td style="border: 1px solid #d7d7d7;padding-left:5px;">Initial Audit</td>
+							<td style="border: 1px solid #d7d7d7;width:25%;padding-left:5px;">Audit Man day:</td>
+							<td style="border: 1px solid #d7d7d7;padding-left:5px;"> {{ getAudit(offerdata)}}</td>
+						</tr>
+					</table><br>
+					<table style="border-collapse: collapse;border: 1px solid #d7d7d7;width:100%;"
+						*ngIf="offerdata.offer">
+						<tr>
+							<td style="border: 1px solid #d7d7d7;border-right: none;width:35%;padding-left:5px;"
+								class="font-bold"><u>Part 2 - Certification Fee</u></td>
+							<td style="border: 1px solid #d7d7d7;border-left: none;padding-left:5px;"><b>Description</b>
+							</td>
+							<td style="border: 1px solid #d7d7d7;width:15%;padding-left:5px;" class="text-center">
+								<b>Amount ({{offerdata.offer.currency}})</b></td>
+						</tr>
+						<tr *ngFor="let offer_certification_f of offerdata?.offer_certification_fee; let isLast=last;">
+							<td style="border: 1px solid #d7d7d7;padding-left:5px;">{{offer_certification_f.activity}}
+							</td>
+							<td style="border: 1px solid #d7d7d7;border-left: none;padding-left:5px;">
+								{{offer_certification_f.description}}  </td>
+							<td style="border: 1px solid #d7d7d7;padding-right:5px;" class="text-right">
+								{{offerdata.offer.currency}} {{offer_certification_f.amount | number :'1.2-2'}}</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #d7d7d7;border-right: none;padding-right:5px;" colspan="2"
+								align="right"><b><u>Sub-Total of Certification Fee:</u></b></td>
+							<td style="border: 1px solid #d7d7d7;padding-right:5px;" class="text-right">
+								<b>{{offerdata.offer.currency}} {{offerdata.offer.certification_fee_sub_total | number
+									:'1.2-2'}}</b></td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #d7d7d7;padding-left:5px;"><b><u>Other Expenses</u></b></td>
+							<td style="border: 1px solid #d7d7d7;"></td>
+							<td style="border: 1px solid #d7d7d7;"></td>
+						</tr>
+						<tr *ngFor="let offer_other_expense of offerdata?.offer_other_expenses; let isLast=last;">
+							<td style="border: 1px solid #d7d7d7;padding-left:5px;">{{offer_other_expense.activity}}
+							</td>
+							<td style="border: 1px solid #d7d7d7;border-left: none;padding-left:5px;">
+								{{offer_other_expense.description}}</td>
+							<td style="border: 1px solid #d7d7d7;padding-right:5px;" class="text-right">
+								{{offerdata.offer.currency}} {{offer_other_expense.amount | number :'1.2-2'}}</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #d7d7d7;border-right: none;padding-right:5px;" colspan="2"
+								align="right"><b><u>Sub-Total of Other Expenses:</u></b></td>
+							<td style="border: 1px solid #d7d7d7;padding-right:5px;" class="text-right">
+								<b>{{offerdata.offer.currency}} {{offerdata.offer.other_expense_sub_total | number
+									:'1.2-2'}}</b></td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #d7d7d7;border-right: none;padding-right:5px;" colspan="2"
+								align="right"><b><u>Total:</u></b></td>
+							<td style="border: 1px solid #d7d7d7;padding-right:5px;" class="text-right">
+								<b>{{offerdata.offer.currency}} {{offerdata.offer.total | number :'1.2-2'}}</b></td>
+						</tr>
+
+						<!--
+							<tr *ngIf="offerdata.offer.discount>0">
+								<td style="border: 1px solid #d7d7d7;border-right: none;padding-right:5px;" colspan="2" align="right"><b><u>Discount:</u></b></td>
+								<td style="border: 1px solid #d7d7d7;padding-right:5px;" class="text-right"><b>{{offerdata.offer.currency}} {{offerdata.offer.discount | number :'1.2-2'}}</b></td>
+							</tr>
+							
+							<tr *ngIf="offerdata.offer.discount>0">
+								<td style="border: 1px solid #d7d7d7;border-right: none;padding-right:5px;" colspan="2" align="right"><b><u>Grand Total:</u></b></td>
+								<td style="border: 1px solid #d7d7d7;padding-right:5px;" class="text-right"><b>{{offerdata.offer.currency}} {{offerdata.offer.grand_total_fee | number :'1.2-2'}}</b></td>
+							</tr>
+							-->
+
+						<tr>
+							<td style="border: 1px solid #d7d7d7;padding-right:5px;" colspan="2" align="right">
+								<b>{{offerdata.offer.taxname}} Rate</b></td>
+							<td style="border: 1px solid #d7d7d7;padding-right:5px;" class="text-right">
+								<b>{{offerdata.offer.currency}} {{offerdata.offer.gst_rate | number :'1.2-2'}}</b></td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #d7d7d7;padding-right:5px;" colspan="2" align="right">
+								<b><u>TOTAL Payable Amount</u></b></td>
+							<td style="border: 1px solid #d7d7d7;padding-right:5px;" class="text-right">
+								<b>{{offerdata.offer.currency}} {{offerdata.offer.total_payable_amount | number
+									:'1.2-2'}}</b></td>
+						</tr>
+
+						<tr *ngIf="offerdata.offer.conversion_required_status==1 && userType!=2">
+							<td style="border: 1px solid #d7d7d7;" colspan="2" align="center" class="text-center">
+								<b>Conversion rate {{offerdata.offer.currency}} 1.00 =
+									{{offerdata.offer.conversion_currency_code}} {{offerdata.offer.conversion_rate |
+									number :'1.2-2'}}</b>
+								<br>
+								Conversion rate is valid for next 30 days
+							</td>
+							<td style="border: 1px solid #d7d7d7;padding-right:5px;" class="text-right">
+								<strong>{{offerdata.offer.conversion_currency_code}}
+									{{offerdata.offer.conversion_total_payable | number :'1.2-2'}}</strong></td>
+						</tr>
+
+						<tr>
+							<td style="border: 1px solid #d7d7d7;padding-left:5px;" colspan="3" align="left"><b>Charges
+									of TC and LR are not included in the quotation this will be as per the GCL fee
+									structure</b></td>
+						</tr>
+
+					</table>
+					<label><u>Travel expenses and Accommodation fee will be born by Operator</u></label>
+
+					<table style="border: none;width:100%;margin-top:25px;">
+						<tr>
+							<td valign="top" style="border:none;font-weight:bold; width:20%;">Agreement Acceptance:</td>
+							<td style="border:none;">
+								<p>In accepting this agreement, the Company confirms the information contained
+									above is correct and agrees to comply with the <b>GCL International Ltd</b> Scheme
+									Rules (http://gcl-intl.com/about-us/rules-of-registration/) and agree to pay all
+									fees
+									relating to the provision of certification services.</p>
+								<!--<p>The Company shall update <b>GCL International Ltd</b> if there are any changes in legal
+									status, organization and management including number of employees, addresses
+									and sites, scope of operation and major changes to the management system /
+									processes.</p>-->
+							</td>
+						</tr>
+					</table>
+
+					<table style="border: none;width:100%;margin-top:15px;" class="center">
+						<tr>
+							<td style="border:none;">Signed:</td>
+							<td style="border:none;">............................</td>
+							<td style="border:none;">Date:</td>
+							<td style="border:none;">............................</td>
+						</tr>
+					</table>
+
+					<div class="col-lg-12 mt-4"
+						*ngIf="offerdata.offer.offer_status!==offerdata?.offerenumstatus['open'] && !((offerdata.offer.offer_status==offerdata?.offerenumstatus['waiting-for-customer-approval']) && (userdetails.resource_access==1 || userType==2 ))">
+						<div class="col-lg-12 mt-4">
+							<button type="button" [disabled]="loading" class="btn but-cust green m-b-5 ml-2"
+								(click)="downloadFile(id,offer_id);openmodal(downloading);"
+								style="width:200px;float: right;">
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+								Download
+							</button>
+						</div>
+					</div>
+
+
+					<div class="clearfix"></div>
+					<div class="mat-accordion col-12 m-t-10 pad-right pad-left m-b-0"
+						*ngIf="offerdata?.approve_comment.length>0">
+						<div class="un-lst">
+							<h3>Approval Details</h3>
+						</div>
+						<div class="mat-accordion card-box enq-view">
+							<ul>
+								<li style="width:100%;"><span class="label-pad">Comment</span> <span class="name-pad">{{
+										offerdata.approve_comment[0].comment }}</span></li>
+								<li><span class="label-pad">Approved By</span> <span class="name-pad">{{
+										offerdata.approve_comment[0].created_by_name }}</span></li>
+								<li><span class="label-pad">Approval Date</span> <span class="name-pad">{{
+										offerdata.approve_comment[0].created_at }}</span></li>
+							</ul>
+						</div>
+					</div>
+
+					<div class="clearfix"></div>
+					<div class="mat-accordion col-12 m-t-10 pad-right pad-left m-b-0"
+						*ngIf="offerdata?.reinitiate_comment.length>0">
+						<div class="un-lst">
+							<h3>Re-Initiate Details</h3>
+						</div>
+						<div class="mat-accordion card-box enq-view"
+							*ngFor="let reinitiatecmt of offerdata?.reinitiate_comment; let isLast=last;">
+							<ul>
+								<li style="width:100%;"><span class="label-pad">Re-Initiate Comment</span> <span
+										class="name-pad">{{ reinitiatecmt.comment }}</span></li>
+								<li><span class="label-pad">Re-Initiated By</span> <span class="name-pad">{{
+										reinitiatecmt.created_by_name }}</span></li>
+								<li><span class="label-pad">Re-Initiated Date</span> <span class="name-pad">{{
+										reinitiatecmt.created_at }}</span></li>
+							</ul>
+						</div>
+					</div>
+
+					<div class="clearfix"></div>
+
+					<ng-container *ngIf="offerdata?.reject_comment.length>0">
+						<div class="un-lst col-12">
+							<h3>Reject Details</h3>
+						</div>
+
+						<mat-accordion *ngFor="let cmt of offerdata.reject_comment; index as i">
+							<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+								<mat-expansion-panel-header>
+									<mat-panel-title>
+										Reject Details {{i+1}}
+									</mat-panel-title>
+								</mat-expansion-panel-header>
+								<div class="card-box enq-view">
+									<ul>
+										<li><span class="label-pad">Rejected By</span> <span class="name-pad">{{
+												cmt.created_by_name }}</span></li>
+										<li><span class="label-pad">Rejected Date</span> <span class="name-pad">{{
+												cmt.created_at }}</span></li>
+										<li style="width:100%;"><span class="label-pad">Comment</span> <span
+												class="name-pad">{{ cmt.comment }}</span></li>
+									</ul>
+								</div>
+							</mat-expansion-panel>
+						</mat-accordion>
+					</ng-container>
+					<div class="col-lg-12 mt-4 mb-4"
+						*ngIf="(offerdata.offer.offer_status==offerdata?.offerenumstatus['waiting-for-customer-approval']) && (userdetails.resource_access==1 || userType==2 )">
+						<div class="float-right">
+							<button *ngIf="userType==2 || is_headquarters==1" type="button" [disabled]="loading"
+								class="btn but-cust green m-b-5 ml-2"
+								(click)="downloadTemplate('scheme','',offerdata.scheme_files.scheme);openmodal(downloading);"
+								style="width:200px;">
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+								Download Scheme Rules
+							</button>
+						</div>
+						<div class="clearfix"></div>
+
+						<form [formGroup]="offerForm">
+
+
+							<div class="row m-t-15">
+								<div class="col-12">
+									<div class="card-box enq-view">
+										<h3>Upload Agreement (Please Sign and Upload the Quotation)</h3>
+										<ul class="tempdrivenform" style="margin-bottom:10px;">
+											<li style="width:100%;">
+												<span class="label-pad" style="width: 45%;">Quotation <span
+														class="text-danger">*</span></span>
+												<span class="label-pad" style="width:35%;">
+													<input type="file" formControlname="quotation_file"
+														(change)="quotationfileChange($event)" style="width:184px">
+													<br>
+													<div style="font-size:10px;line-height:4px; margin-bottom: 8px;">
+														supported file formats: <span
+															*ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{
+															docs}}<span *ngIf="!last">, </span> </span></div>
+
+													<div *ngIf="quotation_file" class="file-border-box">
+														{{ quotation_file }}
+														<a href="javascript:void(0);" (click)="removeFile('quotation')"
+															style="color:red; font-weight:bold;">X</a>
+													</div>
+													<div *ngIf="quotationFileError"
+														style="line-height:4px; margin-bottom:5px;margin-top:9px;"
+														class="validationerror">
+														{{quotationFileError}}
+													</div>
+												</span>
+												<span class="label-pad" style="width:15%;">
+													<button *ngIf="userType==2 || is_headquarters==1" type="button"
+														[disabled]="loading" class="btn but-cust green m-b-5 ml-2"
+														(click)="downloadPDFFile();openmodal(downloading);">
+														<span *ngIf="loading"
+															class="spinner-border spinner-border-sm mr-1"></span>
+														Download
+													</button>
+												</span>
+											</li>
+
+											<ng-container *ngFor="let appunit of offerdata.units; let i=index; ">
+												<li *ngIf="appunit.unit_type!=1 && appunit.unit_type!=2"
+													style="width:100%;"><span class="label-pad"
+														style="width: 45%;">Processor Agreement for {{appunit.name}}
+														<span class="text-danger">*</span></span>
+													<span class="label-pad" style="width:35%;">
+														<input type="file" (change)="fileChange($event,appunit.id)"
+															name="processor_file{{appunit.id}}">
+														<br>
+														<div
+															style="font-size:10px;line-height:4px; margin-bottom: 8px;">
+															supported file formats: <span
+																*ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{
+																docs}}<span *ngIf="!last">, </span> </span></div>
+
+														<div *ngIf="processorfile[appunit.id]"
+															style="padding:5px; border:1px solid #cecece; background-color: beige; height:32px;width: 100%;">
+															{{ processorfile[appunit.id].name }}
+															<a href="javascript:void(0);"
+																(click)="removeProcessorFile(appunit.id)"
+																style="color:red; font-weight:bold;">X</a>
+														</div>
+
+														<div class="validationerror" *ngIf="fileErrList[appunit.id]">
+															Please upload the valid Processor Agreement for
+															{{appunit.name}}</div>
+													</span>
+													<span class="label-pad" style="width:15%;">
+														<button *ngIf="userType==2 || is_headquarters==1" type="button"
+															[disabled]="loading" class="btn but-cust green m-b-5 ml-2"
+															(click)="downloadTemplate('processor','',offerdata.processor_files.processor);openmodal(downloading);">
+															<span *ngIf="loading"
+																class="spinner-border spinner-border-sm mr-1"></span>
+															Download
+														</button>
+													</span>
+												</li>
+											</ng-container>
+
+
+											<li style="width:100%;">
+												<span class="label-pad" style="width: 23%;">&nbsp;</span>
+												<div class="col-lg-4 text-center mt-2" style="float:left;">
+
+													<button (click)="onSubmit('save')"
+														[disabled]="loading || buttonDisable"
+														class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+														<span *ngIf="loading"
+															class="spinner-border spinner-border-sm mr-1"></span>
+														Submit to GCL
+													</button>
+												</div>
+											</li>
+
+										</ul>
+									</div>
+
+									<div class="card-box enq-view m-t-5"
+										*ngIf="status === 'Waiting for Customer Approval'">
+										<h3>Download Labeling Standard</h3>
+
+										<div class="card-box enq-view">
+											<table class="table table-bordered col-12" style="font-size:13px;">
+												<tr>
+													<th class="text-center">S.No</th>
+													<th>Standard</th>
+													<th class="text-center">Action</th>
+												</tr>
+												<tbody>
+
+													<tr *ngIf="standard.split(',').includes('GOTS')">
+														<td width="5%" scope="row" class="center">1</td>
+														<td>GOTS Standard</td>
+														<td width="5%" class="text-center">
+															<a [href]="'../../../assets/Licensing_and_Labelling_Guide_08May2017.pdf'"
+																download>
+																<i class="fa fa-download dashboard-handicon"
+																	style="cursor:pointer;"></i>
+															</a>
+														</td>
+													</tr>
+													<tr
+														*ngIf="standard.split(',').length > 1 || !standard.split(',').includes('GOTS')">
+														<td width="5%" scope="row" class="center">{{
+															standard.split(',').length > 1 ? 2 : 1}}</td>
+														<td>Other Standard</td>
+														<td width="5%" class="text-center">
+															<a [href]="'../../../assets/TE-301-V1.0-Standards-Claims-Policy.pdf'"
+																download>
+																<i class="fa fa-download dashboard-handicon"
+																	style="cursor:pointer;"></i>
+															</a>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+
+									</div>
+
+									<div class="card-box enq-view m-t-5">
+										<h3>Download Standard</h3>
+
+										<div class="card-box enq-view">
+											<table class="table table-bordered col-12" style="font-size:13px;">
+												<tr>
+													<th class="text-center">S.No</th>
+													<th>Standard</th>
+													<th class="text-center">Action</th>
+												</tr>
+												<tbody>
+													<tr
+														*ngFor="let standardcode of offerdata.standard_codes; index as i">
+														<td width="5%" scope="row" class="center">{{ 1+ i }}</td>
+														<td>{{offerdata.standards[i]}}</td>
+														<td width="5%" class="text-center"><a
+																(click)="downloadTemplate('standard',standardcode,offerdata.standard_files[standardcode]);openmodal(downloading);"><i
+																	class="fa fa-download dashboard-handicon"
+																	style="cursor:pointer;"></i></a></td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+
+									</div>
+
+									<div class="card-box enq-view m-t-5">
+										<h3>Download Implementation Manual</h3>
+
+										<div class="card-box enq-view">
+											<table class="table table-bordered col-12" style="font-size:13px;">
+												<tr>
+													<th class="text-center">S.No</th>
+													<th>Standard</th>
+													<th class="text-center">Action</th>
+												</tr>
+												<tbody>
+													<tr
+														*ngFor="let standardcode of offerdata.standard_codes; index as i">
+														<td width="5%" scope="row" class="center">{{ 1+ i }}</td>
+														<td>{{offerdata.standards[i]}}</td>
+														<td width="5%" class="text-center"><a
+																(click)="downloadTemplate('implementation',standardcode,offerdata.implementation_files[standardcode]);openmodal(downloading);"><i
+																	class="fa fa-download dashboard-handicon"
+																	style="cursor:pointer;"></i></a></td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
+
+									<div class="card-box enq-view m-t-5">
+										<h3>Download Audit Checklist</h3>
+
+										<div class="card-box enq-view">
+											<table class="table table-bordered col-12" style="font-size:13px;">
+												<tr>
+													<th class="text-center">S.No</th>
+													<th>Standard</th>
+													<th class="text-center">Action</th>
+												</tr>
+												<tbody>
+													<tr
+														*ngFor="let standardcode of offerdata.standard_codes; index as i">
+														<td width="5%" scope="row" class="center">{{ 1+ i }}</td>
+														<td>{{offerdata.standards[i]}}</td>
+														<td width="5%" class="text-center"><a
+																(click)="downloadTemplate('checklist',standardcode,offerdata.checklist_files[standardcode]);openmodal(downloading);"><i
+																	class="fa fa-download dashboard-handicon"
+																	style="cursor:pointer;"></i></a></td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+
+									</div>
+
+
+
+								</div>
+
+							</div>
+
+
+						</form>
+
+
+					</div>
+
+					<div class="col-lg-12"
+						*ngIf="offerdata.offer.offer_status==offerdata?.offerenumstatus['customer_approved'] || offerdata.offer.offer_status==offerdata?.offerenumstatus['waiting_for_audit_report'] || offerdata.offer.offer_status==offerdata?.offerenumstatus['finalized']">
+
+
+						<div class="row m-t-15">
+							<div class="col-12 pad-right pad-left">
+								<div class="card-box enq-view">
+									<h3>Agreement Files</h3>
+									<table class="table-secondary m-b-15">
+										<tr>
+											<th width="20%">Quotation</th>
+											<td width="70%"><a href="javascript:void(0);"
+													(click)="downloadUploadedFile(offerdata.offer.offerlist_id,offerdata.offer.quotation_file,'quotation');openmodal(downloading);"><i
+														class="fa fa-download"></i> {{ offerdata.offer.quotation_file
+													}}</a></td>
+										</tr>
+										<tr
+											*ngFor="let processorfile of offerdata.offer.processor_files; let i=index; ">
+											<th width="20%">Processor File for {{processorfile.unit_name}}</th>
+											<td width="70%"><a href="javascript:void(0);"
+													(click)="downloadUploadedProcessorFile(offerdata.offer.offerlist_id,processorfile.unit_id,processorfile.id,processorfile.processor_file);openmodal(downloading);"><i
+														class="fa fa-download"></i> {{ processorfile.processor_file
+													}}</a></td>
+										</tr>
+									</table>
+
+									<!--
+										<ul class="tempdrivenform" style="margin-bottom:10px;">
+											<li style="width:100%;"  ><span class="label-pad" style="width: 50%;">Quotation:</span>  
+												<span class="label-pad" style="width:50%;" >
+													<a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offer.offerlist_id,offerdata.offer.quotation_file,'quotation');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.offer.quotation_file }}</a>
+												</span>
+											</li>
+											
+											<li *ngFor="let processorfile of offerdata.offer.processor_files; let i=index; " style="width:100%;"  ><span class="label-pad" style="width:50%;">Processor File for {{processorfile.unit_name}}:</span>  
+												<span class="label-pad" style="width:50%;" >
+													<a href="javascript:void(0);" (click)="downloadUploadedProcessorFile(offerdata.offer.offerlist_id,processorfile.unit_id,processorfile.id,processorfile.processor_file);openmodal(downloading);" ><i class="fa fa-download"></i> {{ processorfile.processor_file }}</a>
+												</span>
+											</li>
+										</ul>
+										-->
+
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-lg-12 mb-4 pad-left pad-right"
+						*ngIf="offerdata.offer.offer_status==offerdata?.offerenumstatus['finalized']">
+
+						<!--
+							<div class="row m-t-15">
+								<div class="col-12">
+									<div class="card-box enq-view">
+										<h3>Audit Report Details</h3>                     
+										<ul class="tempdrivenform" style="margin-bottom:10px;">
+											<li style="width:100%;"  ><span class="label-pad" style="width: 50%;">Quotation:</span>  
+												<span class="label-pad" style="width:50%;" >
+													<a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offer.offerlist_id,offerdata.offer.quotation_file,'quotation');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.offer.quotation_file }}</a>
+												</span>
+											</li>
+											
+											<li *ngFor="let processorfile of offerdata.offer.processor_files; let i=index; " style="width:100%;"  ><span class="label-pad" style="width:50%;">Processor File for {{processorfile.unit_name}}:</span>  
+												<span class="label-pad" style="width:50%;" >
+													<a href="javascript:void(0);" (click)="downloadUploadedProcessorFile(offerdata.offer.offerlist_id,processorfile.unit_id,processorfile.id,processorfile.processor_file);openmodal(downloading);" ><i class="fa fa-download"></i> {{ processorfile.processor_file }}</a>
+												</span>
+											</li>
+											<li style="width:100%;" *ngIf="offerdata.offer.risk_assessment_file" ><span class="label-pad" style="width: 50%;">Risk Assessment:</span>  
+												<span class="label-pad" style="width:50%;" >
+													<a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offer.offerlist_id,offerdata.offer.risk_assessment_file,'risk_assessment_file');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.offer.risk_assessment_file }}</a>
+												</span>
+											</li>
+											<li style="width:100%;" *ngIf="offerdata.offer.reconciliation_report_file" ><span class="label-pad" style="width: 50%;">Reconciliation report:</span>  
+												<span class="label-pad" style="width:50%;" >
+													<a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offer.offerlist_id,offerdata.offer.reconciliation_report_file,'reconciliation_report_file');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.offer.reconciliation_report_file }}</a>
+												</span>
+											</li>
+											<li style="width:100%;" *ngIf="offerdata.offer.reconciliation_report_file" ><span class="label-pad" style="width: 50%;">Volume Reconciliation Formula:</span>  
+													 {{ offerdata.offer.volume_reconciliation_formula }}
+											</li>
+											<li style="width:100%;" *ngIf="offerdata.offer.content_claim_standard_file" ><span class="label-pad" style="width: 50%;">Content Claim Standard:</span>  
+												<span class="label-pad" style="width:50%;" >
+													<a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offer.offerlist_id,offerdata.offer.content_claim_standard_file,'content_claim_standard_file');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.offer.content_claim_standard_file }}</a>
+												</span>
+											</li>
+											<li style="width:100%;" *ngIf="offerdata.offer.chemical_declaration_file" ><span class="label-pad" style="width: 50%;">Chemical Declaration:</span>  
+												<span class="label-pad" style="width:50%;" >
+													<a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offer.offerlist_id,offerdata.offer.chemical_declaration_file,'chemical_declaration_file');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.offer.chemical_declaration_file }}</a>
+												</span>
+											</li>
+											<li style="width:100%;" *ngIf="offerdata.offer.social_declaration_file" ><span class="label-pad" style="width: 50%;">Social Declaration:</span>  
+												<span class="label-pad" style="width:50%;" >
+													<a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offer.offerlist_id,offerdata.offer.social_declaration_file,'social_declaration_file');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.offer.social_declaration_file }}</a>
+												</span>
+											</li>
+											<li style="width:100%;" *ngIf="offerdata.offer.environmental_declaration_file" ><span class="label-pad" style="width: 50%;">Environmental Declaration:</span>  
+												<span class="label-pad" style="width:50%;" >
+													<a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offer.offerlist_id,offerdata.offer.environmental_declaration_file,'environmental_declaration_file');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.offer.environmental_declaration_file }}</a>
+												</span>
+											</li>
+											<li style="width:100%;" *ngIf="offerdata.offer.environmental_report_file" ><span class="label-pad" style="width: 50%;">Environmental Report:</span>  
+												<span class="label-pad" style="width:50%;" >
+													<a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offer.offerlist_id,offerdata.offer.environmental_report_file,'environmental_report_file');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.offer.environmental_report_file }}</a>
+												</span>
+											</li>
+											<li style="width:100%;" *ngIf="offerdata.offer.chemical_list_file" ><span class="label-pad" style="width: 50%;">Chemical List:</span>  
+												<span class="label-pad" style="width:50%;" >
+													<a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offer.offerlist_id,offerdata.offer.chemical_list_file,'chemical_list_file');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.offer.chemical_list_file }}</a>
+												</span>
+											</li>
+
+										</ul>
+									</div>
+								</div>
+							</div>
+							-->
+
+
+						<!--  ----------------Audit Report View Code Start Here --------------	 -->
+						<div class="row"
+							*ngIf="applicableforms['environment_list'] || applicableforms['clientinformation_list']">
+							<div class="col-12">
+								<div class="un-lst">
+									<h3>Client Information</h3>
+								</div>
+								<div>
+									<button type="button" (click)="changeOfferTab('uploadreport')"
+										class="btn btn-sm {{upload_report_status ? 'btn-success' : 'btn-primary'}}">Audit
+										Report</button>
+									<button type="button" *ngIf="applicableforms['clientinformation_list']"
+										(click)="changeOfferTab('generalinfo')"
+										class="btn btn-sm {{generalinfo_status ? 'btn-success' : 'btn-primary'}}"
+										style="margin-left:3px;">General Information</button>
+									<button type="button" *ngIf="applicableforms['clientinformation_list']"
+										(click)="changeOfferTab('supplierinfo')"
+										class="btn btn-sm {{supplierinfo_status ? 'btn-success' : 'btn-primary'}}"
+										style="margin-left:3px;">Suppliers Information</button>
+									<button type="button" *ngIf="applicableforms['clientinformation_list']"
+										(click)="changeOfferTab('checklist')"
+										class="btn btn-sm {{checklist_status ? 'btn-success' : 'btn-primary'}}"
+										style="margin-left:3px;">Checklist</button>
+									<ng-container
+										*ngIf="offerdata.units && offerdata.units.length>0 && (applicableforms['environment_list'] || applicableforms['clientinformation_list'])">
+										<ng-container *ngFor="let unitdata of offerdata.units; let i=index; ">
+											<ng-container
+												*ngIf="applicableforms[unitdata.id] && (applicableforms[unitdata.id]['clientinformation_list'] || applicableforms[unitdata.id]['environment_list'])">
+												<button type="button" (click)="changeOfferTab('unit',unitdata.id)"
+													class="btn btn-sm {{unittab[unitdata.id] ? 'btn-success' : 'btn-primary'}}"
+													style="margin-left:3px;">{{ unitdata.name }}</button>
+											</ng-container>
+										</ng-container>
+									</ng-container>
+									<!--<button type="button" (click)="changeOfferTab('unit')" class="btn btn-sm {{interview_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Unit 1</button>-->
+								</div>
+							</div>
+						</div>
+						<div class="add card-box table-responsive enq-view" style="padding:0px;"
+							*ngIf="upload_report_status">
+							<app-view-auditreport-files [id]="id" [offer_id]="offer_id"></app-view-auditreport-files>
+						</div>
+						<div class="add card-box table-responsive enq-view" style="padding:0px;"
+							*ngIf="generalinfo_status && applicableforms['clientinformation_list']">
+							<app-audit-clientinformation-generalinfo [app_id]="id" [cond_viewonly]="1">
+							</app-audit-clientinformation-generalinfo>
+						</div>
+						<div class="add card-box table-responsive enq-view" style="padding:0px;"
+							*ngIf="supplierinfo_status && applicableforms['clientinformation_list']">
+							<app-audit-clientinformation-supplier [app_id]="id" [cond_viewonly]="1">
+							</app-audit-clientinformation-supplier>
+						</div>
+						<div class="add card-box table-responsive enq-view" style="padding:0px;"
+							*ngIf="checklist_status && applicableforms['clientinformation_list']">
+							<app-audit-clientinformation-viewchecklist [app_id]="id" [cond_viewonly]="1">
+							</app-audit-clientinformation-viewchecklist>
+						</div>
+						<ng-container *ngIf="offerdata.units && offerdata.units.length>0">
+							<ng-container *ngFor="let unitdata of offerdata.units; let i=index; ">
+								<div class="add card-box table-responsive enq-view" style="padding:0px;"
+									*ngIf="unittab[unitdata.id] && (applicableforms[unitdata.id]['clientinformation_list'] || applicableforms[unitdata.id]['environment_list'])">
+									<mat-tab-group>
+										<mat-tab label="Product Controls"
+											*ngIf="applicableforms[unitdata.id]['clientinformation_list']">
+											<app-audit-clientinformation-productcontrols [app_id]="id"
+												[cond_viewonly]="1" [unit_id]="unitdata.id">
+											</app-audit-clientinformation-productcontrols>
+										</mat-tab>
+										<mat-tab label="Environment Data"
+											*ngIf="applicableforms[unitdata.id]['environment_list']">
+											<app-audit-environment [app_id]="id" [cond_viewonly]="1"
+												[unit_id]="unitdata.id"></app-audit-environment>
+										</mat-tab>
+									</mat-tab-group>
+								</div>
+							</ng-container>
+						</ng-container>
+						<!--  ----------------Audit Report View Code End Here --------------	 -->
+
+					</div>
+
+
+					<div class="col-lg-12 mt-4"
+						*ngIf="offerdata.offer.offer_status==offerdata?.offerenumstatus['waiting_for_audit_report'] && (userdetails.resource_access==1 || userType==2)">
+						<div class="col-lg-12 text-center mt-4" *ngIf="apploaded">
+							<!--(click)="onSubmit('save_audit_report_file')"-->
+							<button (click)="open(submitauditreportContent,'submitauditreport')"
+								[disabled]="loading || buttonDisable"
+								class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+								<ng-container
+									*ngIf="applicableforms['environment_list'] || applicableforms['clientinformation_list']; else btnSubmitName">
+									Submit Full Client Information to GCL </ng-container>
+
+
+								<ng-template #btnSubmitName>Confirm to proceed for Audit</ng-template>
+							</button>
+							<!-- <button type="button" 
+									(click)="downloaddocFile(applicationdata.franchise_id,'document')"
+										class="btn btn-sm  btn-primary">Audit Report</button> -->
+
+
+
+
+						</div>
+
+						<div class="row"
+							*ngIf="applicableforms['environment_list'] || applicableforms['clientinformation_list']">
+							<div class="col-12">
+								<div class="un-lst">
+									<h3>Client Information</h3>
+								</div>
+								<div>
+									<button type="button" (click)="changeOfferTab('uploadreport')"
+										class="btn btn-sm {{upload_report_status ? 'btn-success' : 'btn-primary'}}">Audit
+										Report</button>
+									<button type="button" *ngIf="applicableforms['clientinformation_list']"
+										(click)="changeOfferTab('generalinfo')"
+										class="btn btn-sm {{generalinfo_status ? 'btn-success' : 'btn-primary'}}"
+										style="margin-left:3px;">General Information</button>
+									<button type="button" *ngIf="applicableforms['clientinformation_list']"
+										(click)="changeOfferTab('supplierinfo')"
+										class="btn btn-sm {{supplierinfo_status ? 'btn-success' : 'btn-primary'}}"
+										style="margin-left:3px;">Suppliers Information</button>
+									<button type="button" *ngIf="applicableforms['clientinformation_list']"
+										(click)="changeOfferTab('checklist')"
+										class="btn btn-sm {{checklist_status ? 'btn-success' : 'btn-primary'}}"
+										style="margin-left:3px;">Checklist</button>
+									<ng-container
+										*ngIf="offerdata.units && offerdata.units.length>0 && (applicableforms['environment_list'] || applicableforms['clientinformation_list'])">
+										<ng-container *ngFor="let unitdata of offerdata.units; let i=index; ">
+											<ng-container
+												*ngIf="applicableforms[unitdata.id] && (applicableforms[unitdata.id]['clientinformation_list'] || applicableforms[unitdata.id]['environment_list'])">
+												<button type="button" (click)="changeOfferTab('unit',unitdata.id)"
+													class="btn btn-sm {{unittab[unitdata.id] ? 'btn-success' : 'btn-primary'}}"
+													style="margin-left:3px;">{{ unitdata.name }}</button>
+											</ng-container>
+										</ng-container>
+									</ng-container>
+									<!--<button type="button" (click)="changeOfferTab('unit')" class="btn btn-sm {{interview_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Unit 1</button>-->
+								</div>
+							</div>
+						</div>
+
+						<!-- Upload Report Code Start Here -------------------- -->
+						<div class="add card-box table-responsive enq-view" style="padding:0px;"
+							*ngIf="upload_report_status">
+							<div *ngIf="applicableforms['environment_list'] || applicableforms['clientinformation_list']">
+							<form [formGroup]="auditreportForm">
+								<div class="m-t-15">
+									<div class="col-12">
+										<div class="card-box enq-view">
+											<h3>Reconciliation Details</h3>
+
+											<div class="form-group row m-t-10">
+												<!--
+													<div class="col-6">
+														<label>Risk Assessment <span class="text-danger">*</span></label><br>
+														<span class="label-pad" style="width:35%;" >
+															<input type="file" formControlname="risk_assessment_file" (change)="auditreportfileChange($event)" style="width:184px"  >
+
+															<a (click)="downloadTemplate('risk_assessment','',offerdata.download_files.risk_assessment);openmodal(downloading);" style="margin-left: 50px;"><i class="fa fa-download " style="cursor: pointer;"></i></a>
+
+															<br><div style="font-size:10px;line-height:4px; margin: 5px 0 5px 0;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs}}<span *ngIf="!last">, </span> </span></div>
+															
+															<div *ngIf="risk_assessment_file" class="file-border-box">
+																{{ risk_assessment_file }}
+																<a href="javascript:void(0);"  (click)="removeFile('risk_assessment')" style="color:red; font-weight:bold;" >X</a>
+															</div>
+															<div *ngIf="RiskAssessmentFileError"  style="line-height:4px; margin-bottom:5px;margin-top:9px;" class="validationerror" >
+																{{RiskAssessmentFileError}}
+															</div>															
+														</span>													
+													</div>
+													-->
+
+												<div class="col-6">
+													<label>Annual Volume Reconciliation<span
+															class="text-danger">*</span></label><br>
+													<span class="label-pad" style="width:35%;">
+														<input type="file" formControlname="reconciliation_report_file"
+															(change)="ReconciliationfileChange($event)"
+															style="width:184px">
+
+														<a (click)="downloadTemplate('reconciliation_report','',offerdata.download_files.reconciliation_report);openmodal(downloading);"
+															style="margin-left: 50px;"><i class="fa fa-download "
+																style="cursor: pointer;"></i></a>
+
+														<br>
+														<div
+															style="font-size:10px;line-height:4px; margin: 5px 0 5px 0;">
+															supported file formats: <span
+																*ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{
+																docs}}<span *ngIf="!last">, </span> </span></div>
+
+														<div *ngIf="reconciliation_report_file" class="file-border-box">
+
+															<ng-container *ngIf="!reconciliation_report_file_status">{{
+																reconciliation_report_file }}</ng-container>
+
+															<a href="javascript:void(0);"
+																(click)="downloadAuditFiles(reconciliation_report_file,'reconciliation_report_file');openmodal(downloading)"
+																*ngIf="reconciliation_report_file_status"><i
+																	class="fa fa-download"></i> {{
+																reconciliation_report_file }}</a>
+
+															<a href="javascript:void(0);"
+																(click)="removeFile('reconciliation_file')"
+																style="color:red; font-weight:bold;margin-right: 5px;float:right;">X</a>
+														</div>
+														<div *ngIf="reconciliationFileError"
+															style="line-height:4px; margin-bottom:5px;margin-top:9px;"
+															class="validationerror">
+															{{reconciliationFileError}}
+														</div>
+													</span>
+												</div>
+
+												<div class="col-6">
+													<label>Volume Reconciliation Formula <span
+															class="text-danger">*</span></label><br>
+													<textarea formControlName="volume_reconciliation_formula"
+														[class.is-invalid]="af.volume_reconciliation_formula.invalid && af.volume_reconciliation_formula.touched "
+														class="form-control"
+														placeholder="Volume Reconciliation Formula"></textarea>
+													<div *ngIf="af.volume_reconciliation_formula.errors"
+														class="invalid-feedback">
+														<div *ngIf="af.volume_reconciliation_formula.errors.required">
+															Volume Reconciliation Formula is required</div>
+														<div
+															*ngIf="af.volume_reconciliation_formula.hasError('whitespace')">
+															Please enter valid Volume Reconciliation Formula</div>
+														<div *ngIf="af.volume_reconciliation_formula.errors.maxlength">
+															Volume Reconciliation Formula cannot exceed 255 characters
+														</div>
+													</div>
+												</div>
+											</div>
+
+											<ng-container
+												*ngIf="offerdata.showCCS || offerdata.showChemicalDeclaration || offerdata.showSocialDeclaration || offerdata.showEnvironmentalDeclaration">
+												<h3 class="m-t-10">Declarations</h3>
+												<div class="form-group row m-t-10">
+													<div class="col-6" *ngIf="offerdata.showCCS">
+														<label>Content Claim Standard <span
+																class="text-danger">*</span></label><br>
+														<span class="label-pad" style="width:35%;">
+															<input type="file"
+																formControlname="content_claim_standard_file"
+																(change)="ccsfileChange($event)" style="width:184px">
+
+															<a (click)="downloadTemplate('content_claim_standard','',offerdata.download_files.content_claim_standard);openmodal(downloading);"
+																style="margin-left: 50px;"><i class="fa fa-download "
+																	style="cursor: pointer;"></i></a>
+
+															<br>
+															<div
+																style="font-size:10px;line-height:4px; margin: 5px 0 5px 0;">
+																supported file formats: <span
+																	*ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{
+																	docs}}<span *ngIf="!last">, </span> </span></div>
+
+															<div *ngIf="content_claim_standard_file"
+																class="file-border-box">
+
+																<ng-container
+																	*ngIf="!content_claim_standard_file_status">{{
+																	content_claim_standard_file }}</ng-container>
+
+																<a href="javascript:void(0);"
+																	(click)="downloadAuditFiles(content_claim_standard_file,'content_claim_standard_file');openmodal(downloading)"
+																	*ngIf="content_claim_standard_file_status"><i
+																		class="fa fa-download"></i> {{
+																	content_claim_standard_file }}</a>
+
+																<a href="javascript:void(0);"
+																	(click)="removeFile('ccs_file')"
+																	style="color:red; font-weight:bold;margin-right: 5px;float:right;">X</a>
+															</div>
+															<div *ngIf="cssFileError"
+																style="line-height:4px; margin-bottom:5px;margin-top:9px;"
+																class="validationerror">
+																{{cssFileError}}
+															</div>
+														</span>
+													</div>
+
+													<div class="col-6" *ngIf="offerdata.showChemicalDeclaration">
+														<label>Chemical Declaration <span
+																class="text-danger">*</span></label><br>
+														<span class="label-pad" style="width:35%;">
+															<input type="file"
+																formControlname="chemical_declaration_file"
+																(change)="chemicalfileChange($event)"
+																style="width:184px">
+
+															<a (click)="downloadTemplate('chemical_declaration','',offerdata.download_files.chemical_declaration);openmodal(downloading);"
+																style="margin-left: 50px;"><i class="fa fa-download "
+																	style="cursor: pointer;"></i></a>
+
+															<br>
+															<div
+																style="font-size:10px;line-height:4px; margin: 5px 0 5px 0;">
+																supported file formats: <span
+																	*ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{
+																	docs}}<span *ngIf="!last">, </span> </span></div>
+
+															<div *ngIf="chemical_declaration_file"
+																class="file-border-box">
+
+																<ng-container *ngIf="!chemical_declaration_file_status">
+																	{{ chemical_declaration_file }}</ng-container>
+
+																<a href="javascript:void(0);"
+																	(click)="downloadAuditFiles(chemical_declaration_file,'chemical_declaration_file');openmodal(downloading)"
+																	*ngIf="chemical_declaration_file_status"><i
+																		class="fa fa-download"></i> {{
+																	chemical_declaration_file }}</a>
+
+																<a href="javascript:void(0);"
+																	(click)="removeFile('chemical_declaration')"
+																	style="color:red; font-weight:bold;margin-right: 5px;float:right;">X</a>
+															</div>
+															<div *ngIf="chemicalFileError"
+																style="line-height:4px; margin-bottom:5px;margin-top:9px;"
+																class="validationerror">
+																{{chemicalFileError}}
+															</div>
+														</span>
+													</div>
+
+												</div>
+												<div class="form-group row">
+
+													<div class="col-6" *ngIf="offerdata.showSocialDeclaration">
+														<label>Social Declaration <span
+																class="text-danger">*</span></label><br>
+														<span class="label-pad" style="width:35%;">
+															<input type="file" formControlname="social_declaration_file"
+																(change)="socialfileChange($event)" style="width:184px">
+
+															<a (click)="downloadTemplate('social_declaration','',offerdata.download_files.social_declaration);openmodal(downloading);"
+																style="margin-left: 50px;"><i class="fa fa-download "
+																	style="cursor: pointer;"></i></a>
+
+															<br>
+															<div
+																style="font-size:10px;line-height:4px; margin: 5px 0 5px 0;">
+																supported file formats: <span
+																	*ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{
+																	docs}}<span *ngIf="!last">, </span> </span></div>
+
+															<div *ngIf="social_declaration_file"
+																class="file-border-box">
+
+																<ng-container *ngIf="!social_declaration_file_status">{{
+																	social_declaration_file }}</ng-container>
+
+																<a href="javascript:void(0);"
+																	(click)="downloadAuditFiles(social_declaration_file,'social_declaration_file');openmodal(downloading)"
+																	*ngIf="social_declaration_file_status"><i
+																		class="fa fa-download"></i> {{
+																	social_declaration_file }}</a>
+
+																<a href="javascript:void(0);"
+																	(click)="removeFile('social_declaration')"
+																	style="color:red; font-weight:bold;margin-right: 5px;float:right;">X</a>
+															</div>
+															<div *ngIf="socialFileError"
+																style="line-height:4px; margin-bottom:5px;margin-top:9px;"
+																class="validationerror">
+																{{socialFileError}}
+															</div>
+														</span>
+													</div>
+
+													<div class="col-6" *ngIf="offerdata.showEnvironmentalDeclaration">
+														<label>Environmental Declaration <span
+																class="text-danger">*</span></label><br>
+														<span class="label-pad" style="width:35%;">
+															<input type="file"
+																formControlname="environmental_declaration_file"
+																(change)="environmentalfileChange($event)"
+																style="width:184px">
+
+															<a (click)="downloadTemplate('environmental_declaration','',offerdata.download_files.environmental_declaration);openmodal(downloading);"
+																style="margin-left: 50px;"><i class="fa fa-download "
+																	style="cursor: pointer;"></i></a>
+
+															<br>
+															<div
+																style="font-size:10px;line-height:4px; margin: 5px 0 5px 0;">
+																supported file formats: <span
+																	*ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{
+																	docs}}<span *ngIf="!last">, </span> </span></div>
+
+															<div *ngIf="environmental_declaration_file"
+																class="file-border-box">
+
+																<ng-container
+																	*ngIf="!environmental_declaration_file_status">{{
+																	environmental_declaration_file }}</ng-container>
+
+																<a href="javascript:void(0);"
+																	(click)="downloadAuditFiles(environmental_declaration_file,'environmental_declaration_file');openmodal(downloading)"
+																	*ngIf="environmental_declaration_file_status"><i
+																		class="fa fa-download"></i> {{
+																	environmental_declaration_file }}</a>
+
+																<a href="javascript:void(0);"
+																	(click)="removeFile('environmental_declaration')"
+																	style="color:red; font-weight:bold;margin-right: 5px;float:right;">X</a>
+															</div>
+															<div *ngIf="environmentalFileError"
+																style="line-height:4px; margin-bottom:5px;margin-top:9px;"
+																class="validationerror">
+																{{environmentalFileError}}
+															</div>
+														</span>
+													</div>
+
+													<!--
+													<div class="col-6 m-t-15" *ngIf="offerdata.showEnvironmentalReport">
+														<label>Environmental Report <span class="text-danger">*</span></label><br> 
+														<span class="label-pad" style="width:35%;" >
+															<input type="file" formControlname="environmental_report_file" (change)="environmentalreportfileChange($event)" style="width:184px"  >
+
+															<a (click)="downloadTemplate('environmental_report','',offerdata.download_files.environmental_report);openmodal(downloading);" style="margin-left: 50px;"><i class="fa fa-download " style="cursor: pointer;"></i></a>
+
+															<br><div style="font-size:10px;line-height:4px; margin: 5px 0 5px 0;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs}}<span *ngIf="!last">, </span> </span></div>
+															
+															<div *ngIf="environmental_report_file" class="file-border-box">
+																{{ environmental_report_file }}
+																<a href="javascript:void(0);"  (click)="removeFile('environmental_report')" style="color:red; font-weight:bold;" >X</a>
+															</div>
+															<div *ngIf="environmentalreportFileError"  style="line-height:4px; margin-bottom:5px;margin-top:9px;" class="validationerror" >
+																{{environmentalreportFileError}}
+															</div>														
+														</span>
+													</div>
+													-->
+
+													<!--
+													<div class="col-6 m-t-15" *ngIf="offerdata.showChemicalList">
+														<label>Chemical List <span class="text-danger">*</span></label><br> 
+														<span class="label-pad" style="width:35%;" >
+															<input type="file" formControlname="chemical_list_file" (change)="chemicalListfileChange($event)" style="width:184px"  >
+
+															<a (click)="downloadTemplate('chemical_list','',offerdata.download_files.chemical_list);openmodal(downloading);" style="margin-left: 50px;"><i class="fa fa-download " style="cursor: pointer;"></i></a>
+
+															<br><div style="font-size:10px;line-height:4px; margin: 5px 0 5px 0;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs}}<span *ngIf="!last">, </span> </span></div>
+															
+															<div *ngIf="chemical_list_file" class="file-border-box">
+																{{ chemical_list_file }}
+																<a href="javascript:void(0);"  (click)="removeFile('chemical_list')" style="color:red; font-weight:bold;" >X</a>
+															</div>
+															<div *ngIf="chemicalListFileError"  style="line-height:4px; margin-bottom:5px;margin-top:9px;" class="validationerror" >
+																{{chemicalListFileError}}
+															</div>														
+														</span>
+													</div>
+													-->
+
+												</div>
+											</ng-container>
+
+											<div class="col-lg-12 text-center mt-4 mb-4">
+												<button (click)="onSubmit('save_audit_report_file')"
+													[disabled]="loading || buttonDisable"
+													class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+													<span *ngIf="loading"
+														class="spinner-border spinner-border-sm mr-1"></span>
+													Submit
+												</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</form>
+							</div>
+						</div>
+						<!-- Upload Report Code End Here -------------------- -->
+
+						<div class="add card-box table-responsive enq-view" style="padding:0px;"
+							*ngIf="generalinfo_status && applicableforms['clientinformation_list']">
+							<app-audit-clientinformation-generalinfo [app_id]="id">
+							</app-audit-clientinformation-generalinfo>
+						</div>
+
+						<div class="add card-box table-responsive enq-view" style="padding:0px;"
+							*ngIf="supplierinfo_status && applicableforms['clientinformation_list']">
+							<app-audit-clientinformation-supplier [app_id]="id"></app-audit-clientinformation-supplier>
+						</div>
+
+						<div class="add card-box table-responsive enq-view" style="padding:0px;"
+							*ngIf="checklist_status && applicableforms['clientinformation_list']">
+							<app-audit-clientinformation-checklist [app_id]="id">
+							</app-audit-clientinformation-checklist>
+						</div>
+
+						<ng-container *ngIf="offerdata.units && offerdata.units.length>0">
+							<ng-container *ngFor="let unitdata of offerdata.units; let i=index; ">
+								<div class="add card-box table-responsive enq-view"
+									*ngIf="unittab[unitdata.id] && (applicableforms[unitdata.id]['clientinformation_list'] || applicableforms[unitdata.id]['environment_list'])">
+									<mat-tab-group>
+										<mat-tab label="Product Controls"
+											*ngIf="applicableforms[unitdata.id]['clientinformation_list']">
+											<app-audit-clientinformation-productcontrols [app_id]="id"
+												[unit_id]="unitdata.id"></app-audit-clientinformation-productcontrols>
+										</mat-tab>
+										<mat-tab label="Environment Data"
+											*ngIf="applicableforms[unitdata.id]['environment_list']">
+											<app-audit-environment [app_id]="id" [unit_id]="unitdata.id">
+											</app-audit-environment>
+										</mat-tab>
+									</mat-tab-group>
+								</div>
+							</ng-container>
+						</ng-container>
+
+						<!--
+							<div class="row" *ngIf="userdetails.resource_access==1">
+								<div class="col-12">
+									<div class="add card-box table-responsive enq-view" >
+										<h3>Client Information</h3> 			
+										<mat-tab-group>
+											<mat-tab label="General Information"> 
+												<app-audit-clientinformation-generalinfo [app_id]="id" ></app-audit-clientinformation-generalinfo>
+											</mat-tab>	
+											<mat-tab label="Suppliers Information">
+												<app-audit-clientinformation-supplier [app_id]="id"></app-audit-clientinformation-supplier>
+											</mat-tab>
+											<mat-tab label="Checklist">
+												<app-audit-clientinformation-checklist [app_id]="id"></app-audit-clientinformation-checklist>	
+											</mat-tab>
+										</mat-tab-group> 
+									</div>
+								</div>
+								
+							</div>
+							-->
+						<app-usermessage [success]="success" [error]="error"></app-usermessage>
+
+						<!--
+							<form  [formGroup]="auditreportForm"  >
+								<div class="row m-t-15">
+									<div class="col-12">
+										<div class="card-box enq-view">
+											<h3>Upload Audit Report</h3> 
+											
+											<div class="form-group row m-t-15">
+												<div class="col-6">
+													<label>Risk Assessment <span class="text-danger">*</span></label><br>
+													<span class="label-pad" style="width:35%;" >
+														<input type="file" formControlname="risk_assessment_file" (change)="auditreportfileChange($event)" style="width:184px"  >
+
+														<a (click)="downloadTemplate('risk_assessment','',offerdata.download_files.risk_assessment);openmodal(downloading);" style="margin-left: 50px;"><i class="fa fa-download " style="cursor: pointer;"></i></a>
+
+														<br><div style="font-size:10px;line-height:4px; margin: 5px 0 5px 0;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs}}<span *ngIf="!last">, </span> </span></div>
+														
+														<div *ngIf="risk_assessment_file" class="file-border-box">
+															{{ risk_assessment_file }}
+															<a href="javascript:void(0);"  (click)="removeFile('risk_assessment')" style="color:red; font-weight:bold;" >X</a>
+														</div>
+														<div *ngIf="RiskAssessmentFileError"  style="line-height:4px; margin-bottom:5px;margin-top:9px;" class="validationerror" >
+															{{RiskAssessmentFileError}}
+														</div>	
+														
+														
+													</span>
+
+													
+												</div>
+												<div class="col-6">
+													<label>Volume Reconciliation Formula <span class="text-danger">*</span></label><br>
+													<textarea formControlName="volume_reconciliation_formula" [class.is-invalid]="af.volume_reconciliation_formula.invalid && af.volume_reconciliation_formula.touched " class="form-control" placeholder="Volume Reconciliation Formula"></textarea>
+													<div *ngIf="af.volume_reconciliation_formula.errors" class="invalid-feedback">
+														<div *ngIf="af.volume_reconciliation_formula.errors.required" >Volume Reconciliation Formula is required</div>
+														<div *ngIf="af.volume_reconciliation_formula.hasError('whitespace')" >Please enter valid Volume Reconciliation Formula</div>
+														<div *ngIf="af.volume_reconciliation_formula.errors.maxlength">Volume Reconciliation Formula cannot exceed 255 characters</div>								
+													</div>
+												</div>
+											 
+												<div class="col-6 m-t-15" >  
+													<label>Reconciliation report <span class="text-danger">*</span></label><br>
+													<span class="label-pad" style="width:35%;" >
+														<input type="file" formControlname="reconciliation_report_file" (change)="ReconciliationfileChange($event)" style="width:184px"  >
+														
+														<a (click)="downloadTemplate('reconciliation_report','',offerdata.download_files.reconciliation_report);openmodal(downloading);" style="margin-left: 50px;"><i class="fa fa-download " style="cursor: pointer;"></i></a>
+												
+														<br><div style="font-size:10px;line-height:4px; margin: 5px 0 5px 0;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs}}<span *ngIf="!last">, </span> </span></div>
+														
+														<div *ngIf="reconciliation_report_file" class="file-border-box">
+															{{ reconciliation_report_file }}
+															<a href="javascript:void(0);"  (click)="removeFile('reconciliation_file')" style="color:red; font-weight:bold;" >X</a>
+														</div>
+														<div *ngIf="reconciliationFileError"  style="line-height:4px; margin-bottom:5px;margin-top:9px;" class="validationerror" >
+															{{reconciliationFileError}}
+														</div>														
+													</span>
+												</div>
+												<div class="col-6  m-t-15" *ngIf="offerdata.showCCS">
+													
+													<label>Content Claim Standard <span class="text-danger">*</span></label><br> 
+													<span class="label-pad" style="width:35%;" >
+														<input type="file" formControlname="content_claim_standard_file" (change)="ccsfileChange($event)" style="width:184px"  >
+
+														<a (click)="downloadTemplate('content_claim_standard','',offerdata.download_files.content_claim_standard);openmodal(downloading);" style="margin-left: 50px;"><i class="fa fa-download " style="cursor: pointer;"></i></a>
+
+														<br><div style="font-size:10px;line-height:4px; margin: 5px 0 5px 0;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs}}<span *ngIf="!last">, </span> </span></div>
+														
+														<div *ngIf="content_claim_standard_file" class="file-border-box">
+															{{ content_claim_standard_file }}
+															<a href="javascript:void(0);"  (click)="removeFile('ccs_file')" style="color:red; font-weight:bold;" >X</a>
+														</div>
+														<div *ngIf="cssFileError"  style="line-height:4px; margin-bottom:5px;margin-top:9px;" class="validationerror" >
+															{{cssFileError}}
+														</div>														
+													</span>
+												</div>
+												
+											
+												<div class="col-6 m-t-15" *ngIf="offerdata.showChemicalDeclaration">
+													<label>Chemical Declaration <span class="text-danger">*</span></label><br> 
+													<span class="label-pad" style="width:35%;" >
+														<input type="file" formControlname="chemical_declaration_file" (change)="chemicalfileChange($event)" style="width:184px"  >
+
+														<a (click)="downloadTemplate('chemical_declaration','',offerdata.download_files.chemical_declaration);openmodal(downloading);" style="margin-left: 50px;"><i class="fa fa-download " style="cursor: pointer;"></i></a>
+
+														<br><div style="font-size:10px;line-height:4px; margin: 5px 0 5px 0;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs}}<span *ngIf="!last">, </span> </span></div>
+														
+														<div *ngIf="chemical_declaration_file" class="file-border-box">
+															{{ chemical_declaration_file }}
+															<a href="javascript:void(0);"  (click)="removeFile('chemical_declaration')" style="color:red; font-weight:bold;" >X</a>
+														</div>
+														<div *ngIf="chemicalFileError"  style="line-height:4px; margin-bottom:5px;margin-top:9px;" class="validationerror" >
+															{{chemicalFileError}}
+														</div>														
+													</span>
+												</div>
+												<div class="col-6 m-t-15" *ngIf="offerdata.showSocialDeclaration">
+													<label>Social Declaration <span class="text-danger">*</span></label><br>  
+													<span class="label-pad" style="width:35%;" >
+														<input type="file" formControlname="social_declaration_file" (change)="socialfileChange($event)" style="width:184px"  >
+
+														<a (click)="downloadTemplate('social_declaration','',offerdata.download_files.social_declaration);openmodal(downloading);" style="margin-left: 50px;"><i class="fa fa-download " style="cursor: pointer;"></i></a>
+
+														<br><div style="font-size:10px;line-height:4px; margin: 5px 0 5px 0;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs}}<span *ngIf="!last">, </span> </span></div>
+														
+														<div *ngIf="social_declaration_file" class="file-border-box">
+															{{ social_declaration_file }}
+															<a href="javascript:void(0);"  (click)="removeFile('social_declaration')" style="color:red; font-weight:bold;" >X</a>
+														</div>
+														<div *ngIf="socialFileError"  style="line-height:4px; margin-bottom:5px;margin-top:9px;" class="validationerror" >
+															{{socialFileError}}
+														</div>														
+													</span>
+												</div>
+											
+												<div class="col-6 m-t-15" *ngIf="offerdata.showEnvironmentalDeclaration">
+													<label>Environmental Declaration <span class="text-danger">*</span></label><br>  
+													<span class="label-pad" style="width:35%;" >
+														<input type="file" formControlname="environmental_declaration_file" (change)="environmentalfileChange($event)" style="width:184px"  >
+
+														<a (click)="downloadTemplate('environmental_declaration','',offerdata.download_files.environmental_declaration);openmodal(downloading);" style="margin-left: 50px;"><i class="fa fa-download " style="cursor: pointer;"></i></a>
+
+														<br><div style="font-size:10px;line-height:4px; margin: 5px 0 5px 0;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs}}<span *ngIf="!last">, </span> </span></div>
+														
+														<div *ngIf="environmental_declaration_file" class="file-border-box">
+															{{ environmental_declaration_file }}
+															<a href="javascript:void(0);"  (click)="removeFile('environmental_declaration')" style="color:red; font-weight:bold;" >X</a>
+														</div>
+														<div *ngIf="environmentalFileError"  style="line-height:4px; margin-bottom:5px;margin-top:9px;" class="validationerror" >
+															{{environmentalFileError}}
+														</div>														
+													</span>
+												</div>
+												<div class="col-6 m-t-15" *ngIf="offerdata.showEnvironmentalReport">
+													<label>Environmental Report <span class="text-danger">*</span></label><br> 
+													<span class="label-pad" style="width:35%;" >
+														<input type="file" formControlname="environmental_report_file" (change)="environmentalreportfileChange($event)" style="width:184px"  >
+
+														<a (click)="downloadTemplate('environmental_report','',offerdata.download_files.environmental_report);openmodal(downloading);" style="margin-left: 50px;"><i class="fa fa-download " style="cursor: pointer;"></i></a>
+
+														<br><div style="font-size:10px;line-height:4px; margin: 5px 0 5px 0;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs}}<span *ngIf="!last">, </span> </span></div>
+														
+														<div *ngIf="environmental_report_file" class="file-border-box">
+															{{ environmental_report_file }}
+															<a href="javascript:void(0);"  (click)="removeFile('environmental_report')" style="color:red; font-weight:bold;" >X</a>
+														</div>
+														<div *ngIf="environmentalreportFileError"  style="line-height:4px; margin-bottom:5px;margin-top:9px;" class="validationerror" >
+															{{environmentalreportFileError}}
+														</div>														
+													</span>
+												</div>
+											 
+												<div class="col-6 m-t-15" *ngIf="offerdata.showChemicalList">
+													<label>Chemical List <span class="text-danger">*</span></label><br> 
+													<span class="label-pad" style="width:35%;" >
+														<input type="file" formControlname="chemical_list_file" (change)="chemicalListfileChange($event)" style="width:184px"  >
+
+														<a (click)="downloadTemplate('chemical_list','',offerdata.download_files.chemical_list);openmodal(downloading);" style="margin-left: 50px;"><i class="fa fa-download " style="cursor: pointer;"></i></a>
+
+														<br><div style="font-size:10px;line-height:4px; margin: 5px 0 5px 0;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs}}<span *ngIf="!last">, </span> </span></div>
+														
+														<div *ngIf="chemical_list_file" class="file-border-box">
+															{{ chemical_list_file }}
+															<a href="javascript:void(0);"  (click)="removeFile('chemical_list')" style="color:red; font-weight:bold;" >X</a>
+														</div>
+														<div *ngIf="chemicalListFileError"  style="line-height:4px; margin-bottom:5px;margin-top:9px;" class="validationerror" >
+															{{chemicalListFileError}}
+														</div>														
+													</span>
+												</div>
+												<div class="col-6">
+													
+												</div>
+											</div>
+
+											<div class="col-lg-12 text-center mt-4 mb-4">
+												<button (click)="onSubmit('save_audit_report_file')" [disabled]="loading || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+													<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+													Submit to GCL
+												</button>
+											</div>								
+										</div>
+									
+									</div>
+									
+								</div>
+								
+								
+							</form>
+							-->
+					</div>
+
+					<!-- <li style="width:100%;"  >
+							<span class="label-pad" style="width: 40%;">&nbsp;</span>  
+							<div class="mt-2" style="float:left;">
+
+							<button (click)="onSubmit('save_audit_report_file')" [disabled]="loading || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+								Submit to GCL
+							</button>
+							</div>
+						</li> -->
+
+
+
+					<div class="card-box enq-view m-t-15">
+						<div *ngIf="error && success != '' " class="alert alert-danger mt-3 mb-2">{{error}}</div>
+						<div *ngIf="success" class="alert alert-success mt-3 mb-2">{{success}}</div>
+					</div>
+					<div class="text-right m-t-15">
+
+
+						<!--*ngIf="(offerdata.offer.offer_status==offerdata?.offerenumstatus['in-progress'] || offerdata.offer.offer_status==offerdata?.offerenumstatus['waiting-for-oss-approval'] || offerdata.offer.offer_status==offerdata?.offerenumstatus['waiting-for-send-to-customer']  || offerdata.offer.offer_status==offerdata?.offerenumstatus['re-initiated-to-oss'] || offerdata.offer.offer_status==offerdata?.offerenumstatus['customer_rejected']) && (userdetails.resource_access==1 || (userType==3 && (offerdata.offer.offer_status==offerdata?.offerenumstatus['waiting-for-oss-approval'] || offerdata.offer.offer_status==offerdata?.offerenumstatus['re-initiated-to-oss'])) || (userType==1 && userdetails.rules.includes('generate_offer')) )" -->
+						<button type="button" *ngIf="offerdata.can_edit_offer" [routerLink]="['/offer/offer-generate']"
+							[queryParams]="{id:this.id,offer_id:this.offer_id}" [disabled]="loading"
+							class="btn but-cust green m-b-5 ">
+							<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+							Edit Offer
+						</button>
+
+						<button type="button"
+							*ngIf="(offerdata.offer.offer_status==offerdata?.offerenumstatus['in-progress'] || offerdata.offer.offer_status==offerdata?.offerenumstatus['customer_rejected']) && (userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('generate_offer')) )"
+							[disabled]="loading" class="btn but-cust blue m-b-5 ml-2"
+							(click)="open(confirmContent,'sendtooss')">
+							<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+							Send to OSS
+						</button>
+
+						<!-- (offerdata.offer.offer_status==offerdata?.offerenumstatus['waiting-for-oss-approval'] || offerdata.offer.offer_status==offerdata?.offerenumstatus['re-initiated-to-oss'] || offerdata.offer.offer_status==offerdata?.offerenumstatus['customer_rejected']) && (userdetails.resource_access==1 || userType==3)-->
+						<button type="button" *ngIf="offerdata.can_send_to_hq" [disabled]="loading"
+							class="btn but-cust blue m-b-5 ml-2" (click)="open(confirmContent,'sendtohq')">
+							<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+							Send to HQ
+						</button>
+						<!--confirmContent-->
+						<!-- (offerdata.offer.offer_status==offerdata?.offerenumstatus['waiting-for-send-to-customer'] || offerdata.offer.offer_status==offerdata?.offerenumstatus['customer_rejected']) && (userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('generate_offer')) )-->
+						<button type="button" *ngIf="offerdata.can_send_back_oss_customer" [disabled]="loading"
+							class="btn but-cust blue m-b-5 ml-2" (click)="open(commentContent,'reinitiatetooss')">
+							<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+							Send Back to OSS
+						</button>
+						<!--(offerdata.offer.offer_status==offerdata?.offerenumstatus['waiting-for-send-to-customer'] || offerdata.offer.offer_status==offerdata?.offerenumstatus['customer_rejected']) && (userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('generate_offer')) )-->
+						<button type="button" *ngIf="offerdata.can_send_back_oss_customer" [disabled]="loading"
+							class="btn but-cust blue m-b-5 ml-2" (click)="open(confirmContent,'sendcustomer')">
+							<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+							Send to Customer
+						</button>
+
+						<!--
+								<button type="button"  *ngIf="(offerdata.offer.offer_status==offerdata?.offerenumstatus['waiting-for-customer-approval']) && (userdetails.resource_access==1 || userType==2 )" [disabled]="loading" class="btn but-cust green m-b-5 ml-2" (click)="open(confirmContent,'approve')" >
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+									Approve
+								</button>
+
+								<button type="button" *ngIf="(offerdata.offer.offer_status==offerdata?.offerenumstatus['waiting-for-customer-approval']) && (userdetails.resource_access==1 || userType==2 )" [disabled]="loading" class="btn  but-cust  red m-b-5 ml-2" (click)="open(commentContent,'reject')" >
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+									Reject
+								</button>
+							-->
+
+						<!--(offerdata.offer.offer_status==offerdata?.offerenumstatus['customer_approved']) && (userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('offer_approvals')) ) -->
+						<button type="button" *ngIf="offerdata.can_approve_reject" [disabled]="loading"
+							class="btn but-cust green m-b-5 ml-2" (click)="open(commentContent,'offerapprove')">
+							<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+							Approve
+						</button>
+						<!--(offerdata.offer.offer_status==offerdata?.offerenumstatus['customer_approved']) && (userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('offer_approvals')) )  -->
+						<button type="button" *ngIf="offerdata.can_approve_reject" [disabled]="loading"
+							class="btn  but-cust  red m-b-5 ml-2" (click)="open(commentContent,'offerreject')">
+							<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+							Reject
+						</button>
+
+
+
+
+
+					</div>
+
+
+
+
+
+
+				</div>
+
+			</div>
+		</div>
+
+		<div *ngIf="offerdata?.offerhistory.length>0 && userdetails.user_type!=2">
+			<h4>Offer History</h4>
+			<div *ngFor="let history of offerdata?.offerhistory; let i=index;">
+				<mat-accordion>
+					<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+						<mat-expansion-panel-header>
+							<mat-panel-title>
+								Offer Revision {{ 1+ i }}
+							</mat-panel-title>
+						</mat-expansion-panel-header>
+
+						<table style="border-collapse: collapse;border: 1px solid #d7d7d7;width:100%;"
+							*ngIf="offerdata.offerhistory">
+							<tr>
+								<td style="border: 1px solid #d7d7d7;border-right: none;width:35%;padding-left:5px;"
+									class="font-bold"><u>Part 2-Certification Fee</u></td>
+								<td style="border: 1px solid #d7d7d7;border-left: none;padding-left:5px;">
+									<b>Description</b></td>
+								<td style="border: 1px solid #d7d7d7;width:15%;padding-left:5px;" class="text-center">
+									<b>Amount ({{history.currency}})</b></td>
+							</tr>
+							<tr *ngFor="let offer_certification_f of history?.fees; let isLast=last;">
+								<td style="border: 1px solid #d7d7d7;padding-left:5px;">
+									{{offer_certification_f.activity}}</td>
+								<td style="border: 1px solid #d7d7d7;border-left: none;padding-left:5px;">
+									{{offer_certification_f.description}}</td>
+								<td style="border: 1px solid #d7d7d7;padding-right:5px;" class="text-right">
+									{{history.currency}} {{offer_certification_f.amount | number :'1.2-2'}}</td>
+							</tr>
+							<tr>
+								<td style="border: 1px solid #d7d7d7;border-right: none;padding-right:5px;" colspan="2"
+									align="right"><b><u>Sub-Total of Certification Fee:</u></b></td>
+								<td style="border: 1px solid #d7d7d7;padding-right:5px;" class="text-right">
+									<b>{{history.currency}} {{history.certification_fee_sub_total | number
+										:'1.2-2'}}</b></td>
+							</tr>
+							<tr>
+								<td style="border: 1px solid #d7d7d7;padding-left:5px;"><b><u>Other Expenses</u></b>
+								</td>
+								<td style="border: 1px solid #d7d7d7;"></td>
+								<td style="border: 1px solid #d7d7d7;"></td>
+							</tr>
+							<tr *ngFor="let offer_other_expense of history?.other_expenses; let isLast=last;">
+								<td style="border: 1px solid #d7d7d7;padding-left:5px;">{{offer_other_expense.activity}}
+								</td>
+								<td style="border: 1px solid #d7d7d7;border-left: none;padding-left:5px;">
+									{{offer_other_expense.description}}</td>
+								<td style="border: 1px solid #d7d7d7;padding-right:5px;" class="text-right">
+									{{history.currency}} {{offer_other_expense.amount | number :'1.2-2'}}</td>
+							</tr>
+							<tr>
+								<td style="border: 1px solid #d7d7d7;border-right: none;padding-right:5px;" colspan="2"
+									align="right"><b><u>Sub-Total of Other Expenses:</u></b></td>
+								<td style="border: 1px solid #d7d7d7;padding-right:5px;" class="text-right">
+									<b>{{history.currency}} {{history.other_expense_sub_total | number :'1.2-2'}}</b>
+								</td>
+							</tr>
+							<tr>
+								<td style="border: 1px solid #d7d7d7;border-right: none;padding-right:5px;" colspan="2"
+									align="right"><b><u>Total:</u></b></td>
+								<td style="border: 1px solid #d7d7d7;padding-right:5px;" class="text-right">
+									<b>{{history.currency}} {{history.total | number :'1.2-2'}}</b></td>
+							</tr>
+							<tr *ngIf="history.discount!='' && history.discount!='0.00'">
+								<td style="border: 1px solid #d7d7d7;border-right: none;padding-right:5px;" colspan="2"
+									align="right"><b><u>Discount:</u></b></td>
+								<td style="border: 1px solid #d7d7d7;padding-right:5px;" class="text-right">
+									<b>{{history.currency}} {{history.discount | number :'1.2-2'}}</b></td>
+							</tr>
+							<tr *ngIf="history.discount!='' && history.discount!='0.00'">
+								<td style="border: 1px solid #d7d7d7;border-right: none;padding-right:5px;" colspan="2"
+									align="right"><b><u>Grand Total:</u></b></td>
+								<td style="border: 1px solid #d7d7d7;padding-right:5px;" class="text-right">
+									<b>{{history.currency}} {{history.grand_total_fee | number :'1.2-2'}}</b></td>
+							</tr>
+							<tr>
+								<td style="border: 1px solid #d7d7d7;padding-right:5px;" colspan="2" align="right">
+									<b>{{history.taxname}} Rate</b></td>
+								<td style="border: 1px solid #d7d7d7;padding-right:5px;" class="text-right">
+									<b>{{history.currency}} {{history.gst_rate | number :'1.2-2'}}</b></td>
+							</tr>
+							<tr>
+								<td style="border: 1px solid #d7d7d7;padding-right:5px;" colspan="2" align="right">
+									<b><u>TOTAL Payable Amount</u></b></td>
+								<td style="border: 1px solid #d7d7d7;padding-right:5px;" class="text-right">
+									<b>{{history.currency}} {{history.total_payable_amount | number :'1.2-2'}}</b></td>
+							</tr>
+
+							<tr *ngIf="history.conversion_required_status==1">
+								<td style="border: 1px solid #d7d7d7;" colspan="2" align="center" class="text-center">
+									<b>Conversion rate {{history.currency}} 1.00 = {{history.conversion_currency_code}}
+										{{history.conversion_rate | number :'1.2-2'}}</b>
+									<br>
+									Conversion rate is valid for next 30 days
+								</td>
+								<td style="border: 1px solid #d7d7d7;padding-right:5px;" class="text-right">
+									<strong>{{history.conversion_currency_code}} {{history.conversion_total_payable |
+										number :'1.2-2'}}</strong></td>
+							</tr>
+
+						</table>
+
+					</mat-expansion-panel>
+				</mat-accordion>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+
+
+<ng-template #confirmContent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+			<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+
+		{{ confirmText }}
+
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('Create')">Ok</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>
+
+
+<ng-template #commentContent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">{{ modaltitle }}</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+			<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+
+		<form>
+			<div class="form-group">
+				<label for="customer_id">Comments</label>
+				<div class="input-group">
+					<textarea name="comments" [(ngModel)]="model.comments" class="form-control"
+						placeholder="Comments"></textarea>
+				</div>
+				<div class="validationerror" *ngIf="comments_error">Please enter the comments</div>
+			</div>
+		</form>
+
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="checkUserComment()">Submit</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>
+<ng-template #downloading let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Please wait, your file is downloading ...
+	</div>
+</ng-template>
+<ng-template #submitauditreportContent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title" *ngIf="audit_report_valid">Confirm</h4>
+		<h4 class="modal-title" id="modal-basic-title" *ngIf="!audit_report_valid">{{audit_report_title}}</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+			<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+
+	<span *ngIf="this.loadingArr['reportvalidation'] || loading" class="spinner-border spinner-border-sm mr-1"></span>
+	<div class="modal-body" style="font-size:16px;" *ngIf="audit_report_valid && !loading && !alertSuccessMessage">
+		Are you sure, do you want to submit the audit report?
+	</div>
+	<ng-container *ngIf="!audit_report_valid && !loading">
+		<div [innerHTML]="audit_report_message">
+
+		</div>
+	</ng-container>
+	<div class="modal-body text-center" style="font-size:16px;padding:5px;">
+		<div class="alert alert-info" *ngIf="alertInfoMessage">{{alertInfoMessage}}</div>
+		<div class="alert alert-success" *ngIf="alertSuccessMessage">{{alertSuccessMessage}}</div>
+		<div class="alert alert-danger" *ngIf="alertErrorMessage">{{alertErrorMessage}}</div>
+	</div>
+	<div class="modal-footer">
+		<button type="button" *ngIf="audit_report_valid && !loading && !alertSuccessMessage" class="btn btn-success "
+			(click)="onSubmit('audit_report_approve')">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" *ngIf="!loading"
+			(click)="modal.dismiss('cancel click')">Close</button>
+	</div>
+</ng-template>

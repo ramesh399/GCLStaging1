@@ -1,0 +1,181 @@
+<div class="row">
+        <div class="col-12">
+            <div class="add card-box table-responsive">
+                <form  [formGroup]="form" (ngSubmit)="onSubmit()">     
+                    
+                    <div class="col-12 row pad-right" >
+                        <div class="col-8">
+                        <h4 class="page-title">{{ title }}</h4>
+                        </div>
+                        <div class="col-4 text-right pad-right">
+                        <a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/audit/audit-findings']" [queryParams]="{app_id:app_id,unit_id:unit_id,audit_plan_id:audit_plan_id,audit_id:audit_id,type:'nc',audit_plan_unit_id:audit_plan_unit_id}" >Back</a>
+                        </div>
+                    </div>
+                                                    
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view">  
+                        <div class="form-group row">
+                            
+                            <div class="col-12 m-t-15">
+                                <mat-accordion>
+                                    <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+                                        <mat-expansion-panel-header>
+                                            <mat-panel-title>
+                                            Findings Details
+                                            </mat-panel-title>
+                                        </mat-expansion-panel-header>
+                                        
+                                        <div class="card-box enq-view" *ngIf="UnitFindings">
+                                            <table class="table-secondary m-b-15">
+                                                <tr>
+                                                    <th width="20%">Finding</th>
+                                                    <td width="30%">{{ UnitFindings.finding }}</td>
+                                                    <th width="20%">Severity</th>
+                                                    <td width="30%">{{ UnitFindings.severity }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th width="20%">Finding Type</th>
+                                                    <td width="30%">{{ UnitFindings.finding_type }}</td>
+                                                    <th width="20%">Due Date</th>
+                                                    <td width="30%">{{ UnitFindings.duedate }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th width="20%">Status</th>
+                                                    <td width="30%">{{ UnitFindings.status }}</td>
+                                                    <th width="20%">Evidence File</th>
+                                                    <td width="30%"><a href="javascript:void(0);" (click)="downloadFindingFile(UnitFindings.file);open(downloading);"  *ngIf="UnitFindings.file"><i class="fa fa-download"></i>{{ UnitFindings.file }}</a></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                
+                                    </mat-expansion-panel>                
+                                </mat-accordion>
+
+                                <mat-accordion *ngIf="UnitFindings?.auditorComment">
+                                    <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+                                        <mat-expansion-panel-header>
+                                            <mat-panel-title>
+                                            Auditor Comments
+                                            </mat-panel-title>
+                                        </mat-expansion-panel-header>
+                                        
+                                        <div class="card-box enq-view" >
+                                            <table class="table-secondary m-b-15">
+                                                <tr>
+                                                    <th width="20%">Status</th>
+                                                    <td width="30%">{{ UnitFindings.auditorStatus }}</td>
+                                                    <th width="20%">Reviewed Date</th>
+                                                    <td width="30%">{{ UnitFindings.auditorRevieweddate }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th width="20%">Comments</th>
+                                                    <td colspan="3">{{ UnitFindings.auditorComment }}</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                
+                                    </mat-expansion-panel>                
+                                </mat-accordion>
+                            </div>
+                                
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view">
+
+                                <div class="form-group row">    
+                                
+                                    <div class="col-12 m-t-15">
+                                        <label>Root Cause <span class="text-danger">*</span></label>
+                                        <textarea type="text" formControlName="root_cause" [class.is-invalid]="f.root_cause.invalid && f.root_cause.touched " class="form-control" placeholder="Root Cause" ></textarea>
+                                        <div *ngIf="f.root_cause.errors" class="invalid-feedback">
+                                            <div *ngIf="f.root_cause.errors.required" >Root Cause is required</div>
+                                            <div *ngIf="f.root_cause.errors.incorrect">{{ root_causeErrors }}</div>	
+                                            <div *ngIf="f.root_cause.hasError('whitespace')" >Invalid Root Cause</div>
+                                        </div>
+                                    </div>
+                                                                                                
+                                    <div class="col-12 m-t-15">
+                                        <label>Correction <span class="text-danger">*</span></label>
+                                        <textarea type="text" formControlName="correction" [class.is-invalid]="f.correction.invalid && f.correction.touched " class="form-control" placeholder="Correction" ></textarea>
+                                        <div *ngIf="f.correction.errors" class="invalid-feedback">
+                                            <div *ngIf="f.correction.errors.required" >Correction is required</div>
+                                            <div *ngIf="f.correction.errors.incorrect">{{ correctionErrors }}</div>	
+                                            <div *ngIf="f.correction.hasError('whitespace')" >Invalid Correction</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-12 m-t-15">
+                                        <label>Corrective Action <span class="text-danger">*</span></label>
+                                        <textarea type="text" formControlName="corrective_action" [class.is-invalid]="f.corrective_action.invalid && f.corrective_action.touched " class="form-control" placeholder="Corrective Action" ></textarea>
+                                        <div *ngIf="f.corrective_action.errors" class="invalid-feedback">
+                                            <div *ngIf="f.corrective_action.errors.required" >Corrective Action is required</div>
+                                            <div *ngIf="f.corrective_action.errors.incorrect">{{ corrective_actionErrors }}</div>	
+                                            <div *ngIf="f.corrective_action.hasError('whitespace')" >Invalid Correction</div>
+                                        </div>
+                                    </div>
+
+                                    
+                                    <div class="col-8 m-t-15">
+                                        <label>Evidence <span class="text-danger">*</span></label><br>
+                                        <input type="file" formControlname="evidence_file_list" (change)="evidencefileChange($event)" style="width:200px"  >
+                                        <br><div style="font-size:11px;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs}}<span *ngIf="!last">, </span> </span></div>
+                                        <ng-container *ngFor="let evidence_file of evidence_file_list; index as fi"  >
+                                            <div *ngIf="!evidence_file.deleted" class="file-border-box">
+                                                <a href="javascript:void(0);" *ngIf="!evidence_file.added" (click)="downloadFile(evidence_file.id,evidence_file.name);open(downloading);" style="color: #0b77d9;cursor: pointer;"><i class="fa fa-download"></i>{{ evidence_file.name }}</a>
+                                                <ng-container *ngIf="evidence_file.added" >{{ evidence_file.name }}</ng-container>
+                                                <a href="javascript:void(0);"  (click)="removeevidenceFile(evidence_file,fi)" style="color:red; font-weight:bold;margin-right: 5px;float:right;" >X</a>
+                                            </div>
+                                        </ng-container>
+                                        
+                                        <div *ngIf="evidenceFileError" class="validationerror" >
+                                            {{evidenceFileError}}
+                                        </div>
+                                    </div>
+
+                                    <!-- <div class="col-8 m-t-15">
+                                        <label>Status</label>
+                                        <select formControlName="status"  class="form-control select2 m-t-3" [class.is-invalid]="f.status.invalid &&
+                                        f.status.touched">
+                                            <option value="" >-- Status * --</option>
+                                            <option value="1">Inprogress</option>
+                                            <option value="2">Settled Pending Review</option>
+                                        </select>
+                                        <div *ngIf="f.status.errors" class="invalid-feedback">
+                                            <div *ngIf="f.status.errors.required">
+                                                Status is required
+                                            </div>
+                                        </div>
+                                    </div> -->
+                                    
+                                
+                                </div>
+                            </div>
+                            
+                            
+                        </div>
+                                                                        
+                                                                            
+                        <div class="col-lg-12 text-center mt-4 mb-4">
+                            <button [disabled]="loading" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+                                <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                                {{ updateStatus?'Update':'Submit' }}
+                            </button>
+                                                    
+                            <div class="clearfix"></div>
+                                
+                            <app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+                        </div>
+                            
+                    </div>
+                     
+                </form>
+            </div>
+        </div>
+    </div>
+    <ng-template #downloading let-modal>
+        <div class="modal-header">
+            <h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+        </div>
+        <div class="modal-body" style="font-size:16px;">
+            Please wait, your file is downloading ...
+        </div>
+    </ng-template>
+        
+    

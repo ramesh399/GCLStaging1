@@ -1,0 +1,165 @@
+<div class="col-12 row pad-right" >
+	<div class="col-8">
+		<!-- <h4 class="page-title">{{title}}</h4> -->
+	</div>
+	<div class="col-4 text-right pad-right">
+		<!-- <a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/change-scope/standard-addition/list']"><i class="fa fa-arrow-left text-white"></i> Back</a> -->
+	</div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="add card-box table-responsive">
+            <form  [formGroup]="form" >
+                   
+                <div class="enq-view">
+                    <h3>{{title}}</h3>    
+					<div class="form-group row">
+					
+						<div class="col-3">
+                            <label>From Date </label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Certificate generated date" matTooltipClass="tooltip-text-size" aria-tooltip="Certificate generated date" matTooltipPosition="right"></i><br>												
+							<input  style="width: 80%; display: inline;float:left;" type="text" formControlName="from_date" class="form-control" placeholder="From Date" [class.is-invalid]="f.from_date.invalid && f.from_date.touched" matInput [matDatepicker]="from_date" (click)="from_date.open()" (dateChange)="onchangeHandler()">
+							<mat-datepicker-toggle matSuffix  [for]="from_date"></mat-datepicker-toggle>
+							<mat-datepicker #from_date></mat-datepicker>
+                            <div class="clearfix"></div>
+                            <div *ngIf="f.from_date.errors" class="invalid-feedback">
+                                <div *ngIf="f.from_date.errors.required">From Date is required</div>						
+                            </div>
+                            <div *ngIf="from_dateErr" class="validationerror" >
+                                {{from_dateErr}}
+                            </div>
+                        </div>
+					
+						<div class="col-3">
+                            <label>To Date </label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Certificate generated date" matTooltipClass="tooltip-text-size" aria-tooltip="Certificate generated date" matTooltipPosition="right"></i><br>												
+                            <input  style="width: 80%; display: inline;float:left;" type="text" formControlName="to_date" class="form-control" placeholder="To Date" [class.is-invalid]="f.to_date.invalid && f.to_date.touched" matInput [matDatepicker]="to_date" (click)="to_date.open()" (dateChange)="onchangeHandler()">
+							<mat-datepicker-toggle matSuffix  [for]="to_date"></mat-datepicker-toggle>
+							<mat-datepicker #to_date></mat-datepicker>
+                            <div class="clearfix"></div>
+                            <div *ngIf="f.to_date.errors" class="invalid-feedback">
+                                <div *ngIf="f.to_date.errors.required">To Date is required</div>						
+                            </div>
+                            <div *ngIf="to_dateErr" class="validationerror" >
+                                {{to_dateErr}}
+                            </div>
+                        </div>
+
+                        <div class="col-3">
+                            <label>Standard </label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Standard" matTooltipClass="tooltip-text-size" aria-tooltip="Standard" matTooltipPosition="right"></i>
+                            <mat-select placeholder="Standard" formControlName="standard_id" multiple class="form-control select2" [class.is-invalid]="f.standard_id.invalid && f.standard_id.touched" (selectionChange)="onchangeHandler()">
+                                <mat-select-trigger>
+                                <span *ngIf="f.standard_id.value?.length == 1" >{{f.standard_id.value ? getSelectedstdValue(f.standard_id.value): ''}}</span>
+                                <span *ngIf="f.standard_id.value?.length > 1" class="example-additional-selection">
+                                    {{f.standard_id.value.length}} {{ 'selected' }}
+                                </span>
+                                </mat-select-trigger>
+                                <mat-option *ngFor="let item of standardList" [value]="item.id">{{item.name}}</mat-option>
+                            </mat-select>  
+                            <div *ngIf="f.standard_id.errors" class="invalid-feedback">
+                                <div *ngIf="f.standard_id.errors.required">Standard is required</div>
+                            </div>
+                        </div>
+
+                        <div class="col-3" *ngIf="userdetails.is_headquarters === 1">
+                            <label>OSS </label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="OSS" matTooltipClass="tooltip-text-size" aria-tooltip="OSS" matTooltipPosition="right"></i>
+                            <mat-select placeholder="OSS" formControlName="oss_id" multiple class="form-control select2" [class.is-invalid]="f.oss_id.invalid && f.oss_id.touched" (selectionChange)="onchangeHandler()">
+                                <mat-select-trigger>
+                                <span *ngIf="f.oss_id.value?.length == 1" >{{f.oss_id.value ?  getSelectedFranchiseValue(f.oss_id.value) : ''}}</span>
+                                <span *ngIf="f.oss_id.value?.length > 1" class="example-additional-selection">
+                                    {{f.oss_id.value.length}} {{ 'selected' }}
+                                </span>
+                                </mat-select-trigger>
+                                <mat-option *ngFor="let osp of franchiseList" [value]="osp.id">{{osp.osp_details}}</mat-option>	
+                            </mat-select>  
+                            <div *ngIf="f.oss_id.errors" class="invalid-feedback">
+                                <div *ngIf="f.oss_id.errors.required">OSS is required</div>
+                            </div>
+                        </div>
+					
+						
+                    </div>
+                    <div class="validationerror" *ngIf="fieldErrors">{{ fieldErrors }}</div>
+
+										   
+					<div class="col-lg-12 text-center mt-4 mb-4">
+							<button [disabled]="loading || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="onSubmit('submit')">
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+								Submit
+                            </button>
+                            <button type="button" *ngIf="data?.length > 0" [disabled]="loading || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 ml-2" (click)="onSubmit('download','Certification-Details-report.xlsx');openmodal(downloading);" >
+                                <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                            Generate Excel</button>		
+							<div class="clearfix"></div>
+							
+							<!-- <app-usermessage [success]="success" [error]="error"  ></app-usermessage> -->
+                    </div>
+                    
+                    <div class="pad-left pad-right col-12">
+                        <table id="datatable" class="table table-bordered" >
+                            <thead>
+                            <tr>
+                              <th width="5%" scope="col" class="center">S.No</th>
+                              
+                              <th scope="col"  >Code</th>
+                              <th scope="col"  >Customer Number</th>
+                              <th scope="col">Company Name</th>
+                              <th scope="col">Country</th>
+                              <th class="center" scope="col" width="10%">Standard</th>
+                              
+                              <th class="center" scope="col" width="7%">Version</th>
+                              <th class="center" scope="col"  width="11%">Certified Date</th>
+                              <th class="center" scope="col" width="11%">Valid Until</th>
+                              
+                              <th class="center" scope="col" width="10%">Type</th>
+                              <th class="center" scope="col" width="8%">Status</th>
+                              <th class="center" scope="col" width="8%">Is Valid?</th>				
+                              <th class="center" width="10%" scope="col" >Created By</th>				
+                              
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let offer of data; let im=index;">
+                                    <th scope="row" class="center">{{  1+ im }}</th>
+                                    <td>{{ offer.code }}</td>
+                                    <td>{{ offer.customer_number }}</td>
+                                    <td>{{ offer.company_name }}</td>
+                                    <td>{{ offer.application_country }}</td>
+
+
+                                    <td class="center">{{ offer.application_standard }}</td>
+                                    <td class="center">{{ offer.version }}</td>
+
+                                    <td class="center">{{ offer.certificate_generated_date }}</td>
+                                    <td class="center">{{ offer.certificate_valid_until }}</td>						
+                                    <td class="center">{{ offer.type_label }}</td>				
+                                    <td class="center">{{ offer.status_label }}</td>				
+                                    <td class="center">{{ offer.certificate_status_name }}</td>
+                                    <td class="center">{{ offer.creator }}</td>
+
+                                     
+                                </tr>
+                                <tr *ngIf="data?.length==0" >
+                                    <td colspan="13" class="center">No Data Found</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+
+                        
+                    </div>
+
+						
+				</div>
+                 
+            </form>
+        </div>
+    </div>
+</div>
+<ng-template #downloading let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+        Please wait, your file is downloading ...
+    </div>
+</ng-template>

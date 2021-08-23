@@ -1,0 +1,88 @@
+<div class="col-12 m-t-15">
+    <h3>Company and Subcontractor General Information</h3>
+    <div class="col-12" *ngIf="!dataloaded">
+        <span class="spinner-border spinner-border-sm mr-1"></span>
+    </div>
+    <form #companyForm="ngForm"  (ngSubmit)="onGeneralInfoSubmit(companyForm)">
+        <!--
+        <div class="add card-box table-responsive enq-view">
+        -->
+            <!--<h3></h3>-->
+            <table class="table table-bordered col-12" style="font-size:13px;" *ngIf="dataloaded">
+                <thead>
+                    <!--
+                    <tr>
+                        <th class="center" colspan="3" scope="col" >Company and Subcontractor General Information</th>
+                    </tr>
+                    -->
+                    <tr>
+                        <th  scope="col" >Name</th>
+                        <th class="center" scope="col" >Details</th>
+                        <th class="center" scope="col" *ngIf="sufficientaccess">Sufficient</th>
+                    </tr>
+                </thead>
+                 
+                <tbody>
+                    <tr *ngFor="let details of companydetails; index as i ">
+                        <td scope="col" width="40%" class="align-middle" >
+                        <label>{{ details.name }} <span *ngIf="details.isrequired" class="text-danger">*</span></label> <!--<i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="{{ details.name }}" matTooltipClass="tooltip-text-size" aria-tooltip="{{ details.name }}" matTooltipPosition="right"></i>-->
+                        </td>
+                        <td scope="col" width="45%"  >
+                            <ng-container *ngIf="cond_viewonly; else editSection" >
+                                <ng-container *ngIf="details.id!='7'" >{{ categorylist['generaldetail'+details.id] }}</ng-container>
+                                <ng-container *ngIf="details.id=='7'" >{{ country_name }}</ng-container>
+                            </ng-container>
+
+                            <ng-template #editSection >
+                                <ng-container *ngIf="details.id!='7'" >
+                                    <input type="text" #qtdGeneraldetail="ngModel" [readonly]="details.readonly" [required]="details.isrequired?true:false" name="generaldetail{{details.id}}" [(ngModel)]="categorylist['generaldetail'+details.id]" class="form-control">
+                                    <div class="validationerror" *ngIf="!qtdGeneraldetail.valid && qtdGeneraldetail.touched">
+                                        Please enter the value
+                                    </div>
+                                </ng-container>
+                                <ng-container *ngIf="details.id=='7'" >
+                                    <select #qtdGeneraldetail="ngModel" [disabled]="details.readonly" name="generaldetail{{details.id}}" [(ngModel)]="categorylist['generaldetail'+details.id]" class="form-control">
+                                        <option>-- Select --</option>
+                                        <option *ngFor="let country of countryList" value= {{country.id}}>{{country.name}}</option>
+                                    </select>
+                                    <!--
+                                    <div class="validationerror" *ngIf="!qtdGeneraldetail.valid && qtdGeneraldetail.touched">
+                                        Please select the value
+                                    </div>
+                                    -->
+                                </ng-container>
+                            </ng-template>
+                        </td>
+                        <td class="center" *ngIf="sufficientaccess">
+                            <ng-container *ngIf="cond_viewonly">
+                                {{ generalOptions[categorylist['sufficient'+details.id]] }}
+                            </ng-container>
+                            
+                            <ng-container *ngIf="!cond_viewonly">
+                                <select #qtdSufficient="ngModel" [required]="true" name="sufficient{{details.id}}" [(ngModel)]="categorylist['sufficient'+details.id]" class="form-control">
+                                    <option value="">-- Select --</option>
+                                    <option *ngFor="let gopt of generalOptions | keyvalue " value="{{gopt.key}}" >{{ gopt.value }}</option>
+                                </select>
+                                <div class="validationerror" *ngIf="!qtdSufficient.valid && qtdSufficient.touched">
+                                    Please select the option
+                                </div>
+                            </ng-container>
+                        </td>
+                    </tr> 
+                </tbody>
+             
+            </table>
+            <ng-container *ngIf="!cond_viewonly">
+                <div class="col-lg-12 text-center mt-4 mb-4">
+                    <button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10">
+                        <span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+                        {{ (GenralInfoId>0 || datasaved) ?'Update':'Submit' }}
+                    </button>
+                </div>
+            </ng-container>
+            <!--
+        </div>
+        -->
+    </form>
+    <app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+</div>

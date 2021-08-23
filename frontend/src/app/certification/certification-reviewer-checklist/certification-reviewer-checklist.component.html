@@ -1,0 +1,174 @@
+<div class="row">
+    <div class="col-12">
+        <div class="add card-box table-responsive">
+            <form #checklistForm="ngForm"   >
+    
+        
+                <div class="col-12 row pad-right" >
+                    <div class="col-8">
+                        <h4 class="page-title">Audit Certification Checklist</h4>
+                    </div>
+                    <div class="col-4 text-right pad-right">
+					    <a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/certification/view-audit-plan']" [queryParams]="{id:audit_id,certificate_id:certificate_id}" >Back</a>						
+                    </div>
+                </div>
+				
+				<div *ngIf="audit_id" style="margin-bottom:20px;" >
+	                <mat-accordion>
+	                    <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+	                        <mat-expansion-panel-header>
+	                            <mat-panel-title>
+	                            View Audit Plan Details
+	                            </mat-panel-title>
+	                        </mat-expansion-panel-header>
+	                        
+	                        <div class="row" >
+	                            <div class="col-sm-12">
+	                                <div class="clearfix"></div>            
+	                                <app-auditdetail [id]="audit_id" ></app-auditdetail>                            
+	                            </div>              
+	                        </div>
+	                    </mat-expansion-panel>                
+	                </mat-accordion>
+	            </div>
+				
+				<div *ngIf="product_addition_id" style="margin-bottom:10px; margin-top:10px;">
+					<mat-accordion>
+						<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+							<mat-expansion-panel-header>
+								<mat-panel-title>
+								View Product Addition Details
+								</mat-panel-title>
+							</mat-expansion-panel-header>
+							
+							<div class="row">
+								<div class="col-sm-12">
+									<div class="clearfix"></div>            
+									<app-productadditiondetail [id]="product_addition_id" ></app-productadditiondetail>                          
+								</div>              
+							</div>
+						</mat-expansion-panel>                
+					</mat-accordion>
+				</div>
+                
+                <div class="mb-4">
+                   
+                    <div class="col-12" *ngIf="loading">
+                        <span class="spinner-border spinner-border-sm mr-1"></span>
+                    </div>
+                    <div *ngIf="questionList?.length" style="border:1px solid #cfcfcf;">
+                            
+                        <table  class="table table-striped tempdrivenform" style="margin-bottom:0px;">
+                            
+                            <tbody>
+                            
+                                <tr *ngFor="let question of questionList; index as j ">
+                                    <td><p>{{ 1+j }}. {{ question.name }} <a href="javascript:void(0);" (click)="toggleGuidance(question.id)" *ngIf="question.guidance"  ><i class="fa fa-info-circle" aria-hidden="true"></i></a></p>
+                                        <div class="checklist_guidance" *ngIf="guidanceIncludeList.includes(question.id)" [innerHTML]="question.guidance " ></div>
+                                        <div class="ans-cmt col-12 row">    
+                                            <div class="col-4">     
+                                                <h4>Answer <span class="text-danger">*</span></h4>
+                                                <div class="row" >
+                                                    <div class="col-10">
+                                                        
+                                                        <select class="form-control" name="qtd{{question.id}}" (change)="getReviewerAnswer($event.target.value,question.id)" #qtdAnswer="ngModel" [(ngModel)]="reviewcommentlist['qtd'+question.id]"  required >
+                                                            <option value="">-- Options --</option>
+                                                            <option *ngFor="let answer of question.findings" value="{{answer.id}}" >{{ answer.name }}</option>
+                                                        </select>
+                                                        <div class="validationerror" *ngIf="!qtdAnswer.valid && qtdAnswer.touched">
+                                                            Please select the Answer
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                            </div>
+                                            <div class="col-8">
+                                                <h4>Comment</h4>
+                                                <div class="md-form">
+                                                    <textarea type="text" #qtdComment="ngModel" name="qtd_comments{{question.id}}" [(ngModel)]="reviewcommentlist['qtd_comments'+question.id]" class="md-textarea form-control" required  mdbInput style="height:50px"></textarea>
+                                                </div>
+                                                <div class="validationerror" *ngIf="!qtdComment.valid && qtdComment.touched">
+                                                    Please enter the comment
+                                                </div>
+                                            </div>
+                                        </div>  
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card-box enq-view">
+                    <h3>Status Details</h3>                     
+                    <ul class="tempdrivenform" style="margin-bottom:10px;">
+                            <li style="width:100%;"  ><span class="label-pad" style="width: 20%;">Risk Assessment Result <span class="text-danger">*</span></span>  
+                                <span class="label-pad" style="width:35%;" >
+                                    <select name="checklist_status" #reviewStatus="ngModel" style="margin-top:4px; " [(ngModel)]="checklist_status" required  class="form-control" >
+                                        <option value="">-- Risk Assessment Result -- </option>
+                                        <option *ngFor="let status of risklist" value="{{status.id}}">{{status.name}}</option>
+                                    </select>
+                                    <div class="validationerror" *ngIf="!reviewStatus.valid && reviewStatus.touched">
+                                        Please select the Risk Assessment Result
+                                    </div>
+                                </span>
+                            </li>
+                            
+                            <li style="width:100%;" ><span class="label-pad" style="width: 20%;">{{ commentLabel }} </span>       
+                                <span class="label-pad" style="width:35%;padding-bottom:5px;" >
+                                    <textarea class="form-control" #reviewComment="ngModel"  name="checklist_comments" rows=4 [(ngModel)]="checklist_comments" style=" margin-top:10px; line-height:18px;"></textarea>
+                                    <div class="validationerror" *ngIf="!reviewComment.valid && reviewComment.touched">
+                                        Please enter the {{ commentLabel }}
+                                    </div>
+                                </span>
+                            </li>          
+                    </ul>							
+                </div>
+
+                <div class="text-center mb-4">
+
+
+                    <button (click)="onSubmit(checklistForm,'decline',commonModel)"  *ngIf="reviewerCorrection.length>0" [disabled]="loading || buttonDisable" class="btn btn-info btn-custom waves-effect w-md waves-light m-r-10 m-b-5 m-t-10" style="background-color:#0b88b7;"  >
+                        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                        Decline
+                    </button>
+                
+                    <button [disabled]="loading || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10" (click)="onSubmit(checklistForm,'',commonModel)" >
+                        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                        Submit
+                    </button>
+                
+                    <app-usermessage [success]="success" [error]="error"  ></app-usermessage>      
+                
+                    
+                </div>
+               
+            </form>
+        </div>
+    </div>
+</div>
+
+<ng-template #commonModel let-modal>
+    
+    <div class="modal-header">
+          <h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+          <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('close')">
+            <span class="c-icon" aria-hidden="true">&times;</span>
+          </button>
+      </div>
+    
+      <div class="modal-body text-center" style="font-size:16px;padding:5px;">
+      <div class="alert alert-info" *ngIf="alertInfoMessage">{{alertInfoMessage}}</div>
+      <div class="alert alert-success" *ngIf="alertSuccessMessage">{{alertSuccessMessage}}</div>
+      <div class="alert alert-danger" *ngIf="alertErrorMessage">{{alertErrorMessage}}</div>
+    </div>	
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="modal.close('')">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+      
+    
+  </ng-template>
+
+

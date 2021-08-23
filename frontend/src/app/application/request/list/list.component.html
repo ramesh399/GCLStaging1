@@ -1,0 +1,236 @@
+<form>
+  
+<div class="row" >
+  <div class="col-12">
+      <div class="card-box table-responsive">
+     		
+		<div class="row col-12 m-b-5 pad-right">
+          <div class="col-8 pad-left">
+            <h4 class="page-title"><i class="fa fa-list-ul"></i> Application List</h4>
+            <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+          </div>
+          <div class="col-4 text-right pad-right">
+            <!-- <a class="btn btn-primary" href="#" *ngIf="userType==2 || userdetails.resource_access==1 || ((userType==3 ||userType==1) && userdetails.rules.includes('create_application')) " role="button" [routerLink]="['/application/add-request']" >Add Application</a>-->
+            <!-- <a class="btn btn-primary" href="#" *ngIf="userdetails.resource_access==1" role="button" [routerLink]="['/application/add-request']" >Add Application</a>-->
+          </div>
+        </div>
+		<div class="row col-12  m-b-5 pad-right">
+			<div class="col-6" style="margin-left: 400px;">
+			<ng-container  *ngIf="userType!=2">
+				<mat-select style="width: 23%;font-size:13px;" placeholder="-- OSS --" #franchiseFilter name="franchiseFilter" [(ngModel)]="service.franchiseFilter" multiple class="custom-select"  >
+					<mat-select-trigger>
+					<span *ngIf="franchiseFilter.value?.length == 1" >{{franchiseFilter.value ?  getSelectedFranchiseValue(franchiseFilter.value) : ''}}</span>
+					<span *ngIf="franchiseFilter.value?.length > 1" class="example-additional-selection">
+						{{franchiseFilter.value.length}} {{ 'selected' }}
+					</span>
+					</mat-select-trigger>
+					<mat-option *ngFor="let osp of franchiseList" [value]="osp.id">{{osp.osp_details}}</mat-option>					
+				</mat-select>
+			</ng-container>
+		</div>
+		</div>
+		<div class="row col-12 m-b-5 pad-right">
+            <div class="col-2 text-left pad-left">
+            <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+              </select>
+              </div>
+
+              <div class="col-7 text-rigth">
+				<select class="custom-select" style="width: 23%; font-size:13px;" name="statusFilter" [(ngModel)]="service.statusFilter">
+					<option value="">All</option>
+					<option  *ngFor="let item of statuslist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+				</select>
+				&nbsp;
+				<mat-select style="width: 23%;font-size:13px;" placeholder="-- Standard --" #standardFilter name="standardFilter" [(ngModel)]="service.standardFilter" multiple class="custom-select"  >
+					<mat-select-trigger>
+					<span *ngIf="standardFilter.value?.length == 1" >{{standardFilter.value ?  getSelectedValue(standardFilter.value) : ''}}</span>
+					<span *ngIf="standardFilter.value?.length > 1" class="example-additional-selection">
+						{{standardFilter.value.length}} {{ 'selected' }}
+					</span>
+					</mat-select-trigger>
+					<mat-option *ngFor="let std of standardList" [value]="std.id">{{std.code}}</mat-option>
+				</mat-select>
+				&nbsp;
+				<mat-select style="width: 18%;font-size:13px;" placeholder="-- Type --" #typeFilter name="typeFilter" [(ngModel)]="service.typeFilter" multiple class="custom-select"  >
+					<mat-select-trigger>
+					<span *ngIf="typeFilter.value?.length == 1" >{{typeFilter.value ?  getSelectedTypeValue(typeFilter.value) : ''}}</span>
+					<span *ngIf="typeFilter.value?.length > 1" class="example-additional-selection">
+						{{typeFilter.value.length}} {{ 'selected' }}
+					</span>
+					</mat-select-trigger>
+					<mat-option *ngFor="let item of typelist | keyvalue" [value]="item.key">{{item.value}}</mat-option>
+				</mat-select>
+				&nbsp;
+				<mat-select style="width: 23%;font-size:13px;" placeholder="-- Brand --" #brandFilter name="brandFilter" [(ngModel)]="service.brandFilter" multiple class="custom-select"  >
+					<mat-select-trigger>
+					<span *ngIf="brandFilter.value?.length == 1" >{{brandFilter.value ?  getSelectedBrandValue(brandFilter.value) : ''}}</span>
+					<span *ngIf="brandFilter.value?.length > 1" class="example-additional-selection">
+						{{brandFilter.value.length}} {{ 'selected' }}
+					</span>
+					</mat-select-trigger>
+					<mat-option *ngFor="let br of brandList" [value]="br.id">{{br.brand_name}}</mat-option>
+				</mat-select>
+				&nbsp;
+				
+              </div>
+          <div class="col-3 text-right pad-right">
+            <input class="search-pad" type="text" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+          </div>
+        </div>
+
+
+		<div class="col-12 pad-left" *ngIf="arrEnumStatus">
+			<table id="datatable" class="table table-bordered" >
+			  <thead>
+			  <tr>
+				<th width="5%" scope="col" class="text-center">S.No</th>
+				<th width="13%" scope="col" sortable="code" (sort)="onSort($event)" class="text-center">App. Number</th>
+				<th scope="col" sortable="company_name" (sort)="onSort($event)" >Company Name</th>
+				<th scope="col" *ngIf="userdetails.resource_access!=1" >Brand</th>
+				<th scope="col" *ngIf="userdetails.resource_access!=1"  >Brand Group</th>
+				<th scope="col" class="text-center" *ngIf="userType!=2">OSS</th>				
+				<th scope="col" class="text-center">No.of Units</th>				
+				<th scope="col">Standard(s)</th>				
+				<th scope="col" >Contact Person</th>
+				<!--<th scope="col" >Email Address</th>-->
+				<!--
+				<th scope="col" sortable="city" (sort)="onSort($event)" >City</th>				
+				<th scope="col">Telephone</th>
+				-->
+				<th scope="col" class="text-center" sortable="status" (sort)="onSort($event)" >Status</th>
+				<!--<th scope="col" class="text-center" (sort)="onSort($event)" >Overall Status</th>-->
+				<th scope="col" class="text-center">Type</th>
+				<th width="10%" scope="col" sortable="created_at" (sort)="onSort($event)">Created Date</th>
+				<th width="6%" class="text-center" scope="col">Action</th>
+			  </tr>
+			  </thead>
+			  <tbody>
+			  <tr *ngFor="let application of applications$ | async; let i=index; ">
+				<th scope="row" class="center">{{ i+1+ service.pageNo }}</th>
+				<td class="text-center"><span style="color: #0b77d9;cursor: pointer;"><ngb-highlight [result]="application.code" [term]="service.searchTerm" (click)="open(appdetails,application.id);"></ngb-highlight></span></td>				
+				<td><ngb-highlight [result]="application.company_name"  [term]="service.searchTerm"></ngb-highlight></td>
+				<td *ngIf="userdetails.resource_access!=1"><ngb-highlight  [result]="application.brand_name"  [term]="service.searchTerm"></ngb-highlight></td>
+				<td *ngIf="userdetails.resource_access!=1"><ngb-highlight  [result]="application.brand_group"  [term]="service.searchTerm"></ngb-highlight></td>
+				<td class="text-center" *ngIf="userType!=2">{{application.oss_label}}</td>
+				<td class="text-center"><ngb-highlight [result]="application.application_unit_count"></ngb-highlight></td>
+				<td><ngb-highlight [result]="application.application_standard"></ngb-highlight></td>
+				
+				<td><ngb-highlight [result]="application.first_name" [term]="service.searchTerm"></ngb-highlight></td>
+
+				<!--<td><ngb-highlight [result]="application.email_address" [term]="service.searchTerm"></ngb-highlight></td>-->
+				<!--
+				<td><ngb-highlight [result]="application.city" [term]="service.searchTerm"></ngb-highlight></td>				
+				<td><ngb-highlight [result]="application.telephone" [term]="service.searchTerm"></ngb-highlight></td>
+				-->
+				<td class="text-center"><b><span [style.color]="application.status_label_color"><ngb-highlight [result]="application.status" [term]="service.searchTerm"></ngb-highlight></span></b></td>
+				<!--<td class="text-center"><ngb-highlight [result]="application.overall_status" [term]="service.searchTerm"></ngb-highlight></td>-->
+				<td class="text-center"><ngb-highlight [result]="application.audit_type_label" [term]="service.searchTerm"></ngb-highlight></td>
+				<td><ngb-highlight [result]="application.created_at" [term]="service.searchTerm"></ngb-highlight></td>
+				<td class="center">
+				  <a href="javascript:void(0);" [routerLink]="['/application/apps/view']" [queryParams]="{id:application.id}" title="View" alt="View"><i class="fa fa-eye"></i> </a>
+				  <a href="javascript:void(0);" *ngIf="(application.audit_type=='1' || application.audit_type=='2') && (application.status_id==arrEnumStatus['open'] || application.status_id==arrEnumStatus['pending_with_customer'] || application.status_id==arrEnumStatus['submitted']) && (userType==2 || userType==3 || userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('update_application')) )" [routerLink]="['/application/edit-request']" [queryParams]="{id:application.id,type:'edit'}" title="Edit" alt="Edit" class="pl-2"><i class="fa fa-edit"></i> </a>
+				  
+				  <!--<a href="javascript:void(0);" *ngIf="application.audit_type=='3' && (application.status_id==arrEnumStatus['open'] || application.status_id==arrEnumStatus['pending_with_customer']) && (userType==2 || userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('update_application')) )" [routerLink]="['/change-scope/process-addition/add']" [queryParams]="{id:application.addition_id,app:application.parent_app_id,new_app_id:application.id}" title="Edit" alt="Edit" class="pl-2"><i class="fa fa-edit"></i> </a>-->
+
+				  <a href="javascript:void(0);" *ngIf="application.audit_type=='4' && (application.status_id==arrEnumStatus['open'] || application.status_id==arrEnumStatus['pending_with_customer'] || application.status_id==arrEnumStatus['submitted']) && (userType==2 || userType==3 || userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('update_application')) )" [routerLink]="['/application/edit-request']" [queryParams]="{id:application.id,app_id:application.parent_app_id,standard_addition_id:application.addition_id}" title="Edit" alt="Edit" class="pl-2"><i class="fa fa-edit"></i> </a>
+
+				  <!--<a href="javascript:void(0);" *ngIf="application.audit_type=='5' && (application.status_id==arrEnumStatus['open'] || application.status_id==arrEnumStatus['pending_with_customer'] ) && (userType==2 || userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('update_application')) )" [routerLink]="['/change-scope/unit-addition/add']" [queryParams]="{id:application.addition_id,app:application.parent_app_id,new_app_id:application.id}" title="Edit" alt="Edit" class="pl-2"><i class="fa fa-edit"></i> </a>-->
+				</td>
+				</tr>
+				<tr  *ngIf="(applications$ | async)?.length==0" >
+          <td colspan="12" class="center">{{ commontxt.norecords }}</td>
+        </tr>
+			  </tbody>
+			</table>
+        </div>
+		
+        <div class="row col-12 pad-left pad-right">
+			<div class="col-6">
+				<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+				<div *ngIf="!(service.loading$ | async)">
+				Displaying {{ (applications$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (applications$ | async).length }} of {{ (total$ | async) }} results.
+				</div>
+			</div>
+			<div class="col-6 pad-right text-right">						
+			<ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+				<ng-template ngbPaginationFirst>First</ng-template>
+				<ng-template ngbPaginationPrevious>Prev</ng-template>
+				<ng-template ngbPaginationNext>Next</ng-template>			  
+				<ng-template ngbPaginationLast>Last</ng-template>			  
+			</ngb-pagination>						
+			</div>
+		</div>
+      </div>
+    </div>
+  </div>
+
+</form>
+<ng-template #appdetails let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Application Details</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+	</div>
+	<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+    <div class="modal-body"  *ngIf="!loading" >
+        <div class="mat-accordion">
+			<div class="card-box enq-view">
+				<table class="table-secondary m-b-15">
+					<tr>
+						<th width="20%">Project</th>
+						<td width="30%">{{ applicationdata.code }}</td>
+						<th width="20%">Company</th>
+						<td width="30%">{{ applicationdata.company_name }}</td>
+					</tr>
+					<tr>
+						<th width="20%">Email Address</th>
+						<td width="30%">{{ applicationdata.email_address }}</td>
+						<th width="20%">Address 1</th>
+						<td width="30%">{{ applicationdata.address }}</td>
+					</tr>
+					<tr>
+						<th width="20%">State</th>
+						<td width="30%">{{ applicationdata.state_id_name }}</td>
+						<th width="20%">City</th>
+						<td width="30%">{{ applicationdata.city }}</td>
+					</tr>
+					<tr>
+						<th width="20%">Country</th>
+						<td width="30%">{{ applicationdata.country_id_name }}</td>
+						<th width="20%">Website</th>
+						<td width="30%">{{ applicationdata.company_website?applicationdata.company_website:'NA' }}</td>
+					</tr>
+				</table>
+			</div>
+
+		</div>
+		<!--
+		<div class="card-box enq-view m-t-10 ">
+			<h3>Product Details</h3>
+			<table class="table table-bordered col-12" style="font-size:13px;">
+				<thead>
+				<tr>
+					<th scope="col" class="center">S.No</th>
+					<th scope="col"  >Product Category</th>
+					<th scope="col"  >Type of Product</th>
+					
+				</tr>
+				</thead>
+				<tbody>
+					<ng-container *ngFor="let product of applicationdata.productDetails; index as i">
+						<tr>
+							<td scope="row" class="center"   >{{  1+ i }}</td>
+							<td >{{ product.name }}</td>
+							<td >{{ product.product_type_name }}</td>
+						</tr> 
+						
+					</ng-container>               
+				</tbody>
+			</table>
+		</div>
+		-->
+		
+    </div>
+</ng-template>

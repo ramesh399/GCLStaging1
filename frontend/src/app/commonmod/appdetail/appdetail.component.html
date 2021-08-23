@@ -1,0 +1,498 @@
+<span *ngIf="apploading" class="spinner-border spinner-border-sm mr-1"></span>
+<form #detailForm="ngForm" *ngIf="applicationdata"   >
+			
+        
+			<div class="mat-accordion">
+				<div class="card-box enq-view">
+					<h3>Application Details</h3>
+					<table class="table-secondary m-b-15">
+						<tr>
+							<th width="20%">Number</th>
+							<td width="30%">{{ applicationdata.code }}</td>
+							<th width="20%">Created Date &amp; Time</th>
+							<td width="30%">{{ applicationdata.created_at }}</td>
+						</tr>
+						<tr>
+							<th width="20%">Created By</th>
+							<td width="30%">{{ applicationdata.created_by }}</td>
+							<th width="20%">Application Type</th>
+							<td width="30%">{{ applicationdata.audit_type_label }}</td>
+						</tr>
+						<tr *ngIf="display_type=='only_application'">
+							<th width="20%">Status</th>
+							<td colspan="3" >{{ applicationdata.status }}</td>
+						</tr>
+						<tr *ngIf="display_type!='only_application'">
+							<th width="20%">Status</th>
+							<td width="30%">{{ applicationdata.status }}</td>
+							<th width="20%">Company File</th>
+							<td width="30%"><a href="javascript:void(0);" (click)="downloadCompanyFile(applicationdata.company_file);open(downloading);" ><i class="fa fa-download" *ngIf="applicationdata.company_file"></i> {{ applicationdata.company_file }}</a></td>
+						</tr>
+						<tr *ngIf="applicationdata.tax_no">
+							<th width="20%">Tax no./NTN No./GST No./VAT No</th>
+							<td colspan="3">{{ applicationdata.tax_no }}</td>
+						</tr>
+					</table>
+				</div>
+
+			</div>
+			
+			<div class="mat-accordion">
+				<div class="card-box enq-view">
+					<h3>Company Details</h3>
+					<table class="table-secondary m-b-15">
+						<tr>
+							<th width="20%">Company Name</th>
+							<td width="30%">{{ applicationdata.company_name }}</td>
+							<th width="20%">Postal Code</th>
+							<td width="30%">{{ applicationdata.zipcode }}</td>
+						</tr>
+						<tr>
+							<th width="20%">Address</th>
+							<td width="30%">{{ applicationdata.address }}</td>
+							<th width="20%">Country</th>
+							<td width="30%">{{ applicationdata.country_id_name }}</td>
+						</tr>
+						<tr>
+							<th width="20%">State</th>
+							<td width="30%">{{ applicationdata.state_id_name }}</td>
+							<th width="20%">City</th>
+							<td width="30%">{{ applicationdata.city }}</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			
+			<!-- <div class="mat-accordion">
+				<div class="card-box enq-view">
+					<h3>Main Contact Person</h3>
+					<ul>
+						<li><span class="label-pad">Salutation</span>   <span class="name-pad">{{ applicationdata.salutation_name }}</span></li>
+						<li><span class="label-pad">Name</span>   <span class="name-pad">{{ applicationdata.first_name }} {{ applicationdata.last_name }}</span></li>				
+						<li><span class="label-pad">Job Title</span>   <span class="name-pad">{{ applicationdata.job_title }}</span></li>				
+						<li><span class="label-pad">Telephone</span>   <span class="name-pad">{{ applicationdata.telephone }}</span></li>
+						<li><span class="label-pad">Email Address</span>   <span class="name-pad">{{ applicationdata.email_address }}</span></li>					
+					</ul>
+				</div>
+			</div> -->
+			
+			<div class="mat-accordion" *ngIf="userdecoded?.user_type!=2 && applicationdata?.franchise">
+				<div class="card-box enq-view">
+					<h3>Franchise Details</h3>
+					<table class="table-secondary m-b-15">
+						<tr>
+							<th width="20%">Company Name</th>
+							<td width="30%">{{ applicationdata.franchise.company_name }}</td>
+							<th width="20%">Contact Name</th>
+							<td width="30%">{{ applicationdata.franchise.contact_name }}</td>
+						</tr>
+						<tr>
+							<th width="20%">Telephone</th>
+							<td width="30%">{{ applicationdata.franchise.company_telephone }}</td>
+							<th width="20%">Country</th>
+							<td width="30%">{{ applicationdata.franchise.company_country_name }}</td>
+						</tr>
+						<tr>
+							<th width="20%">City</th>
+							<td width="30%">{{ applicationdata.franchise.company_city }}</td>
+							<th width="20%">Email Address</th>
+							<td width="30%">{{ applicationdata.franchise.company_email }}</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			 
+			<div class="card-box enq-view lst greybg">
+				<h3>Standard Information</h3>
+				<table class="table-secondary m-b-15">
+					<tr>
+						<th width="20%">Standard(s)</th>
+						<td width="80%">
+							<ul>
+								<li *ngFor="let standard of applicationdata.standards; ">
+								<span>{{ standard }}</span></li>
+							</ul>
+						</td>
+					</tr>
+				</table>		
+						
+			</div>
+			
+			<div class="card-box enq-view m-t-10 " *ngIf="applicationdata.applicationcertifiedbyothercb && applicationdata.applicationcertifiedbyothercb.length>0">
+				<h3>Already Certified Details</h3>
+				<table class="table table-bordered col-12">
+					<thead>
+					<tr>
+						<th scope="col" class="center" style="width: 5%;">S.No</th>
+						<th scope="col"  style="width: 12%;">Standard</th>
+						<th scope="col"  >Certification Body</th>
+						<th scope="col" class="center" style="width: 12%;">Validity Date</th>
+						<th scope="col" *ngIf="display_type!='only_application'" >Certification File</th>
+					</tr>
+					</thead>
+					<tbody>
+						<ng-container *ngFor="let application of applicationdata.applicationcertifiedbyothercb; index as i">
+							<tr>
+								<td scope="row" class="center">{{  1+ i }}</td>
+								<td >{{ application.standard_name }}</td>
+								<td >{{ application.certification_body_name }}</td>
+								<td class="center">{{ application.validity_date }}</td>
+								<td *ngIf="display_type!='only_application'"><span class="name-pad" *ngIf="application.certification_file"><a href="javascript:void(0);" (click)="downloadcertificateFile(application.id,application.certification_file);open(downloading);" ><i class="fa fa-download" ></i>&nbsp;{{ application.certification_file }}</a></span></td>
+									
+							</tr> 
+							
+						</ng-container>               
+					</tbody>
+				</table>
+			</div>
+			
+			
+			<div class="card-box enq-view m-t-10 ">
+				<h3>Product Details</h3>
+				<table class="table table-bordered col-12" style="font-size:13px;">
+					<thead>
+					<tr>
+						<th scope="col" class="center">S.No</th>
+						<th scope="col"  >Product Category</th>
+						<th scope="col"  >Type of Product</th>
+						<th scope="col" class="center" >Wastage (%)</th>
+						<th scope="col" >Material Composition</th>
+						<th scope="col"  >Standard</th>
+						<th scope="col"  >Label Grade</th>
+					</tr>
+					</thead>
+					<tbody>
+						<ng-container *ngFor="let product of applicationdata.productDetails; index as i">
+							<tr>
+								<td scope="row" class="center"   >{{  1+ i }}</td>
+								<td >{{ product.name }}</td>
+								<td >{{ product.product_type_name }}</td>
+								<td class="center">{{ product.wastage }}</td>
+								<td >
+									{{ product.materialcompositionname }}
+								</td>
+								<td>{{ product.standard_name }}</td>
+								<td>{{ product.label_grade_name }}</td>
+							</tr> 
+							
+						</ng-container>               
+					</tbody>
+				</table>
+			</div>
+			
+								
+			<div class="un-lst"><h3>Facility Details</h3></div> 
+		
+			<mat-accordion *ngFor="let unit of applicationdata.units; index as i">
+				<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+					<mat-expansion-panel-header>
+						<mat-panel-title>
+						{{ unit.unit_type_name}} : {{ unit.name }}
+						</mat-panel-title>
+					</mat-expansion-panel-header>
+					<div class="card-box enq-view">
+					
+						<h3>{{ unit.unit_type_name}} Details</h3>
+						<table class="table-secondary m-b-15">
+							<tr>
+								<th width="20%">Name</th>
+								<td width="30%">{{ unit.name }}</td>
+								<th width="20%">Postal Code</th>
+								<td width="30%">{{ unit.zipcode }}</td>
+							</tr>
+							<tr>
+								<th width="20%">Address</th>
+								<td colspan="3">{{ unit.address }}</td>
+							</tr>
+							<tr>
+								<th width="20%">Country</th>
+								<td width="30%">{{ unit.country_id_name }}</td>
+								<th width="20%">State</th>
+								<td width="30%">{{ unit.state_id_name }}</td>
+							</tr>
+							<tr>
+								<th width="20%">City</th>
+								<td width="30%">{{ unit.city }}</td>
+								<th width="20%">No. of Employees</th>
+								<td width="30%">{{ unit.no_of_employees }}</td>
+							</tr>
+						</table>
+						
+						<div class="mat-accordion">
+							<div class="card-box enq-view">
+								<h3>{{ unit.unit_type_name}} Product Details</h3>
+								 
+									<table class="table table-bordered col-12" style="font-size:13px;">
+										<thead>
+										<tr>
+											<th scope="col" class="center">S.No</th>
+											<th scope="col"  >Product Category</th>
+											<th scope="col"  >Type of Product</th>
+											<th scope="col" class="center" >Wastage (%)</th>
+											<th scope="col" >Material Composition</th>
+											<th scope="col"  >Standard</th>
+											<th scope="col"  >Label Grade</th>
+										</tr>
+										</thead>
+										<tbody>
+											 
+												<tr *ngFor="let product of unit?.product_details; index as is;">
+													<td scope="row" class="center"   >{{  1+ is }}</td>
+													<td >{{ product.name }}</td>
+													<td >{{ product.product_type_name }}</td>
+													<td class="center">{{ product.wastage }}</td>
+													<td >
+														{{ product.materialcompositionname }}
+													</td>
+													<td>{{ product.standard_name }}</td>
+													<td>{{ product.label_grade_name }}</td>
+												</tr> 
+											          
+										</tbody>
+									</table>
+									 
+								<!--<ul>
+									<li style="width:100%;"><span class="label-pad">Products</span>   <span class="name-pad" style="width:100%;"><span *ngFor="let prd of unit.products; let isLast=last;" >{{ prd }} {{isLast ? '' : ', '}}</span></span></li>
+								</ul>-->
+							</div>
+						</div>
+						
+						<div class="card-box enq-view lst greybg" >
+							<h3>Standard Information</h3>
+							<table class="table-secondary m-b-15">
+								<tr>
+									<th width="20%">Standard(s)</th>
+									<td width="80%">
+										<ul>
+											<li *ngFor="let standard of unit.standarddetails; ">
+											<span>{{ standard.name }}</span></li>
+										</ul>
+									</td>
+								</tr>
+							</table>	
+							
+						</div>
+
+						<div class="card-box enq-view lst">
+							<h3>Business Sector Information</h3>
+
+							<table class="table-secondary m-b-15">
+								<tr *ngFor="let bsector of unit.bsectorsdetails | keyvalue">
+									<th width="20%">{{ bsector.value }}</th>
+									<td width="80%">
+										<ng-container  *ngIf="unit.selunitgpsarrlists && unit.selunitgpsarrlists[unit.id] && unit.selunitgpsarrlists[unit.id][bsector.key] && unit.selunitgpsarrlists[unit.id][bsector.key].length>0">
+											<span *ngFor="let bsec of unit.selunitgpsarrlists[unit.id][bsector.key]; index as isu; let isLast=last;" >
+												{{ bsec.group_code }}{{isLast ? '' : ', '}}
+											</span>
+										</ng-container>										
+									</td>
+								</tr>								
+							</table>		
+
+						</div>	
+												
+						<div class="mat-accordion">
+							<div class="card-box enq-view">
+								<h3>{{ unit.unit_type_name}} Process Details</h3>
+								<table class="table-secondary m-b-15">
+									<tr>
+										<th width="20%">Process(es)</th>
+										<td width="80%"><span *ngFor="let prs of unit.process; let isLast=last;" >{{ prs }} {{isLast ? '' : ', '}}</span></td>
+									</tr>
+									<tr *ngIf="applicationdata.audit_type == 3">
+										<th width="20%">Process Addition</th>
+										<td width="80%" ><span *ngFor="let prs of unit.new_process; let isLast=last;" >{{ prs }} {{isLast ? '' : ', '}}</span></td>
+									</tr>
+								</table>
+							</div>
+						</div>
+						
+						<div class="card-box enq-view m-t-15" *ngIf="unit.certified_standard">
+							<h3>{{ unit.unit_type_name}} Certified Standard Details</h3>
+							<table class="table table-bordered">
+								<thead>
+								<tr>
+									<th class="center">S.No</th>
+									<th>Standard</th>
+									<th>License Number</th>
+									<th class="center">Expiry Date</th>
+									<th *ngIf="display_type!='only_application'">Attachment</th>
+								</tr>
+								</thead>
+								<tbody>
+									<tr *ngFor="let cstandard of unit.certified_standard; index as i">
+										<td class="center">{{i+1}}</td>
+										<td>{{ cstandard.standard }}</td>
+										<td>{{ cstandard.license_number }}</td>
+										<td class="center">{{ cstandard.expiry_date }}</td>
+										<td  *ngIf="display_type!='only_application'">
+											<span *ngFor="let file of cstandard.files; let isLast=last;" >
+											
+												<a href="javascript:void(0);" (click)="downloadFile(file.id,file.name);open(downloading);" ><i class="fa fa-download" ></i>&nbsp;{{ file.name }}</a>
+												
+												{{isLast ? '' : ', '}}
+										</span></td>
+									</tr>                
+								</tbody>
+							</table>
+						</div>
+						
+					</div>
+				</mat-expansion-panel>                
+			</mat-accordion>
+				
+				
+					
+			
+			
+			
+			<div class="un-lst" *ngIf="applicationdata?.applicationreviews" ><h3>Application Review Details</h3></div> 
+     
+            <mat-accordion *ngFor="let applicationreview of applicationdata.applicationreviews; index as i">
+                <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+					<mat-expansion-panel-header>
+						<mat-panel-title>
+						  Review {{ i+1 }}
+						</mat-panel-title>
+                    </mat-expansion-panel-header>
+					<div class="card-box enq-view">
+					
+						<h3>Reviewer Details</h3>
+						
+						<table class="table-secondary m-b-15">
+							<tr>
+								<th width="20%">Reviewer</th>
+								<td width="30%">{{ applicationreview.reviewer }}</td>
+								<th width="20%">Answer</th>
+								<td width="30%">{{ applicationreview.answer_name }}</td>
+							</tr>
+							<tr>
+								<th width="20%">Status</th>
+								<td width="30%">{{ applicationreview.status_name }}</td>
+								<th width="20%">Reviewed Date</th>
+								<td width="30%">{{ applicationreview.updated_at }}</td>
+							</tr>
+							<tr>
+								<th width="20%">Review Risk Assessment Result</th>
+								<td width="30%">{{ applicationreview.review_result_name }}</td>
+								<th width="20%">Comments</th>
+								<td width="30%">{{ applicationreview.status_comments }}</td>
+							</tr>
+						</table>
+						
+
+						<div  *ngIf="userdecoded?.user_type==1 || userdecoded?.user_type==3" >
+							<h3 *ngIf="applicationreview?.reviewcomments.length>0">Reviewer Comments</h3>
+							
+							<div class="page-title-box">
+								<div *ngFor="let reviewcomment of applicationreview.reviewcomments; index as i">	
+									<div class="qustion">
+									<h5>{{ 1+i }}. {{ reviewcomment.question }}</h5>
+									{{ reviewcomment.answer }}
+									<p [innerHTML]="reviewcomment.comment"></p>
+									</div>
+								</div>  
+							</div>
+
+							<h3 *ngIf="applicationreview?.unitreviewcomments.length>0">Facility Review Comments</h3>
+							
+							<div class="page-title-box" *ngFor="let unitreviewcomment of applicationreview.unitreviewcomments; index as i" >
+
+								<mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false" [expanded]="true">
+									<mat-expansion-panel-header>
+										<mat-panel-title>
+											Unit: {{ unitreviewcomment.unit_name }}
+										</mat-panel-title>
+									</mat-expansion-panel-header>
+									<div *ngFor="let unitreviewcomment of unitreviewcomment.reviews; index as j">	
+										<div class="qustion">
+											<h5>{{ 1+j }}. {{ unitreviewcomment.question }}</h5>
+											{{ unitreviewcomment.answer }}
+											<p [innerHTML]="unitreviewcomment.comment"></p>
+										</div>
+									</div>  
+								</mat-expansion-panel>
+
+							</div>
+						</div>
+						
+						
+						
+						
+						
+                    </div>
+                </mat-expansion-panel>                
+            </mat-accordion>
+			
+			<ng-container *ngIf="applicationdata?.applicationchecklistcmt?.length>0">
+				<div class="un-lst" *ngIf="applicationdata?.applicationchecklistcmt" ><h3>Application Checklist</h3></div> 
+
+				<mat-accordion>
+					<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+						<mat-expansion-panel-header>
+							<mat-panel-title>
+								Application Checklist Details
+							</mat-panel-title>
+						</mat-expansion-panel-header>
+						<div class="card-box enq-view">
+							<div class="page-title-box">
+								<div *ngFor="let checklistcmt of applicationdata?.applicationchecklistcmt; index as i">	
+									<div class="qustion">
+									<h5>{{ 1+i }}. {{ checklistcmt.question }}</h5>
+									<b>{{ checklistcmt.answer }}</b>
+									<p [innerHTML]="checklistcmt.comment"></p>
+									<span class="label-pad" *ngIf="display_type!='only_application' && checklistcmt.document">Document :</span>&nbsp;&nbsp;<span class="name-pad" *ngIf="display_type!='only_application' && checklistcmt.document"><a href="javascript:void(0);" (click)="downloadChecklistFile(checklistcmt.id,checklistcmt.document);open(downloading);" ><i class="fa fa-download"></i>{{ checklistcmt.document }}</a></span>	
+									</div>
+								</div>  
+							</div>
+						</div>
+					</mat-expansion-panel>
+				</mat-accordion>
+			</ng-container>
+
+			<ng-container *ngIf="applicationdata?.applicationapprovals?.length>0">
+				<div class="un-lst" ><h3>Application Approval Details</h3></div> 
+		
+				<mat-accordion *ngFor="let applicationapproval of applicationdata.applicationapprovals; index as i">
+					<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+						<mat-expansion-panel-header>
+							<mat-panel-title>
+							Approval {{ i+1 }}
+							</mat-panel-title>
+						</mat-expansion-panel-header>
+						<div class="card-box enq-view">
+							<table class="table-secondary m-b-15">
+								<tr>
+									<th width="20%">Approver</th>
+									<td width="30%">{{ applicationapproval.approver_name }}</td>
+									<th width="20%">Status</th>
+									<td width="30%">{{ applicationapproval.status_name }}</td>
+								</tr>
+								<tr>
+									<th width="20%">Comments</th>
+									<td colspan="3">{{ applicationapproval.comment }}</td>
+								</tr>
+								<tr>
+									<th width="20%" *ngIf="applicationapproval.status==1">Approved Date</th>
+									<td colspan="3" *ngIf="applicationapproval.status==1">{{ applicationapproval.updated_at }}</td>
+									<th width="20%" *ngIf="applicationapproval.status==2">Rejected Date</th>
+									<td colspan="3" *ngIf="applicationapproval.status==2">{{ applicationapproval.updated_at }}</td>
+								</tr>
+							</table>
+						</div>
+					</mat-expansion-panel>                
+				</mat-accordion>
+			</ng-container>
+
+			<ng-template #downloading let-modal>
+				<div class="modal-header">
+					<h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+				</div>
+				<div class="modal-body" style="font-size:16px;">
+					Please wait, your file is downloading ...
+				</div>
+			</ng-template>
+				
+				
+
+</form>

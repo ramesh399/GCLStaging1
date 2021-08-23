@@ -1,0 +1,648 @@
+<div class="row">
+	<div class="col-sm-12  p-b-10">
+		<div class="page-title-box">
+		    
+			<div class="float-left">
+				<h4 class="page-title">Quotation Details</h4>
+			</div>
+			
+			<div class="text-right float-right">
+				<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/offer/generate-list']" >Back</a>
+			</div>
+			
+		</div>	
+	</div>
+</div>
+
+<mat-accordion>
+	<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+		<mat-expansion-panel-header>
+			<mat-panel-title>
+			View Application Details
+			</mat-panel-title>
+		</mat-expansion-panel-header>
+		
+		<div class="row" *ngIf="applicationdata" >
+			<div class="col-sm-12">
+				<div class="clearfix"></div>			
+				<app-appdetail [id]="applicationdata.id" ></app-appdetail>							
+			</div>				
+		</div>
+
+	</mat-expansion-panel>                
+</mat-accordion>
+
+<div class="clearfix"></div>
+
+<div class="row" style="margin-top: 20px;">
+    <div class="col-12" *ngIf="applicationdata">
+	    
+        <div class="add card-box table-responsive">
+            <form  [formGroup]="form" (ngSubmit)="onSubmit()"  >                    				
+				
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view">
+					<div style="font-size:16px; margin-bottom:15px; padding-bottom:5px; border-bottom:1px solid #cecece;display: inline-block; "> Quotation Code : {{ applicationdata.offercode }}</div>
+
+
+
+
+
+					<h3>Units Manday</h3>  
+					<div class="form-group row">
+						<div class="tbl-sec">
+							<table class="table table-bordered tab-bor col-12" >
+								<thead>
+								<tr>
+									<th width="4%" scope="col" class="center align-middle" >S.No</th>
+									<th scope="col"  width="35%" class="align-middle" >Unit name</th>
+									<th width="16%" scope="col" class="text-center align-middle">Actual Manday</th>
+									<th width="16%" scope="col" class="text-center align-middle">Adjusted Manday</th>
+									<th width="28%" scope="col" class="text-center align-middle">Adjusted Manday Comments</th>
+									<th width="28%" scope="col" class="text-center align-middle">Translator Required</th>
+									<th width="28%" scope="col" class="text-center align-middle">Final Manday</th>
+								</tr>
+								</thead>
+								<tbody>
+									<tr *ngIf="appunitmanday?.length==0">
+											<td colspan="4" class="center">No Units Added</td>
+									</tr>
+									<tr *ngFor="let unitmanday of appunitmanday; let i=index; ">
+										<td scope="row" class="center align-middle" >{{  1+ i }}</td>
+										<td class="align-middle">{{ unitmanday.name }}</td>
+										<td class="text-right  align-middle">{{ unitmanday.final_manday }}</td>
+										<td class="text-right align-middle">
+											<ng-container *ngIf="!ossEditStatus">
+												<input type="text"  
+												(change)="translatorValueChange(transChange.value, unitmanday.id)"
+												style="text-align:right;" [class.is-invalid]="f['manday_'+unitmanday.id].invalid && f['manday_'+unitmanday.id].touched "
+												 class="form-control" formControlName="manday_{{unitmanday.id}}" [value]="unitmanday.adjusted_manday"  >
+												<div *ngIf="f['manday_'+unitmanday.id].errors" class="invalid-feedback">
+													<div *ngIf="f['manday_'+unitmanday.id].errors.required"  >
+														Manday is required
+													</div>
+													<div *ngIf="f['manday_'+unitmanday.id].errors.pattern">
+														Manday should be valid numbers
+													</div>
+												</div>
+											</ng-container>	
+											
+											<ng-container *ngIf="ossEditStatus">
+											{{unitmanday.adjusted_manday}}
+											</ng-container>
+										</td>
+										<td class="text-right align-middle">
+										    <ng-container *ngIf="!ossEditStatus">
+												<textarea  rows="3" 
+												[class.is-invalid]="f['adjusted_manday_comment_'+unitmanday.id].invalid && f['adjusted_manday_comment_'+unitmanday.id].touched "
+												 class="form-control"  formControlName="adjusted_manday_comment_{{unitmanday.id}}"></textarea>
+												<div *ngIf="f['adjusted_manday_comment_'+unitmanday.id].errors" class="invalid-feedback">
+													<div *ngIf="f['adjusted_manday_comment_'+unitmanday.id].errors.required"  >
+														Adjusted Manday Comment is required
+													</div>
+													<div *ngIf="f['adjusted_manday_comment_'+unitmanday.id].errors.pattern">
+														Manday should be valid numbers
+													</div>
+												</div>
+											</ng-container>
+											
+											<ng-container *ngIf="ossEditStatus">
+											{{unitmanday.adjusted_manday_comment}}
+											</ng-container>
+										</td>
+										<!--  | number :'1.2-2'-->
+										<td>
+											
+											<select #transChange formControlName="manday_tranlatorChanges{{unitmanday.id}}" 
+											(change)="translatorValueChange(transChange.value, unitmanday.id)"
+											class="form-control generate_select" >
+											<option value="" ></option>
+											<option value="true" >Yes</option>
+											<option value="false" >No</option>
+										</select>
+										
+											 
+										</td>
+										<td>
+											{{unitmanday.final_manday_withtrans}}
+										</td> 
+									</tr>
+								</tbody>
+								<tfoot>
+									<tr>
+									   <td colspan="2" class="text-right"><strong>Total Manday</strong></td>
+									   <td class="text-right"><strong>{{ actualmanday | number :'1.2-2'}}</strong></td>
+									   <td class="text-right"><strong>{{ unitManDayTotal | number :'1.2-2'}}</strong></td>
+									   <td class="text-right">&nbsp;</td>
+									   <td class="text-right">&nbsp;</td>
+									   <td class="text-right"><strong>{{ finalmandaytotal | number :'1.2-2'}}</strong></td>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+
+
+
+					<ng-container *ngIf="!ossEditStatus">
+						<h3>Currency &amp; Conversion Rate</h3> 					
+						<div class="form-group row">
+							<div class="row col-12 prd-lab">
+								<div class="col-4">
+									<label for="conversion_required">Currency &amp; Conversion Rate Required </label>
+									&nbsp;&nbsp;<input type="checkbox" formControlName="conversion_required" disabled [checked]="1"   (change)="conversionRequired($event.target.checked)">								
+								</div>
+								
+								<div class="col-2" *ngIf="conversion_required_status==1">
+									<label>Base Currency <span class="text-danger">*</span></label>
+									<input type="text" formControlName="currency" readonly class="form-control" value="{{currency}}" placeholder="Base Currency" (change)="changeCurrency($event.target.value)">
+									<div *ngIf="currencyErrors" class="validationerror" >
+										{{ currencyErrors }}
+									</div>
+								</div>
+								
+								<div class="col-2" *ngIf="conversion_required_status==1">
+									<label>Conversion Rate <span class="text-danger">*</span></label>
+									<input type="text" formControlName="conversion_rate"  class="form-control" value="{{conversion_rate}}" placeholder="Conversion Rate" (change)="changeConversionRate($event.target.value)">
+									<div *ngIf="conversion_rateErrors" class="validationerror" >
+										{{ conversion_rateErrors }}
+									</div>
+									<ng-container *ngIf="f.conversion_rate.errors">
+										<div *ngIf="f.conversion_rate.errors.min" class="validationerror">
+											Conversion Rate should have minimum 0.01
+										</div>
+										<div *ngIf="f.conversion_rate.errors.pattern" class="validationerror">
+											Please enter valid Conversion Rate
+										</div>
+									</ng-container>
+									
+								</div>
+								
+								<div class="col-3" *ngIf="conversion_required_status==1">
+									<label>Conversion Currency <span class="text-danger">*</span></label>
+									<!--
+									<input type="text" formControlName="conversion_currency_code"  class="form-control" value="{{conversion_currency_code}}" placeholder="Conversion Currency Code *" (change)="changeConversionCurrencyCode($event.target.value)">
+									-->
+									<select formControlName="conversion_currency_code" class="form-control select2" (change)="changeConversionCurrencyCode($event.target.value)">
+										<option value="" >-- Conversion Currency --</option>
+										<option *ngFor="let countryCode of countryCodeList" value='{{countryCode.code}}'>{{countryCode.code}}</option>
+									</select>
+									<div *ngIf="conversion_currency_codeErrors" class="validationerror" >
+										{{ conversion_currency_codeErrors }}
+									</div>
+								</div>
+							</div>	
+						</div>
+					</ng-container>
+					
+					<!--
+					<div *ngIf="offer_status==4">
+						<h3>Discount Details</h3>  
+						<div class="form-group row">
+							<div class="row col-12 prd-lab">
+								<div class="col-3">
+									<label>Discount</label>
+									<input type="text" formControlName="discount"  class="form-control" value="{{discount}}" placeholder="Discount *" (change)="changeDiscount($event.target.value)">
+									<div *ngIf="discountErrors" class="validationerror" >
+										{{ discountErrors }}
+									</div>
+								</div>							
+							</div>	
+						</div>	
+					</div>
+					-->					
+								
+					<h3>Certification Fee</h3>  
+					<div class="form-group row">									
+						
+						<div class="tbl-sec">
+							<table id="datatable" class="table table-bordered tab-bor col-12" >
+								<thead>
+								<tr>
+									<th width="4%" scope="col" class="center">S.No</th>
+									<th scope="col">Activity</th>
+									<th scope="col">Description</th>
+									<th width="12%" scope="col" class="text-center">Amount</th>
+									<ng-container *ngIf="!ossEditStatus">
+									<th width="8%" scope="col" class="center" >Action</th>
+									</ng-container>
+								</tr>
+								</thead>
+								<tbody>
+									<tr *ngIf="feesEntries?.length==0">
+											<td colspan="4" class="center">No Fee Added</td>
+									</tr>
+									<tr *ngFor="let feeEntry of feesEntries; let i=index; ">
+										<td scope="row" class="center">{{  1+ i }}</td>
+										<td>{{ feeEntry.fee_name }}</td>
+										<td>{{ feeEntry.fee_description }}</td>
+										<td class="text-right">{{currency_code}} {{ feeEntry.amount | number :'1.2-2' }}</td>
+										<ng-container *ngIf="!ossEditStatus">
+										<td  class="center">
+										    <!--<a *ngIf="(1+ i)==1" href="javascript:void(0);" [routerLink]="['/offer/validate-certified-standard']" [queryParams]="{id:this.id,offer_id:this.offer_id}"> <i class="fa fa-edit"></i> </a>-->
+											
+											<a *ngIf="(1+ i)>1" href="javascript:void(0);" (click)="editFee(i)" > <i class="fa fa-edit"></i> </a>
+											&nbsp;&nbsp;
+											<a *ngIf="(1+ i)>2" href="javascript:void(0);" (click)="removeFee(i)" > <i class="fa fa-trash text-danger"></i> </a>
+										</td>
+										</ng-container>
+									</tr>
+								</tbody>
+								<tfoot>
+									<tr>
+									   <td colspan="3" class="text-right"><strong>Sub-Total of Certification Fee</strong></td>
+									   <td class="text-right"><strong>{{currency_code}} {{certification_fee_sub_total | number :'1.2-2'}}</strong></td>
+									   <ng-container *ngIf="!ossEditStatus">
+									   <td>&nbsp;</td>
+									   </ng-container>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
+						<ng-container *ngIf="!ossEditStatus">
+						<div class="row col-12 prd-lab">
+							<div class="col-3">
+								<label>Activity <span class="text-danger">*</span></label>
+								<input type="text" formControlName="fee_name"  class="form-control" placeholder="Activity" (change)="checkCertificationFee()" >
+								<div *ngIf="fee_nameErrors" class="validationerror" >
+										{{ fee_nameErrors }}
+								</div>
+							</div>
+						
+							<div class="col-5">
+								<label>Description <span class="text-danger">*</span></label>
+								<input type="text" formControlName="fee_description"  class="form-control" placeholder="Description" (change)="checkCertificationFee()">
+								<div *ngIf="fee_descriptionErrors" class="validationerror" >
+									{{ fee_descriptionErrors }} 
+								</div>
+							</div>
+							
+							<!--
+							<div class="col-2">
+								<label>No.of Manday</label>
+								<input type="text" formControlName="noofmanday" (change)="calculateManday($event.target.value)"  class="form-control" placeholder="No.of Manday *" >
+								<div *ngIf="noofmandayErrors" class="validationerror" >
+									{{ noofmandayErrors }} 
+								</div>
+							</div>
+							-->
+							
+							<div class="col-2">
+								<label>Amount <span class="text-danger">*</span></label>
+								<input type="text" formControlName="amount" class="form-control text-right" placeholder="Amount" (change)="checkCertificationFee()">
+								<div *ngIf="amountErrors" class="validationerror" >
+									{{ amountErrors }} 
+								</div>
+							</div>
+							
+							<div class="col-2" style="padding-top:25px;">
+								<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="addFee()">+Add Fee</a>
+							</div>
+							
+						</div>
+						</ng-container>						
+						
+					</div>	
+
+					<h3>Other Expenses</h3>  
+					<div class="form-group row">
+						<div class="row col-12 prd-lab">
+							<div class="col-3">
+								<label>Activity <span class="text-danger">*</span></label>
+								<input type="text" formControlName="expense_name"  class="form-control" placeholder="Activity" (change)="checkOtherExpensesFee()">
+								<div *ngIf="expense_nameErrors" class="validationerror" >
+										{{ expense_nameErrors }}
+								</div>
+							</div>
+						
+							<div class="col-5">
+								<label>Description <span class="text-danger">*</span></label>
+								<input type="text" formControlName="expense_description"  class="form-control" placeholder="Description" (change)="checkOtherExpensesFee()">
+								<div *ngIf="expense_descriptionErrors" class="validationerror" >
+									{{ expense_descriptionErrors }} 
+								</div>
+							</div>
+							
+							<div class="col-2">
+								<label>Amount <span class="text-danger">*</span></label>
+								<input type="text" formControlName="expense_amount"  class="form-control text-right" placeholder="Amount" (change)="checkOtherExpensesFee()" >
+								<div *ngIf="expense_amountErrors" class="validationerror" >
+									{{ expense_amountErrors }} 
+								</div>
+							</div>
+							
+							<div class="col-2" style="padding-top:25px;">
+								<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="addOtherExpenses()"  >+Add Expenses</a>
+							</div>
+							
+						</div>
+						
+						<div class="tbl-sec">
+							<table id="datatable" class="table table-bordered tab-bor col-12" >
+								<thead>
+								<tr>
+									<th width="4%" scope="col" class="center">S.No</th>
+									<th scope="col">Activity</th>
+									<th scope="col">Description</th>
+									<th width="12%" scope="col" class="text-center">Amount</th>
+									<th width="8%" scope="col" class="center" >Action</th>
+								</tr>
+								</thead>
+								<tbody>
+									<tr *ngIf="expensesEntries?.length==0">
+											<td colspan="4" class="center">No Other Expenses Added</td>
+									</tr>
+									<ng-container *ngIf="expensesEntries" >
+										<tr *ngFor="let expenseEntry of expensesEntries; let i=index; ">
+											<td scope="row" class="center">{{  1+ i }}</td>
+											<td>{{ expenseEntry.expense_name }}</td>
+											<td>{{ expenseEntry.expense_description }}</td>
+											<td class="text-right">{{currency_code}} {{ expenseEntry.expense_amount | number :'1.2-2' }}</td>
+											
+											<td  class="center">
+												<a href="javascript:void(0);" (click)="editOtherExpenses(i)" > <i class="fa fa-edit"></i> </a>
+												&nbsp;&nbsp;
+												<a href="javascript:void(0);" *ngIf="expenseEntry.entry_type==1" (click)="removeOtherExpenses(i)" > <i class="fa fa-trash text-danger"></i> </a>
+											</td>
+										</tr>
+									</ng-container>
+								</tbody>
+								<tfoot>
+									<tr>
+										<td colspan="3" class="text-right"><strong>Sub-Total of Other Expenses</strong></td>
+										<td class="text-right"><strong>{{currency_code}} {{other_expense_sub_total | number :'1.2-2' }}</strong></td>
+										<td>&nbsp;</td>
+									</tr>
+									<tr>
+										<td colspan="3" class="text-right"><strong>TOTAL (Certification Fee + Other Expenses)</strong></td>
+										<td class="text-right"><strong>{{currency_code}} {{total_fee | number :'1.2-2' }}</strong></td>
+										<td>&nbsp;</td>
+									</tr>
+									
+									<!--
+									<tr *ngIf="offer_status==4">
+										<td colspan="3" class="text-right"><strong>Discount</strong></td>
+										<td class="text-right"><strong>{{currency_code}} {{discount | number :'1.2-2' }}</strong></td>
+										<td>&nbsp;</td>
+									</tr>
+									<tr *ngIf="offer_status==4">
+										<td colspan="3" class="text-right"><strong>GRAND TOTAL</strong></td>
+										<td class="text-right"><strong>{{currency_code}} {{grand_total_fee | number :'1.2-2' }}</strong></td>
+										<td>&nbsp;</td>
+									</tr>
+									-->
+									
+									<tr>
+										<td colspan="3" class="text-right">{{taxname}} Rate</td>
+										<td class="text-right">{{currency_code}} {{tax_rate | number :'1.2-2'}}</td>
+										<td>&nbsp;</td>
+									</tr>
+									<tr>
+										<td colspan="3" class="text-right"><strong>TOTAL Payable Amount in {{currency_code}}</strong></td>
+										<td class="text-right"><strong>{{currency_code}} {{total_payable_amount | number :'1.2-2' }}</strong></td>
+										<td>&nbsp;</td>
+									</tr>
+									<tr *ngIf="conversion_required_status==1 && conversion_rate>=1">
+										<td colspan="3" class="text-center">
+										<strong>Conversion rate  {{currency_code}} 1.00 = {{conversion_currency_code}} {{conversion_rate | number :'1.2-2' }}</strong>
+										<br>
+										Conversion rate is valid for next 30 days
+										</td>
+										<td class="text-right"><strong>{{conversion_currency_code}} {{conversion_total_payable_amount | number :'1.2-2' }}</strong></td>
+										<td>&nbsp;</td>
+									</tr>
+									<tr>
+										<td colspan="5" class="text-left"><strong>Charges of TC and LR are not included in the quotation this will be as per the GCL fee structure</strong></td>
+									</tr>
+								</tfoot>
+							</table>
+							<label><u>Travel expenses and Accommodation fee will be born by Operator</u></label>
+						</div>					
+						
+					</div>
+					
+					
+					<div class="form-group row">
+					
+						<div class="col-lg-12 text-center mt-4 mb-4">
+							<button tabindex="-1" [disabled]="loading || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+								Submit
+							</button>
+							<button type="button" [disabled]="loading || buttonDisable" [routerLink]="['/offer/generate-list']" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2">Cancel</button>
+
+							<app-usermessage [success]="success" [error]="error"  ></app-usermessage> 
+                        </div>
+						
+					</div>
+					
+					
+					
+				</div>
+				
+			</form>
+        </div>
+	</div>	
+ 
+</div>
+
+
+
+
+
+
+
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Assign Reviewer</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form>
+        <div class="form-group">
+            <label for="user_id">User</label>
+            <div class="input-group">
+                     
+                <select name="user_id" [(ngModel)]="model.user_id"  class="form-control select2" style="width:320px; display:inline;" >
+                        <option value="">-- User --</option>
+                        <option *ngFor="let user of userList" value= {{user.id}}>{{ user.first_name+' '+user.last_name }}</option>
+                </select>     
+                <div class="validationerror" *ngIf="user_id_error"  >Please select the user</div>
+            </div>
+        </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="checkUserSel()">Save</button>
+
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+    </div>
+</ng-template>
+
+<ng-template #approvercontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Assign Approver</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<form>
+		<div class="form-group">
+			<label for="user_id">User</label>
+			<div class="input-group">
+						
+
+				<select name="user_id" [(ngModel)]="model.approver_user_id"  class="form-control select2" style="width:320px; display:inline;" >
+						<option value="">-- User --</option>
+						<option *ngFor="let user of userList" value= {{user.id}}>{{ user.first_name+' '+user.last_name }}</option>
+				</select>     
+				<div class="validationerror" *ngIf="user_id_error"  >Please select the user</div>
+			</div>
+		</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="checkUserSel('approver')">Save</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>
+ 
+
+<ng-template #approverConfirmContent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Approve Application</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<form>
+		<div class="form-group">
+			<label for="status">Status</label>
+			<div class="input-group">
+						
+
+				<select name="status" [(ngModel)]="model.status"  class="form-control select2" style="width:120px; display:inline;" >
+						<option value="">-- Status --</option>
+						<option *ngFor="let status of approvalStatusList" value= {{status.id}}>{{ status.name }}</option>
+				</select>     
+				
+			</div>
+			<div class="validationerror" *ngIf="status_error"  >Please select the status</div>
+		</div>
+		<div class="form-group">
+			<label for="status">Comment(s)</label>
+			<div class="input-group">
+						
+				<textarea name="comment" [(ngModel)]="model.comment" rows="4" style="width:100%; display:inline;" ></textarea>
+				 
+				<div class="validationerror" *ngIf="comment_error"  >Please enter the comment</div>
+			</div>
+		</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="checkUserSel('statusapproval')">Save</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>
+			<!--
+            <div class="card-box enq-view">
+                <h3>Customer Details</h3>                     
+                <ul>
+                    <li><span class="label-pad">Code</span> -  <span class="name-pad">{{ applicationdata.code }}</span></li>
+                    <li><span class="label-pad">Last Name</span>  -  <span class="name-pad">{{ applicationdata.last_name }}</span></li>
+                    <li><span class="label-pad">Telephone</span> -  <span class="name-pad">{{ applicationdata.telephone }}</span></li>
+                    <li><span class="label-pad">E-Mail</span> -  <span class="name-pad"><a href="mailto:{{ enquirydata.email }}">{{ applicationdata.email }}</a></span></li>
+                    <li><span class="label-pad">Country</span> -  <span class="name-pad">{{ applicationdata.country_id }}</span></li>
+                    <li><span class="label-pad">State</span> -  <span class="name-pad">{{ applicationdata.state_id }}</span></li>
+                </ul>
+                
+            </div>
+			
+            <div class="card-box enq-view">
+                <h3>Company Details</h3>                     
+                <ul>
+                    <li><span class="label-pad">Company Name</span> -  <span class="name-pad">{{ enquirydata.company_name }}</span></li>
+                    <li><span class="label-pad">Contact Name</span>  -  <span class="name-pad">{{ enquirydata.contact_name }}</span></li>
+                    <li><span class="label-pad">Telephone</span> -  <span class="name-pad">{{ enquirydata.company_telephone }}</span></li>
+                    <li><span class="label-pad">E-Mail</span> -  <span class="name-pad"><a href="mailto:{{ enquirydata.company_email }}">{{ enquirydata.company_email }}</a></span></li>
+                    <li><span class="label-pad">Website</span> -  <span class="name-pad"><a target="_blank" href="{{ enquirydata.company_website }}">{{ enquirydata.company_website }}</a></span></li>
+                    <li><span class="label-pad">Country</span> -  <span class="name-pad">{{ enquirydata.company_country_id }}</span></li>
+                    <li><span class="label-pad">Address Line1</span> -  <span class="name-pad">{{ enquirydata.company_address1 }}</span></li>
+                    <li><span class="label-pad">Address Line2</span> -  <span class="name-pad">{{ enquirydata.company_address2 }}</span></li>
+                    <li><span class="label-pad">Town/City</span> -  <span class="name-pad">{{ enquirydata.company_city }}</span></li>
+                    <li><span class="label-pad">Zipcode</span> -  <span class="name-pad">{{ enquirydata.company_zipcode }}</span></li>
+                </ul>
+                
+            </div>
+            <div class="card-box enq-view enq-view-full">
+                <h3>Standard Information</h3>                     
+                <ul>
+                    <li><span class="label-pad">Standards</span> -  <span class="name-pad">
+                        
+                        <span *ngFor="let standard of enquirydata.standards; let isLast=last;" >{{ standard.name }} {{isLast ? '' : ', '}}</span>
+                        
+                    
+                    </span></li>
+                </ul>
+                
+            </div>
+            <div class="card-box enq-view">
+                <h3>Company Details</h3>                     
+                <ul>
+                    <li><span class="label-pad">Number of employees</span> -  <span class="name-pad">{{ enquirydata.number_of_employees }}</span></li>
+                    <li><span class="label-pad">Number of sites</span> -  <span class="name-pad">{{ enquirydata.number_of_sites }}</span></li>
+                </ul>
+                
+            </div>
+            <div class="card-box enq-view enq-view-det">
+                <h3>Description of company operations</h3>                     
+               <p>{{ enquirydata.description }}</p>
+                
+            </div>
+            <div class="card-box enq-view enq-view-det det1">
+                <h3>Any other information about company</h3>                     
+               <p>{{ enquirydata.other_information }}</p>
+                
+            </div>
+			
+			<div class="card-box enq-view">
+                <h3>Status Details</h3>                     
+                <ul>
+                    <li><span class="label-pad">Status</span> -  <span class="name-pad">{{ enquirydata.status }}</span></li>
+                    <li><span class="label-pad">Status Updated Date</span> -  <span class="name-pad">{{ enquirydata.status_updated_date }}</span></li>
+                    
+				</ul>							
+                
+            </div>
+			
+			<div class="card-box enq-view">
+			<div  *ngIf="error" class="alert alert-danger mt-3 mb-2">{{error}}</div>
+			<div  *ngIf="success" class="alert alert-success mt-3 mb-2" >{{success}}</div>
+			</div>
+			
+            <div class="text-right">
+                <button type="button" *ngIf="enquirydata.status=='Open'" class="btn but-cust blue m-b-5">Existing Customer?</button>
+                <button type="button" *ngIf="enquirydata.status=='Open'" [disabled]="loading" class="btn but-cust green m-b-5 ml-2" (click)="addCustomer()">
+				<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+				New Customer?
+				
+				</button>
+				
+				<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/enquiry/list']" *ngIf="enquirydata.status!='Open'">Back</a>
+               
+                <button type="button" *ngIf="enquirydata.status=='Open'" class="btn but-cust grey m-b-5 ml-2" >Archive</button>
+                
+                
+                
+        </div>
+        -->
+        
+        <!--
+        </div>
+    </div>   end row --> 

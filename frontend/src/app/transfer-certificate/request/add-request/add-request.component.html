@@ -1,0 +1,1333 @@
+<div class="col-12 row pad-right" >
+	<div class="col-8">
+		<h4 class="page-title">{{title}}</h4>
+	</div>
+	<div class="col-4 text-right pad-right">
+		<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/transaction-certificate/request/list']"><i class="fa fa-arrow-left text-white"></i> Back</a>
+	</div>
+</div>
+<div class="row">
+    <div class="col-12">
+	    <div class="add card-box table-responsive" *ngIf="!requestStatus">
+			<span class="spinner-border spinner-border-sm mr-1"></span>
+		</div>
+		
+        <div class="add card-box table-responsive" *ngIf="requestStatus">
+            <form  [formGroup]="form" (ngSubmit)="onSubmit()">
+			
+				<div class="clearfix"></div>
+				<div class="col-12 row enq-view pad-right">
+                    <div class="col-8 text-primary" style="border-bottom: 1px solid #d7d7d7;font-size:16px;padding-left:0px;">
+						TC Request
+                    </div>
+                    <div class="col-4 text-right pad-right text-primary" style="border-bottom: 1px solid #d7d7d7;font-size:16px;">
+						<i *ngIf="resultdata?.requestdata && tc_request_view" class="fa fa-edit" (click)="fnTCEdit('request_edit')"></i>
+						<i *ngIf="tc_request_edit" class="fa fa-eye" (click)="fnTCEdit('request_view')"></i>
+                    </div>
+                </div>
+				
+				<div *ngIf="resultdata?.requestdata && tc_request_view" class="mat-accordion m-t-10">
+					<div class="card-box enq-view">
+						<table class="table-secondary">
+							<tr>
+								<th width="20%">Company</th>
+								<td width="30%">{{ resultdata?.requestdata?.app_id_label }},<br>{{ resultdata.requestdata.app_address }}</td>
+								<th width="20%">Unit</th>
+								<td width="30%">{{ resultdata?.requestdata?.unit_id_label }},<br>{{ resultdata.requestdata.unit_address }}</td>
+							</tr>
+							<tr>
+								<th width="20%">Certification Program</th>
+								<td width="30%">{{ resultdata?.requestdata?.standard_id_code_label }}</td>
+								<th width="20%">Status</th>
+								<td width="30%">{{ resultdata?.requestdata?.request_status_label }}</td>
+							</tr>
+						</table>						
+						<div *ngIf="resultdata?.requestdata && id && tc_request_view" class="col-12 text-right">
+							<button type="button" class="btn btn-link pad-right text-primary" style="font-size:12px;" (click)="view(TCDetails)">Read more...</button>
+						</div>
+					</div>
+				</div>				
+				
+				<div *ngIf="!resultdata?.requestdata  || tc_request_edit" class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view">
+                        
+					<div class="form-group row m-t-20">
+					
+						<div class="col-4">
+							<label>Company <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Company" matTooltipClass="tooltip-text-size" aria-tooltip="Company" matTooltipPosition="right"></i>
+							<select formControlName="app_id" [class.is-invalid]="f.app_id.invalid && f.app_id.touched" class="form-control select2" (change)='oncompanychange($event.target.value)'>
+                                <option value="">-- Company --</option>
+                                <option *ngFor="let app of appdata" value = {{app.id}}>{{app.company_name}}</option>
+                            </select>
+							<span *ngIf="loading?.company" class="spinner-border spinner-border-sm mr-1"></span>
+							<div *ngIf="company_address?.address" class="file-border-box">
+								<span>{{ company_address.address }}, {{ company_address.city }}, {{ company_address.state }}, {{ company_address.country }} - {{ company_address.zipcode }}</span>
+							</div>
+
+                            <div *ngIf="f.app_id.errors" class="invalid-feedback">
+                                <div *ngIf="f.app_id.errors.required" >Company Name is required</div>
+                            </div>
+							
+						</div>
+					
+						<div class="col-4">
+							<label>Last Processor <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Last Processor" matTooltipClass="tooltip-text-size" aria-tooltip="Last Processor" matTooltipPosition="right"></i>
+							<select formControlName="unit_id" [class.is-invalid]="f.unit_id.invalid && f.unit_id.touched" class="form-control select2" (change)='onunitchange($event.target.value)'>
+                                <option value="">-- Last Processor --</option>
+                                <option *ngFor="let unit of unitlist" value = {{unit.id}}>{{unit.name}}</option>
+                            </select>
+							<span *ngIf="loading?.unit" class="spinner-border spinner-border-sm mr-1"></span>
+							<div *ngIf="unit_address?.address" class="file-border-box">
+								<span>{{ unit_address.address }}, {{ unit_address.city }}, {{ unit_address.state }}, {{ unit_address.country }} - {{ unit_address.zipcode }}</span>
+							</div>
+                            <div *ngIf="f.unit_id.errors" class="invalid-feedback">
+                                <div *ngIf="f.unit_id.errors.required" >Last Processor is required</div>
+                            </div>	
+						</div>
+						
+						<div class="col-4">
+							<label>Certification Program <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Certification Program" matTooltipClass="tooltip-text-size" aria-tooltip="Certification Program" matTooltipPosition="right"></i>
+							<mat-select placeholder="-- Certification Program --" formControlName="standard_id" multiple class="form-control select2" [class.is-invalid]="f.standard_id.invalid && f.standard_id.touched" (selectionChange)='getlabel($event.value);validateIfoamStandard($event.value);'>
+								<mat-select-trigger>
+								<span *ngIf="f.standard_id.value?.length == 1" >{{f.standard_id.value ? getSelectedValue1(f.standard_id.value): ''}}</span>
+								<span *ngIf="f.standard_id.value?.length > 1" class="example-additional-selection">
+									{{f.standard_id.value.length}} {{ 'selected' }}
+								</span>
+								</mat-select-trigger>
+								<mat-option *ngFor="let item of standardlist" [value]="item.id">{{item.name}}</mat-option>
+							</mat-select>  
+
+                            <div *ngIf="f.standard_id.errors" class="invalid-feedback">
+                                <div *ngIf="f.standard_id.errors.required" >Certification Program is required</div>
+                                <div *ngIf="f.standard_id.errors.incorrect">{{ standard_idErrors }}</div>
+                            </div>	
+						</div>
+						
+					</div>	
+					
+					<div class="form-group row">
+					
+						<div class="col-4">
+							<label>Buyer <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Buyer" matTooltipClass="tooltip-text-size" aria-tooltip="Buyer" matTooltipPosition="right"></i>
+							<select formControlName="buyer_id" [class.is-invalid]="f.buyer_id.invalid && f.buyer_id.touched" class="form-control select2" (change)="loadAddress($event.target.value,'buyer')">
+                                <option value="">-- Buyer --</option>
+                                <option *ngFor="let buyer of buyerlist" value = {{buyer.id}}>{{buyer.name}}</option>
+                            </select>
+							<span *ngIf="loading?.buyer" class="spinner-border spinner-border-sm mr-1"></span>
+							<div *ngIf="buyer_address?.address" class="file-border-box">
+								<span>{{ buyer_address.address }}, {{ buyer_address.city }}, {{ buyer_address.state ? buyer_address.state + ', ' : '' }}{{ buyer_address.country }} - {{ buyer_address.zipcode }}</span>
+							</div>
+                            <div *ngIf="f.buyer_id.errors" class="invalid-feedback">
+                                <div *ngIf="f.buyer_id.errors.required" >Buyer is required</div>
+                            </div>	
+						</div>
+
+						<div class="col-4">
+							<label>USDA Nop Complaint <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="USDA Nop Complaint" matTooltipClass="tooltip-text-size" aria-tooltip="USDA Nop Complaint" matTooltipPosition="right"></i>
+							<select formControlName="usda_nop_compliant" [class.is-invalid]="f.usda_nop_compliant.invalid && f.usda_nop_compliant.touched" class="form-control select2">
+                                <option value="">-- USDA Nop Complaint --</option>
+                                <option value = "1">Yes</option>
+                                <option value = "2">No</option>
+                            </select>
+                            <div *ngIf="f.usda_nop_compliant.errors" class="invalid-feedback">
+                                <div *ngIf="f.usda_nop_compliant.errors.required" >USDA Nop Complaint is required</div>
+                            </div>	
+                        </div>
+						
+						<div class="col-4">
+							<label>IFOAM Standard <span class="text-danger" *ngIf="validateStatus">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="IFOAM Standard" matTooltipClass="tooltip-text-size" aria-tooltip="IFOAM Standard" matTooltipPosition="right"></i>
+
+							<mat-select placeholder="-- IFOAM Standard --" formControlName="ifoam_standard" multiple class="form-control select2" [class.is-invalid]="f.ifoam_standard.invalid && f.ifoam_standard.touched">
+								<mat-select-trigger>
+								<span *ngIf="f.ifoam_standard.value?.length == 1" >{{f.ifoam_standard.value ? getifoamSelectedValue(f.ifoam_standard.value): ''}}</span>
+								<span *ngIf="f.ifoam_standard.value?.length > 1" class="example-additional-selection">
+									{{f.ifoam_standard.value.length}} {{ 'selected' }}
+								</span>
+								</mat-select-trigger>
+								<mat-option *ngFor="let item of ifoamstdlist" [value]="item.id">{{item.name}}</mat-option>
+							</mat-select>  
+
+                            <div *ngIf="f.ifoam_standard.errors" class="invalid-feedback"> 
+                                <div *ngIf="f.ifoam_standard.errors.required" >IFOAM Standard is required</div>
+                            </div>	
+						</div>			
+						
+					</div>								
+										
+					<div class="form-group row">					
+                        <div class="col-12">
+                            <label>Identification Code </label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Identification Code" matTooltipClass="tooltip-text-size" aria-tooltip="Identification Code" matTooltipPosition="right"></i>
+                            <textarea type="text" maxlength="185" formControlName="comments" [class.is-invalid]="f.comments.invalid && f.comments.touched " class="form-control" placeholder="Identification Code" ></textarea>
+							<div *ngIf="f.comments.errors" class="invalid-feedback">
+								<div *ngIf="f.comments.errors.required" >Identification Code is required</div>
+								<div *ngIf="f.comments.hasError('whitespace')" >Please enter valid Identification Code</div>	
+								<div *ngIf="f.comments.errors.maxlength">Identification Code cannot exceed 185 characters</div>							
+							</div>
+                        </div>  
+                    </div>
+
+					<span class="label-pad" style="width:330px;"><label>Do you want to share TC to brand ?</label></span> -  <span class="name-pad">
+						<input type="radio" id="yes" [checked]="f.sel_reduction.value=='1'?true:false" formControlName="sel_reduction" value="1" >&nbsp; <label for="yes">Yes</label>
+						&nbsp;&nbsp;&nbsp;&nbsp;
+						<input type="radio" id="no" [checked]="f.sel_reduction.value=='2'?true:false" formControlName="sel_reduction" value="2">&nbsp;<label for="no"> No</label>
+					</span>
+
+					<div class="cs-pgm-blue top" *ngIf="f.sel_reduction.value==1">
+						<div class="col-12 pad-left pad-right">
+							<!-- <div class="form-group row">
+								<label>Click here to Download the Consent Form. </label>
+								<a style="font-size: 20px;" href="javascript:void(0);"  (click)="openmodal(downloading);DownloadConsentFile('consent','Agreement_Consent_Form_Inditex_Suppliers_(R2).docx')" class="pl-2" title="Download" alt="Download"><i class="fa fa-file-pdf-o text-danger"></i></a>
+							</div> -->
+							<div class="form-group row">
+								<!--  -->
+								
+								<!-- <div class="col-4">
+									<label>Brands <span class="text-danger">*</span></label>
+									<mat-select placeholder="Brands" formControlName="brand_id" multiple class="form-control select2" [class.is-invalid]="f.brand_id.invalid && f.brand_id.touched">
+										<mat-select-trigger>
+										<span *ngIf="f.brand_id.value?.length == 1" >{{f.brand_id.value ? getSelectedValue('brand_id', f.brand_id.value): ''}}</span>
+										<span *ngIf="f.brand_id.value?.length > 1" class="example-additional-selection">
+											{{f.brand_id.value.length}} {{ 'selected' }}
+										</span>
+										</mat-select-trigger>
+										<mat-option *ngFor="let bl of brandlist" [value]="bl.id"  >{{bl.brand_name}}</mat-option>
+									</mat-select>
+								
+									<div *ngIf="f.brand_id.errors" class="invalid-feedback">
+										<div *ngIf="f.brand_id.errors.required" >Brand is required</div>
+									</div>
+									
+								</div> -->
+
+								<div class="col-4">
+									<label>Brands <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Brands" matTooltipClass="tooltip-text-size" aria-tooltip="Brands" matTooltipPosition="right"></i>
+									<select formControlName="brand_id" [class.is-invalid]="f.brand_id.invalid && f.brand_id.touched" class="form-control select2">
+										<option value="">-- Brands --</option>
+										<option  *ngFor="let bl of brandlist" value={{bl.id}}  >{{bl.brand_name}}</option>	
+									</select>
+									<div *ngIf="f.brand_id.errors" class="invalid-feedback">
+										<div *ngIf="f.brand_id.errors.required" >Brand Id is required</div>
+									</div>	
+								</div>
+
+								<div class="col-4">
+									<label>Authorized Person Name <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Authorized Person Name" matTooltipClass="tooltip-text-size" aria-tooltip="Authorized Person Name" matTooltipPosition="right"></i>
+									<input type="text" formControlName="authorized_name"  class="form-control" placeholder="Authorized Person Name" [class.is-invalid]="f.authorized_name.invalid && f.authorized_name.touched">
+									<div *ngIf="f.authorized_name.errors" class="invalid-feedback">
+										<div *ngIf="f.authorized_name.errors.required">Authorized Person Name is required</div>
+										<div *ngIf="f.authorized_name.hasError('whitespace')" >Invalid Authorized Person Name</div>
+										<div *ngIf="f.authorized_name.errors.maxlength">Authorized Person Name cannot exceed 255 characters</div>
+									</div>
+								</div> 
+
+								<div class="col-4">
+									<label> Date <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Brand Consent Date" matTooltipClass="tooltip-text-size" aria-tooltip="Brand Consent Date" matTooltipPosition="right"></i><br>
+									<input style="width: 70%; display: inline;float:left;" type="text" formControlName="brand_consent_date" class="form-control" placeholder="Date" [class.is-invalid]="f.brand_consent_date.invalid && f.brand_consent_date.touched" matInput [matDatepicker]="brand_consent_date" (click)="brand_consent_date.open()">
+									<mat-datepicker-toggle matSuffix  [for]="brand_consent_date"></mat-datepicker-toggle>
+									<mat-datepicker #brand_consent_date></mat-datepicker>
+									
+									<div *ngIf="f.brand_consent_date.errors" class="invalid-feedback">
+										<div *ngIf="f.brand_consent_date.errors.required">Brand Consent Date is required</div>
+									</div>
+								</div>
+
+                                 
+								<!-- <div class="col-4">
+									<label>Brand File<span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Brand File" matTooltipClass="tooltip-text-size" aria-tooltip="Brand File" matTooltipPosition="right"></i>
+									<input type="file" formControlname="qua_exam_file" (change)="qua_examfileChange($event)"  >
+									<div style="font-size:11px;" >supported file formats: 
+										<span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs}}<span *ngIf="!last">, </span> </span>
+									</div>
+									
+									<div *ngIf="qua_exam_file" class="file-border-box">
+										<ng-container *ngIf="!standardFormDetails.id">{{ qua_exam_file }}</ng-container> -->
+										<!-- <a *ngIf="standardFormDetails.id" href="javascript:void(0);" (click)="downloadstdFile(standardFormDetails.id,'standard',qua_exam_file);open(downloading)" ><i class="fa fa-download"></i> {{ qua_exam_file }}</a> -->
+										<!-- <a href="javascript:void(0);"  (click)="removequa_examFiles()" style="color:red; font-weight:bold;margin-right: 5px;float:right;" >X</a>
+									</div>
+
+									<div *ngIf="qua_examfileErrors" class="validationerror" >
+										{{ qua_examfileErrors }} 
+									</div>
+								</div> -->
+<!-- 
+								<div class="col-4">
+									<label>Brand File</label><br>
+									<input type="file" formControlname="brand_file" (change)="brandfileChange($event)" style="width:184px">
+									<br><div style="font-size:11px;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs}}<span *ngIf="!last">, </span> </span></div>
+									<div *ngIf="brand_file" style="padding:5px; border:1px solid #cecece; background-color: beige; height:32px;width: 50%;">
+									  {{ brand_file }}
+									   <a href="javascript:void(0);"  (click)="removebrandFile()" style="color:red; font-weight:bold;margin-right: 5px;float:right;" >X</a>
+								   </div>
+									  <div *ngIf="brandFileError" class="validationerror" >
+										{{brandFileError}}
+									  </div>
+								  </div>-->	
+							</div>
+							
+							<div class="col-12 m-t-20 pad-left pad-right">
+							<!-- <table id="datatable" class="table table-bordered tab-bor col-12 pad-left pad-right" >
+								<thead>
+								<tr>
+									<th scope="col" class="center" width="3%">S.No</th>
+									<th scope="col"  >Standard Name</th>
+									<th scope="col"  >License Number</th>
+									<th scope="col"  >Expiry Date</th>
+									<th scope="col" class="center" >File(s)</th>
+									<th scope="col" class="center" width="8%">Action</th>
+								</tr>
+								</thead>
+								<tbody>
+									<tr *ngIf="standardEntries?.length==0">
+										<td colspan="6" class="center">No Standard Added</td>
+									</tr>
+									<tr *ngFor="let standardEntry of standardEntries; let i=index; " [class.currentedit]="f.sel_standard.value==standardEntry.id">
+										<td scope="row" class="center">{{  1 + i }}</td>
+										<td>{{ standardEntry.name }}</td>
+										<td>{{ standardEntry.license_number }}</td>
+										<td>{{ standardEntry.expiry_date }}</td>
+										<td  class="center">
+												<ul class="filelist">
+													<li style="width:100%;" *ngFor="let item of filterItemsOfType(standardEntry.uploadedFileNames); index as i"   >
+														{{ item?.name }}
+													</li>
+												</ul>
+										</td>
+										<td  class="center">
+											<a href="javascript:void(0);" (click)="editStandard(standardEntry.id)" title="Edit" alt="Edit"> <i class="fa fa-edit"></i> </a>
+											&nbsp;&nbsp;
+											<a href="javascript:void(0);" (click)="removeStandard(standardEntry.id)" title="Delete" alt="Delete"> <i class="fa fa-trash text-danger"></i> </a>
+							
+									</td>
+									</tr>
+								</tbody>
+							</table> -->
+							</div>
+						   
+						</div>
+					</div>
+
+					<div class="col-lg-12 text-center mt-5 mb-5">
+							<button [disabled]="loading?.button || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+								<span *ngIf="loading?.button" class="spinner-border spinner-border-sm mr-1"></span>
+								{{ tc_request_edit ? 'Update' : 'Next' }}
+							</button>
+														
+							<button *ngIf="resultdata?.requestdata" [disabled]="loading?.button || buttonDisable" type="button" (click)="fnTCEdit('request_view')" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2">
+								<span *ngIf="loading?.button" class="spinner-border spinner-border-sm mr-1"></span>
+								Close
+							</button>
+							
+							<!--
+							<button [disabled]="loading?.button || buttonDisable" type="button" [routerLink]="['/transaction-certificate/request/list']" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2">
+								<span *ngIf="loading?.button" class="spinner-border spinner-border-sm mr-1"></span>
+								Cancel
+							</button>
+							-->
+														
+							<div class="clearfix"></div>
+							
+							<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+					</div>
+						
+				</div>
+				
+				<div class="clearfix"></div>
+				
+				<div *ngIf="resultdata?.requestdata" class="col-12 row enq-view pad-right m-t-15">
+                    <div class="col-8 text-primary" style="border-bottom: 1px solid #d7d7d7;font-size:16px;padding-left:0px;">
+						Products on TC
+                    </div>
+                    <div class="col-4 text-right pad-right" style="border-bottom: 1px solid #d7d7d7;font-size:16px;">
+						<a href="javascript:void(0);" (click)="addProductPop(productEntryDetails)" title="Add Product" alt="Add Product"> <i class="fa fa-plus"></i> </a>						
+					</div>
+                </div>
+				
+				<div *ngIf="resultdata?.requestdata" class="card-box enq-view m-t-10">					
+					<table class="table table-bordered col-12" style="font-size:13px;">
+						<thead>
+						<tr>
+							<th scope="col" class="center" style="vertical-align:middle;">S.No</th>
+							<th scope="col" style="vertical-align:middle; width:15%;">Product Details</th>
+							<th scope="col" width="15%" style="vertical-align:middle;">Trade Name / Technical Details</th>
+							<th scope="col" style="vertical-align:middle;">Packaging Details</th>
+							<th scope="col" style="vertical-align:middle;">Invoice and Transport Details</th>
+							<!--	
+							<th scope="col" class="text-center" style="vertical-align:middle;">Net Weight (kg)</th>
+							<th scope="col" class="text-center" style="vertical-align:middle;">Wastage Weight (kg)</th>
+							-->
+							<th scope="col" class="text-center" style="vertical-align:middle;">Raw Material Required (kg)</th>
+							<th scope="col" class="text-center" style="vertical-align:middle;">Raw Material Used (kg)</th>
+							<th scope="col" class="text-center" style="vertical-align:middle;">Input Valid? <i class="fa fa-info-circle   ml-1 info-icon-size text-white" matTooltip="Input Valid?" matTooltipClass="tooltip-text-size" aria-tooltip="Input Valid?" matTooltipPosition="right"></i></th>
+							<th scope="col" class="text-center" style="vertical-align:middle;">Select Stock <i class="fa fa-info-circle   ml-1 info-icon-size text-white" matTooltip="Select Stock" matTooltipClass="tooltip-text-size" aria-tooltip="Select Stock" matTooltipPosition="right"></i></th>
+							<th scope="col" class="text-center" style="vertical-align:middle;">Action <i class="fa fa-info-circle  ml-1 info-icon-size text-white" matTooltip="Product Action" matTooltipClass="tooltip-text-size" aria-tooltip="Product Action" matTooltipPosition="right"></i></th>
+						</tr>
+						</thead>
+						<tbody>
+							<ng-container *ngIf="resultdata?.requestproduct?.length>0">
+								<tr *ngFor="let product of resultdata?.requestproduct; index as i">
+									<td scope="row" class="center">{{ 1+ i }}</td>
+									<td [innerHTML]="product.product_name"></td>
+									<td [innerHTML]="product.trade_name"></td>
+									<td>{{ product.packed_in +' / '+ product.unit_information }}</td>
+									<td [innerHTML]="product.invoice_details"></td>								
+									<!--		
+									<td class="text-right">{{ product.net_weight }}</td>
+									<td class="text-right">{{ product.wastage_weight }}</td>
+									-->
+									<td class="text-right">{{ product.total_net_weight }}</td>
+									<td class="text-right">{{ product.total_used_weight }}</td>
+									<td class="center"> 
+										<span *ngIf="product.product_status==1" class="text-success"><i class="fa fa-check"></i></span> 
+										<span *ngIf="product.product_status!=1" class="text-danger"><i class="fa fa-ban"></i></span> 
+									</td>
+									<td class="center">
+										<a href="javascript:void(0);" (click)="addRawMaterialInputPop(rawMaterialInputEntryDetails,product)" title="Select Stock" alt="Select Stock" *ngIf="product.product_status!=1"> <i class="fa fa-plus" *ngIf="product.product_status!=1"></i> </a>
+										<a href="javascript:void(0);" (click)="addRawMaterialInputPop(rawMaterialInputEntryDetails,product)" title="Edit Stock" alt="Edit Stock" *ngIf="product.product_status==1"> <i class="fa fa-pencil" *ngIf="product.product_status==1"></i> </a>
+									</td>
+									<td width="8%">
+										<a href="javascript:void(0);" (click)="viewProduct(productDetails,product)" title="View Product" alt="View Product"> <i class="fa fa-eye"></i> </a>&nbsp;
+										<a href="javascript:void(0);" (click)="editProduct(productEntryDetails,i,product)" title="Edit Product" alt="Edit Product" > <i class="fa fa-edit"></i> </a>&nbsp;
+										<a href="javascript:void(0);" (click)="removeProductData(confirmcontent,product)" title="Delete Product" alt="Delete Product"  > <i class="fa fa-trash text-danger"></i> </a>
+										<a href="javascript:void(0);" (click)="cloneProductData(product)" title="Clone Product" alt="Clone Product"  > <i class="fa fa-clone"></i> </a>
+									</td>
+								</tr> 								
+							</ng-container>               
+							<tr  *ngIf="resultdata?.requestproduct?.length==0" >
+							  <td colspan="11" class="center">{{ commontxt.norecords }}</td>
+							</tr>
+						</tbody>
+					</table>				
+				</div>										
+				<div class="clearfix"></div>                                
+            </form>
+			
+			<div class="clearfix"></div>
+			
+			<!-------------  Evidence Upload Code Start Here  ---------------->
+			<div *ngIf="resultdata?.requestdata && evidenceFormStatus" class="m-t-15">
+				<form  [formGroup]="evidenceForm"  >
+				<!-- (ngSubmit)="onEvidenceSubmit()"-->
+					<div class="col-12 row enq-view pad-right">
+						<div class="col-8 text-primary" style="border-bottom: 1px solid #d7d7d7;font-size:16px;padding-left:0px;">
+							Evidence for TC
+						</div>
+						<div class="col-4 text-right pad-right text-primary" style="border-bottom: 1px solid #d7d7d7;font-size:16px;">
+							&nbsp;
+						</div>
+					</div>
+					
+					<div class="col-12 enq-view pad-left">
+						<div class="form-group row m-t-15">
+							<div class="col-6">
+								<label>Sales Invoice with Packing List <span class="text-danger">*</span></label><br>
+								<input type="file" formControlname="sales_invoice_with_packing_list" (change)="evidenceDocument($event,'sales_invoice_with_packing_list')" style="width:184px"  >
+								<br><div style="font-size:11px;">supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs }}<span *ngIf="!last">, </span> </span></div>
+								<!--<div *ngIf="sales_invoice_with_packing_list" style="padding:5px; border:1px solid #cecece; background-color: beige; height:32px;width: 100%;">-->
+								<ng-container *ngFor="let salefile of sales_invoice_with_packing_list; index as fi"  >
+									<div *ngIf="!salefile.deleted" class="file-border-box">
+										<a href="javascript:void(0);" *ngIf="!salefile.added" (click)="downloadEvidenceFile(salefile.id,'sales_invoice_with_packing_list',salefile.name);openmodal(downloading);" > <i class="fa fa-download" ></i>&nbsp;{{ salefile.name }}</a>
+
+										<span *ngIf="salefile.added">{{ salefile.name }}</span>
+										<a href="javascript:void(0);"  (click)="removeEvidenceDocument('sales_invoice_with_packing_list',salefile,fi)" style="color:red; font-weight:bold;margin-right: 5px;float:right;" >X</a>
+									</div>
+								</ng-container>
+								<div *ngIf="sales_invoice_with_packing_listFileErr" class="validationerror" >
+									{{sales_invoice_with_packing_listFileErr}}
+								</div>
+							</div>
+							
+							<div class="col-6">
+								<label>Transport Document <span class="text-danger">*</span></label><br>
+								<input type="file" formControlname="transport_document" (change)="evidenceDocument($event,'transport_document')" style="width:184px"  >
+								<br><div style="font-size:11px;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs }}<span *ngIf="!last">, </span> </span></div>
+
+								<ng-container *ngFor="let salefile of transport_document; index as fi"  >
+
+									<div  *ngIf="!salefile.deleted" class="file-border-box">
+										<a href="javascript:void(0);" *ngIf="!salefile.added" (click)="downloadEvidenceFile(salefile.id,'transport_document',salefile.name);openmodal(downloading);" > <i class="fa fa-download" ></i>&nbsp;{{ salefile.name }}</a>
+
+										<span *ngIf="salefile.added">{{ salefile.name }}</span>
+										<a href="javascript:void(0);"  (click)="removeEvidenceDocument('transport_document',salefile,fi)" style="color:red; font-weight:bold;margin-right: 5px;float:right;" >X</a>
+									</div>
+								</ng-container>
+								<div *ngIf="transport_documentFileErr" class="validationerror" >
+									{{transport_documentFileErr}}
+								</div>
+							</div>
+							
+						</div>					
+						
+						<div class="form-group row m-t-15">
+							<div class="col-6">
+								<label>Mass Balance Sheet ( QCS ) </label><br>
+								<input type="file" formControlname="mass_balance_sheet" (change)="evidenceDocument($event,'mass_balance_sheet')" style="width:184px"  >
+								<br><div style="font-size:11px;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs }}<span *ngIf="!last">, </span> </span></div>
+								<ng-container *ngFor="let salefile of mass_balance_sheet; index as fi"  >
+									<div *ngIf="!salefile.deleted"  class="file-border-box">
+										<a href="javascript:void(0);" *ngIf="!salefile.added" (click)="downloadEvidenceFile(salefile.id,'mass_balance_sheet',salefile.name);openmodal(downloading);" > <i class="fa fa-download" ></i>&nbsp;{{ salefile.name }}</a>
+
+										<span *ngIf="salefile.added">{{ salefile.name }}</span>
+										<a href="javascript:void(0);"  (click)="removeEvidenceDocument('mass_balance_sheet',salefile,fi)" style="color:red; font-weight:bold;margin-right: 5px;float:right;" >X</a>
+									</div>
+								</ng-container>
+								<div *ngIf="mass_balance_sheetFileErr" class="validationerror" >
+									{{mass_balance_sheetFileErr}}
+								</div>
+							</div>
+						
+							<div class="col-6">
+								<label>Test Report </label><br>
+								<input type="file" formControlname="test_report" (change)="evidenceDocument($event,'test_report')" style="width:184px"  >
+								<br><div style="font-size:11px;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs }}<span *ngIf="!last">, </span> </span></div>
+								<ng-container *ngFor="let salefile of test_report; index as fi"  >
+									<div  *ngIf="!salefile.deleted" class="file-border-box">
+										<a href="javascript:void(0);" *ngIf="!salefile.added" (click)="downloadEvidenceFile(salefile.id,'test_report',salefile.name);openmodal(downloading);" > <i class="fa fa-download" ></i>&nbsp;{{ salefile.name }}</a>
+
+										<span *ngIf="salefile.added">{{ salefile.name }}</span>
+										<a href="javascript:void(0);"  (click)="removeEvidenceDocument('test_report',salefile,fi)" style="color:red; font-weight:bold;margin-right: 5px;float:right;" >X</a>
+									</div>
+								</ng-container>
+								<div *ngIf="test_reportFileErr" class="validationerror" >
+									{{test_reportFileErr}}
+								</div>
+							</div>
+						</div>						
+					</div>
+					
+					
+					<div class="col-lg-12 text-center mt-4 mb-4" *ngIf="((resultdata?.requestdata?.request_status==enumstatus['waiting_for_osp_review'] || resultdata?.requestdata?.request_status==enumstatus['pending_with_osp'] ) && (userType==3 || userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('assign_as_oss_review_for_tc')) )) || (resultdata?.requestdata?.request_status==enumstatus['review_in_process'] && ((userType==1 && resultdata.requestdata.reviewer_id==userdetails.uid )  || userdetails.resource_access==1) )">
+						<button (click)="onEvidenceSubmit('other')"  [disabled]="loading?.button || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+							<span *ngIf="loading?.button" class="spinner-border spinner-border-sm mr-1"></span>
+							Update Evidence
+						</button>
+					</div>
+
+					<div class="col-lg-12 text-center mt-4 mb-4" *ngIf="resultdata?.requestdata?.request_status==enumstatus['open'] || resultdata?.requestdata?.request_status==enumstatus['draft'] || resultdata?.requestdata?.request_status==enumstatus['pending_with_customer']">
+					
+						<button (click)="onEvidenceSubmit('draft')"  [disabled]="loading?.button || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+							<span *ngIf="loading?.button" class="spinner-border spinner-border-sm mr-1"></span>
+							{{ sales_invoice_with_packing_list && resultdata?.requestdata?.request_status>enumstatus['open'] ? 'Update Evidence' : 'Save Evidence'}}
+						</button>
+						
+						
+						
+						<button *ngIf="resultdata?.requestdata?.request_status!=enumstatus['rejected'] && resultdata?.requestdata?.request_status>enumstatus['open']" [disabled]="loading?.button || buttonDisable" (click)="openmodal(downloading);DownloadFile(id,resultdata.requestdata.tc_filename);" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 ml-2">
+							<span *ngIf="loading?.button" class="spinner-border spinner-border-sm mr-1"></span>
+							 {{resultdata.requestdata.request_status!=enumstatus['approved'] ? 'View Draft TC' : 'View TC' }} 
+						</button>
+													
+						<button *ngIf="resultdata?.requestdata?.request_status!=enumstatus['rejected'] && resultdata?.requestdata?.request_status>enumstatus['open'] || resultdata?.requestdata?.request_status==enumstatus['pending_with_customer']" (click)="onEvidenceSubmit('approval')" [disabled]="loading?.button || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 ml-2">
+							<span *ngIf="loading?.button" class="spinner-border spinner-border-sm mr-1"></span>
+							{{ sales_invoice_with_packing_list ? 'Update Evidence' : 'Save Evidence'}} & Submit for Approval
+						</button>						
+													
+						<div class="clearfix"></div>
+						
+						
+					</div>
+					<app-usermessage [success]="finalsuccess" [error]="finalerror"  ></app-usermessage>
+				</form>	
+			</div>
+			<!-------------  Evidence Upload Code End Here  ---------------->
+        </div>
+    </div>
+</div>
+
+<ng-template #productEntryDetails let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title" style="font-size:16px !important;"> {{ this.productdata ? 'Edit' : 'Add' }} Product</h4>		
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<div class="alert alert-success" *ngIf="productsuccess">{{productsuccess}}</div>
+		<div *ngIf="!productsuccess" >
+			<form  [formGroup]="productForm">
+						
+				<div class="form-group row">
+	
+					<div class="col-12">
+						<label for="product_id">Product <span class="text-danger">*</span></label>	<i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Product" matTooltipClass="tooltip-text-size" aria-tooltip="Product" matTooltipPosition="right"></i>				
+						<select formControlName="product_id" class="form-control select2" [class.is-invalid]="pf.product_id.invalid && pf.product_id.touched">
+							<option value="">-- Product --</option>
+							<option  *ngFor="let item of resultdata?.productlist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+						</select> 
+						
+						<div *ngIf="pf.product_id.errors" class="invalid-feedback">
+							<div *ngIf="pf.product_id.errors.required">Product is required</div>
+						</div>						
+					</div>			
+					
+				</div>
+				
+				<div class="form-group row">
+				
+					<div class="col-8">
+						<label>Trade Name / Technical Specification <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Trade Name / Technical Specification" matTooltipClass="tooltip-text-size" aria-tooltip="Trade Name / Technical Specification" matTooltipPosition="right"></i>
+						<input type="text" formControlName="trade_name" [class.is-invalid]="pf.trade_name.invalid && pf.trade_name.touched " class="form-control" placeholder="Trade Name / Technical Specification">
+						<div *ngIf="pf.trade_name.errors" class="invalid-feedback">
+							<div *ngIf="pf.trade_name.errors.required" >Trade Name / Technical Specification is required</div>
+							<div *ngIf="pf.trade_name.hasError('whitespace')" >Please enter valid Trade Name / Technical Specification</div>
+							<div *ngIf="pf.trade_name.errors.maxlength">Trade Name / Technical Specification cannot exceed 255 characters</div>								
+						</div>
+					</div>								
+				
+					<div class="col-2">
+						<label>Packed In <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Packed In" matTooltipClass="tooltip-text-size" aria-tooltip="Packed In" matTooltipPosition="right"></i>
+						<input type="text" formControlName="packed_in" [class.is-invalid]="pf.packed_in.invalid && pf.packed_in.touched " class="form-control" placeholder="Packed In">
+						<div *ngIf="pf.packed_in.errors" class="invalid-feedback">
+							<div *ngIf="pf.packed_in.errors.required" >Packed In is required</div>
+							<div *ngIf="pf.packed_in.hasError('whitespace')" >Please enter valid Packed In</div>
+							<div *ngIf="pf.packed_in.errors.maxlength">Packed In cannot exceed 255 characters</div>								
+						</div>
+					</div>
+					
+					<div class="col-2">
+						<label>Lot Number/Style Number <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Lot Number/Style Number" matTooltipClass="tooltip-text-size" aria-tooltip="Lot Number/Style Number" matTooltipPosition="right"></i>
+						<input type="text" formControlName="lot_ref_number" [class.is-invalid]="pf.lot_ref_number.invalid && pf.lot_ref_number.touched " class="form-control" placeholder="Lot Number/Style Number">
+						<div *ngIf="pf.lot_ref_number.errors" class="invalid-feedback">
+							<div *ngIf="pf.lot_ref_number.errors.required" >Lot Number/Style Number is required</div>
+							<div *ngIf="pf.lot_ref_number.hasError('whitespace')" >Please enter valid Lot Number/Style Number</div>
+							<!--<div *ngIf="pf.lot_ref_number.errors.maxlength">Lot Number/Style Number cannot exceed 255 characters</div>-->
+						</div>
+					</div>			
+					
+				</div>				
+				
+				<div class="form-group row">
+				
+					<div class="col-2">
+						<label>Units (Pcs/M) </label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Units (Pcs/M)" matTooltipClass="tooltip-text-size" aria-tooltip="Units (Pcs/M)" matTooltipPosition="right"></i>
+						<input type="text" formControlName="unit_information" [class.is-invalid]="pf.unit_information.invalid && pf.unit_information.touched " class="form-control" placeholder="Units (Pcs/M)">
+						<div *ngIf="pf.unit_information.errors" class="invalid-feedback">
+							<!--<div *ngIf="pf.unit_information.errors.required" >Units ( Pcs/M) is required</div>-->
+							<div *ngIf="pf.unit_information.hasError('whitespace')" >Please enter valid Units (Pcs/M)</div>
+							<div *ngIf="pf.unit_information.errors.maxlength">Units (Pcs/M) cannot exceed 255 characters</div>								
+						</div>
+					</div>	
+					
+					<div class="col-3">
+						<label>Purchase Order No. <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Purchase Order No." matTooltipClass="tooltip-text-size" aria-tooltip="Purchase Order No." matTooltipPosition="right"></i>
+						<input type="text" formControlName="purchase_order_no" [class.is-invalid]="pf.purchase_order_no.invalid && pf.purchase_order_no.touched " class="form-control" placeholder="Purchase Order No.">
+						<div *ngIf="pf.purchase_order_no.errors" class="invalid-feedback">
+							<div *ngIf="pf.purchase_order_no.errors.required" >Purchase Order No. is required</div>
+							<div *ngIf="pf.purchase_order_no.hasError('whitespace')" >Please enter valid Purchase Order No.</div>
+							<div *ngIf="pf.purchase_order_no.errors.maxlength">Purchase Order No. cannot exceed 255 characters</div>								
+						</div>
+					</div>	
+
+					<div class="col-3">
+						<label>Purchase Order Date <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Purchase Order Date" matTooltipClass="tooltip-text-size" aria-tooltip="Purchase Order Date" matTooltipPosition="right"></i><br>												
+						<input style="width: 70%; display: inline;float:left;" type="text" [max]="maxDate" formControlName="purchase_order_date" class="form-control" placeholder="Purchase Order Date" [class.is-invalid]="pf.purchase_order_date.invalid && pf.purchase_order_date.touched" matInput [matDatepicker]="purchase_order_date" (click)="purchase_order_date.open()">
+						<mat-datepicker-toggle matSuffix  [for]="purchase_order_date" style="float:left;"></mat-datepicker-toggle>
+						<mat-datepicker #purchase_order_date></mat-datepicker>
+						<div class="clearfix"></div>
+						<div *ngIf="pf.purchase_order_date.errors" class="invalid-feedback">
+							<div *ngIf="pf.purchase_order_date.errors.required">Purchase Order is required</div>														
+						</div>
+					</div>
+								
+					<div class="col-2">
+						<label>Invoice No. <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Invoice No." matTooltipClass="tooltip-text-size" aria-tooltip="Invoice No." matTooltipPosition="right"></i>
+						<input type="text" formControlName="invoice_no" [class.is-invalid]="pf.invoice_no.invalid && pf.invoice_no.touched " class="form-control" placeholder="Invoice No.">
+						<div *ngIf="pf.invoice_no.errors" class="invalid-feedback">
+							<div *ngIf="pf.invoice_no.errors.required" >Invoice No. is required</div>
+							<div *ngIf="pf.invoice_no.hasError('whitespace')" >Please enter valid Invoice No.</div>
+							<div *ngIf="pf.invoice_no.errors.maxlength">Invoice No. cannot exceed 255 characters</div>								
+						</div>
+					</div>
+					
+					<div class="col-2">
+						<label>Invoice Date <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Invoice Date" matTooltipClass="tooltip-text-size" aria-tooltip="Invoice Date" matTooltipPosition="right"></i><br>												
+						<input style="width: 70%; display: inline;float:left;" type="text" [max]="maxDate" formControlName="invoice_date" class="form-control" placeholder="Invoice Date" [class.is-invalid]="pf.invoice_date.invalid && pf.invoice_date.touched" matInput [matDatepicker]="invoice_date" (click)="invoice_date.open()">
+						<mat-datepicker-toggle matSuffix  [for]="invoice_date" style="float:left;"></mat-datepicker-toggle>
+						<mat-datepicker #invoice_date></mat-datepicker>
+						<div class="clearfix"></div>
+						<div *ngIf="pf.invoice_date.errors" class="invalid-feedback">
+							<div *ngIf="pf.invoice_date.errors.required">Invoice Date is required</div>														
+						</div>
+					</div>	
+				
+				</div>				
+				
+				<div class="form-group row">
+									
+					<div class="col-2">
+						<label>Transport By <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Transport By" matTooltipClass="tooltip-text-size" aria-tooltip="Transport By" matTooltipPosition="right"></i>
+						<select formControlName="transport_id" [class.is-invalid]="pf.transport_id.invalid && pf.transport_id.touched" class="form-control select2">
+							<option value="">-- Transport By --</option>
+							<option *ngFor="let transport of transportlist" value = {{transport.id}}>{{transport.name}}</option>
+						</select>
+						<div *ngIf="pf.transport_id.errors" class="invalid-feedback">
+							<div *ngIf="pf.transport_id.errors.required" >Transport By is required</div>
+						</div>	
+					</div>
+				
+					<div class="col-3">
+						<label>Transport Document No. <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Transport Document No." matTooltipClass="tooltip-text-size" aria-tooltip="Transport Document No." matTooltipPosition="right"></i>
+						<input type="text" formControlName="transport_document_no" [class.is-invalid]="pf.transport_document_no.invalid && pf.transport_document_no.touched " class="form-control" placeholder="Transport Document No.">
+						<div *ngIf="pf.transport_document_no.errors" class="invalid-feedback">
+							<div *ngIf="pf.transport_document_no.errors.required" >Transport Document No. is required</div>
+							<div *ngIf="pf.transport_document_no.hasError('whitespace')" >Please enter valid Transport Document No.</div>
+							<div *ngIf="pf.transport_document_no.errors.maxlength">Transport Document No. cannot exceed 255 characters</div>								
+						</div>
+					</div>
+					
+					<div class="col-3">
+						<label>Transport Document Date <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Transport Document Date" matTooltipClass="tooltip-text-size" aria-tooltip="Transport Document Date" matTooltipPosition="left"></i>						
+						<input style="width: 70%; display: inline;float:left;" [max]="maxDate" type="text" formControlName="transport_document_date" class="form-control" placeholder="Transport Document Date" [class.is-invalid]="pf.transport_document_date.invalid && pf.transport_document_date.touched" matInput [matDatepicker]="transport_document_date" (click)="transport_document_date.open()">
+						<mat-datepicker-toggle matSuffix  [for]="transport_document_date" style="float:left;"></mat-datepicker-toggle>
+						<mat-datepicker #transport_document_date></mat-datepicker>						
+						<div *ngIf="pf.transport_document_date.errors" class="invalid-feedback">
+							<div *ngIf="pf.transport_document_date.errors.required" >Transport Document Date is required</div>														
+						</div>
+					</div>
+					
+					<div class="col-2">
+						<label>Transport Company Name </label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Transport Company Name" matTooltipClass="tooltip-text-size" aria-tooltip="Transport Company Name" matTooltipPosition="right"></i>
+						<input type="text" formControlName="transport_company_name" [class.is-invalid]="pf.transport_company_name.invalid && pf.transport_company_name.touched " class="form-control" placeholder="Transport Company Name">
+						<div *ngIf="pf.transport_company_name.errors" class="invalid-feedback">
+							<div *ngIf="pf.transport_company_name.errors.required" >Transport Company Name is required</div>
+							<div *ngIf="pf.transport_company_name.hasError('whitespace')" >Please enter valid Transport Company Name</div>
+							<div *ngIf="pf.transport_company_name.errors.maxlength">Transport Company Name cannot exceed 255 characters</div>								
+						</div>
+					</div>
+					
+					<div class="col-2">
+						<label>Vehicle/Container No. </label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Vehicle/Container No" matTooltipClass="tooltip-text-size" aria-tooltip="Vehicle/Container No" matTooltipPosition="right"></i>
+						<input type="text" formControlName="vehicle_container_no" [class.is-invalid]="pf.vehicle_container_no.invalid && pf.vehicle_container_no.touched " class="form-control" placeholder="Vehicle/Container No">
+						<div *ngIf="pf.vehicle_container_no.errors" class="invalid-feedback">
+							<div *ngIf="pf.vehicle_container_no.errors.required" >Vehicle/Container No is required</div>
+							<div *ngIf="pf.vehicle_container_no.hasError('whitespace')" >Please enter valid Vehicle/Container No</div>
+							<div *ngIf="pf.vehicle_container_no.errors.maxlength">Vehicle/Container No cannot exceed 255 characters</div>								
+						</div>
+					</div>
+					
+				</div>
+				
+				<div class="form-group row">
+														
+					<div class="col-3">
+						<label>Consignee <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Consignee" matTooltipClass="tooltip-text-size" aria-tooltip="Consignee" matTooltipPosition="right"></i>
+						<select formControlName="consignee_id" [class.is-invalid]="pf.consignee_id.invalid && pf.consignee_id.touched" class="form-control select2" (change)="loadAddress($event.target.value,'consignee')">
+							<option value="">-- Consignee --</option>
+							<option *ngFor="let consignee of buyerconsigneelist" value = {{consignee.id}}>{{consignee.name}}</option>
+						</select>
+						<span *ngIf="loading?.buyer" class="spinner-border spinner-border-sm mr-1"></span>
+							<div *ngIf="consignee_address?.address && showconsigneeaddress" class="file-border-box">
+								<span>{{ consignee_address.address }}, {{ consignee_address.city }}, {{ consignee_address.state ? consignee_address.state + ', ' : '' }}{{ consignee_address.country }} - {{ consignee_address.zipcode }}</span>
+							</div>
+						<div *ngIf="pf.consignee_id.errors" class="invalid-feedback">
+							<div *ngIf="pf.consignee_id.errors.required" >Consignee is required</div>
+						</div>	
+					</div>
+					
+					<div class="col-3">
+						<label>Gross Weight(kg) <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Gross Weight(kg)" matTooltipClass="tooltip-text-size" aria-tooltip="Gross Weight(kg)" matTooltipPosition="right"></i>
+						<input type="text" formControlName="gross_weight" [class.is-invalid]="pf.gross_weight.invalid && pf.gross_weight.touched " class="form-control" placeholder="Gross Weight" (change)="validateWeight()">
+						<div *ngIf="pf.gross_weight.errors" class="invalid-feedback">
+							<div *ngIf="pf.gross_weight.errors.required" >Gross Weight is required</div>
+							<div *ngIf="pf.gross_weight.errors.min">Gross Weight should be greater than or equal to 0.1</div>
+							<div *ngIf="pf.gross_weight.errors.pattern" >Please enter valid Gross Weight</div>
+							<div *ngIf="pf.gross_weight.errors.maxlength">Gross Weight cannot exceed 10 characters</div>								
+						</div>
+						<div *ngIf="gross_weightErr" class="validationerror" >
+							{{gross_weightErr}}
+						</div>						
+					</div>
+					
+					<div class="col-3">
+						<label>Net Weight(kg) <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Net Weight(kg)" matTooltipClass="tooltip-text-size" aria-tooltip="Net Weight(kg)" matTooltipPosition="right"></i>
+						<input type="text" formControlName="net_weight" [class.is-invalid]="pf.net_weight.invalid && pf.net_weight.touched " class="form-control" placeholder="Net Weight" (change)="validateWeight()">
+						<div *ngIf="pf.net_weight.errors" class="invalid-feedback">
+							<div *ngIf="pf.net_weight.errors.required" >Net Weight is required</div>
+							<div *ngIf="pf.net_weight.errors.min">Net Weight should be greater than or equal to 0.1</div>
+							<div *ngIf="pf.net_weight.errors.pattern" >Please enter valid Net Weight</div>
+							<div *ngIf="pf.net_weight.errors.maxlength">Net Weight cannot exceed 10 characters</div>								
+						</div>
+						<div *ngIf="net_weightErr" class="validationerror" >
+							{{net_weightErr}}
+						</div>						
+					</div>					
+					
+					<div class="col-3">
+						<label>Certified Weight(kg) <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Certified Weight" matTooltipClass="tooltip-text-size" aria-tooltip="Certified Weight" matTooltipPosition="right"></i>
+						<input type="text" formControlName="certified_weight" [class.is-invalid]="pf.certified_weight.invalid && pf.certified_weight.touched " class="form-control" placeholder="Certified Weight" (change)="validateWeight()">
+						<div *ngIf="pf.certified_weight.errors" class="invalid-feedback">
+							<div *ngIf="pf.certified_weight.errors.required" >Certified Weight is required</div>
+							<div *ngIf="pf.certified_weight.errors.min">Certified Weight should be greater than or equal to 0.1</div>
+							<div *ngIf="pf.certified_weight.errors.pattern" >Please enter valid Certified Weight</div>
+							<div *ngIf="pf.certified_weight.errors.maxlength">Certified Weight cannot exceed 10 characters</div>								
+						</div>
+						<div *ngIf="certified_weightErr" class="validationerror" >
+							{{certified_weightErr}}
+						</div>
+					</div>										
+				</div>			
+			</form>
+		</div>
+	</div>
+	
+	<div class="modal-footer" *ngIf="!productsuccess">
+		<button type="button" class="btn btn-success " [disabled]="productloading['logsbutton']" (click)="addProduct();">
+		<span *ngIf="productloading['logsbutton']" class="spinner-border spinner-border-sm mr-1"></span>{{editProductStatus == 1 ? 'Update' : 'Save'}}
+		</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">
+		<span *ngIf="productloading['logsbutton']" class="spinner-border spinner-border-sm mr-1"></span>Cancel
+		</button>
+	</div>	
+	
+</ng-template>
+
+
+<ng-template #rawMaterialInputEntryDetails let-modal>
+	
+	<form #inputMaterialForm="ngForm">
+	
+		<div class="modal-header">		
+			<table border="0" cellspacing="10" cellpadding="0" width="100%">
+				<tr>
+					<td width="9%"><h4 class="modal-title" style="font-size:16px;">Select Stock</h4></td>						
+					<td align="right" width="15%">
+						Wastage<i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Wastage" matTooltipClass="tooltip-text-size" aria-tooltip="Wastage" matTooltipPosition="left"></i> 
+						<input type="text" name="wastage_percentage" #wastage_percentage="ngModel" [(ngModel)]="inputmaterialweightlist['wastage_percentage']" pattern="^[0-9]\d*(\.\d+)?$" class="form-control text-right ml-1" style="width:60px;display:inline;" (change)="changeProductWastage(confirmproductwastagecontent,inputMaterialForm);"> %
+						<div class="validationerror" *ngIf="!wastage_percentage.valid && wastage_percentage.touched">
+							Invalid Weight
+						</div>						
+						<div class="validationerror" *ngIf="!wastagePercentageErr">
+							Wastage accept only 0 to 99
+						</div>
+					</td>
+					<td align="right" width="20%">
+						Additional Weight<i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Additional Weight" matTooltipClass="tooltip-text-size" aria-tooltip="Additional Weight" matTooltipPosition="left"></i> 
+						<input type="text" name="additional_weight" #additional_weight="ngModel" [(ngModel)]="inputmaterialweightlist['additional_weight']" pattern="^[0-9]\d*(\.\d+)?$" class="form-control text-right ml-1" style="width:80px;display:inline;" (change)="changeAdditionalWeight(confirmadditionalweightcontent,inputMaterialForm);"> kg
+						<div class="validationerror" *ngIf="!additional_weight.valid && additional_weight.touched">
+							Invalid Additional Weight
+						</div>						
+						<div class="validationerror" *ngIf="!additionalWeightErr">
+							Additional Weight accept only 0 to 99
+						</div>
+						<div class="validationerror" style="font-size:11px;" *ngIf="minRawMaterialRequiredErr">
+							{{ minRawMaterialRequiredErr }}
+						</div>
+					</td>
+					<td align="right" width="56%">
+						Net Weight: <span class="text-primary"><b>{{viewinputmaterialdata.net_weight}} kg</b></span>&nbsp;|&nbsp;
+						Wastage Weight: <span class="text-primary"><b>{{viewinputmaterialdata.wastage_weight}} kg</b></span>&nbsp;|&nbsp;
+						<b>Raw Material Required:</b>&nbsp;<span class="text-primary"><b>{{viewinputmaterialdata.total_net_weight}} kg</b></span>&nbsp;|&nbsp;
+						<b>Stock Used:</b>&nbsp;<span class="{{ remainingWeightError ? 'text-danger' : 'text-success'}}"><b>{{remainingcertifiedweight}} kg</b></span>
+					</td>
+				</tr>	
+			</table>
+				
+		
+			<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+				<span class="c-icon" aria-hidden="true">&times;</span>
+			</button>
+		</div>
+	
+	
+	
+		<div class="modal-body">
+						
+			<div *ngIf="materialloadingstatus">
+				<span class="spinner-border spinner-border-sm mr-1"></span>
+			</div>
+			<div *ngIf="!materialloadingstatus && !rawmaterialstandardcontentstatus && !rawmaterialwithoutstandardcontentstatus && !rawmaterialreclaimcontentstatus">
+				<div class="col-12 alert alert-danger mt-3 mb-0 errorSummary" >No Raw Material Added</div>
+			</div>
+			<div *ngIf="rawmaterialstandardcontentstatus || rawmaterialwithoutstandardcontentstatus || rawmaterialreclaimcontentstatus">
+			
+				<div *ngIf="!logsuccess && rawmaterialids.length>0" >				
+					
+					<div *ngIf="rawmaterialstandardname && rawmaterialstandardcontentstatus">										
+						<div *ngFor="let item of rawmaterialstandardname | keyvalue; index as i">
+							<div class="clearfix"></div>
+							<div class="enq-view{{i>0 ? ' m-t-15' : ''}}">
+								<h3 style="font-size:16px;">{{ item.value }}</h3>
+								<div *ngIf="rawmaterialstandardcontent[item.key]" class="m-b-10">					
+									<table class="table table-bordered col-12" style="font-size:13px;">
+										<thead>
+										<tr>
+											<th scope="col" width="1%" class="center">S.No</th>
+											<th scope="col" width="20%">Supplier Name</th>
+											<th scope="col" width="15%">Trade Name</th>	
+											<th scope="col" width="14%">Product Name</th>
+											<th scope="col" width="10%">Lot Number</th>
+											<th scope="col" width="11%">TC Number</th>
+											<!--
+											<th scope="col" width="11%" class="text-right">Net Weight (kg)</th>
+											-->										
+											<th scope="col" width="11%" class="text-right">Net Weight (kg)</th>
+											<th scope="col" width="14%" class="text-right">Use from Stock (kg)</th>
+										</tr>
+										</thead>
+										<tbody>
+											<ng-container *ngIf="rawmaterialstandardcontent[item.key]">
+												<tr *ngFor="let stditem of rawmaterialstandardcontent[item.key]; index as rmsc">	
+													<td style="vertical-align:middle;" width="2%" scope="row" class="center">{{ 1+ rmsc }}</td>
+													<td style="vertical-align:middle;">{{ stditem.supplier_name }}</td>
+													<td style="vertical-align:middle;">{{ stditem.trade_name }}</td>
+													<td style="vertical-align:middle;">{{ stditem.product_name }}</td>
+													<td style="vertical-align:middle;">{{ stditem.lot_number }}</td>
+													<td style="vertical-align:middle;">
+														<ng-container *ngIf="stditem.tc_attachment" >
+															<a href="javascript:void(0);" (click)="downloadRawmaterialFile(stditem.raw_material_id,'tc_attachment',stditem.tc_attachment);openmodal(downloading);" > <i class="fa fa-download" ></i>&nbsp;{{ stditem.tc_number }}</a>
+														</ng-container>
+														<ng-container *ngIf="!stditem.tc_attachment" >{{ stditem.tc_number }}</ng-container>
+													</td>
+													<!--												
+													<td style="vertical-align:middle;" class="text-right">{{ stditem.net_weight }}</td>
+													-->												
+													<td style="vertical-align:middle;" class="text-right">{{ stditem.net_weight }}</td>
+													<td style="vertical-align:middle;" width="13%">
+														<input type="text" name="input_weight{{stditem.raw_material_product_id}}" #inputWeight="ngModel" [(ngModel)]="inputmaterialweightlist['input_weight'+stditem.raw_material_product_id]" pattern="^[0-9]\d*(\.\d+)?$" min="0.1" class="form-control text-right" (change)="calculateRemainingWeight(inputMaterialForm,$event.target.value,inputWeight.valid,stditem.net_weight,stditem.raw_material_product_id,inputmaterialweightlistExists['input_weight'+stditem.raw_material_product_id])">
+														<div class="validationerror" *ngIf="!inputWeight.valid && inputWeight.touched">
+															Invalid Weight
+														</div>
+														<div class="validationerror" *ngIf="weightError.indexOf(stditem.raw_material_product_id)!==-1?true:false">
+														Input Weight should be less than or equal to Net Weight
+														</div>																							
+													</td>													
+												</tr> 								
+											</ng-container>               
+											<tr  *ngIf="!rawmaterialstandardcontent[item.key]" >
+											  <td colspan="7" class="center">{{ commontxt.norecords }}</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>	
+					</div>
+					
+					<div class="clearfix"></div>
+					<div *ngIf="rawmaterialwithoutstandardcontent && rawmaterialwithoutstandardcontentstatus" class="enq-view m-t-15">																											
+						<h3 style="font-size:16px;">Non Certified Stock</h3>						
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<thead>
+							<tr>
+								<th scope="col" width="1%" class="center">S.No</th>
+								<th scope="col" width="20%">Supplier Name</th>
+								<th scope="col" width="15%">Trade Name</th>	
+								<th scope="col" width="14%">Product Name</th>	
+								<th scope="col" width="10%">Lot Number</th>	
+								<th scope="col" width="11%">Invoice Number</th>									
+								<th scope="col" width="11%" class="text-right">Net Weight (kg)</th>									
+								<th scope="col" width="14%" class="text-right">Use from Stock (kg)</th>											
+							</tr>
+							</thead>
+							<tbody>
+								<ng-container *ngFor="let item of rawmaterialwithoutstandardcontent | keyvalue; index as mrmwsc">
+									<tr *ngFor="let stditem of item.value; index as rmwsc">	
+										<td style="vertical-align:middle;" width="2%" scope="row" class="center">{{ 1+ mrmwsc }}</td>
+										<td style="vertical-align:middle;">{{ stditem.supplier_name }}</td>
+										<td style="vertical-align:middle;">{{ stditem.trade_name }}</td>
+										<td style="vertical-align:middle;">{{ stditem.product_name }}</td>
+										<td style="vertical-align:middle;">{{ stditem.lot_number }}</td>
+										<td style="vertical-align:middle;">{{ stditem.invoice_number }}</td>
+										<td style="vertical-align:middle;" class="text-right">{{ stditem.net_weight }}</td>
+										<td style="vertical-align:middle;" width="13%">
+											<input type="text" name="input_weight{{stditem.raw_material_product_id}}" #inputWeight="ngModel" [(ngModel)]="inputmaterialweightlist['input_weight'+stditem.raw_material_product_id]" pattern="^[0-9]\d*(\.\d+)?$" min="0.1" class="form-control text-right" (change)="calculateRemainingWeight(inputMaterialForm,$event.target.value,inputWeight.valid,stditem.net_weight,stditem.raw_material_product_id,inputmaterialweightlistExists['input_weight'+stditem.raw_material_product_id])"  >
+											<div class="validationerror" *ngIf="!inputWeight.valid && inputWeight.touched">
+											Invalid Weight
+											</div>
+											<div class="validationerror" *ngIf="weightError.indexOf(stditem.raw_material_product_id)!==-1?true:false">
+											Input Weight should be less than or equal to Net Weight
+											</div>											
+										</td>													
+									</tr> 								
+								</ng-container>               
+								<tr  *ngIf="!rawmaterialwithoutstandardcontent" >
+									<td colspan="7" class="center">{{ commontxt.norecords }}</td>
+								</tr>
+							</tbody>
+						</table>					
+					</div>
+					
+					
+					<div class="clearfix"></div>
+					<div *ngIf="rawmaterialreclaimcontent && rawmaterialreclaimcontentstatus" class="enq-view m-t-15">																											
+						<h3 style="font-size:16px;">Reclaim Stock</h3>						
+						<table class="table table-bordered col-12" style="font-size:13px;">
+							<thead>
+							<tr>
+								<th scope="col" width="1%" class="center">S.No</th>
+								<th scope="col" width="20%">Supplier Name</th>
+								<th scope="col" width="15%">Trade Name</th>	
+								<th scope="col" width="14%">Product Name</th>	
+								<th scope="col" width="10%">Lot Number</th>	
+								<th scope="col" width="11%">Invoice Number</th>									
+								<th scope="col" width="11%" class="text-right">Net Weight (kg)</th>									
+								<th scope="col" width="14%" class="text-right">Use from Stock (kg)</th>											
+							</tr>
+							</thead>
+							<tbody>
+								<ng-container *ngFor="let item of rawmaterialreclaimcontent | keyvalue; index as reclaimindx">
+									<tr *ngFor="let stditem of item.value; index as rmwsc">	
+										<td style="vertical-align:middle;" width="2%" scope="row" class="center">{{ 1+ reclaimindx }}</td>
+										<td style="vertical-align:middle;">{{ stditem.supplier_name }}</td>
+										<td style="vertical-align:middle;">{{ stditem.trade_name }}</td>
+										<td style="vertical-align:middle;">{{ stditem.product_name }}</td>
+										<td style="vertical-align:middle;">{{ stditem.lot_number }}</td>
+										<td style="vertical-align:middle;">{{ stditem.invoice_number }}</td>
+										<td style="vertical-align:middle;" class="text-right">{{ stditem.net_weight }}</td>
+										<td style="vertical-align:middle;" width="13%">
+											
+											<input type="text" name="input_weight{{stditem.raw_material_product_id}}" #inputWeight="ngModel" [(ngModel)]="inputmaterialweightlist['input_weight'+stditem.raw_material_product_id]" pattern="^[1-9]\d*(\.\d+)?$" class="form-control text-right" (change)="calculateRemainingWeight(inputMaterialForm,$event.target.value,inputWeight.valid,stditem.net_weight,stditem.raw_material_product_id,inputmaterialweightlistExists['input_weight'+stditem.raw_material_product_id])"  >
+											<div class="validationerror" *ngIf="!inputWeight.valid && inputWeight.touched">
+											Invalid Weight
+											</div>
+											<div class="validationerror" *ngIf="weightError.indexOf(stditem.raw_material_product_id)!==-1?true:false">
+											Input Weight should be less than or equal to Net Weight
+											</div>											
+										</td>													
+									</tr> 								
+								</ng-container>               
+								<tr  *ngIf="!rawmaterialwithoutstandardcontent" >
+									<td colspan="7" class="center">{{ commontxt.norecords }}</td>
+								</tr>
+							</tbody>
+						</table>					
+					</div>
+				</div>				
+				<div *ngIf="rawmaterialids.length==0">{{ commontxt.norecords }}</div>
+			</div>	
+			
+			<div class="clearfix"></div>
+			<div *ngIf="remainingWeightError" class="col-12 alert alert-danger mt-3 errorSummary m-b-10 text-center" [innerHtml]="remainingWeightError"></div>		
+			
+			<div class="clearfix"></div>
+			<div *ngIf="remainingWeightSuccess" class="col-12 alert alert-success mt-3 m-b-10 text-center">{{remainingWeightSuccess}}</div>
+			
+		</div>
+		
+		<div class="clearfix"></div>	
+		<div *ngIf="stocksuccess || stockerror" class="col-12 m-b-10 text-center">
+		<app-usermessage [success]="stocksuccess" [error]="stockerror"  ></app-usermessage>
+		</div>
+
+		<div class="modal-footer" *ngIf="!logsuccess">
+						
+			<ng-container *ngIf="wastage_percentage.valid && additional_weight.valid && wastagePercentageErr && additionalWeightErr && !minRawMaterialRequiredErr">
+			<button type="button" class="btn btn-success " [disabled]="weightError.length>0 || inputloading['inputdatabutton']" (click)="addRawMaterialInput(inputMaterialForm)">
+			<span *ngIf="inputloading['stockbutton']" class="spinner-border spinner-border-sm mr-1"></span>Update</button>
+			</ng-container>
+
+			<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">
+			<span *ngIf="inputloading['stocksbutton']" class="spinner-border spinner-border-sm mr-1"></span>Close</button>			
+		</div>
+	</form>
+</ng-template>
+
+<ng-template #TCDetails let-modal>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+	<div class="modal-body" style="font-size:16px;">
+		<div class="card-box enq-view">	
+			<table class="table-secondary m-b-15" *ngIf="resultdata?.requestdata">
+				<tr>
+					<th width="20%">Company</th>
+					<td width="30%">
+						{{ resultdata?.requestdata?.app_id_label }},<br>
+						{{ resultdata.requestdata.app_address }}
+					</td>
+					<th width="20%">Unit</th>
+					<td width="30%">
+						{{ resultdata?.requestdata?.unit_id_label }},<br>
+						{{ resultdata.requestdata.unit_address }}
+					</td>
+				</tr>					
+				<tr>									
+					<th width="20%">Certification Program</th>
+					<td width="30%">{{ resultdata?.requestdata?.standard_id_code_label }}</td>
+					<th width="20%">Status</th>
+					<td width="30%">{{ resultdata?.requestdata?.request_status_label }}</td>
+				</tr>										
+				<tr>
+					<th width="20%">Buyer</th>
+					<td width="30%">
+						{{ resultdata.requestdata.buyer_id_label }},<br>{{ resultdata.requestdata.buyer_address }}<br>
+						License Number: {{ resultdata.requestdata.buyer_license_number }}
+					</td>																
+					<th width="20%">Inspection Body</th>
+					<td width="30%">
+						{{ resultdata.requestdata.inspection_body_id_label }},<br>{{ resultdata.requestdata.inspection_body_address }}
+					</td>								
+				</tr>				
+				<tr>
+					<th width="20%">TC No. {{ resultdata?.requestdata?.request_status!='7' ? 'Temp' : ''}}</th>
+					<td width="30%">{{ resultdata?.requestdata?.request_status!='7' ? resultdata.requestdata.id : resultdata.requestdata.tc_number }}</td>
+					<!--
+					<th width="20%">TC No.</th>
+					<td width="30%">{{ resultdata.requestdata.tc_number ? resultdata.requestdata.tc_number : '-' }}</td>
+					-->
+					<th width="20%">TC No. CDS</th>
+					<td width="30%">{{ resultdata.requestdata.tc_number_cds ? resultdata.requestdata.tc_number_cds : '-' }}</td>
+				</tr>	
+				<tr>									
+					<th width="20%">Country of Dispatch</th>
+					<td width="30%">{{ resultdata.requestdata.country_of_dispach_label }}</td>
+					<th width="20%">USDA Nop Complaint</th>
+					<td width="30%">{{ resultdata.requestdata.usda_nop_compliant_label }}</td>
+				</tr>
+				<tr>									
+					<th width="20%">IFOAM Standard</th>
+					<td width="30%" [innerHTML]="resultdata.requestdata?.ifoam_standard_id_label" ></td>
+					<th width="20%">Identification Code</th>
+					<td width="30%">{{ resultdata.requestdata.comments }}</td>
+				</tr>								
+				<tr>
+					<th width="20%">Created By</th>
+					<td width="30%">{{ resultdata?.requestdata?.created_by_label }}</td>
+					<th width="20%">Created Date</th>
+					<td width="30%">{{ resultdata?.requestdata?.created_at }}</td>
+				</tr>					
+			</table>
+			<div style="text-align: center;">
+				<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="modal.dismiss('cancel click')" >Close</a>
+			</div>
+		</div>
+    </div>
+</ng-template>
+<ng-template #downloading let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+        Please wait, your file is downloading ...
+    </div>
+</ng-template>
+<ng-template #productDetails let-modal>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+	<div class="modal-body" style="font-size:16px;">
+		<div class="card-box enq-view">
+			<h3>Product Details</h3>
+			<table class="table-secondary m-b-15" *ngIf="viewproductData">
+				<tr>
+					<th width="20%">Product Name</th>
+					<td colspan="3">{{ viewproductData.product_name }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Trade Name / Technical Specification</th>
+					<td colspan="3">{{ viewproductData.trade_name }}</td>					
+				</tr>
+				<tr>					
+					<th width="20%">Packed In</th>
+					<td width="30%">{{ viewproductData.packed_in }}</td>
+					<th width="20%">Wastage Percentage</th>
+					<td width="30%">{{ viewproductData.wastage_percentage }} %</td>
+				</tr>	
+				<tr>					
+					<th width="20%">Gross Weight</th>
+					<td width="30%">{{ viewproductData.gross_weight }} kg</td>
+					<th width="20%">Net Weight</th>
+					<td width="30%">{{ viewproductData.net_weight }} kg</td>
+				</tr>	
+				<tr>					
+					<th width="20%">Certified Weight</th>
+					<td width="30%">{{ viewproductData.certified_weight }} kg</td>
+					<th width="20%">Wastage Weight</th>
+					<td width="30%">{{ viewproductData.wastage_weight }} kg</td>
+				</tr>	
+				<tr>
+					<th width="20%">Consignee</th>
+					<td width="30%">{{ viewproductData.consignee_id_label }}</td>
+					<th width="20%">Additional Weight</th>
+					<td width="30%">{{ viewproductData.additional_weight }} kg</td>					
+				</tr>
+				<tr>
+					<th width="20%">Units (Pcs/M)</th>
+					<td width="30%">{{ viewproductData.unit_information?viewproductData.unit_information:'NA' }}</td>
+					<th width="20%">Raw Material Required</th>
+					<td width="30%">{{ viewproductData.total_net_weight }} kg</td>				
+				</tr>	
+				<tr>					
+					<th width="20%">Purchase Order No.</th>
+					<td width="30%">{{ viewproductData.purchase_order_no }}</td>
+					<th width="20%">Raw Material Used</th>
+					<td width="30%">{{ viewproductData.total_used_weight }} kg</td>
+				</tr>	
+				<tr>
+					<th width="20%">Purchase Order Date</th>
+					<td width="30%">{{ viewproductData.purchase_order_date }}</td>
+					<th width="20%">Invoice No.</th>
+					<td width="30%">{{ viewproductData.invoice_no }}</td>
+				</tr>	
+				<tr>
+					<th width="20%">Invoice Date</th>
+					<td width="30%">{{ viewproductData.invoice_date }}</td>
+					<th width="20%">Transport By</th>
+					<td width="30%">{{ viewproductData.transport_id_label }}</td>					
+				</tr>	
+				<tr>
+					<th width="20%">Transport Document No.</th>
+					<td width="30%">{{ viewproductData.transport_document_no }}</td>
+					<th width="20%">Transport Document Date</th>
+					<td width="30%">{{ viewproductData.transport_document_date }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Transport Company Name</th>
+					<td width="30%">{{ viewproductData.transport_company_name }}</td>
+					<th width="20%">Vehicle/Container No.</th>
+					<td width="30%">{{ viewproductData.vehicle_container_no }}</td>
+				</tr>
+			</table>			
+			
+			<div *ngIf="viewproductData?.materialused" class="enq-view">																											
+				<h3>Stock from Raw Material</h3>						
+				<table class="table table-bordered col-12" style="font-size:13px;">
+					<thead>
+					<tr>
+						<th scope="col" width="3%" class="center">S.No</th>
+						<th scope="col">Supplier Name</th>
+						<th scope="col">Trade Name</th>	
+						<th scope="col">Product Name</th>
+						<th scope="col">Lot Number</th>	
+						<th scope="col">TC Number</th>
+						<th scope="col" width="11%" class="text-right">Raw Material Net Weight</th>																		
+					</tr>
+					</thead>
+					<tbody>
+						<ng-container *ngIf="viewproductData?.materialused?.length>0">
+							<tr *ngFor="let stditem of viewproductData?.materialused; index as i">	
+								<td valign="middle" width="3%" scope="row" class="center">{{ 1+ i }}</td>
+								<td valign="middle">{{ stditem.supplier_name }}</td>
+								<td valign="middle">{{ stditem.trade_name }}</td>
+								<td valign="middle">{{ stditem.product_name }}</td>
+								<td valign="middle">{{ stditem.lot_number }}</td>	
+								<td valign="middle">
+									<ng-container *ngIf="stditem.tc_attachment" >
+										<a href="javascript:void(0);" (click)="downloadRawmaterialFile(stditem.raw_material_id,'tc_attachment',stditem.tc_attachment);openmodal(downloading);" > <i class="fa fa-download" ></i>&nbsp;{{ stditem.tc_number }}</a>
+									</ng-container>
+									<ng-container *ngIf="!stditem.tc_attachment" >{{ stditem.tc_number }}</ng-container>
+								</td>
+								<td valign="middle" class="text-right">{{ stditem.used_weight }} kg</td>																												
+							</tr>
+							<tr>	
+								<td colspan="6" valign="middle" class="text-right text-primary"><b>Total Used Weight</b></td>	
+								<td valign="middle" class="text-right text-primary"><b>{{ viewproductData?.totalweightusedfrommaterial }} kg</b></td>																												
+							</tr>							
+						</ng-container>               
+						<tr *ngIf="viewproductData?.materialused?.length==0">
+							<td colspan="8" class="center">{{ commontxt.norecords }}</td>
+						</tr>
+					</tbody>
+				</table>					
+			</div>		
+			<div style="text-align: center;">
+				<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="modal.dismiss('cancel click')" >Close</a>
+			</div>
+		</div>
+    </div>
+</ng-template>
+
+<ng-template #confirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	
+	<div class="alert alert-success m-t-15 m-l-15 m-r-15" *ngIf="alertSuccessMessage">{{alertSuccessMessage}}</div>
+	
+	<div class="modal-body" style="font-size:16px;" *ngIf="!alertSuccessMessage">
+		{{ confirmContentText }}
+	</div>
+	
+	<div class="modal-footer" *ngIf="!alertSuccessMessage">
+		<button type="button" *ngIf="model.action =='productdelete'" class="btn btn-success" (click)="fnDeleteProduct();">Ok</button>
+		<button type="button" *ngIf="model.action =='approval'" class="btn btn-success " (click)="changeStatusConfirm();">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>
+
+<ng-template #confirmproductwastagecontent let-modal>
+	<div class="modal-header" *ngIf="!alertWeightErrorMessage && !alertAdditionalWeightSuccessMessage">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-header" *ngIf="alertWeightErrorMessage || alertAdditionalWeightSuccessMessage">
+		<h4 class="modal-title" id="modal-basic-title">Message</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	
+	<div class="alert alert-success m-t-15 m-l-15 m-r-15" *ngIf="alertProductSuccessMessage">{{alertProductSuccessMessage}}</div>
+	<div class="alert alert-danger m-t-15 m-l-15 m-r-15" *ngIf="alertWeightErrorMessage">{{alertWeightErrorMessage}}</div>
+
+	<div class="modal-body" style="font-size:16px;" *ngIf="!alertProductSuccessMessage && !alertWeightErrorMessage">
+		Are you sure, do you want to change the Product Wastage Percentage(%)?
+	</div>
+	
+	<div class="modal-footer" *ngIf="!alertProductSuccessMessage">
+		<ng-container *ngIf="!alertWeightErrorMessage" >
+			<button type="button" [disabled]="productWastageConfirmButtonDisable" class="btn btn-outline-secondary" (click)="changeProductWastageConfirm();">
+				<span *ngIf="productWastageConfirmButtonDisable" class="spinner-border spinner-border-sm mr-1"></span>Ok
+			</button>	
+			
+			<button type="button" [disabled]="productWastageConfirmButtonDisable" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">
+				<span *ngIf="productWastageConfirmButtonDisable" class="spinner-border spinner-border-sm mr-1"></span>Cancel
+			</button>
+		</ng-container>
+		<ng-container *ngIf="alertWeightErrorMessage" >
+			<button type="button" [disabled]="additionalWeightConfirmButtonDisable" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">
+				<span *ngIf="additionalWeightConfirmButtonDisable" class="spinner-border spinner-border-sm mr-1"></span>Close
+			</button>	
+		</ng-container>
+	</div>
+			
+</ng-template>
+
+<ng-template #confirmadditionalweightcontent let-modal>
+	<div class="modal-header" *ngIf="!alertWeightErrorMessage && !alertAdditionalWeightSuccessMessage">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-header" *ngIf="alertWeightErrorMessage || alertAdditionalWeightSuccessMessage">
+		<h4 class="modal-title" id="modal-basic-title">Message</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	
+	<div class="alert alert-success m-t-15 m-l-15 m-r-15" *ngIf="alertAdditionalWeightSuccessMessage">{{alertAdditionalWeightSuccessMessage}}</div>
+	<div class="alert alert-danger m-t-15 m-l-15 m-r-15" *ngIf="alertWeightErrorMessage">{{alertWeightErrorMessage}}</div>
+	
+	<div class="modal-body" style="font-size:16px;" *ngIf="!alertAdditionalWeightSuccessMessage && !alertWeightErrorMessage">
+		Are you sure, do you want to change the Additional Weight kg?
+	</div>
+	
+	<div class="modal-footer" *ngIf="!alertAdditionalWeightSuccessMessage">
+		<ng-container *ngIf="!alertWeightErrorMessage" >
+			<button type="button" [disabled]="additionalWeightConfirmButtonDisable" class="btn btn-outline-secondary" (click)="changeAdditionalWeightConfirm();">
+				<span *ngIf="additionalWeightConfirmButtonDisable" class="spinner-border spinner-border-sm mr-1"></span>Ok
+			</button>	
+			
+			<!--modal.dismiss('cancel click')-->
+			<button type="button" [disabled]="additionalWeightConfirmButtonDisable" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">
+				<span *ngIf="additionalWeightConfirmButtonDisable" class="spinner-border spinner-border-sm mr-1"></span>Cancel
+			</button>	
+		</ng-container>	
+		<ng-container *ngIf="alertWeightErrorMessage" >
+			<button type="button" [disabled]="additionalWeightConfirmButtonDisable" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">
+				<span *ngIf="additionalWeightConfirmButtonDisable" class="spinner-border spinner-border-sm mr-1"></span>Close
+			</button>	
+		</ng-container>
+	</div>			
+</ng-template>
+
+
+
+
+

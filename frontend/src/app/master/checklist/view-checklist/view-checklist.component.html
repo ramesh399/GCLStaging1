@@ -1,0 +1,33 @@
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+        <div class="page-title-box p-b-30">
+            <h4 class="page-title">{{title}}</h4>
+            <div class="clearfix"></div>
+            <div class="text-right float-right">
+                <a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/master/checklist/list']" [queryParams]="{category:category}">Back</a>
+            </div>
+        </div>		
+    </div>
+</div>
+
+<div class="row" *ngIf="applicationdata">
+    <div class="col-12">
+
+        <table class="table-secondary m-b-15">
+            <tr *ngIf="applicationdata.name">
+                <th width="20%">Name</th>
+                <td colspan="80%">{{ applicationdata.name }}</td>
+            </tr>
+            <tr *ngIf="applicationdata.guidance">
+                <th width="20%">Guidance</th>
+                <td colspan="80%">{{ applicationdata.guidance }}</td>
+            </tr>
+        </table>
+        
+        <!-- <div class="text-right">                
+            <button type="button" class="btn but-cust green m-b-5 ml-2" [routerLink]="['/master/checklist/list']" [queryParams]="{category:category}">Back to List</button>                
+        </div> -->
+        
+    </div>
+</div> <!-- end row -->

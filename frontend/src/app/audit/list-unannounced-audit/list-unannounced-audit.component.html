@@ -1,0 +1,94 @@
+<form>
+  
+    <div class="row" >
+      <div class="col-12">
+          <div class="card-box table-responsive">
+                 
+            <div class="row col-12 m-b-5 pad-right">
+              <div class="col-8 pad-left">
+                <h4 class="page-title">Unannounced Audit List</h4>
+                <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+              </div>
+              <div class="col-4 text-right pad-right">
+                <!-- <a class="btn btn-primary" href="#" *ngIf="userType==2 || userdetails.resource_access==1 || ((userType==3 ||userType==1) && userdetails.rules.includes('create_application')) " role="button" [routerLink]="['/application/add-request']" >Add Application</a>-->
+                <!-- <a class="btn btn-primary" href="#" *ngIf="userdetails.resource_access==1" role="button" [routerLink]="['/application/add-request']" >Add Application</a>-->
+              </div>
+            </div>
+            
+            <div class="row col-12 m-b-5 pad-right">
+                <div class="col-3 text-left pad-left">
+                <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                    <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+                  </select>
+                  </div>
+    
+                  <div class="col-5 text-rigth">
+                    <mat-select style="width: 33%;font-size:13px;" placeholder="-- Standard --" #standardFilter name="standardFilter" [(ngModel)]="service.standardFilter" multiple class="custom-select"  >
+                        <mat-select-trigger>
+                        <span *ngIf="standardFilter.value?.length == 1" >{{standardFilter.value ?  getSelectedValue(standardFilter.value) : ''}}</span>
+                        <span *ngIf="standardFilter.value?.length > 1" class="example-additional-selection">
+                            {{standardFilter.value.length}} {{ 'selected' }}
+                        </span>
+                        </mat-select-trigger>
+                        <mat-option *ngFor="let std of standardList" [value]="std.id">{{std.code}}</mat-option>
+                    </mat-select>
+                  </div>
+              <div class="col-4 text-right pad-right">
+                Search: <input class="search-pad" type="text" name="searchTerm" [(ngModel)]="service.searchTerm"/>
+              </div>
+            </div>
+    
+            <div class="col-12 pad-left">
+                <table id="datatable" class="table table-bordered" >
+                  <thead>
+                  <tr>
+                    <th width="5%" scope="col" class="text-center">S.No</th>
+                    <th scope="col" sortable="company_name" (sort)="onSort($event)" >Company Name</th>							
+                    <th scope="col">Standard(s)</th>
+                    <th scope="col" >Contact Person</th>
+                    <th scope="col">Telephone</th>				
+                    <th width="10%" scope="col" class="center">Risk Category</th>				
+                    <!-- <th scope="col" class="text-center" sortable="status" (sort)="onSort($event)" >Status</th> -->
+                    <th width="10%" scope="col" sortable="created_at" (sort)="onSort($event)">Created Date</th>
+                    <th width="6%" class="text-center" scope="col">Action</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr *ngFor="let application of applications$ | async; let i=index; ">
+                    <th scope="row" class="center">{{ i+1+ service.pageNo }}</th>			
+                    <td><ngb-highlight [result]="application.company_name"  [term]="service.searchTerm"></ngb-highlight></td>
+                    
+                    <td><ngb-highlight [result]="application.application_standard"></ngb-highlight></td>
+                    <td><ngb-highlight [result]="application.first_name" [term]="service.searchTerm"></ngb-highlight></td>
+				
+				            <td><ngb-highlight [result]="application.telephone" [term]="service.searchTerm"></ngb-highlight></td>
+					
+					          <td class="center"><ngb-highlight [result]="application.risk_category_label" [term]="service.searchTerm"></ngb-highlight></td>
+                    
+                    <!-- <td class="text-center"><b><span><ngb-highlight [result]="application.change_status_name" [term]="service.searchTerm"></ngb-highlight></span></b></td> -->
+                    
+                    <td><ngb-highlight [result]="application.created_at" [term]="service.searchTerm"></ngb-highlight></td>
+                    <td class="center">
+                        <a href="javascript:void(0);" *ngIf="application.audit_id" [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:application.audit_id}" title="View Audit" alt="View Audit"><i class="fa fa-eye"></i> </a>
+                    </td>
+                    </tr>
+                    <tr  *ngIf="(applications$ | async)?.length==0" >
+              <td colspan="10" class="center">{{ commontxt.norecords }}</td>
+            </tr>
+                  </tbody>
+                </table>
+            </div>
+            
+            <div class="d-flex justify-content-between p-2">
+              <ngb-pagination maxSize="10" rotate=true [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+                <ng-template ngbPaginationPrevious>Prev</ng-template>
+                <ng-template ngbPaginationNext>Next</ng-template>			  
+              </ngb-pagination>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+    </form>
+    
+   

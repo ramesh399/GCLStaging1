@@ -1,0 +1,230 @@
+<div class="col-12 row pad-right" >
+	<div class="col-8">
+		<h4 class="page-title">{{title}}</h4>
+	</div>
+	<div class="col-4 text-right pad-right">
+		<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/change-scope/change-address/list']"><i class="fa fa-arrow-left text-white"></i> Back</a>
+	</div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="add card-box table-responsive">
+            <form  [formGroup]="form">
+            	
+				<!--				
+				<div class="col-12 row pad-right" >
+                    <div class="col-8">
+                    <h4 class="page-title"><i class="fa fa-list-ul"></i> {{title}}</h4>
+                    </div>
+                    <div class="col-4 text-right pad-right">
+                    <a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/change-scope/change-address/list']" >Back</a>
+                    </div>
+                </div>
+				-->         
+                   
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view">
+				
+					<h3>Company Details</h3>
+                    
+					<div class="form-group row">
+					
+						<div class="col-6">
+							<label>Company <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Company Name" matTooltipClass="tooltip-text-size" aria-tooltip="Company Name" matTooltipPosition="right"></i>
+                            <!-- oncompanychange($event.target.value) -->
+							<select formControlName="app_id" [class.is-invalid]="f.app_id.invalid && f.app_id.touched" class="form-control select2" (change)='checkRequestedUnitAddition($event.target.value)'>
+                                <option value="">-- Company --</option>
+                                <option *ngFor="let app of appdata" value = {{app.id}}>{{app.company_name}}</option>
+                            </select>
+                            <span *ngIf="loading?.company" class="spinner-border spinner-border-sm mr-1"></span>
+                            <div *ngIf="f.app_id.errors" class="invalid-feedback">
+                                <div *ngIf="f.app_id.errors.required" >Company Name is required</div>
+                            </div>	
+						</div>
+					
+						<div class="col-6">
+							<label>Unit <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Unit Name" matTooltipClass="tooltip-text-size" aria-tooltip="Unit Name" matTooltipPosition="right"></i>
+							<select formControlName="unit_id" [class.is-invalid]="f.unit_id.invalid && f.unit_id.touched" class="form-control select2" (change)='getUnitDetails($event.target.value)'>
+                                <option value="">-- Unit --</option>
+                                <option *ngFor="let unit of unitlist" value={{unit.id}}>{{unit.name}}</option>
+							</select>
+                            <span *ngIf="loading?.unit" class="spinner-border spinner-border-sm mr-1"></span>
+                            <div *ngIf="f.unit_id.errors" class="invalid-feedback">
+                                <div *ngIf="f.unit_id.errors.required" >Unit Name is required</div>
+                            </div>	
+						</div>				
+						
+					</div>
+
+					<div *ngIf="showform">
+						<h3 style="margin-top:30px">Scope Holder Details</h3>
+						<div class="form-group row">
+							
+							<div class="col-4">
+								<label>{{ unitypename }} Name <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Name" matTooltipClass="tooltip-text-size" aria-tooltip="Name" matTooltipPosition="right"></i>
+								<input type="text" formControlName="unit_name"  class="form-control"  placeholder="Name" [class.is-invalid]="f.unit_name.invalid && f.unit_name.touched">
+								<div *ngIf="f.unit_name.errors" class="invalid-feedback">
+									<div *ngIf="f.unit_name.errors.required" >{{ unitypename }} Name is required</div>
+									<div *ngIf="f.unit_name.errors.maxlength">{{ unitypename }} Name cannot exceed 255 characters</div>
+									<div *ngIf="f.unit_name.hasError('whitespace')">Invalid {{ unitypename }} Name</div>
+								</div>
+							</div>
+							
+							<div class="col-4">
+								<label>Address <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Address" matTooltipClass="tooltip-text-size" aria-tooltip="Address" matTooltipPosition="right"></i>
+								<textarea rows="1" formControlName="unit_address" [class.is-invalid]="f.unit_address.invalid && f.unit_address.touched " placeholder="Address" class="form-control" ></textarea>
+								<div *ngIf="f.unit_address.errors" class="invalid-feedback">
+									<div *ngIf="f.unit_address.errors.required">Address is required</div>
+									<div *ngIf="f.unit_address.errors.pattern || f.unit_address.hasError('whitespace')">Invalid Address</div> 
+								</div>
+							</div>
+							
+							<div class="col-4">
+								<label>Postal Code <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Postal Code" matTooltipClass="tooltip-text-size" aria-tooltip="Postal Code" matTooltipPosition="right"></i>
+								<input type="text" formControlName="unit_zipcode"  class="form-control"  placeholder="Postal Code" [class.is-invalid]="f.unit_zipcode.invalid && f.unit_zipcode.touched">
+								<div *ngIf="f.unit_zipcode.errors" class="invalid-feedback">
+									<div *ngIf="f.unit_zipcode.errors.required">Postal Code is required</div>
+									<div *ngIf="f.unit_zipcode.errors.maxlength">Postal Code cannot exceed 15 characters</div>
+									<div *ngIf="f.unit_zipcode.errors.pattern || f.unit_zipcode.hasError('whitespace')">Invalid Postal Code</div>     
+								</div> 
+							</div>
+							
+						</div> 
+					
+						<div class="form-group row">
+						
+							<div class="col-4">
+								<label>Country <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Country" matTooltipClass="tooltip-text-size" aria-tooltip="Country" matTooltipPosition="right"></i>
+								<select formControlName="unit_country_id" class="form-control select2" [class.is-invalid]="f.unit_country_id.invalid && f.unit_country_id.touched" (change)="getStateList($event.target.value)">
+									<option value="">-- Country --</option>							
+									<option *ngFor="let country of countryList" value= {{country.id}}>{{country.name}}</option>
+								</select>     
+								
+								<div *ngIf="f.unit_country_id.errors" class="invalid-feedback">
+									<div *ngIf="f.unit_country_id.errors.required">Country is required</div>
+								</div>
+							</div>
+							
+							<div class="col-4">
+								<label>State <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="State" matTooltipClass="tooltip-text-size" aria-tooltip="State" matTooltipPosition="right"></i>
+								<select formControlName="unit_state_id" class="form-control select2" [class.is-invalid]="f.unit_state_id.invalid && f.unit_state_id.touched">
+									<option value="">-- State --</option>							
+									<option *ngFor="let stateL of stateList" value= {{stateL.id}}>{{stateL.name}}</option>
+								</select>
+								<div *ngIf="f.unit_state_id.errors" class="invalid-feedback">
+									<div *ngIf="f.unit_state_id.errors.required">State is required</div>
+								</div>
+							</div>
+							
+							<div class="col-4">
+								<label>City <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="City" matTooltipClass="tooltip-text-size" aria-tooltip="City" matTooltipPosition="right"></i>
+								<input type="text" formControlName="unit_city"  class="form-control"  placeholder="City" [class.is-invalid]="f.unit_city.invalid && f.unit_city.touched">
+								<div *ngIf="f.unit_city.errors" class="invalid-feedback">
+									<div *ngIf="f.unit_city.errors.required">City cannot be blank.</div>
+									<div *ngIf="f.unit_city.errors.maxlength">City cannot exceed 255 characters</div>
+									<div *ngIf="f.unit_city.errors.pattern || f.unit_city.hasError('whitespace')">Invalid City</div>      
+								</div>
+							</div>
+							
+						</div>
+						
+						<h3 style="margin-top:30px">Main Contact Person</h3>
+						<div class="form-group row">
+							<div class="col-4">
+								<label>Salutation <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Salutation" matTooltipClass="tooltip-text-size" aria-tooltip="Salutation" matTooltipPosition="right"></i>
+								<select formControlName="salutation" class="form-control select2"  [class.is-invalid]="f.salutation.invalid && f.salutation.touched">
+									<option value="" >-- Salutation --</option>
+									<option *ngFor="let salutation of salutationList" value= {{salutation.id}}>{{salutation.name}}</option>
+								</select>
+								<div *ngIf="f.salutation.errors" class="invalid-feedback">
+									<div *ngIf="f.salutation.errors.required">Saluation is required</div>
+									<div *ngIf="f.salutation.errors.pattern || f.salutation.hasError('whitespace')">Invalid Saluation</div>
+								</div>
+							</div>
+							
+							<div class="col-4">
+								<label>First Name <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="First Name" matTooltipClass="tooltip-text-size" aria-tooltip="First Name" matTooltipPosition="right"></i>
+								<input type="text" formControlName="first_name" [class.is-invalid]="f.first_name.invalid && f.first_name.touched " class="form-control" placeholder="First Name" >
+								<div *ngIf="f.first_name.errors" class="invalid-feedback">
+									<div *ngIf="f.first_name.errors.required" >First Name is required</div>
+									<div *ngIf="f.first_name.errors.maxlength">First Name cannot exceed 255 characters</div>
+									<div *ngIf="f.first_name.errors.pattern || f.first_name.hasError('whitespace')">Invalid First Name</div>
+								</div>
+							
+							</div>
+							<div class="col-4">
+								<label>Last Name <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Last Name" matTooltipClass="tooltip-text-size" aria-tooltip="Last Name" matTooltipPosition="right"></i>
+								<input type="text" formControlName="last_name" [class.is-invalid]="f.last_name.invalid && f.last_name.touched " class="form-control" placeholder="Last Name" >
+								<div *ngIf="f.last_name.errors" class="invalid-feedback">
+									<div *ngIf="f.last_name.errors.required" >Last Name is required</div>
+									<div *ngIf="f.last_name.errors.maxlength">Last Name cannot exceed 255 characters</div>
+									<div *ngIf="f.last_name.errors.pattern || f.last_name.hasError('whitespace')">Invalid Last Name</div>
+								</div>
+							</div>
+							
+						</div>
+						
+						<div class="form-group row">
+							<div class="col-4">
+								<label>Job Title <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Job Title" matTooltipClass="tooltip-text-size" aria-tooltip="Job Title" matTooltipPosition="right"></i>
+								<input type="text" formControlName="job_title" [class.is-invalid]="f.job_title.invalid && f.job_title.touched " class="form-control" placeholder="Job Title" >
+								<div *ngIf="f.job_title.errors" class="invalid-feedback">
+									<div *ngIf="f.job_title.errors.required" >Job Title is required</div>
+									<div *ngIf="f.job_title.errors.maxlength">Job Title cannot exceed 255 characters</div>
+									<div *ngIf="f.job_title.errors.pattern || f.job_title.hasError('whitespace')">Invalid Job Title</div>
+								</div>								
+							</div>
+							
+							<div class="col-4">
+								<label>Telephone <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Telephone Number" matTooltipClass="tooltip-text-size" aria-tooltip="Telephone Number" matTooltipPosition="right"></i>
+								<input type="text" class="form-control" formControlName="company_telephone" [class.is-invalid]="f.company_telephone.invalid && f.company_telephone.touched" class="form-control" placeholder="Telephone" >                                                                      
+								<div *ngIf="f.company_telephone.errors" class="invalid-feedback">
+									<div *ngIf="f.company_telephone.errors.required"> Telephone is required</div>
+									<div *ngIf="f.company_telephone.errors.minlength">Telephone must be at least 8 characters</div>
+									<div *ngIf="f.company_telephone.errors.maxlength">Telephone cannot exceed 15 characters</div>
+									<div *ngIf="f.company_telephone.errors.pattern || f.company_telephone.hasError('whitespace')">Invalid Telephone Number</div>
+								</div>								
+							</div>
+							
+							<div class="col-4">
+								<label>Email <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Email" matTooltipClass="tooltip-text-size" aria-tooltip="Email" matTooltipPosition="right"></i>
+								<input type="text" formControlName="company_email" [class.is-invalid]="f.company_email.invalid && f.company_email.touched " class="form-control" placeholder="Email" >
+								<div *ngIf="f.company_email.errors" class="invalid-feedback">
+									<div *ngIf="f.company_email.errors.required" >Email is required</div>
+									<div *ngIf="f.company_email.errors.maxlength">Email cannot exceed 255 characters</div>
+									<div *ngIf="f.company_email.errors.email">Email must be a valid email address</div>
+									<div *ngIf="f.company_email.hasError('whitespace')">Invalid Email</div>
+								</div>						
+							</div>
+							
+						</div>	
+						 
+						<div class="col-lg-12 text-center mt-4 mb-4">
+								<button [disabled]="loading?.button || buttonDisable" (click)="onSubmit(1)" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+									<span *ngIf="loading?.button" class="spinner-border spinner-border-sm mr-1"></span>
+									{{ id ? 'Update' : 'Save' }}
+								</button>
+								
+								<button [disabled]="loading?.button || buttonDisable" (click)="onSubmit(2)" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 ml-2">
+								<span *ngIf="loading?.button" class="spinner-border spinner-border-sm mr-1"></span>							
+								{{ id ? 'Update & Submit for Approval' : 'Save & Submit for Approval' }}
+								</button>
+						
+								<!-- <button (click)="onSubmit('addition')"  [disabled]="loading?.button || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+									<span *ngIf="loading?.button" class="spinner-border spinner-border-sm mr-1"></span>
+									Save & Submit for Approval
+                        		</button> -->
+															
+								<div class="clearfix"></div>
+								
+								<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+						</div>
+					</div>				
+						
+				</div>				
+				
+                 
+            </form>
+        </div>
+    </div>
+</div>

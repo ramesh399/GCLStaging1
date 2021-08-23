@@ -1,0 +1,216 @@
+<div class="col-12 m-t-15">
+    <h3>Product Controls</h3>	
+    <div class="text-info">
+    <strong>Product Controls (Identification, Seperation, cleaning):</strong>
+    Please describe your process flow (i, e, store, yarn dyeing, knitting, fabric dyeing, AOP, cutting, screen print, embroidery, sewing, finishing, packing, finished goods area, transport & subcontract) of certified product. How do you ensure that on each production step identification is possible and contamination/mixing is avoided (detailled description of system regarding identification, separation, cleaning)?
+    </div>
+    <!--
+    <div class="col-12 pad-left">
+        <table id="datatable" class="table table-bordered" >
+            <thead>
+                <tr>
+                    <th width="5%" scope="col" class="center">S.No</th>
+                    <th scope="col">Process</th>		
+                    <th width="10%" class="text-center" scope="col">Action</th>	
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let process of processdetails; let i=index; ">
+                    <td scope="row" class="center">{{ 1+i }}</td>
+                
+                    <td><ngb-highlight [result]="process.process"  ></ngb-highlight></td>
+                    <td  class="center">
+                        <a href="javascript:void(0);" (click)="viewProcess(processDetails,process)" title="View" alt="View"> <i class="fa fa-eye"></i> </a>
+                        <a href="javascript:void(0);" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('edit_audit_process')" (click)="editProcess(i,process)" title="Edit" alt="Edit" class="pl-2"> <i class="fa fa-edit"></i> </a>
+                        <a href="javascript:void(0);" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('delete_audit_process')" (click)="removeSupplier(confirmcontent,i,process)" title="Delete" alt="Delete" class="pl-2"> <i class="fa fa-trash text-danger"></i> </a>
+                    </td>
+                </tr>
+                <tr  *ngIf="processdetails?.length==0" >
+                    <td colspan="3" class="center">No Producr Contrls Added</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    -->
+</div>	
+
+<div class="col-12 m-t-15">
+    <div class="col-12 pad-left">
+        <table id="datatable" class="table table-bordered" >
+            <thead>
+                <tr>
+                    <th width="5%" scope="col" class="center">S.No</th>
+                    <th scope="col">Process</th>
+                    <th scope="col">Process Control</th>		
+                    <th scope="col"  width="10%" class="center" *ngIf="sufficient_access">Sufficient</th>
+                    <th width="10%" class="text-center" scope="col">Action</th>	
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let process of processdetails; let i=index; ">
+                    <td scope="row" class="center">{{ 1+i }}</td>
+                
+                    <td><ngb-highlight [result]="process.process"  ></ngb-highlight></td>
+                    <td><ngb-highlight [result]="process.description"  ></ngb-highlight></td>
+                    
+                    <td class="center" *ngIf="sufficient_access"><ngb-highlight [result]="process.sufficient_label"  ></ngb-highlight></td>
+                    <td  class="center">
+                        <a href="javascript:void(0);" (click)="viewProcess(processDetails,process)" title="View" alt="View"> <i class="fa fa-eye"></i> </a>
+                        <ng-container *ngIf="!cond_viewonly">
+                            <a href="javascript:void(0);" *ngIf="(userType==1 && userdetails.rules.includes('audit_execution')) || userType==2 || userdetails.resource_access==1 || userdetails.rules.includes('edit_audit_process')" (click)="editProcess(i,process)" title="Edit" alt="Edit" class="pl-2"> <i class="fa fa-edit"></i> </a>
+                            <a href="javascript:void(0);" *ngIf="(userType==1 && userdetails.rules.includes('audit_execution')) || userType==2 || userdetails.resource_access==1 || userdetails.rules.includes('delete_audit_process')" (click)="removeProcess(confirmcontent,i,process)" title="Delete" alt="Delete" class="pl-2"> <i class="fa fa-trash text-danger"></i> </a>
+                        </ng-container>
+                    </td>
+                </tr>
+                <tr  *ngIf="processdetails?.length==0" >
+                    <td colspan="5" class="center">No Process Control Added</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <div class="clearfix"></div>
+    <ng-container *ngIf="!cond_viewonly">
+        <div class="row" *ngIf="(userType==1 && userdetails.rules.includes('audit_execution')) || userType==2 || userdetails.resource_access==1 || userdetails.rules.includes('add_audit_process') || (userdetails.rules.includes('edit_audit_process') && processData)">
+            <div class="col-12 m-t-15">
+                <!--
+                <div class="add card-box table-responsive enq-view">  
+                -->		
+                    <h3>{{editStatus == 1 ? 'Update' : 'Add'}} Product Control</h3>                             
+                    <form  [formGroup]="processform">
+                        <div class="form-group row">
+                            
+                            <div class="col-6">
+                                <label>Process <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Process" matTooltipClass="tooltip-text-size" aria-tooltip="Process" matTooltipPosition="right"></i>
+                                <input type="text" formControlName="process"  class="form-control" placeholder="Process" [class.is-invalid]="pf.process.invalid && pf.process.touched">
+                                
+                                <div *ngIf="pf.process.errors" class="invalid-feedback">
+                                    <div *ngIf="pf.process.errors.required">Process is required</div>
+                                    <div *ngIf="pf.process.hasError('whitespace')" >Invalid Process</div>
+                                    <div *ngIf="pf.process.errors.maxlength">Process cannot exceed 255 characters</div>
+                                </div>
+                            </div>
+
+                            <div class="col-6 " *ngIf="sufficient_access" >
+                                <label>Sufficient <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Sufficient" matTooltipClass="tooltip-text-size" aria-tooltip="Sufficient" matTooltipPosition="right"></i>
+                                <select formControlName="sufficient" [class.is-invalid]="pf.sufficient.invalid && pf.sufficient.touched" class="form-control select2">
+                                    <option value="">-- Sufficient --</option>
+                                    <option  *ngFor="let item of sufficientlist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+                                </select>
+                                <div *ngIf="pf.sufficient.errors" class="invalid-feedback">
+                                    <div *ngIf="pf.sufficient.errors.required" >Sufficient is required</div>
+                                </div>
+                            </div> 
+
+                            
+                        </div> 
+
+
+                        <div class="form-group row">
+                            <div class="col-12">
+                                <label>Process Control <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Process Control" matTooltipClass="tooltip-text-size" aria-tooltip="Process Control" matTooltipPosition="right"></i>
+                                <textarea formControlName="description"  [class.is-invalid]="pf.description.invalid && pf.description.touched" rows="4" class="form-control" placeholder="Process Control"></textarea>
+                                <div *ngIf="pf.description.errors" class="invalid-feedback">
+                                    <div *ngIf="pf.description.errors.required">Process Control is required</div>
+                                    <div *ngIf="pf.description.hasError('whitespace')" >Invalid Process Control</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+                        <div class="col-lg-12 text-center mt-4 mb-4">
+                            <button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="addprocess()">
+                                <span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+                                {{editStatus == 1 ? 'Update' : 'Save'}}	
+                            </button>
+                            <button [disabled]="loading['button'] || buttonDisable" type="button" (click)="processFormreset()"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Reset</button>
+
+                            <div class="clearfix"></div>
+                                
+                            
+                        </div>
+                    </form>				             
+                </div>
+            <!--	
+            </div>
+            -->
+        </div>
+    </ng-container>
+    <app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+</div>	
+<ng-template #processDetails let-modal>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+	<div class="modal-body" >
+		<div class="card-box enq-view">	
+            <table class="table-secondary m-b-15" *ngIf="ProcessData">
+				<tr>
+					<th width="20%">Process</th>
+					<td colspan="3">{{ ProcessData.process }}</td>
+                </tr>	
+                <tr *ngIf="sufficient_access">
+                    <th width="20%">Sufficient</th>
+					<td colspan="3">
+                        <span *ngIf="cond_viewonly">{{ ProcessData.sufficient_label }}</span>
+                        <form>
+                            <ng-container *ngIf="!cond_viewonly">
+                                <select name="sufficient" [(ngModel)]="model.sufficient"  class="form-control select2" (change)="changeSufficient(changeSufficientpopup,$event.target.value)" style="width: 35%;" >
+                                    <option value="">-- Sufficient --</option>
+                                    <option  *ngFor="let item of sufficientlist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+                                </select>
+                            </ng-container>
+                        </form>
+                    </td>
+                </tr>
+                <tr>
+					<th width="20%">Description</th>
+					<td colspan="3">{{ ProcessData.description }}</td>
+                </tr>
+                <tr>
+					<th width="20%">Created By</th>
+					<td width="30%">{{ ProcessData.created_by_label }}</td>
+					<th width="20%">Created Date</th>
+					<td width="30%">{{ ProcessData.created_at }}</td>
+                </tr>	
+            </table>
+			<div style="text-align: center;">
+				<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="modal.dismiss('cancel click')" >Close</a>
+            </div>
+            <app-usermessage [success]="sufficientsuccess" [error]="sufficienterror"  ></app-usermessage>
+		</div>
+    </div>
+</ng-template>
+<ng-template #confirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to delete the data?
+	</div>
+	<div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>
+<ng-template #changeSufficientpopup let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you change Sufficient?
+	</div>
+	<div class="modal-footer">
+        <button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>

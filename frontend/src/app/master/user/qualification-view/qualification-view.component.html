@@ -1,0 +1,309 @@
+<div class="row">
+    <div class="col-12">
+        <div class="add card-box table-responsive">      
+            <form #checklistForm="ngForm"   >
+				<div class="col-12 row pad-right" >
+					<div class="col-8" style="padding-left:0px;">
+						<h4 class="page-title">User Qualification View</h4>
+					</div>
+					<div class="col-4 text-right pad-right">
+						<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/master/user/list']" >Back</a>
+					</div>
+				</div>
+				
+				<div class="enq-view mat-accordion qualification-view-content" *ngIf="userData">
+					
+					
+					<div class="mat-accordion">
+						<div class="card-box enq-view">
+							<h3>User Details</h3>
+							<ul>
+								<li><span class="label-pad">First Name</span>   <span class="name-pad">{{ userData.first_name }}</span></li>
+								<li><span class="label-pad">Last Name</span>   <span class="name-pad">{{ userData.last_name }}</span></li>
+								<li><span class="label-pad">Email</span>   <span class="name-pad">{{ userData.email }}</span></li>
+								<li><span class="label-pad">Telephone</span>   <span class="name-pad">{{ userData.telephone }}</span></li>
+								<li><span class="label-pad">Country</span>   <span class="name-pad">{{ userData.country_name }}</span></li>
+								<li><span class="label-pad">State</span>   <span class="name-pad">{{ userData.state_name }}</span></li>								
+							</ul>
+						</div>
+					</div>
+
+					<div class="form-group row col-12" >
+						<div class="col-3" style="padding-left:0px">
+							<h3>Standard</h3>
+							<mat-select placeholder="Standard *" #standardSel="ngModel" name="standard" [(ngModel)]="standard" multiple class="form-control select2" (selectionChange)="getSector()" >
+								<mat-select-trigger>
+								<span *ngIf="standardSel.value?.length == 1" >{{standardSel.value ? getSelectedValue('standard', standardSel.value): ''}}</span>
+								<span *ngIf="standardSel.value?.length > 1" class="example-additional-selection">
+									{{standardSel.value.length}} {{ 'selected' }}
+								</span>
+								</mat-select-trigger>
+								<mat-option *ngFor="let standards of standardList" [value]="standards.id">{{standards.name}}</mat-option>
+							</mat-select>
+						</div>
+						<div class="col-3">
+							<h3>Role</h3>
+							<mat-select placeholder="Role *" #roleSel="ngModel" name="role" [(ngModel)]="role" multiple class="form-control select2" (selectionChange)="getQuestion()"  >
+								<mat-select-trigger>
+								<span *ngIf="roleSel.value?.length == 1" >{{roleSel.value ? getSelectedValue('role',roleSel.value) : ''}}</span>
+								<span *ngIf="roleSel.value?.length > 1" class="example-additional-selection">
+									{{roleSel.value.length}} {{ 'selected' }}
+								</span>
+								</mat-select-trigger>
+								<mat-option *ngFor="let roles of roleList" [value]="roles.id">{{roles.name}}</mat-option>
+							</mat-select>
+						</div>
+						<div class="col-3">
+                            <h3>Business Sector</h3>
+                            <mat-select placeholder="Business Sector *" #sectorSel="ngModel" name="business_sector" [(ngModel)]="business_sector" multiple class="form-control select2" (selectionChange)="getSectorGroup()"  >
+								<mat-select-trigger>
+								<span *ngIf="sectorSel.value?.length == 1" >{{sectorSel.value ? getSelectedValue('sector',sectorSel.value) : ''}}</span>
+								<span *ngIf="sectorSel.value?.length > 1" class="example-additional-selection">
+									{{sectorSel.value.length}} {{ 'selected' }}
+								</span>
+								</mat-select-trigger>
+								<mat-option *ngFor="let sector of businessSectorList" [value]="sector.id">{{sector.name}}</mat-option>
+							</mat-select>
+                        </div>
+                        <div class="col-3">
+                            <h3>Business Sector Group</h3>
+                            <mat-select placeholder="Business Sector Group *" #groupSel="ngModel" name="business_sector_group" [(ngModel)]="business_sector_group" multiple class="form-control select2" (selectionChange)="getQuestion()"  >
+								<mat-select-trigger>
+								<span *ngIf="groupSel.value?.length == 1" >{{groupSel.value ? getSelectedValue('group',groupSel.value) : ''}}</span>
+								<span *ngIf="groupSel.value?.length > 1" class="example-additional-selection">
+									{{groupSel.value.length}} {{ 'selected' }}
+								</span>
+								</mat-select-trigger>
+								<mat-option *ngFor="let group of businessSectorGroupList" [value]="group.id">{{group.name}}</mat-option>
+							</mat-select>
+                        </div>
+					</div>
+					
+
+					<div class="col-12" *ngIf="this.loadingInfo?.questions">
+                        <span class="spinner-border spinner-border-sm mr-1"></span>
+                    </div>
+					<ng-container *ngIf="questionList && questionList.length> 0">
+						<h3>Checklist</h3>
+						<div  style="border:1px solid #cfcfcf;" >
+							<table  class="table table-striped tempdrivenform" style="margin-bottom:0px;">
+												
+								<tbody>
+								
+									<tr *ngFor="let question of questionList; index as j ">
+											<td><p>{{ 1+j }}. {{ question.name }} <a href="javascript:void(0);" (click)="toggleGuidance(question.id)"  *ngIf="question.guidance" ><i class="fa fa-info-circle" aria-hidden="true"></i></a></p>
+												<div class="checklist_guidance" *ngIf="guidanceIncludeList.includes(question.id)" [innerHTML]="question.guidance " ></div>
+												<div class="ans-cmt ans-view-cmt col-12 row"> 
+													<div class="col-4">     
+														<h4>Recurring Period</h4>
+														<select class="form-control" #qtdRecurringPeriod="ngModel" (change)="changeValidDate(qtdRecurringPeriod.value,question.id)" name="qtd_recurring{{question.id}}"  [(ngModel)]="reviewcommentlist['qtd_recurring'+question.id]"  required >
+															<option value="">-- Options --</option>
+															<option *ngFor="let period of recurringPeriod | keyvalue; " value="{{period.key}}" >{{ period.value }}</option>
+														</select>
+														<div class="validationerror" *ngIf="!qtdRecurringPeriod.valid && qtdRecurringPeriod.touched">
+															Please select the Recurring Period
+														</div>
+														
+													</div>  
+													<div class="col-4" *ngIf="qtdRecurringPeriod.value != 6">
+														<h4>Valid Until</h4>
+														<div class="md-form">
+															<input type="text" style="width: 85%; display: inline;" [required]="(question.recurring_period != 6)?true:false"  matInput [matDatepicker]="qtd_validuntil"  (click)="qtd_validuntil.open()" name="qtd_validuntil{{question.id}}"  [(ngModel)]="reviewcommentlist['qtd_valid'+question.id]"  class="form-control" placeholder="Valid Until *" >
+															<mat-datepicker-toggle matSuffix  [for]="qtd_validuntil"></mat-datepicker-toggle>
+															<mat-datepicker #qtd_validuntil></mat-datepicker>
+														</div>
+													</div>   
+													<div class="col-12 row"> 
+														<div class="col-4">
+															<h4 >Answer</h4>
+															{{ answerArr[question.answer] }}
+														</div>
+														<div class="col-4" *ngIf="question.file">
+															<h4 >File</h4>
+															<a href="javascript:void(0);" (click)="downloadFile(question.reviewcommentid,question.file,'active')" >{{ question.file }}</a>
+															<!--<div class="col-12 validationerror"  *ngIf="answerErrList[standard.id+''+question.id]" > Please select the Answer</div>-->
+														</div>
+													</div>
+													
+													<div class="col-12">
+														<h4 >Comment</h4>
+														<div class="md-form">
+															{{question.comment}}
+														</div>
+													</div>
+													
+													
+													
+													
+												</div>  
+											</td>
+									</tr>
+								</tbody>
+							</table>
+						
+							<div class="col-lg-12 text-center" style="border-top: 1px solid #cecece;">
+
+								<button [disabled]="loading || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10" (click)="onSubmit(checklistForm)" >
+									<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+									Approve Questions
+								</button>
+								&nbsp;&nbsp;
+								<button [disabled]="loading || buttonDisable" type="button" [routerLink]="['/master/user/list']" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 m-t-10">
+									<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+									Back
+								</button>
+								<!--<a class="btn btn-secondary active m-t-10 m-b-5" href="#" role="button" [routerLink]="['/master/user/list']" >Back</a> -->
+							</div>
+							
+						</div>
+						<div><app-usermessage [success]="success" [error]="error"  ></app-usermessage></div>
+					</ng-container>
+					<div class="col-12 alert alert-info mt-0 mb-5"   *ngIf="!questionList || questionList.length<= 0">Questions not found for approval</div>
+
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-t-15 enq-view reviewquestion" *ngIf="historyReviewData && historyReviewData.length>0"> 
+						<h3>Review History</h3>
+						<ng-container *ngFor="let history of historyReviewData; index as j" >
+							<mat-accordion  >
+								<mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false" [expanded]="false">
+									<mat-expansion-panel-header>
+										<mat-panel-title>
+											Review {{ 1+j }} ( {{ 'Date: '+history.created_date+' | Done By:'+history.created_by }} )
+										</mat-panel-title>
+									</mat-expansion-panel-header>
+
+
+									<table  class="table table-striped tempdrivenform" style="margin-bottom:0px;">
+												
+										<tbody>
+										
+											<tr *ngFor="let question of history.questions; index as j ">
+													<td><p>{{ 1+j }}. {{ question.question }}</p>
+														
+														<div class="ans-cmt ans-view-cmt col-12 row">    
+															<div class="col-4">     
+																<h4>Answer</h4>
+																<div class="cont" >
+																	{{ answerArr[question.answer] }}
+																</div>
+																
+															</div>
+															
+															<!--
+															<div class="col-4"  *ngIf="question.recurring_period">     
+																<h4>Recurring Period</h4>
+																<div class="cont" >
+																		{{ recurringPeriod[question.recurring_period] }}
+																</div>
+															</div>
+															<div class="col-4" *ngIf="question.valid_until && question.recurring_period!=6">
+																<h4>Valid Until</h4>
+																<div class="cont" >
+																	{{ question.valid_until }}
+																</div>
+															</div>
+															-->
+
+															<div class="col-6" *ngIf="question.file">
+																<h4>File</h4>
+																<div class="cont" >
+																	<a href="javascript:void(0);" (click)="downloadFile(question.history_comment_id,question.file)" >{{ question.file }}</a>
+																</div>
+															</div>
+
+
+															<div class="col-12">
+																<h4>Comment</h4>
+																<div class="cont" >
+																	{{ question.comment }}
+																</div>
+															</div>
+															
+															
+															
+														</div>  
+													</td>
+											</tr>
+										</tbody>
+									</table>
+
+
+
+								</mat-expansion-panel>                
+							</mat-accordion>
+						</ng-container>
+						<div class="col-12 alert alert-info mt-0 mb-5"   *ngIf="historyReviewData.length<= 0">Review history not found</div>
+					</div>
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-t-15 enq-view reviewquestion" *ngIf="historyApprovalData && historyApprovalData.length>0"> 
+							<h3>Approval History</h3>
+							<ng-container *ngFor="let history of historyApprovalData; index as j" >
+								<mat-accordion  >
+									<mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false" [expanded]="false">
+										<mat-expansion-panel-header>
+											<mat-panel-title>
+												Approval {{ 1+j }} ( {{ 'Date: '+history.created_date+' | Done By:'+history.created_by }} )
+											</mat-panel-title>
+										</mat-expansion-panel-header>
+	
+	
+										<table  class="table table-striped tempdrivenform" style="margin-bottom:0px;">
+													
+											<tbody>
+											
+												<tr *ngFor="let question of history.questions; index as j ">
+														<td><p>{{ 1+j }}. {{ question.question }}</p>
+															
+															<div class="ans-cmt ans-view-cmt col-12 row">    
+																<!--<div class="col-6">     
+																	<h4>Answer</h4>
+																	<div class="cont" >
+																		{{ answerArr[question.answer] }}
+																	</div>
+																</div>-->
+																
+																<div class="col-6"  *ngIf="question.recurring_period">     
+																	<h4>Recurring Period</h4>
+																	<div class="cont" >
+																		{{ recurringPeriod[question.recurring_period] }}
+																	</div>
+																</div>
+																<div class="col-6" *ngIf="question.valid_until && question.recurring_period!=6">
+																	<h4>Valid Until</h4>
+																	<div class="cont" >
+																		{{ question.valid_until }}
+																	</div>
+																</div>
+																<div class="col-6" *ngIf="question.file">
+																	<h4>File</h4>
+																	<div class="cont" >
+																		<a href="javascript:void(0);" (click)="downloadFile(question.history_comment_id,question.file)" >{{ question.file }}</a>
+																	</div>
+																</div>
+																<div class="col-12">
+																	<h4>Comment</h4>
+																	<div class="cont" >
+																		{{ question.comment }}
+																	</div>
+																</div>
+																
+																
+																
+															</div>  
+														</td>
+												</tr>
+											</tbody>
+										</table>
+	
+	
+	
+									</mat-expansion-panel>                
+								</mat-accordion>
+							</ng-container>
+							<div class="col-12 alert alert-info mt-0 mb-5"   *ngIf="historyApprovalData.length<= 0">Approval history not found</div>
+						</div>
+					
+				</div>
+				
+			</form>
+        </div>
+    </div>
+</div>

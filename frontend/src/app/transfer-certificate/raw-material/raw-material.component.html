@@ -1,0 +1,738 @@
+<div class="row"  >
+    <div class="col-12">
+        <div class="card-box table-responsive">
+        	<div class="row col-12 m-b-5 pad-right">
+              	<div class="col-8 pad-left">
+                <h4 class="page-title"><i class="fa fa-list-ul"></i> {{title}}</h4>
+                <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+                
+              	</div>
+               
+            </div>
+        
+            <div class="row col-12 m-b-5 pad-right">
+                <div class="col-4 text-left pad-left">
+                    <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                        <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+                    </select>
+                </div>
+                <div class="col-4 text-left">	
+					<select class="custom-select" style="width: 30%; font-size:13px;" name="certifiedFilter" [(ngModel)]="service.certifiedFilter">
+						<option value="">All</option>
+						<option  *ngFor="let item of filteroptionList | keyvalue" value="{{item.key}}">{{item.value}}</option>
+					</select>			    
+                </div>               	
+                <div class="col-4 text-right pad-right" >
+                   <input class="search-pad" type="text" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+                </div>
+            </div>
+
+
+
+            <div class="col-12 pad-left">
+                <table id="datatable" class="tc_break table table-bordered" >
+                    <thead>
+                    <tr>
+                        <th width="5%" scope="col" class="center">S.No</th>
+                        <th scope="col" sortable="supplier_name" (sort)="onSort($event)">Supplier Name</th>
+						<!--
+						<th scope="col" sortable="trade_name" (sort)="onSort($event)">Trade Name / Technical Specification</th>
+						<th scope="col" sortable="product_name" (sort)="onSort($event)">Product Name</th> 						
+						<th scope="col" sortable="lot_number" (sort)="onSort($event)">Lot No.</th>
+						-->
+						<th width="8%" scope="col">Certified?</th>	
+						<th scope="col">Raw TC No.</th>			
+						<th class="text-right" scope="col">Net Weight (kg)</th>
+						<th class="text-right" scope="col">Balance Weight (kg)</th>
+						<!--<th class="text-right" scope="col">Certified Weight (kg)</th>
+						-->
+						<th width="8%" class="text-center" scope="col">Action</th>	
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let entry of RawMaterial$ | async; let i=index;">
+                        <td scope="row" class="center">{{ 1+i+ service.pageNo }}</td>                       								
+						<td><ngb-highlight [result]="entry.supplier_name"  [term]="service.searchTerm"></ngb-highlight></td>						
+						<!-- <td><ngb-highlight [result]="entry.trade_name"  [term]="service.searchTerm"></ngb-highlight></td>
+						<td><ngb-highlight [result]="entry.product_name"  [term]="service.searchTerm"></ngb-highlight></td>
+						<td><ngb-highlight [result]="entry.lot_number"  [term]="service.searchTerm"></ngb-highlight></td>
+						-->
+						<td class="center"><ngb-highlight [result]="entry.is_certified_label"  [term]="service.searchTerm"></ngb-highlight></td>
+						<td><a href="javascript:void(0);" *ngIf="entry.tc_number" (click)="downloadRawmaterialFile(entry.id,'tc_attachment',entry.tc_attachment);openmodal(downloading);" > <i class="fa fa-download" ></i>&nbsp;{{ entry.tc_number }}</a></td>
+
+						<td class="text-right"><ngb-highlight [result]="entry.net_weight"  [term]="service.searchTerm"></ngb-highlight></td>	
+						<td class="text-right"><ngb-highlight [result]="entry.balance_weight"  [term]="service.searchTerm"></ngb-highlight></td>						
+						<!--<td class="text-right"><ngb-highlight [result]="entry.certified_weight"  [term]="service.searchTerm"></ngb-highlight></td>
+						-->
+						<td width="9%" class="center">
+							<a href="javascript:void(0);" (click)="showDetails(DownloadDetails,entry.id)" title="View" alt="View"><i class="fa fa-eye"></i></a>							
+							<a href="javascript:void(0);" *ngIf="canEditData" (click)="editData(i,entry.id)" title="Edit" alt="Edit" class="pl-2"> <i class="fa fa-edit"></i> </a>							
+							<a href="javascript:void(0);" *ngIf="canDeleteData" (click)="removeData(confirmcontent,i,entry)" title="Delete" alt="Delete" class="pl-2"> <i class="fa fa-trash text-danger"></i> </a>
+						</td>
+                    </tr>
+                    <tr  *ngIf="(RawMaterial$ | async)?.length==0" >
+                        <td colspan="10" class="center">{{ commontxt.norecords }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="row col-12 pad-left pad-right">
+				<div class="col-6">
+					<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+					<div *ngIf="!(service.loading$ | async)">
+					Displaying {{ (RawMaterial$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (RawMaterial$ | async).length }} of {{ (total$ | async) }} results.
+					</div>
+				</div>
+				<div class="col-6 pad-right text-right">						
+				<ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+					<ng-template ngbPaginationFirst>First</ng-template>
+					<ng-template ngbPaginationPrevious>Prev</ng-template>
+					<ng-template ngbPaginationNext>Next</ng-template>			  
+					<ng-template ngbPaginationLast>Last</ng-template>			  
+				</ngb-pagination>						
+				</div>
+			</div>
+   		</div>
+	</div>
+</div>
+
+
+
+<div class="row" *ngIf="((canAddData || (canEditData && curData)) && (userType==2 || editStatus == 1))">
+    <div class="col-12">
+        <div class="add card-box table-responsive enq-view">
+                    
+			<h3>{{editStatus == 1 ? 'Edit' : 'Add'}} {{title}}</h3>                              			
+				
+			<form  [formGroup]="form">
+
+				<div class="form-group row">
+				
+					<div class="col-8">
+						<label>Supplier Name <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Supplier Name" matTooltipClass="tooltip-text-size" aria-tooltip="Supplier Name" matTooltipPosition="right"></i>
+						<input type="text" formControlName="supplier_name"  class="form-control" placeholder="Supplier Name " [class.is-invalid]="f.supplier_name.invalid && f.supplier_name.touched">
+						<div *ngIf="f.supplier_name.errors" class="invalid-feedback">
+							<div *ngIf="f.supplier_name.errors.required">Supplier Name is required</div>
+							<div *ngIf="f.supplier_name.errors.maxlength">Supplier Name cannot exceed 255 characters</div>
+							<div *ngIf="f.supplier_name.errors.pattern || f.supplier_name.hasError('whitespace')">Invalid Supplier Name</div>
+						</div>
+					</div>				
+											
+					
+					<div class="col-4">
+						<label>Is Certified <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Certified" matTooltipClass="tooltip-text-size" aria-tooltip="Certified" matTooltipPosition="right"></i>
+						<select formControlName="is_certified" [class.is-invalid]="f.is_certified.invalid && f.is_certified.touched" class="form-control select2" (change)='certifiedFn($event.target.value)'>
+							<option value="">-- Certified --</option>
+							<option value="1">Yes</option>
+							<option value="2">No</option>
+							<option value="3">Reclaim</option>
+						</select>
+						<div *ngIf="f.is_certified.errors" class="invalid-feedback"> 
+							<div *ngIf="f.is_certified.errors.required">Certified is required</div>
+						</div>
+					</div>
+					
+					
+				</div>
+								
+					
+				
+				<div *ngIf="is_certified">
+					
+					<div *ngIf="certified_yes">
+						<div class="form-group row" >
+							<div class="col-3">
+								<label>TC No. <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="TC No." matTooltipClass="tooltip-text-size" aria-tooltip="TC No." matTooltipPosition="right"></i>
+								<input type="text" formControlName="tc_number" class="form-control" placeholder="TC No." [class.is-invalid]="f.tc_number.invalid && f.tc_number.touched">
+								<div *ngIf="f.tc_number.errors" class="invalid-feedback">
+									<div *ngIf="f.tc_number.errors.required">TC No. is required</div>
+									<div *ngIf="f.tc_number.errors.incorrect">{{ tc_numberErrors }}</div>
+								</div>
+							</div>
+
+							<div class="col-3">
+								<label>TC Attachment <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="TC Attachment" matTooltipClass="tooltip-text-size" aria-tooltip="TC Attachment" matTooltipPosition="right"></i><br>
+								<input type="file" formControlname="tc_attachment" (change)="tcChange($event)" >
+								<br><div style="font-size:11px;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs }}<span *ngIf="!last">, </span> </span></div>
+								<div *ngIf="tc_attachment" style="padding:5px; border:1px solid #cecece; background-color: beige; height:32px;width: 100%;">
+									<span>{{ tc_attachment }}</span>
+									<a href="javascript:void(0);"  (click)="removetc_attachment()" style="color:red; font-weight:bold;margin-right: 5px;float:right;" >X</a>
+									
+								</div>
+								<div *ngIf="tc_attachmentFileErr" class="validationerror" >
+									{{tc_attachmentFileErr}}
+								</div>
+							</div>	
+
+							<div class="col-3">
+								<label>Farm SC No. </label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Farm SC No." matTooltipClass="tooltip-text-size" aria-tooltip="Farm SC No." matTooltipPosition="right"></i>
+								<input type="text" formControlName="form_sc_number" class="form-control" placeholder="Farm SC No." [class.is-invalid]="f.form_sc_number.invalid && f.form_sc_number.touched">
+								<div *ngIf="f.form_sc_number.errors" class="invalid-feedback">
+									<div *ngIf="f.form_sc_number.errors.required">Farm SC No. is required</div>
+								</div>
+							</div>	
+							
+							<div class="col-3">
+								<label>Farm SC Attachment </label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Farm SC Attachment" matTooltipClass="tooltip-text-size" aria-tooltip="Farm SC Attachment" matTooltipPosition="right"></i><br>
+								<input type="file" formControlname="form_sc_attachment" (change)="form_scChange($event)" >
+								<br><div style="font-size:11px;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs }}<span *ngIf="!last">, </span> </span></div>
+								<div *ngIf="form_sc_attachment" style="padding:5px; border:1px solid #cecece; background-color: beige; height:32px;width: 100%;">
+									<span>{{ form_sc_attachment }}</span>
+									<a href="javascript:void(0);"  (click)="removeform_sc_attachment()" style="color:red; font-weight:bold;margin-right: 5px;float:right;" >X</a>
+									
+								</div>
+								<div *ngIf="form_sc_attachmentFileErr" class="validationerror" >
+									{{form_sc_attachmentFileErr}}
+								</div>
+							</div>	
+						</div>
+
+						<div class="form-group row" >
+							<div class="col-3">
+								<label>Farm TC No. </label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Farm TC No." matTooltipClass="tooltip-text-size" aria-tooltip="Farm TC No." matTooltipPosition="right"></i>
+								<input type="text" formControlName="form_tc_number" class="form-control" placeholder="Farm TC No." [class.is-invalid]="f.form_tc_number.invalid && f.form_tc_number.touched">
+								<div *ngIf="f.form_tc_number.errors" class="invalid-feedback">
+									<div *ngIf="f.form_tc_number.errors.required">Farm TC No. is required</div>
+								</div>
+							</div>
+
+							<div class="col-3">
+								<label>Farm TC Attachment </label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Farm TC Attachment" matTooltipClass="tooltip-text-size" aria-tooltip="Farm TC Attachment" matTooltipPosition="right"></i><br>
+								<input type="file" formControlname="form_tc_attachment" (change)="form_tcChange($event)" >
+								<br><div style="font-size:11px;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs }}<span *ngIf="!last">, </span> </span></div>
+								<div *ngIf="form_tc_attachment" style="padding:5px; border:1px solid #cecece; background-color: beige; height:32px;width: 100%;">
+									<span>{{ form_tc_attachment }}</span>
+									<a href="javascript:void(0);"  (click)="removeform_tc_attachment()" style="color:red; font-weight:bold;margin-right: 5px;float:right;" >X</a>
+									
+								</div>
+								<div *ngIf="form_tc_attachmentFileErr" class="validationerror" >
+									{{form_tc_attachmentFileErr}}
+								</div>
+							</div>	
+
+							<div class="col-3">
+								<label>Trader TC No. </label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Trader TC No." matTooltipClass="tooltip-text-size" aria-tooltip="Trader TC No." matTooltipPosition="right"></i>
+								<input type="text" formControlName="trade_tc_number" class="form-control" placeholder="Trader TC No." [class.is-invalid]="f.trade_tc_number.invalid && f.trade_tc_number.touched">
+								<div *ngIf="f.trade_tc_number.errors" class="invalid-feedback">
+									<div *ngIf="f.trade_tc_number.errors.required">Trader TC No. is required</div>
+								</div>
+							</div>	
+							
+							<div class="col-3">
+								<label>Trader TC Attachment </label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Trader TC Attachment" matTooltipClass="tooltip-text-size" aria-tooltip="Trader TC Attachment" matTooltipPosition="right"></i><br>
+								<input type="file" formControlname="trade_tc_attachment" (change)="trade_tcChange($event)" >
+								<br><div style="font-size:11px;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs }}<span *ngIf="!last">, </span> </span></div>
+								<div *ngIf="trade_tc_attachment" style="padding:5px; border:1px solid #cecece; background-color: beige; height:32px;width: 100%;">
+									<span>{{ trade_tc_attachment }}</span>
+									<a href="javascript:void(0);"  (click)="removetrade_tc_attachment()" style="color:red; font-weight:bold;margin-right: 5px;float:right;" >X</a>
+									
+								</div>
+								<div *ngIf="trade_tc_attachmentFileErr" class="validationerror" >
+									{{trade_tc_attachmentFileErr}}
+								</div>
+							</div>	
+						</div>
+
+						<div class="form-group row">
+							<div class="col-6">
+								<label>Certification Body <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Certification Body" matTooltipClass="tooltip-text-size" aria-tooltip="Certification Body" matTooltipPosition="right"></i>
+								<select formControlName="certification_body_id" [class.is-invalid]="f.certification_body_id.invalid && f.certification_body_id.touched" class="form-control select2">
+									<option value="">-- Certification Body --</option>
+									<option *ngFor="let certification of certificationlist" value = {{certification.id}}>{{certification.name}}</option>
+								</select>
+								<div *ngIf="f.certification_body_id.errors" class="invalid-feedback">
+									<div *ngIf="f.certification_body_id.errors.required" >Certification Body is required</div>
+								</div>	
+							</div>
+					
+							<div class="col-6">
+								<label>Standard <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Standard" matTooltipClass="tooltip-text-size" aria-tooltip="Standard" matTooltipPosition="right"></i>
+								<mat-select placeholder="Standard" formControlName="standard_id" multiple class="form-control select2" [class.is-invalid]="f.standard_id.invalid && f.standard_id.touched" (selectionChange)='getlabel($event.value,1)'>
+									<mat-select-trigger>
+									<span *ngIf="f.standard_id.value?.length == 1" >{{f.standard_id.value ? getSelectedStandardValue(f.standard_id.value): ''}}</span>
+									<span *ngIf="f.standard_id.value?.length > 1" class="example-additional-selection">
+										{{f.standard_id.value.length}} {{ 'selected' }}
+									</span>
+									</mat-select-trigger>
+									<mat-option *ngFor="let item of standardList" [value]="item.id">{{item.name}}</mat-option>
+								</mat-select>  
+								<div *ngIf="f.standard_id.errors" class="invalid-feedback">
+									<div *ngIf="f.standard_id.errors.required">Standard is required</div>
+									<div *ngIf="f.standard_id.errors.incorrect">{{ standard_idErrors }}</div>
+								</div>
+							</div>
+							
+							
+							
+						</div>					
+					</div>
+
+					<div class="form-group row">
+						<div class="col-4"  *ngIf="certified_no || certified_reclaim">
+							<label>Invoice No. <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Invoice No." matTooltipClass="tooltip-text-size" aria-tooltip="Invoice No." matTooltipPosition="right"></i>
+							<input type="text" formControlName="invoice_number"  class="form-control" placeholder="Invoice No." [class.is-invalid]="f.invoice_number.invalid && f.invoice_number.touched">
+							<div *ngIf="f.invoice_number.errors" class="invalid-feedback">
+								<div *ngIf="f.invoice_number.errors.required">Invoice No. is required</div>
+							</div>
+						</div>		
+					</div>		
+					
+					<div *ngIf="certified_reclaim">
+						<div class="form-group row">
+							<div class="col-4">
+								<label>Invoice Document <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Invoice Document" matTooltipClass="tooltip-text-size" aria-tooltip="Invoice Document" matTooltipPosition="right"></i><br>
+								<input type="file" formControlname="invoice_attachment" (change)="invoiceChange($event)" >
+								<br><div style="font-size:11px;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs }}<span *ngIf="!last">, </span> </span></div>
+								<div *ngIf="invoice_attachment" style="padding:5px; border:1px solid #cecece; background-color: beige; height:32px;width: 100%;">
+									<span>{{ invoice_attachment }}</span>
+									<a href="javascript:void(0);"  (click)="removeinvoice_attachment()" style="color:red; font-weight:bold;margin-right: 5px;float:right;" >X</a>
+								</div>
+								<div *ngIf="invoice_attachmentFileErr" class="validationerror" >
+									{{invoice_attachmentFileErr}}
+								</div>
+							</div>	
+							
+							<div class="col-4">
+								<label>Declaration Document <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Declaration Document" matTooltipClass="tooltip-text-size" aria-tooltip="Declaration Document" matTooltipPosition="right"></i><br>
+								<input type="file" formControlname="declaration_attachment" (change)="declarationChange($event)" >
+								<br><div style="font-size:11px;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs }}<span *ngIf="!last">, </span> </span></div>
+								<div *ngIf="declaration_attachment" style="padding:5px; border:1px solid #cecece; background-color: beige; height:32px;width: 100%;">
+									<span>{{ declaration_attachment }}</span>
+									<a href="javascript:void(0);"  (click)="removedeclaration_attachment()" style="color:red; font-weight:bold;margin-right: 5px;float:right;" >X</a>
+								</div>
+								<div *ngIf="declaration_attachmentFileErr" class="validationerror" >
+									{{declaration_attachmentFileErr}}
+								</div>
+							</div>	
+						</div>	
+					</div>
+
+				</div>
+				
+				<h3>Manage {{title}} Product(s)</h3>
+				
+				<div class="col-12 m-t-15 pad-left pad-right">
+					<div class="row col-12 cs-pgm-blue m-0 pad-left pad-right" style="padding:15px 0px;">	
+								
+						<div class="tbl-sec col-12">
+							<table id="datatable" class="table table-bordered tab-bor col-12" >
+								<thead>
+									<tr>
+										<th scope="col" width="5%" class="center">S.No</th>
+										<th scope="col">Trade Name / Technical Specification</th>
+										<th scope="col">Product Name</th>
+										<th scope="col" class="left" *ngIf="certified_yes">Standard Label Grade</th>
+										<th scope="col" class="left" width="8%">Gross Weight(kg)</th>
+										<th scope="col" class="left" width="8%">Net Weight(kg)</th>
+										<th scope="col" class="left" width="8%" *ngIf="certified_yes">Certified Weight(kg)</th>
+										<th scope="col" class="center" width="8%">Action</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr *ngIf="productEntries?.length==0">
+										<td colspan="8" class="center">No Products Added</td>
+									</tr>
+									<tr *ngFor="let Entry of productEntries; let im=index; ">
+										<td scope="row" class="center">{{  1+ im }}</td>
+										<td class="left">{{ Entry.trade_name }}</td>
+										<td class="left">{{ Entry.product_name }}</td>
+										<td class="left" *ngIf="certified_yes">{{ Entry.label_grade_name }}</td>
+										<td class="left">{{ Entry.gross_weight }}</td>
+										<td class="left">{{ Entry.net_weight }}</td>
+										<td class="left" *ngIf="certified_yes">{{ Entry.certified_weight }}</td>
+										<td  class="center">
+											<!-- <a href="javascript:void(0);" (click)="showproductDetails(productDetails,Entry)" title="View" alt="View" *ngIf="curData"><i class="fa fa-eye"></i></a> -->
+											
+											<a href="javascript:void(0);" class="pl-2" (click)="editProduct(im)" title="Edit" alt="Edit"> <i class="fa fa-edit"></i> </a>
+											
+											<a href="javascript:void(0);" *ngIf="!Entry.is_product_used" class="pl-2" (click)="removeProduct(im)" title="Delete" alt="Delete"> <i class="fa fa-trash text-danger"></i> </a>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<div class="validationerror" *ngIf="productErrors">Please add Product details</div>
+						
+							<h3>{{producteditStatus ? 'Edit' : 'Add'}} {{title}}'s Product</h3>
+							<div class="form-group row">
+								<div [ngClass]="certified_yes ? 'col-4': 'col-6'" >
+									<label>Trade Name / Technical Specification <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Trade Name / Technical Specification" matTooltipClass="tooltip-text-size" aria-tooltip="Trade Name / Technical Specification" matTooltipPosition="right"></i>
+									<input type="text" formControlName="trade_name"  class="form-control" placeholder="Trade Name / Technical Specification" [class.is-invalid]="f.trade_name.invalid && f.trade_name.touched">
+									<div *ngIf="f.trade_name.errors" class="invalid-feedback">
+										<div *ngIf="f.trade_name.errors.required">Trade Name / Technical Specification is required</div>
+										<div *ngIf="f.trade_name.errors.maxlength">Trade Name / Technical Specification cannot exceed 255 characters</div>
+										<!-- <div *ngIf="f.trade_name.errors.pattern || f.trade_name.hasError('whitespace')">Invalid Trade Name / Technical Specification</div> -->
+									</div>
+								</div>
+			
+								<div [ngClass]="certified_yes ? 'col-4': 'col-6'">
+									<label>Product Name <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Product Name" matTooltipClass="tooltip-text-size" aria-tooltip="Product Name" matTooltipPosition="right"></i>
+									<input type="text" formControlName="product_name"  class="form-control" placeholder="Product Name" [class.is-invalid]="f.product_name.invalid && f.product_name.touched">
+									<div *ngIf="f.product_name.errors" class="invalid-feedback">
+										<div *ngIf="f.product_name.errors.required">Product Name is required</div>
+										<div *ngIf="f.product_name.errors.maxlength">Product Name cannot exceed 255 characters</div>
+										<div *ngIf="f.product_name.errors.pattern || f.product_name.hasError('whitespace')">Invalid Product Name</div>
+									</div>
+								</div>
+								
+								<div class="col-4" *ngIf="certified_yes">
+									<label>Standard Label Grade <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Label Grade" matTooltipClass="tooltip-text-size" aria-tooltip="Label Grade" matTooltipPosition="right"></i>
+									<mat-select placeholder="Standard Label Grade" formControlName="label_grade_id" multiple class="form-control select2" [class.is-invalid]="f.label_grade_id.invalid && f.label_grade_id.touched">
+										<mat-select-trigger>
+										<span *ngIf="f.label_grade_id.value?.length == 1" >{{f.label_grade_id.value ? getSelectedLabelgradeValue(f.label_grade_id.value): ''}}</span>
+										<span *ngIf="f.label_grade_id.value?.length > 1" class="example-additional-selection">
+											{{f.label_grade_id.value.length}} {{ 'selected' }}
+										</span>
+										</mat-select-trigger>
+										<mat-option *ngFor="let item of labelgradeList" [value]="item.id">{{item.name}}</mat-option>
+									</mat-select> 
+									<span *ngIf="loading['labelgrade']" class="spinner-border spinner-border-sm mr-1"></span> 
+									<div *ngIf="f.label_grade_id.errors" class="invalid-feedback">
+										<div *ngIf="f.label_grade_id.errors.required">Label Grade is required</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="form-group row">
+								
+								<div class="col-6">
+									<label>Lot No. <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Lot No." matTooltipClass="tooltip-text-size" aria-tooltip="Lot No." matTooltipPosition="right"></i>
+									<input type="text" formControlName="lot_number"  class="form-control" placeholder="Lot No." [class.is-invalid]="f.lot_number.invalid && f.lot_number.touched">
+									<div *ngIf="f.lot_number.errors" class="invalid-feedback">
+										<div *ngIf="f.lot_number.errors.required">Lot No. is required</div>
+										<div *ngIf="f.lot_number.errors.maxlength">Lot No. cannot exceed 255 characters</div>
+										<div *ngIf="f.lot_number.errors.pattern || f.lot_number.hasError('whitespace')">Invalid Lot No.</div>
+									</div>
+								</div>
+							
+								<div [ngClass]="certified_yes ? 'col-2': 'col-3'">
+									<label>Gross Weight (kg) <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Gross Weight" matTooltipClass="tooltip-text-size" aria-tooltip="Gross Weight" matTooltipPosition="right"></i>
+									<input type="text" formControlName="gross_weight"  class="form-control" placeholder="Gross Weight (kg)" [class.is-invalid]="f.gross_weight.invalid && f.gross_weight.touched" (change)="validateWeight()">
+									<div *ngIf="f.gross_weight.errors" class="invalid-feedback">
+										<div *ngIf="f.gross_weight.errors.required">Gross Weight is required</div>
+										<div *ngIf="f.gross_weight.errors.min">Gross Weight should be greater than or equal to 1</div>
+										<div *ngIf="f.gross_weight.errors.pattern">Invalid Gross Weight</div>								
+									</div>
+									<div *ngIf="gross_weightErr" class="validationerror" >
+										{{gross_weightErr}}
+									</div>
+								</div>											
+								
+								<div [ngClass]="certified_yes ? 'col-2': 'col-3'">
+									<label>Net Weight (kg) <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Net Weight" matTooltipClass="tooltip-text-size" aria-tooltip="Net Weight" matTooltipPosition="right"></i>
+									<input type="text" formControlName="net_weight"  class="form-control" placeholder="Net Weight (kg)" [class.is-invalid]="f.net_weight.invalid && f.net_weight.touched" (change)="validateWeight();changeBalanceWeight($event.target.value)">
+									<div *ngIf="f.net_weight.errors" class="invalid-feedback">
+										<div *ngIf="f.net_weight.errors.required">Net Weight is required</div>
+										<div *ngIf="f.net_weight.errors.min">Net Weight should be greater than or equal to 1</div>
+										<div *ngIf="f.net_weight.errors.pattern">Invalid Net Weight</div>								
+									</div>
+									<div *ngIf="net_weightErr" class="validationerror" >
+										{{net_weightErr}}
+									</div>
+								</div>
+
+								<div class="col-2" *ngIf="certified_yes">
+									<label>Certified Weight (kg) <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Certified Weight" matTooltipClass="tooltip-text-size" aria-tooltip="Certified Weight" matTooltipPosition="right"></i>
+									<input type="text" formControlName="certified_weight"  class="form-control" placeholder="Certified Weight (kg)" [class.is-invalid]="f.certified_weight.invalid && f.certified_weight.touched" (change)="validateWeight()">
+									<div *ngIf="f.certified_weight.errors" class="invalid-feedback">
+										<div *ngIf="f.certified_weight.errors.required">Certified Weight is required</div>
+										<div *ngIf="f.certified_weight.errors.min">Certified Weight should be greater than or equal to 1</div>
+										<div *ngIf="f.certified_weight.errors.pattern">Invalid Certified Weight</div>								
+									</div>
+									<div *ngIf="certified_weightErr" class="validationerror" >
+										{{certified_weightErr}}
+									</div>
+								</div>
+								
+							</div>
+							
+							<div class="col-4 pad-left" >
+								<ng-container *ngIf="producteditStatus && editStatus">
+									<span class="text-success">Balance Weight: <b>{{ currentEditproduct.balance_weight }}</b></span><span class="text-danger m-l-15">Used Weight: <b>{{ currentEditproduct.used_weight }}</b></span>
+								</ng-container>
+							</div>
+							
+							<div class="col-12 text-right" style="padding-top:5px;">
+								<a class="btn btn-success btn-sm waves-light" href="javascript:void(0);" role="button" (click)="addProduct()"  >{{ producteditStatus ? 'Update' : 'Add' }} Product</a>
+								<a class="btn btn-secondary btn-sm active waves-light ml-2" href="javascript:void(0);" role="button" (click)="resetproductform();"  >Reset</a>
+							</div>
+						</div>
+								
+							
+						
+						<!--<div class="col-12 validationerror" *ngIf="standard_error" >{{ standard_error }}</div>-->
+					</div>
+				</div>	
+
+
+				<div class="col-lg-12 text-center mt-4 mb-4">
+					<button [disabled]="loading['button']" (click)="addData()" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+						<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+						{{editStatus == 1 ? 'Update' : 'Save'}}		
+					</button>&nbsp;&nbsp;										
+					<button [disabled]="loading['button']" (click)="formReset()" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2" style="margin-left: 5px;">
+						<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+						{{userType == 2 ? 'Reset' : 'Close'}}
+					</button>
+											
+					<div class="clearfix"></div>
+						
+					<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+				</div>	
+				
+				<div class="col-lg-12 error">
+				Note: After completing your actions, please click "Submit" button to store the data.
+				</div>
+			
+			</form>				
+             
+        </div>
+    </div>
+</div>
+
+<ng-template #confirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;" *ngIf="popupsuccess=='' && popuperror=='' && popupinfomessage==''">
+		Are you sure, do you want to delete the data?
+	</div>
+	 
+	<div class="alert alert-info m-2" *ngIf="popupinfomessage">{{popupinfomessage}}</div>
+	<div class="alert alert-success m-2" *ngIf="popupsuccess">{{popupsuccess}}</div>
+	<div class="alert alert-danger m-2" *ngIf="popuperror">{{popuperror}}</div>
+	 
+	<div class="modal-footer" *ngIf="popupinfomessage==''">
+		<button type="button" *ngIf="popupsuccess=='' && popuperror==''" class="btn btn-success " (click)="removeDataAction()">Ok</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Close</button>
+	</div>
+</ng-template>
+
+<ng-template #DownloadDetails let-modal>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+	<div class="modal-body" style="font-size:16px;">
+		<span *ngIf="loading['data']" class="spinner-border spinner-border-sm mr-1"></span>
+		<ng-container *ngIf="!loading['data']">
+			<div class="card-box enq-view">
+				<table class="table-secondary m-b-15" *ngIf="downloadData">
+					<tr *ngIf="downloadData.is_certified==2 || downloadData.is_certified==3">
+						<th width="20%">Supplier Name</th>
+						<td width="30%">{{ downloadData.supplier_name }}</td>
+						<th width="20%">Invoice No.</th>
+						<td width="30%">{{ downloadData.invoice_number }}</td>
+					</tr>				
+					<tr *ngIf="downloadData.is_certified==1">
+						<th width="20%">Supplier Name</th>
+						<td colspan="3">{{ downloadData.supplier_name }}</td>
+					</tr>					
+							
+					<tr>
+						<!--<th width="20%">Lot No.</th>
+						<td width="30%">{{ downloadData.lot_number }}</td>-->
+						<th width="20%">Certified</th>
+						<td colspan="3">{{ downloadData.is_certified_label }}</td>
+					</tr>
+					<tr *ngIf="downloadData.is_certified==1">
+						<th width="20%">Raw TC No.</th>
+						<td width="30%">{{ downloadData.tc_number }}</td>
+						<th width="20%">TC Attachment</th>
+						<td width="30%" *ngIf="downloadData.tc_attachment"><a href="javascript:void(0);" (click)="downloadFile(downloadData.id,'tc_attachment',downloadData.tc_attachment);openmodal(downloading);" > <i class="fa fa-download" ></i>&nbsp;{{ downloadData.tc_attachment }}</a></td>
+						<td width="30%" *ngIf="!downloadData.tc_attachment">NA</td>
+					</tr>
+					<tr *ngIf="downloadData.is_certified==1">
+						<th width="20%">Farm SC No.</th>
+						<td width="30%">{{ downloadData.form_sc_number }}</td>
+						<th width="20%">Farm SC Attachment</th>
+						<td width="30%" *ngIf="downloadData.form_sc_attachment"><a href="javascript:void(0);" (click)="downloadFile(downloadData.id,'form_sc_attachment',downloadData.form_sc_attachment);openmodal(downloading);" > <i class="fa fa-download" ></i>&nbsp;{{ downloadData.form_sc_attachment }}</a></td>
+						<td width="30%" *ngIf="!downloadData.form_sc_attachment">NA</td>
+					</tr>
+					<tr *ngIf="downloadData.is_certified==1">
+						<th width="20%">Farm TC No.</th>
+						<td width="30%">{{ downloadData.form_tc_number }}</td>
+						<th width="20%">Farm TC Attachment</th>
+						<td width="30%" *ngIf="downloadData.form_tc_attachment"><a href="javascript:void(0);" (click)="downloadFile(downloadData.id,'form_tc_attachment',downloadData.form_tc_attachment);openmodal(downloading);" > <i class="fa fa-download" ></i>&nbsp;{{ downloadData.form_tc_attachment }}</a></td>
+						<td width="30%" *ngIf="!downloadData.form_tc_attachment">NA</td>
+					</tr>
+					<tr *ngIf="downloadData.is_certified==1">
+						<th width="20%">Trader TC No.</th>
+						<td width="30%">{{ downloadData.trade_tc_number }}</td>
+						<th width="20%">Trader TC Attachment</th>
+						<td width="30%" *ngIf="downloadData.trade_tc_attachment"><a href="javascript:void(0);" (click)="downloadFile(downloadData.id,'trade_tc_attachment',downloadData.trade_tc_attachment);openmodal(downloading);" > <i class="fa fa-download" ></i>&nbsp;{{ downloadData.trade_tc_attachment }}</a></td>
+						<td width="30%" *ngIf="!downloadData.trade_tc_attachment">NA</td>
+					</tr>
+					<tr *ngIf="downloadData.is_certified==1">
+						<th width="20%">Standard</th>
+						<td width="30%">{{ downloadData.standard_name }}</td>
+						<th width="20%">Certification Body</th>
+						<td width="30%">{{ downloadData.certification_body_name }}</td>
+						<!--<th width="20%">Standard Label Grade</th>
+						<td width="30%">{{ downloadData.label_grade_name }}</td>-->
+					</tr>				
+					<!--<tr *ngIf="downloadData.is_certified==1">
+						<th width="20%">Certification Body</th>
+						<td width="30%">{{ downloadData.certification_body_name }}</td>
+						<th width="20%">Certified Weight</th>
+						<td colspan="3">{{ downloadData.certified_weight }} kg</td>
+					</tr>-->
+					<tr>
+						<th width="20%">Gross Weight</th>
+						<td width="30%">{{ downloadData.gross_weight }} kg</td>
+						<th width="20%">Net Weight</th>
+						<td width="30%">{{ downloadData.net_weight }} kg</td>
+					</tr>
+					<tr>
+						<th width="20%">Used Weight</th>
+						<td width="30%">{{ downloadData.used_weight }} kg</td>
+						<th width="20%">Balance Weight</th>
+						<td width="30%">{{ downloadData.balance_weight }} kg</td>
+					</tr>
+					<tr *ngIf="downloadData.is_certified==3">					
+						<th width="20%">Invoice Document</th>
+						<td width="30%" *ngIf="downloadData.invoice_attachment"><a href="javascript:void(0);" (click)="downloadFile(downloadData.id,'invoice_attachment',downloadData.invoice_attachment);openmodal(downloading);" > <i class="fa fa-download" ></i>&nbsp;{{ downloadData.invoice_attachment }}</a></td>
+						<td width="30%" *ngIf="!downloadData.invoice_attachment">NA</td>					
+						<th width="20%">Declaration Document</th>
+						<td width="30%" *ngIf="downloadData.declaration_attachment"><a href="javascript:void(0);" (click)="downloadFile(downloadData.id,'declaration_attachment',downloadData.declaration_attachment);openmodal(downloading);" > <i class="fa fa-download" ></i>&nbsp;{{ downloadData.declaration_attachment }}</a></td>
+						<td width="30%" *ngIf="!downloadData.declaration_attachment">NA</td>					
+					</tr>
+					<tr>
+						<th width="20%">Status</th>
+						<td width="30%">{{ downloadData.status_label }}</td>
+						<th width="20%">Created Date</th>
+						<td width="30%">{{ downloadData.created_at }}</td>
+					</tr>
+				</table>			
+				
+			</div>
+	
+			<div class="tbl-sec pl-0 pr-0" *ngIf="downloadData">
+				<table id="datatable" class="table table-bordered tab-bor col-12" style="font-size: 13px;">
+					<thead>
+						<tr>
+							<th scope="col" width="5%" class="center">S.No</th>
+							<th scope="col">Trade Name / Technical Specification</th>
+							<th scope="col">Product Name</th>
+							<th scope="col">Lot No.</th>
+							<th scope="col" class="left" *ngIf="downloadData.is_certified==1">Standard Label Grade</th>
+							<th scope="col" class="left" *ngIf="downloadData.is_certified==1">Certified Weight(kg)</th>
+							<th scope="col" class="left">Gross Weight(kg)</th>
+							<th scope="col" class="left">Net Weight(kg)</th>
+							<th scope="col" class="left">Used Weight(kg)</th>
+							<th scope="col" class="left">Balance Weight(kg)</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr *ngIf="downloadData.products?.length==0">
+							<td colspan="7" class="center">No Products Added</td>
+						</tr>
+						<tr *ngFor="let Entry of downloadData.products; let im=index; ">
+							<td scope="row" class="center">{{  1+ im }}</td>
+							<td class="left">{{ Entry.trade_name }}</td>
+							<td class="left">{{ Entry.product_name }}</td>
+							<td class="left">{{ Entry.lot_number }}</td>
+							<td class="left" *ngIf="downloadData.is_certified==1">{{ Entry.label_grade_name }}</td>
+							<td class="left" *ngIf="downloadData.is_certified==1">{{ Entry.certified_weight }}</td>
+							<td class="left">{{ Entry.gross_weight }}</td>
+							<td class="left">{{ Entry.net_weight }}</td>
+							<td class="left">{{ Entry.used_weight }}</td>
+							<td class="left">{{ Entry.balance_weight }}</td>
+						</tr>
+					</tbody>
+				</table>	
+			</div>
+			
+			<div class="tbl-sec pl-0 pr-0" *ngIf="downloadData?.used_products">
+				<ng-container >
+					<table id="datatable" class="table table-bordered tab-bor col-12" style="font-size: 13px;" >
+						<thead>
+						<tr>
+							<th colspan="5" scope="col" class="center">Used Products</th>
+						</tr>
+						<tr>
+							<th width="5%" scope="col" class="center">S.No</th>
+							<th scope="col">Product Name</th>	
+							<th scope="col">Sales TC No.</th>
+							<th class="text-center" scope="col">Used Weight (kg)</th>	
+							<th scope="col" class="text-center" >Added On</th>	
+						</tr>
+						</thead>
+						<tbody>
+							<tr *ngIf="downloadData.used_products.length==0">
+								<td colspan="5" class="center">No Product Added</td>
+							</tr>
+							<tr *ngFor="let products of downloadData.used_products; let i=index; ">
+								<td scope="row" class="center">{{  1+ i }}</td>
+								<td>{{ products.product_name }}</td>
+								<td>{{ products.tc_nos }}</td>
+								<td class="text-right" >{{ products.used_weight }} kg</td>
+								<td class="text-center" >{{ products.created_at }}</td>
+								
+							</tr>
+							<tr>
+								<td colspan="3" class="text-right text-primary"><b>Total Used Weight</b></td>
+								<td class="text-right text-primary"><b>{{ downloadData.total_used_weight }} kg</b></td>
+								<td>&nbsp;</td>
+							</tr>
+						</tbody>
+					</table>
+				</ng-container>
+			</div>
+
+
+			<div class="tbl-sec pl-0 pr-0" *ngIf="downloadData?.rawmaterial_history">
+				<ng-container >
+					<table id="datatable" class="table table-bordered tab-bor col-12" style="font-size: 13px;" >
+						<thead>
+						<tr>
+							<th colspan="4" scope="col" class="center">History</th>
+						</tr>
+						<tr>
+							<th width="5%" scope="col" class="center">S.No</th>
+							<th scope="col" class="text-center" >Activity</th>	
+							<th scope="col" class="text-center" >Created By</th>
+							<th scope="col" class="text-center" >Created On</th>
+						</tr>
+						</thead>
+						<tbody>
+							<tr *ngIf="downloadData.rawmaterial_history.length==0">
+								<td colspan="4" class="center">No History Found</td>
+							</tr>
+							<tr *ngFor="let historyrow of downloadData.rawmaterial_history; let i=index; ">
+								<td scope="row" class="center">{{  1+ i }}</td>
+								<td class="cl_rawmaterialhistory" >
+									<span [innerHTML]="historyrow.activity" ></span>
+									<ng-container *ngIf="historyrow.history_files && historyrow.history_files.length>0" >
+										<ul>
+											<li *ngFor="let historyfilerow of historyrow.history_files; let j=index; ">
+												{{ historyfilerow.raw_material_file_type_label }}: "<a href="javascript:void(0);" (click)="downloadMaterialFile(historyfilerow,'old');openmodal(downloading);">{{ historyfilerow.raw_material_file_old }}</a>" >> "<a href="javascript:void(0);" (click)="downloadMaterialFile(historyfilerow,'new');openmodal(downloading);">{{ historyfilerow.raw_material_file_new }}</a>"
+											</li>
+										</ul>
+									</ng-container>
+								</td>
+								<td>{{ historyrow.created_by }}</td>
+								<td class="text-center" >{{ historyrow.created_at }}</td>
+								
+							</tr>
+						</tbody>
+					</table>
+				</ng-container>
+			</div>
+		</ng-container>
+        
+		<div style="text-align: center;">
+			<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="modal.dismiss('cancel click')" >Close</a>
+		</div>
+    </div>
+</ng-template>
+<ng-template #downloading let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+        Please wait, your file is downloading ...
+    </div>
+</ng-template>

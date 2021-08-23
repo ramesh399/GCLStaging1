@@ -1,0 +1,302 @@
+
+<div class="row">
+    <div class="col-12">
+	
+		<div class="col-sm-12  p-b-10">
+			<div class="page-title-box">
+				<div class="float-left">
+					<h4 class="page-title">Generate {{title}}</h4>
+				</div>
+				
+				<div class="text-right float-right">
+					<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/invoice/'+backLink]" [queryParams]="{type:type}" >Back</a>
+				</div>
+			</div>	
+		</div>
+		
+		<!-- <div class="add card-box table-responsive" *ngIf="offerdata"> -->
+	    <div class="add card-box table-responsive">
+			<ng-container *ngIf="type == 3 || type == 4" >
+				<form  [formGroup]="userForm">				
+					<div class="col-12 m-b-20 row">
+						<div class="col-6 m-t-10">
+							<label>{{ddlLabel}} <span class="text-danger">*</span></label>
+							<mat-select placeholder="-- {{ddlLabel}} --" formControlName="customer" class="form-control select2" [class.is-invalid]="uf.customer.invalid && uf.customer.touched" (selectionChange)="changeCustomer()">
+								<mat-option *ngFor="let customer of customerList" [value]="customer.id">{{customer.display_company_name}}</mat-option>
+							</mat-select>
+							<span *ngIf="loadinginfo" class="spinner-border spinner-border-sm mr-1"></span>
+							<div *ngIf="uf.customer.errors" class="invalid-feedback">
+								<div *ngIf="uf.customer.errors.required">{{ddlLabel}} is required</div>							
+							</div>
+						</div>
+						<div class="col-2 m-t-10">
+							<label>Credit Note Option <span class="text-danger">*</span></label>
+							<select formControlName="credit_note" class="form-control select2" [class.is-invalid]="uf.credit_note.invalid && uf.credit_note.touched">
+								<option  *ngFor="let item of creditList | keyvalue" value="{{item.key}}">{{item.value}}</option>
+							</select>	
+						</div>
+					</div>	
+				</form>	
+			</ng-container>
+			<div class="row" style="padding-top:20px;" *ngIf="loadingdata"  ><span class="spinner-border spinner-border-sm mr-1"></span></div>
+			<div *ngIf="offerdata && !loadingdata">				                  				
+				<!-- (ngSubmit)="onSubmit()"-->
+				<form  [formGroup]="form">					
+				
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view">
+					
+						<ng-container *ngIf="!ossEditStatus">
+							<h3>Currency &amp; Conversion Rate</h3> 					
+							<div class="form-group row">
+								<div class="row col-12 prd-lab">
+									<div class="col-4">
+										<label for="conversion_required">Currency &amp; Conversion Rate Required </label>
+										&nbsp;&nbsp;<input type="checkbox" formControlName="conversion_required" disabled [checked]="1"   (change)="conversionRequired($event.target.checked)">								
+									</div>									
+									
+									<div class="col-2" *ngIf="conversion_required_status==1">
+										<label>Base Currency <span class="text-danger">*</span></label>
+										<input type="text" formControlName="currency"  class="form-control" readonly placeholder="Base Currency" >
+										<div *ngIf="currencyErrors" class="validationerror" >
+											{{ currencyErrors }}
+										</div>
+									</div>
+									
+									<div class="col-2" *ngIf="conversion_required_status==1">
+										<label>Conversion Rate <span class="text-danger">*</span></label>
+										<input type="text" formControlName="conversion_rate"  class="form-control" placeholder="Conversion Rate" (change)="changeConversionRate($event.target.value)">
+										<div *ngIf="conversion_rateErrors" class="validationerror" >
+											{{ conversion_rateErrors }}
+										</div>
+										<ng-container *ngIf="f.conversion_rate.errors">
+											<div *ngIf="f.conversion_rate.errors.min" class="validationerror">
+												Conversion Rate should have minimum 0.01
+											</div>
+											<div *ngIf="f.conversion_rate.errors.pattern" class="validationerror">
+												Please enter valid Conversion Rate
+											</div>
+										</ng-container>
+									</div>
+									
+									<div class="col-3" *ngIf="conversion_required_status==1">
+										<label>Conversion Currency <span class="text-danger">*</span></label>
+										
+										<select formControlName="conversion_currency_code" class="form-control select2" (change)="changeConversionCurrencyCode($event.target.value)">
+											<option value="" >-- Conversion Currency --</option>
+											<option *ngFor="let countryCode of countryCodeList" value='{{countryCode.code}}'>{{countryCode.code}}</option>
+										</select>
+										<div *ngIf="conversion_currency_codeErrors" class="validationerror" >
+											{{ conversion_currency_codeErrors }}
+										</div>
+									</div>
+								</div>	
+							</div>
+						</ng-container>
+						
+
+						<h3>Other Expenses</h3> 
+						<div class="form-group row">												
+							<div class="tbl-sec">
+								<table id="datatable" class="table table-bordered tab-bor col-12 m-b-0" >
+									<thead>
+									<tr>
+										<th scope="col" class="center" width="5%">S.No</th>																			
+										<th scope="col">Activity</th>										
+										<th scope="col">Description</th>
+										<th scope="col" class="center" *ngIf="type==1 || type==2">Standard(s)</th>
+										<th scope="col" class="text-right" width="15%">Amount</th>	
+										<th scope="col" class="text-right" *ngIf="checkEntryType()" width="10%">Action</th>									
+									</tr>
+									</thead>
+									<tbody>
+										<tr *ngIf="offerdata?.offer_other_expenses?.length==0">
+												<td colspan="4" class="center">No Other Expenses Added</td>
+										</tr>
+										<tr *ngFor="let expenseEntry of offerdata?.offer_other_expenses; let i=index; ">
+											<td scope="row" class="center" width="5%">{{  1+ i }}</td>
+											<td>{{ expenseEntry.activity }}</td>											
+											<td>{{ expenseEntry.description }}</td>
+											<td class="center" *ngIf="type==1 || type==2">{{ expenseEntry.standard_label }}</td>
+											<td class="text-right" width="15%">{{offerdata.offer.currency}} {{ expenseEntry.amount | number :'1.2-2' }}</td>									
+											<td  class="center" *ngIf="checkEntryType()" width="10%">
+												<span *ngIf="expenseEntry.entry_type=='new'">
+													<a href="javascript:void(0);" (click)="editOtherExpenses(i)" > <i class="fa fa-edit"></i> </a>
+													&nbsp;&nbsp;
+													<a href="javascript:void(0);" (click)="removeOtherExpenses(i)" > <i class="fa fa-trash text-danger"></i> </a>
+												</span>
+											</td>
+										</tr>
+									</tbody>
+									<tfoot *ngIf="offerdata?.offer_other_expenses?.length>0">
+										<!--
+										<tr>
+											<td colspan="3" class="text-right"><strong>Sub-Total of Other Expenses</strong></td>
+											<td class="text-right"><strong>{{offerdata.offer.currency}} {{offerdata.offer.other_expense_sub_total | number :'1.2-2' }}</strong></td>										
+										</tr>
+										<tr>
+											<td colspan="3" class="text-right"><strong>TOTAL (Certification Fee + Other Expenses)</strong></td>
+											<td class="text-right"><strong>{{offerdata.offer.currency}} {{offerdata.offer.total | number :'1.2-2' }}</strong></td>										
+										</tr>
+										-->
+										
+										<tr>
+											<td [attr.colspan]="totalColSpan" class="text-right"><strong>TOTAL</strong></td>
+											<td class="text-right"><strong>{{offerdata.offer.currency}} {{offerdata.offer.other_expense_sub_total | number :'1.2-2' }}</strong></td>										
+										</tr>
+										
+										<tr *ngIf="discount_status">
+											<td [attr.colspan]="totalColSpan" class="text-right"><strong>Discount</strong></td>
+											<td class="text-right"><strong>{{offerdata.offer.currency}} {{offerdata.invoice_discount | number :'1.2-2' }}</strong></td>
+										</tr>
+										
+										<tr *ngIf="discount_status">
+											<td [attr.colspan]="totalColSpan" class="text-right"><strong>GRAND TOTAL</strong></td>
+											<td class="text-right"><strong>{{offerdata.offer.currency}} {{offerdata.offer.grand_total_fee | number :'1.2-2' }}</strong></td>
+										</tr>									
+										
+										<tr>
+											<td [attr.colspan]="totalColSpan" class="text-right">{{offerdata.offer.taxname}} Rate</td>
+											<td class="text-right">{{offerdata.offer.currency}} {{offerdata.offer.gst_rate | number :'1.2-2'}}</td>										
+										</tr>
+										
+										<tr>
+											<td [attr.colspan]="totalColSpan" class="text-right"><strong>TOTAL Payable Amount in {{currency_code}}</strong></td>
+											<td class="text-right"><strong>{{currency_code}} {{ total_payable_amount | number :'1.2-2' }}</strong></td>										
+										</tr>
+										
+										<tr *ngIf="conversion_required_status==1 && conversion_rate>=1">
+											<td [attr.colspan]="totalColSpan" class="text-center">
+											<strong>Conversion rate  {{currency_code}} 1.00 = {{conversion_currency_code}} {{conversion_rate | number :'1.2-2' }}</strong>
+											<br>
+											Conversion rate is valid for next 30 days
+											</td>
+											<td class="text-right"><strong>{{conversion_currency_code}} {{conversion_total_payable_amount | number :'1.2-2' }}</strong></td>
+										</tr>
+										
+										
+									</tfoot>
+								</table>
+							</div>					
+						</div>
+						
+						<div class="form-group row">
+							
+							<div class="row col-12 prd-lab">
+							
+								<div class="col-3">
+									<label>Activity</label>
+									<input type="text" formControlName="expense_name"  class="form-control" placeholder="Activity *" (change)="checkOtherExpensesFee()">
+									<div *ngIf="expense_nameErrors" class="validationerror" >
+										{{ expense_nameErrors }}
+									</div>
+								</div>
+							
+								<div class="col-7">
+									<label>Description</label>
+									<input type="text" formControlName="expense_description"  class="form-control" placeholder="Description *" (change)="checkOtherExpensesFee()">
+									<div *ngIf="expense_descriptionErrors" class="validationerror" >
+										{{ expense_descriptionErrors }} 
+									</div>
+								</div>
+								
+								<div class="col-2">
+									<label>Amount</label>
+									<input type="text" formControlName="expense_amount"  class="form-control text-right" placeholder="Amount *" (change)="checkOtherExpensesFee()" >
+									<div *ngIf="expense_amountErrors" class="validationerror" >
+										{{ expense_amountErrors }} 
+									</div>
+								</div>
+								
+							</div>	
+								
+							<div class="row col-12">	
+								<div class="col-12 text-right">
+									<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="addOtherExpenses()"  >+Add Other Expenses</a>
+									&nbsp;
+									<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="resetOtherExpenses()"  >Reset</a>
+								</div>							
+							</div>
+							
+						</div>
+						
+						<!--
+						<h3>Certification Fee</h3>  
+						<div class="form-group row">					
+							<div class="tbl-sec">
+								<table id="datatable" class="table table-bordered tab-bor col-12" >
+									<thead>
+									<tr>
+										<th scope="col" class="center">S.No</th>
+										<th scope="col">Activity</th>
+										<th scope="col">Description</th>
+										<th scope="col" class="text-right">Amount</th>									
+									</tr>
+									</thead>
+									<tbody>
+										<tr *ngIf="offerdata.offer_certification_fee?.length==0">
+												<td colspan="4" class="center">No Fee Added</td>
+										</tr>
+										<tr *ngFor="let feeEntry of offerdata.offer_certification_fee; let i=index; ">
+											<td scope="row" class="center">{{  1+ i }}</td>
+											<td>{{ feeEntry.activity }}</td>
+											<td>{{ feeEntry.description }}</td>
+											<td class="text-right">{{offerdata.offer.currency}} {{ feeEntry.amount | number :'1.2-2' }}</td>									
+										</tr>
+									</tbody>
+									<tfoot>
+										<tr>
+										   <td colspan="3" class="text-right"><strong>Sub-Total of Certification Fee</strong></td>
+										   <td class="text-right"><strong>{{offerdata.offer.currency}} {{offerdata.offer.certification_fee_sub_total | number :'1.2-2'}}</strong></td>
+										</tr>
+									</tfoot>
+								</table>
+							</div>						
+						</div>	
+						-->				
+						<div *ngIf="offerdata" class="m-b-15">
+							<h3>Discount Details</h3>  
+							<div class="form-group row">
+								<div class="row col-12 m-b-5">
+									<div class="col-3">
+										<label>Discount ({{offerdata.offer.currency}})</label>
+										<input type="text" formControlName="discount"  class="form-control" value="{{discount}}" placeholder="Discount *" (change)="changeDiscount($event.target.value)">
+										<div *ngIf="discountErrors" class="validationerror" >
+											{{ discountErrors }}
+										</div>
+									</div>							
+								</div>	
+							</div>	
+						</div>													
+						
+						<div class="form-group row" *ngIf="offerdata">					
+							<div class="col-lg-12 text-center mt-4 mb-4">
+								<button (click)="onSubmit()" tabindex="-1" [disabled]="loading" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+									<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+									Submit
+								</button>
+								<button type="button" [routerLink]="['/invoice/'+backLink]" [queryParams]="{type:type}" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2">Cancel</button>
+
+								<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+								<!--<div *ngIf="error" class="alert alert-danger mt-3 mb-0">{{error}}</div>
+								<div *ngIf="success" class="alert alert-success mt-3 mb-0">{{success}}</div>-->
+							</div>						
+						</div>
+						
+						<h3>Payment Details</h3>  
+						<div class="form-group row" *ngIf="offerdata.oss_payment_details?.length>0">												
+							<div class="tbl-sec">
+								<table id="datatable" class="table table-bordered tab-bor col-12">
+									<tr *ngFor="let paymentEntry of offerdata.oss_payment_details; let i=index; ">
+										<td width="20%">{{paymentEntry.payment_label}}</td>
+										<td width="80%">{{paymentEntry.payment_content}}</td>										
+									</tr>
+								</table>
+							</div>					
+						</div>
+						
+					</div>	
+				</form>		
+			</div>			
+		</div>	
+	</div>
+</div>		

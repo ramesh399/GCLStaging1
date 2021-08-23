@@ -1,0 +1,179 @@
+<div class="col-12 row pad-right" >
+	<div class="col-8">
+		<h3 class="page-title">Add Issue </h3>
+	</div>
+	<div class="col-4 text-right pad-right">
+		<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/itcenter/list-it-center']"><i class="fa fa-arrow-left text-white"></i> Back</a>
+	</div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="add card-box table-responsive">
+            <form  [formGroup]="form" (ngSubmit)="onSubmit()"  >
+                            				
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view">
+
+					<div class="form-group row">
+					
+						<div class="col-6">
+							<label>Issue Category <span class="text-danger">*</span></label>
+							<select formControlName="issue_id" [class.is-invalid]="f.issue_id.invalid && f.issue_id.touched" class="form-control select2">
+								<option value="">-- Issue Category --</option>
+								<option [value]="it.name" *ngFor="let it of availabeCat">{{ it.name }}</option>
+								
+								
+							</select>
+							<div *ngIf="f.issue_id.errors" class="invalid-feedback">
+								<div *ngIf="f.issue_id.errors.required" >Issue Category is required</div>								
+								 
+							</div>							
+						</div>
+						  
+												
+								
+						<div class="col-6">
+							<label>Ticket Number <span class="text-danger">*</span></label>
+							<input type="text" formControlName="name" 
+							readonly
+							[class.is-invalid]="f.name.invalid && f.name.touched" class="form-control"
+								placeholder="Ticket Number">
+							<div *ngIf="f.name.errors" class="invalid-feedback">
+								<div *ngIf="f.name.errors.required">Issue Description is required</div>
+								<div *ngIf="f.name.errors.pattern || f.name.hasError('whitespace')">Invalid Issue Description</div>
+								<div *ngIf="f.name.errors.maxlength">Issue Description cannot exceed 255 characters</div>
+								<div *ngIf="f.name.errors.incorrect">{{ nameErrors }}</div>
+							</div>
+						
+						</div>
+
+						
+					</div>	
+					<div class="form-group row">
+					
+						<div class="col-6">
+							<label>Email Id<span class="text-danger">*</span></label>
+							<input type="text" formControlName="contact"
+								[class.is-invalid]="f.contact.invalid && f.contact.touched " class="form-control"
+								placeholder="Email">
+							<div *ngIf="f.contact.errors" class="invalid-feedback">
+								<div *ngIf="f.contact.errors.required">Code is required</div>
+								<div *ngIf="f.contact.errors.pattern || f.contact.hasError('whitespace')">Invalid Code</div>
+								<div *ngIf="f.contact.errors.maxlength">Code cannot exceed 50 characters</div>
+							 
+							</div>
+						
+						</div>
+						<div class="col-6">
+							<label>Region<span class="text-danger">*</span></label>
+							<input type="text" formControlName="from"
+								[class.is-invalid]="f.from.invalid && f.from.touched " class="form-control"
+								placeholder="Region">
+							<div *ngIf="f.from.errors" class="invalid-feedback">
+								<div *ngIf="f.from.errors.required">Code is required</div>
+								<div *ngIf="f.from.errors.pattern || f.from.hasError('whitespace')">Invalid Code</div>
+								<div *ngIf="f.from.errors.maxlength">Code cannot exceed 50 characters</div>
+							 
+							</div>
+						
+						</div>
+
+					</div>
+					
+					<div class="form-group row">
+						<div class="col-4">
+							<label>Upload File <span class="text-danger"></span></label>
+							<i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Upload File"
+								matTooltipClass="tooltip-text-size" aria-tooltip="Upload File" matTooltipPosition="right"></i><br />
+							<input type="file" #myInput multiple (change)="fileChange($event)" formControlname="issueFile"
+								style="width: 184px" />
+							<br />
+							<!--    -->
+							<div *ngFor="
+												                          let docs of issueFileNames;
+												                          let last = last;
+												                          let i = index;
+												                        " style="
+												                        padding: 5px;
+												                        border: 1px solid #cecece;
+												                        background-color: beige;
+												                        height: 32px;
+												                        width: 100%;
+												                      ">
+								<span>{{ docs.name ? docs.name : docs}} </span>
+								<a href="javascript:void(0);" (click)="issueFileNames = []" style="
+												                          color: red;
+												                          font-weight: bold;
+												                          margin-right: 5px;
+												                          float: right;
+												                        ">X</a>
+							</div>
+						</div>
+						<div class="col-4">
+							<label>Issue Status <span class="text-danger">*</span></label>
+							<select formControlName="status" [class.is-invalid]="f.status.invalid && f.status.touched"
+								class="form-control select2">
+								<option value="">-- Issue Status --</option>
+								<option value="true">Active</option>
+								<option value="false">In-Active</option>
+								 
+							</select>
+							<div *ngIf="f.status.errors" class="invalid-feedback">
+								<div *ngIf="f.status.errors.required">Issue Status is required</div>
+							 
+							</div>
+						</div>
+						<div class="col-4">
+							<label>Issue Priority <span class="text-danger">*</span></label>
+							<select formControlName="priority" [class.is-invalid]="f.priority.invalid && f.priority.touched"
+								class="form-control select2">
+								<option value="">-- Issue Priority --</option>
+								<option value="low">Low</option>
+								<option value="medium">Medium</option>
+								<option value="high">High</option>
+							 
+							</select>
+							<div *ngIf="f.priority.errors" class="invalid-feedback">
+								<div *ngIf="f.priority.errors.required">Issue Priority is required</div>
+								 
+							</div>
+						</div>
+					</div>
+					<div class="form-group row">
+						
+						<div class="col-6">
+
+							<label>Desctiption<span class="text-danger">*</span></label>
+							<textarea type="text" formControlName="description"
+								[class.is-invalid]="f.description.invalid && f.description.touched " class="form-control"
+								placeholder="Description"></textarea>
+					
+							<div *ngIf="f.description.errors" class="invalid-feedback">
+								<div *ngIf="f.description.errors.required">Code is required</div>
+								<div *ngIf="f.description.errors.pattern || f.description.hasError('whitespace')">Invalid Code</div>
+								<div *ngIf="f.description.errors.maxlength">Code cannot exceed 50 characters</div>
+					
+							</div>
+					
+						</div>
+					</div>
+					<div class="col-lg-12 text-center mt-4 mb-4">
+						<button [disabled]="loading || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+							<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+							{{ this.service.editData ?  'Update Issue' : 'Add Issue' }}
+						</button>
+						<button [disabled]="loading || buttonDisable" type="button" [routerLink]="['/itcenter/list-it-center']" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2">
+							<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+							Cancel
+						</button>
+
+						<div class="clearfix"></div>
+							
+						<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+					</div>				
+						
+				</div>
+                 
+            </form>
+        </div>
+    </div>
+</div>

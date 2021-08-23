@@ -1,0 +1,195 @@
+<div class="row"  >
+    <div class="col-12">
+        <div class="card-box table-responsive">
+        	<div class="row col-12 m-b-5 pad-right">
+              	<div class="col-8 pad-left">
+                <h4 class="page-title"><i class="fa fa-list-ul"></i> Audit Interview Sampling Plan</h4>
+                <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+                
+              	</div>
+               
+            </div>
+        
+            <div class="row col-12 m-b-5 pad-right">
+                <div class="col-4 text-left pad-left">
+                    <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                        <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+                    </select>
+                </div>
+                <div class="col-4 text-left p-t-5"></div>
+                <div class="col-4 text-right pad-right">
+                    <input class="search-pad" type="text" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+                </div>
+            </div>
+
+
+
+            <div class="col-12 pad-left">
+                <table id="datatable" class="table table-bordered" >
+                    <thead>
+                    <tr>
+                        <th width="5%" scope="col" class="center">S.No</th>
+                        <!-- <th scope="col">Audit Man Days</th> -->
+						<th scope="col">No.of employees From</th>
+						<th scope="col">No.of employees To</th>
+                        <th scope="col">Total Employees Interviewed</th>
+                        <th scope="col">Worker Files/Time and Wage Records Checked per Month</th>
+                        <th scope="col">Effective Time Spent on Interviews</th>	
+						<th width="10%" class="text-center" scope="col">Action</th>	
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let planEntry of plans$ | async; let i=index; ">
+                        <td scope="row" class="center">{{ 1+i+ service.pageNo }}</td>
+                       
+								
+                        <!-- <td class="center"><ngb-highlight [result]="planEntry.audit_man_days"  [term]="service.searchTerm"></ngb-highlight></td>
+ -->
+                        <td class="center"><ngb-highlight [result]="planEntry.no_of_employees_from"  [term]="service.searchTerm"></ngb-highlight></td>
+						<td class="center"><ngb-highlight [result]="planEntry.no_of_employees_to"  [term]="service.searchTerm"></ngb-highlight></td>
+                        <td class="center"><ngb-highlight [result]="planEntry.total_employees_interviewed"  [term]="service.searchTerm"></ngb-highlight></td>
+                        <td class="center"><ngb-highlight [result]="planEntry.records_checked_per_month"  [term]="service.searchTerm"></ngb-highlight></td>
+                        <td class="center"><ngb-highlight [result]="planEntry.time_spent_on_interviews"  [term]="service.searchTerm"></ngb-highlight></td>
+						<td  class="center">
+							<a *ngIf="canEditData" href="javascript:void(0);" (click)="editPlan(i,planEntry)" title="Edit" alt="Edit" class="pl-2"> <i class="fa fa-edit"></i> </a>
+							<a *ngIf="canDeleteData" href="javascript:void(0);" (click)="removePlan(confirmcontent,i,planEntry)" title="Delete" alt="Delete" class="pl-2"> <i class="fa fa-trash text-danger"></i> </a>
+						</td>
+                    </tr>
+                    <tr  *ngIf="(plans$ | async)?.length==0" >
+                        <td colspan="6" class="center">{{ commontxt.norecords }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="row col-12 pad-left pad-right">
+				<div class="col-6">
+					<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+					<div *ngIf="!(service.loading$ | async)">
+					Displaying {{ (plans$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (plans$ | async).length }} of {{ (total$ | async) }} results.
+					</div>
+				</div>
+				<div class="col-6 pad-right text-right">						
+				<ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+					<ng-template ngbPaginationFirst>First</ng-template>
+					<ng-template ngbPaginationPrevious>Prev</ng-template>
+					<ng-template ngbPaginationNext>Next</ng-template>			  
+					<ng-template ngbPaginationLast>Last</ng-template>			  
+				</ngb-pagination>						
+				</div>
+			</div>
+   		</div>
+	</div>
+</div>
+<div class="row" *ngIf="canAddData || (canEditData && planData)">
+    <div class="col-12">
+		<div class="col-12 pad-left">
+			<div class="add card-box table-responsive enq-view">
+						  
+				<h3>{{editStatus == 1 ? 'Update' : 'Add'}} Audit Interview Sampling Plan</h3>                              
+		   
+				<form  [formGroup]="form" (ngSubmit)="onSubmit()">
+					<div class="form-group row">
+						
+						<!-- <div class="col-6">
+							<label>Audit Man Days <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Audit Man Days" matTooltipClass="tooltip-text-size" aria-tooltip="Audit Man Days" matTooltipPosition="right"></i>
+							<input type="text" formControlName="audit_man_days" [class.is-invalid]="f.audit_man_days.invalid && f.audit_man_days.touched" class="form-control" placeholder="Audit Man Days *" >
+							<div *ngIf="f.audit_man_days.errors" class="invalid-feedback">
+								<div *ngIf="f.audit_man_days.errors.required" >Audit Man Days is required</div>
+								<div *ngIf="f.audit_man_days.errors.pattern" >Invalid Audit Man Days</div>
+								<div *ngIf="f.audit_man_days.errors.maxlength">Audit Man Days cannot exceed 255 characters</div>
+								<div *ngIf="f.audit_man_days.errors.incorrect">{{ audit_man_daysErrors }}</div>																	
+							</div>						
+						</div> -->
+
+						<div class="col-3">
+							<label>No. of employess From <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="No. of employess From" matTooltipClass="tooltip-text-size" aria-tooltip="No. of employess From" matTooltipPosition="right"></i>
+							<input type="text" formControlName="no_of_employess_from" [class.is-invalid]="f.no_of_employess_from.invalid && f.no_of_employess_from.touched" class="form-control" placeholder="No. of employess From *" >
+							<div *ngIf="f.no_of_employess_from.errors" class="invalid-feedback">
+								<div *ngIf="f.no_of_employess_from.errors.required" >No. of employess From is required</div>
+								<div *ngIf="f.no_of_employess_from.errors.pattern" >Invalid No. of employess From</div>
+								<div *ngIf="f.no_of_employess_from.errors.maxlength">No. of employess From cannot exceed 11 characters</div>
+							</div>						
+						</div> 
+						<div class="col-3">
+							<label>No. of employess To <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="No. of employess To" matTooltipClass="tooltip-text-size" aria-tooltip="No. of employess To" matTooltipPosition="right"></i>
+							<input type="text" formControlName="no_of_employess_to" [class.is-invalid]="f.no_of_employess_to.invalid && f.no_of_employess_to.touched" class="form-control" placeholder="No. of employess To*" >
+							<div *ngIf="f.no_of_employess_to.errors" class="invalid-feedback">
+								<div *ngIf="f.no_of_employess_to.errors.required" >No of employess To is required</div>
+								<div *ngIf="f.no_of_employess_to.errors.pattern" >Invalid No of employess To</div>
+								<div *ngIf="f.no_of_employess_to.errors.maxlength">No of employess To cannot exceed 11 characters</div>
+							</div>						
+						</div> 
+
+						
+
+						<div class="col-6">
+							<label>Total Employees Interviewed <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Total Employees Interviewed" matTooltipClass="tooltip-text-size" aria-tooltip="Total Employees Interviewed" matTooltipPosition="right"></i>
+							<input type="text" formControlName="total_employees_interviewed" [class.is-invalid]="f.total_employees_interviewed.invalid && f.total_employees_interviewed.touched" class="form-control" placeholder="Total Employees Interviewed *" >
+							<div *ngIf="f.total_employees_interviewed.errors" class="invalid-feedback">
+								<div *ngIf="f.total_employees_interviewed.errors.required" >Total Employees Interviewed is required</div>
+								<div *ngIf="f.total_employees_interviewed.errors.pattern" >Invalid Total Employees Interviewed</div>
+								<div *ngIf="f.total_employees_interviewed.errors.maxlength">Total Employees Interviewed cannot exceed 11 characters</div>
+							</div>						
+						</div> 
+						
+					</div> 	
+
+					<div class="form-group row">
+													
+						<div class="col-6">
+							<label>Worker Files/Time and Wage Records Checked per Month <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Worker Files/Time and Wage Records Checked per Month" matTooltipClass="tooltip-text-size" aria-tooltip="Worker Files/Time and Wage Records Checked per Month" matTooltipPosition="right"></i>
+							<input type="text" formControlName="records_checked_per_month" [class.is-invalid]="f.records_checked_per_month.invalid && f.records_checked_per_month.touched" class="form-control" placeholder="Worker Files/Time and Wage Records Checked per Month *" >
+							<div *ngIf="f.records_checked_per_month.errors" class="invalid-feedback">
+								<div *ngIf="f.records_checked_per_month.errors.required" >Worker Files/Time and Wage Records Checked per Month is required</div>
+								<div *ngIf="f.records_checked_per_month.errors.pattern" >Invalid Worker Files/Time and Wage Records Checked per Month</div>
+								<div *ngIf="f.records_checked_per_month.errors.maxlength">Worker Files/Time and Wage Records Checked per Month cannot exceed 11 characters</div>
+							</div>						
+						</div>
+						
+						<div class="col-6">
+							<label>Effective Time Spent on Interviews <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Effective Time Spent on Interviews" matTooltipClass="tooltip-text-size" aria-tooltip="Effective Time Spent on Interviews" matTooltipPosition="right"></i>
+							<input type="text" formControlName="time_spent_on_interviews" [class.is-invalid]="f.time_spent_on_interviews.invalid && f.time_spent_on_interviews.touched" class="form-control" placeholder="Effective Time Spent on Interviews *" >
+							<div *ngIf="f.time_spent_on_interviews.errors" class="invalid-feedback">
+								<div *ngIf="f.time_spent_on_interviews.errors.required" >Effective Time Spent on Interviews is required</div>
+								<div *ngIf="f.time_spent_on_interviews.errors.pattern" >Invalid Effective Time Spent on Interviews</div>
+								<div *ngIf="f.time_spent_on_interviews.errors.maxlength">Effective Time Spent on Interviews cannot exceed 13 characters</div>
+							</div>						
+						</div>
+						
+					</div>								
+								
+					<div class="col-lg-12 text-center mt-4 mb-4">
+						<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="addplan()">
+							<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+							{{editStatus == 1 ? 'Update' : 'Save'}}	
+						</button>
+						<button [disabled]="loading['button'] || buttonDisable" type="button"  (click)="planFormreset()"   class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Reset</button>
+
+						<div class="clearfix"></div>
+							
+						
+					</div>				
+				</form>	
+					
+				 
+			</div>
+		</div>	
+    </div>
+</div>
+<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+<ng-template #confirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to delete the data?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>

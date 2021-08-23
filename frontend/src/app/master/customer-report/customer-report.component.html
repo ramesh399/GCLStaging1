@@ -1,0 +1,108 @@
+<div class="row">
+    <div class="col-12">
+        <div class="add card-box table-responsive">
+            <form  [formGroup]="form" (ngSubmit)="onSubmit()"  >
+            		
+				<div class="col-12 row pad-right" >
+                    <div class="col-8">
+                    <h4 class="page-title">{{title}}</h4>
+                    </div>
+                    <div class="col-4 text-right pad-right">
+                    <a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/user/dashboard']" >Back</a>
+                    </div>
+                </div>
+         
+                   
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view">
+                        
+					<div class="form-group row">
+					
+						<div class="col-6 m-t-15">
+							<label>Customer <span class="text-danger">*</span></label>
+                            <!-- oncompanychange($event.target.value) -->
+							<select formControlName="customer_id" [class.is-invalid]="f.customer_id.invalid && f.customer_id.touched" class="form-control select2">
+                                <option value="">-- Customer --</option>
+                                <option *ngFor="let customer of customerList" value = {{customer.id}}>{{customer.company_name}}</option>
+                            </select>
+                            <div *ngIf="f.customer_id.errors" class="invalid-feedback">
+                                <div *ngIf="f.customer_id.errors.required" >Customer is required</div>
+                            </div>	
+						</div>
+					
+						
+                    </div>
+
+										   
+					<div class="col-lg-12 text-center mt-4 mb-4">
+							<button [disabled]="loading?.button || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+								<span *ngIf="loading?.button" class="spinner-border spinner-border-sm mr-1"></span>
+								Generate Report
+							</button>
+							<!-- <button [disabled]="loading || buttonDisable" type="button" [routerLink]="['/transfer-certificate/request/list']" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2">
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+								Cancel
+							</button> -->
+														
+							<div class="clearfix"></div>
+							
+							<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+					</div>
+
+						
+				</div>
+                 
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row" *ngIf="showDetails">
+    <div class="col-12">
+        <div class="add card-box table-responsive enq-view m-t-15">  
+            
+            <div class="card-box enq-view m-t-20 ">		
+                <div class="col-12 pad-left">
+                    <table id="datatable" class="table table-bordered" >
+                        <thead>
+                        <tr>
+                            <th width="5%" scope="col" class="text-center">S.No</th>
+                            <th width="13%" scope="col" class="text-center">App. Number</th>
+                            <th scope="col"  >Company Name</th>				
+                            <th scope="col" class="text-center">No.of Units</th>				
+                            <th scope="col">Standard(s)</th>				
+                            <th scope="col" >Contact Person</th>
+                            <th scope="col">Telephone</th>
+                            <th scope="col" class="text-center"  >Status</th>
+                            <th scope="col" class="text-center"  >Overall Status</th>
+                            <th scope="col" class="text-center">Type</th>
+                            <th width="10%" scope="col" >Created Date</th>
+                            <th width="6%" class="text-center" scope="col">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let application of applicationlist; let i=index; ">
+                            <th scope="row" class="center">{{ i+1 }}</th>
+                            <td align="center">{{application.code}}</td>				
+                            <td>{{application.company_name}}</td>
+                            <td class="text-center">{{application.application_unit_count}}</td>
+                            <td>{{application.application_standard}}</td>
+                            
+                            <td>{{application.first_name}}</td>
+                            <td>{{application.telephone}}</td>
+                            <td class="text-center"><b><span [style.color]="application.status_label_color">{{application.status}}</span></b></td>
+                            <td class="text-center">{{application.overall_status}}</td>
+                            <td class="text-center">{{application.audit_type_label}}</td>
+                            <td>{{application.created_at}}</td>
+                            <td class="center">
+                                <a href="javascript:void(0);" [routerLink]="['/master/customer-details/index']" [queryParams]="{id:application.id}" title="View" alt="View"><i class="fa fa-eye"></i> </a>
+                            </td>
+                            </tr>
+                        
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+                
+        </div>
+    </div>
+</div>

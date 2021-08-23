@@ -1,0 +1,158 @@
+<div class="row">
+    <div class="col-sm-12">
+        <div class="page-title-box p-b-30">
+            <div class="col-6" style="padding-left:0px;" >
+            <h4 class="page-title">View Unannounced Audit</h4></div>
+            <div class="text-right float-right col-6">
+                <a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/unannounced-audit/list']" >Back</a>
+            </div>
+        </div>	
+    </div>
+</div>
+<div class="row" style="padding-top:20px;" *ngIf="auditdetails"  >
+    <div class="col-sm-12 mat-accordion">
+        <div class="mat-accordion">
+            <div class="card-box enq-view">
+                
+                    <div class="mat-accordion">
+                        <div class="card-box enq-view">
+                            <h3>Unannounced Audit Details</h3>
+                            <table class="table-secondary m-b-15">
+                                <tr>
+                                    <th width="20%">Company Name</th>
+                                    <td width="30%">{{ auditdetails.company_name }}</td>
+                                    <th width="20%">Standard</th>
+                                    <td width="30%">{{ auditdetails.standard_label }}</td>
+                                </tr>
+                                <tr>
+                                    <th width="20%">Risk Category</th>
+                                    <td width="30%">{{ auditdetails.risk_category_label }}</td>
+                                    <th width="20%">Status</th>
+                                    <td width="30%">{{ auditdetails.status_label }}</td>
+                                </tr>
+                                <tr>
+                                    <th width="20%">Created By</th>
+                                    <td width="30%">{{ auditdetails.created_by_label }}</td>
+                                    <th width="20%">Created At</th>
+                                    <td width="30%">{{ auditdetails.created_at }}</td>
+                                </tr>
+                            </table>
+                        </div>
+        
+                    </div>
+
+                    <div class="un-lst"><h3>Facility Details</h3></div> 
+
+                    <mat-accordion *ngFor="let unit of auditdetails.units; index as i">
+                        <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                {{ unit.unit_type_label }} : {{ unit.name }}
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div class="card-box enq-view">
+
+                                <h3>{{ unit.unit_type_label }} Details</h3>
+                                <table class="table-secondary m-b-15">
+                                    <tr>
+                                        <th width="20%">Name</th>
+                                        <td width="30%">{{ unit.name }}</td>
+                                        <th width="20%">Postal Code</th>
+                                        <td width="30%">{{ unit.zipcode }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th width="20%">Address</th>
+                                        <td colspan="3">{{ unit.address }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th width="20%">Country</th>
+                                        <td width="30%">{{ unit.country_name }}</td>
+                                        <th width="20%">State</th>
+                                        <td width="30%">{{ unit.state_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th width="20%">City</th>
+                                        <td width="30%">{{ unit.city }}</td>
+                                        <th width="20%">No. of Employees</th>
+                                        <td width="30%">{{ unit.no_of_employees }}</td>
+                                    </tr>
+                                </table>
+
+                                <div class="card-box enq-view lst greybg" >
+                                    <h3>Standard Information</h3>
+                                    <table class="table-secondary m-b-15">
+                                        <tr>
+                                            <th width="20%">Standard(s)</th>
+                                            <td width="80%">
+                                                <ul>
+                                                    <li *ngFor="let standard of unit.unit_standards; ">
+                                                    <span>{{ standard.name }}</span></li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </table>	
+                                    
+                                </div>
+
+                                <div class="card-box enq-view lst">
+                                    <h3>Business Sector Information</h3>
+                                    <ul>
+                                        <li *ngFor="let bsector of unit.unit_bsectors" >
+                                            <div class="row col-12">
+                                                <div class="col-4">{{ bsector.name }}</div>
+                                            </div>
+                                         
+                                            <div class="mat-accordion col-12" >
+                                                <div class="card-box enq-view">
+        
+                                                    <!--<b>Resources</b>-->
+                                                    <table class="table table-bordered bgsector" style="font-size:13px; line-height:27px; width:40%;">
+                                                        <thead>
+                                                        <tr>
+                                                            <th class="center" width="5%">S.No</th>
+                                                            <th width="25%">Business Sector Group</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <ng-container *ngIf="bsector.bsectorgroup && bsector.bsectorgroup.length>0">
+                                                            <tr *ngFor="let bsec of bsector.bsectorgroup; index as isu;" >
+                                                                <td class="center">{{ 1+ isu }}</td>
+                                                                <td>{{ bsec.name }}</td>
+                                                            </tr>
+                                                        </ng-container>
+                                                        
+                                                        <ng-container *ngIf="!bsector.bsectorgroup">
+                                                            <tr>
+                                                                <td colspan="2" class="center">No Business Group Selected</td>
+                                                            </tr>
+                                                        </ng-container>
+                                                    </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+                                            
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div class="mat-accordion">
+                                    <div class="card-box enq-view">
+                                        <h3>{{ unit.unit_type_label}} Process Details</h3>
+                                        <table class="table-secondary m-b-15">
+                                            <tr>
+                                                <th width="20%">Process(es)</th>
+                                                <td width="80%"><span *ngFor="let prs of unit.process; let isLast=last;" >{{ prs }} {{isLast ? '' : ', '}}</span></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </mat-expansion-panel>                
+                    </mat-accordion>
+                    
+            </div>
+        </div>
+    </div>
+</div>

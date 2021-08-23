@@ -1,0 +1,157 @@
+<div class="col-12 row pad-right" >
+	<div class="col-8">
+	</div>
+	<div class="col-4 text-right pad-right">
+	</div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="add card-box table-responsive">
+            <form  [formGroup]="form" >
+                   
+                <div class="enq-view">
+                    <h3>{{title}}</h3>    
+					<div class="form-group row">
+					
+						<div class="col-3">
+                            <label>From Date </label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Created Date" matTooltipClass="tooltip-text-size" aria-tooltip="Created Date" matTooltipPosition="right"></i><br>												
+							<input  style="width: 80%; display: inline;float:left;" type="text" formControlName="from_date" class="form-control" placeholder="From Date" [class.is-invalid]="f.from_date.invalid && f.from_date.touched" matInput [matDatepicker]="from_date" (click)="from_date.open()" (dateChange)="onchangeHandler()">
+							<mat-datepicker-toggle matSuffix  [for]="from_date"></mat-datepicker-toggle>
+							<mat-datepicker #from_date></mat-datepicker>
+                            <div class="clearfix"></div>
+                            <div *ngIf="f.from_date.errors" class="invalid-feedback">
+                                <div *ngIf="f.from_date.errors.required">From Date is required</div>						
+                            </div>
+                            <div *ngIf="from_dateErr" class="validationerror" >
+                                {{from_dateErr}}
+                            </div>
+                        </div>
+					
+						<div class="col-3">
+                            <label>To Date </label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Created Date" matTooltipClass="tooltip-text-size" aria-tooltip="Created Date" matTooltipPosition="right"></i><br>												
+                            <input  style="width: 80%; display: inline;float:left;" type="text" formControlName="to_date" class="form-control" placeholder="To Date" [class.is-invalid]="f.to_date.invalid && f.to_date.touched" matInput [matDatepicker]="to_date" (click)="to_date.open()" (dateChange)="onchangeHandler()">
+							<mat-datepicker-toggle matSuffix  [for]="to_date"></mat-datepicker-toggle>
+							<mat-datepicker #to_date></mat-datepicker>
+                            <div class="clearfix"></div>
+                            <div *ngIf="f.to_date.errors" class="invalid-feedback">
+                                <div *ngIf="f.to_date.errors.required">To Date is required</div>						
+                            </div>
+                            <div *ngIf="to_dateErr" class="validationerror" >
+                                {{to_dateErr}}
+                            </div>
+                        </div>
+
+                        <div [ngClass]="userdetails.is_headquarters === 1 ? 'col-2': 'col-3'" *ngIf="userdetails.is_headquarters === 1">
+                            <label>OSS </label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="OSS" matTooltipClass="tooltip-text-size" aria-tooltip="OSS" matTooltipPosition="right"></i>
+                            <mat-select placeholder="OSS" formControlName="oss_id" multiple class="form-control select2" [class.is-invalid]="f.oss_id.invalid && f.oss_id.touched" (selectionChange)="onchangeHandler()">
+                                <mat-select-trigger>
+                                <span *ngIf="f.oss_id.value?.length == 1" >{{f.oss_id.value ?  getSelectedFranchiseValue(f.oss_id.value) : ''}}</span>
+                                <span *ngIf="f.oss_id.value?.length > 1" class="example-additional-selection">
+                                    {{f.oss_id.value.length}} {{ 'selected' }}
+                                </span>
+                                </mat-select-trigger>
+                                <mat-option *ngFor="let osp of franchiseList" [value]="osp.id">{{osp.osp_details}}</mat-option>	
+                            </mat-select>  
+                            <div *ngIf="f.oss_id.errors" class="invalid-feedback">
+                                <div *ngIf="f.oss_id.errors.required">OSS is required</div>
+                            </div>
+                        </div>
+
+                        <div [ngClass]="userdetails.is_headquarters === 1 ? 'col-2': 'col-3'">
+                            <label>Invoice Type <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Invoice Type" matTooltipClass="tooltip-text-size" aria-tooltip="Invoice Type" matTooltipPosition="right"></i>
+							<select formControlName="invoicetype" [class.is-invalid]="f.invoicetype.invalid && f.invoicetype.touched" class="form-control select2" (change)="getType($event.target.value);onchangeHandler();" [value]='1'>
+                                <option value='1'>Customer Invoice List</option>
+                                <option value='2'>OSS Invoice List</option>
+                                <option value='3'>Customer Additional Invoice List</option>
+                                <option value='4'>OSS Additional Invoice List</option>
+                            </select>
+                        </div>
+
+                        <div [ngClass]="userdetails.is_headquarters === 1 ? 'col-2': 'col-3'">
+                            <label>Payment Status </label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Status" matTooltipClass="tooltip-text-size" aria-tooltip="Status" matTooltipPosition="right"></i>
+                            <mat-select placeholder="Status" formControlName="status_id" multiple class="form-control select2" [class.is-invalid]="f.status_id.invalid && f.status_id.touched" (selectionChange)="onchangeHandler()">
+                                <mat-select-trigger>
+                                <span *ngIf="f.status_id.value?.length == 1" >{{f.status_id.value ?  getSelectedStatusValue(f.status_id.value) : ''}}</span>
+                                <span *ngIf="f.status_id.value?.length > 1" class="example-additional-selection">
+                                    {{f.status_id.value.length}} {{ 'selected' }}
+                                </span>
+                                </mat-select-trigger>
+                                <mat-option *ngFor="let item of statuslist | keyvalue" [value]="item.key">{{item.value}}</mat-option>	
+                            </mat-select>  
+                            <div *ngIf="f.status_id.errors" class="invalid-feedback">
+                                <div *ngIf="f.status_id.errors.required">Status is required</div>
+                            </div>
+                        </div>
+
+						
+                    </div>
+                    <div class="validationerror" *ngIf="fieldErrors">{{ fieldErrors }}</div>
+
+										   
+					<div class="col-lg-12 text-center mt-4 mb-4">
+							<button [disabled]="loading || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="onSubmit('submit')">
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+								Submit
+                            </button>
+                            <button type="button" *ngIf="data?.length > 0" [disabled]="loading || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 ml-2" (click)="onSubmit('download','Invoice-report.xlsx');openmodal(downloading);" >
+                                <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                            Generate Excel</button>		
+							<div class="clearfix"></div>
+							
+							<!-- <app-usermessage [success]="success" [error]="error"  ></app-usermessage> -->
+                    </div>
+                    
+                    <div class="pad-left pad-right col-12">
+                        <table id="datatable" class="table table-bordered tab-bor col-12" >
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="center">S.No</th>
+                                    <th scope="col" >Invoice Number</th>
+				                    <th scope="col" >Invoice To</th>
+                                    <th scope="col" *ngIf="invoice_type==1 || invoice_type==3">OSS</th>
+                                    <th scope="col" *ngIf="invoice_type==2">Company Name</th>
+                                    <th *ngIf="invoice_type!=3 && invoice_type!=4" scope="col" >Standard(s)</th>				
+                                    <th scope="col" >Amount (USD)</th>								
+                                    <th scope="col" >Telephone</th>
+                                    <th *ngIf="invoice_type!=1 && invoice_type!=2" scope="col" >Type</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col" class="center">Payment Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngIf="data?.length==0">
+                                    <td colspan="10" class="center">No Data Found</td>
+                                </tr>
+                                <tr *ngFor="let Entry of data; let im=index; ">
+                                    <td scope="row" class="center">{{  1+ im }}</td>
+                                    <td scope="row" class="center">{{  Entry.invoice_number }}</td>
+                                    <td class="left">{{ Entry.invoice_to }}</td>
+                                    <td class="left" *ngIf="invoice_type==1 || invoice_type==3">{{ Entry.oss_company_name }}</td>
+                                    <td class="left" *ngIf="invoice_type==2">{{ Entry.company_name }}</td>
+                                    <td class="left" *ngIf="invoice_type!=3 && invoice_type!=4">{{ Entry.standard_label }}</td>
+                                    <td class="left">{{ Entry.currency }} {{ Entry.total_payable_amount }}</td>
+                                    <td class="left">{{ Entry.telephone }}</td>
+                                    <td class="left" *ngIf="invoice_type!=1 && invoice_type!=2">{{ Entry.credit_note_option }}</td>
+                                    <td class="left">{{ Entry.invoice_status_name }}</td>
+                                    <td class="left">{{ Entry.payment_date }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+						
+				</div>
+                 
+            </form>
+        </div>
+    </div>
+</div>
+<ng-template #downloading let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+        Please wait, your file is downloading ...
+    </div>
+</ng-template>

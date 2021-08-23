@@ -1,0 +1,117 @@
+<form>
+  
+<div class="row">
+  <div class="col-12">
+      <div class="card-box table-responsive">
+
+		<div class="row col-12 m-b-5 pad-right">
+          <div class="col-8 pad-left">
+            <h4 class="page-title"><i class="fa fa-list-ul"></i> {{title}}</h4>
+            <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+          </div>
+          <div class="col-4 text-right pad-right">
+            <a *ngIf="canAddData" class="btn btn-primary btn-sm" href="#" role="button" [routerLink]="['/master/audit-reviewer-checklist/add']" [queryParams]="{category:category}"><i class="fa fa-plus text-white"></i> Add Checklist</a>
+          </div>
+        </div>
+		
+		<div class="row col-12 m-b-5 pad-right">
+            <div class="col-4 text-left pad-left">
+            <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+              </select>
+              </div>
+              <div class="col-4 text-left">
+				<mat-select style="width: 45%;font-size:13px;" placeholder="-- Standard --" #standardFilter name="standardFilter" [(ngModel)]="service.standardFilter" multiple class="custom-select"  >
+					<mat-select-trigger>
+					<span *ngIf="standardFilter.value?.length == 1" >{{standardFilter.value ?  getSelectedValue(standardFilter.value) : ''}}</span>
+					<span *ngIf="standardFilter.value?.length > 1" class="example-additional-selection">
+					  {{standardFilter.value.length}} {{ 'selected' }}
+					</span>
+					</mat-select-trigger>
+					<mat-option *ngFor="let std of standardList" [value]="std.id">{{std.code}}</mat-option>
+				</mat-select>
+			  </div>
+          <div class="col-4 text-right pad-right">
+            <input class="search-pad" type="text" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+          </div>
+        </div>
+
+		
+        
+		<div class="col-12 pad-left">
+			<table id="datatable" class="table table-bordered" >
+			  <thead>
+			  <tr>
+				<th width="5%" scope="col" class="center">S.No</th>
+				<th scope="col" sortable="name" (sort)="onSort($event)" >Audit Reviewer Review Checklist Name</th>
+				<th scope="col"  >Standard(s)</th>
+				<th width="12%" scope="col" class="text-center" sortable="created_at" (sort)="onSort($event)">Date &amp; Time</th>
+				<th width="12%" scope="col" class="text-center">Action</th>
+			  </tr>
+			  </thead>
+			  <tbody>
+			  <tr *ngFor="let auditreviewerchecklist of auditreviewerchecklists$ | async; let i=index; ">
+				<th scope="row" class="center">{{  1+ i + service.pageNo }}</th>
+				<td><ngb-highlight [result]="auditreviewerchecklist.name" [term]="service.searchTerm"></ngb-highlight></td>
+				<td><ngb-highlight [result]="auditreviewerchecklist.standard_label" [term]="service.searchTerm"></ngb-highlight></td>
+				<td class="text-center"><ngb-highlight [result]="auditreviewerchecklist.created_at" [term]="service.searchTerm"></ngb-highlight></td>
+				<td class="text-center">
+					<a href="javascript:void(0);" [routerLink]="['/master/audit-reviewer-checklist/view']" [queryParams]="{id:auditreviewerchecklist.id,category:category}" title="View" alt="View"><i class="fa fa-eye"></i></a>
+
+					<a href="javascript:void(0);" *ngIf="auditreviewerchecklist.status==0 && canDeactivateData" (click)="open(commonModel,'deactivate',auditreviewerchecklist.id)" class="pl-2" title="Active" alt="Active"><i class="fa fa-toggle-on text-success"></i></a>	
+					<a href="javascript:void(0);" *ngIf="auditreviewerchecklist.status==1 && canActivateData" (click)="open(commonModel,'activate',auditreviewerchecklist.id)" class="pl-2" title="In-active" alt="In-active"><i class="fa fa-toggle-off text-danger"></i></a>	
+					<a *ngIf="canEditData" href="javascript:void(0);" [routerLink]="['/master/audit-reviewer-checklist/edit']" [queryParams]="{id:auditreviewerchecklist.id,category:category}" class="pl-2" title="Edit" alt="Edit"><i class="fa fa-edit"></i></a>
+
+					<a href="javascript:void(0);" *ngIf="canDeleteData" (click)="open(commonModel,'delete',auditreviewerchecklist.id)" class="pl-2" title="Delete" alt="Delete"><i class="fa fa-trash text-danger"></i></a>	
+				</td>
+				</tr>
+				<tr  *ngIf="(auditreviewerchecklists$ | async)?.length==0" >
+				  <td colspan="5" class="center">{{ commontxt.norecords }}</td>
+				</tr>
+			  </tbody>
+			</table>
+        </div>
+		
+       <div class="row col-12 pad-left pad-right">
+			<div class="col-6">
+				<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+				<div *ngIf="!(service.loading$ | async)">
+				Displaying {{ (auditreviewerchecklists$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (auditreviewerchecklists$ | async).length }} of {{ (total$ | async) }} results.
+				</div>
+			</div>
+			<div class="col-6 pad-right text-right">						
+			<ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+				<ng-template ngbPaginationFirst>First</ng-template>
+				<ng-template ngbPaginationPrevious>Prev</ng-template>
+				<ng-template ngbPaginationNext>Next</ng-template>			  
+				<ng-template ngbPaginationLast>Last</ng-template>			  
+			</ngb-pagination>						
+			</div>
+		</div>
+      </div>
+    </div>
+  </div>
+
+</form>
+
+<ng-template #commonModel let-modal>
+    
+	<div class="modal-header">
+				<h4 class="modal-title" id="modal-basic-title">Message</h4>
+				<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('close')">
+			<span class="c-icon" aria-hidden="true">&times;</span>
+				</button>
+		</div>
+	
+		<div class="modal-body text-center" style="font-size:16px;padding:5px;">
+		<div class="alert alert-info" *ngIf="alertInfoMessage">{{alertInfoMessage}}</div>
+		<div class="alert alert-success" *ngIf="alertSuccessMessage">{{alertSuccessMessage}}</div>
+		<div class="alert alert-danger" *ngIf="alertErrorMessage">{{alertErrorMessage}}</div>
+	</div>	
+	
+		<div class="modal-footer text-center">
+		<button type="button" class="btn btn-success" *ngIf="okBtn" (click)="commonModalAction();">Ok</button>
+				<button type="button" class="btn btn-outline-secondary" *ngIf="cancelBtn" (click)="modal.dismiss('cancel')">Cancel</button>        
+		</div>
+	
+</ng-template>

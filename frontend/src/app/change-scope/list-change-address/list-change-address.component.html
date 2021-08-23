@@ -1,0 +1,110 @@
+<form>
+  
+    <div class="row">
+      <div class="col-12">
+          <div class="card-box table-responsive">
+    
+            <div class="row col-12 m-b-5 pad-right">
+              <div class="col-8 pad-left">
+                <h4 class="page-title"><i class="fa fa-list-ul"></i> Change Address List</h4>
+                <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+              </div>
+              <div class="col-4 text-right pad-right">
+                <a class="btn btn-primary btn-sm" href="#" role="button" [routerLink]="['/change-scope/change-address/add']"> <i class="fa fa-plus text-white"></i> Request Change Address</a>
+              </div>
+            </div>
+            
+            <div class="row col-12 m-b-5 pad-right">
+                <div class="col-4 text-left pad-left">
+                  <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                    <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+                  </select>
+                  </div>
+                  <div class="col-4 text-left p-t-5">
+                      
+                    </div>
+              <div class="col-4 text-right pad-right">
+                <input class="search-pad" type="text" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+              </div>
+            </div>
+    
+            <div class="col-12 pad-left">
+                <table id="datatable" class="table table-bordered" >
+                  <thead>
+                  <tr>
+                    <th width="5%" scope="col" class="text-center">S.No</th>
+                    <th scope="col" sortable="app_id" (sort)="onSort($event)" >Company Name</th>
+                    <th scope="col" sortable="status" class="text-center" (sort)="onSort($event)" >Status</th>
+					<th scope="col" (sort)="onSort($event)" >Created By</th>
+                    <th width="12%" class="text-center" scope="col" sortable="created_at" (sort)="onSort($event)">Date</th>		
+                    <th width="10%" scope="col" class="text-center">Action</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr *ngFor="let address of changeaddresses$ | async; let i=index; ">
+                    <th scope="row" class="text-center">{{  1+ i + service.pageNo }}</th>
+                    <td><ngb-highlight [result]="address.company_name" [term]="service.searchTerm"></ngb-highlight></td>
+                    <td class="text-center"><ngb-highlight [result]="address.status_name" [term]="service.searchTerm"></ngb-highlight></td>
+					<td><ngb-highlight [result]="address.created_by_label" [term]="service.searchTerm"></ngb-highlight></td>
+                    <td class="text-center"><ngb-highlight [result]="address.created_at" [term]="service.searchTerm"></ngb-highlight></td>
+                    <td class="text-center">
+ 
+                    <!-- <a href="javascript:void(0);"  [routerLink]="['/change-scope/change-address/view']" [queryParams]="{id:address.id,app:address.app_id}" title="View" alt="View"><i class="fa fa-eye"></i></a> -->
+                    <!-- <a href="javascript:void(0);" *ngIf="address.showappview"  [routerLink]="['/application/apps/view']" [queryParams]="{id:address.new_app_id}" title="View Application" alt="View Application"><i class="fa fa-eye"></i></a> -->
+
+                    <a href="javascript:void(0);" *ngIf="address.showappview"  [routerLink]="['/change-scope/change-address/view']" [queryParams]="{id:address.id,app:address.app_id}" title="View Application" alt="View Application"><i class="fa fa-eye"></i></a>
+                    <a href="javascript:void(0);" *ngIf="address.showedit"  [routerLink]="['/change-scope/change-address/edit']" [queryParams]="{id:address.id,app:address.app_id}" title="Edit" alt="Edit" class="pl-2"><i class="fa fa-edit"></i></a>
+
+                    <a href="javascript:void(0);"  *ngIf="address.showdelete" (click)="open(commonModel,'delete',address.id)" class="pl-2" title="Delete" alt="Delete"><i class="fa fa-trash text-danger"></i></a>	
+                    </td>
+                </tr>
+                <tr  *ngIf="(changeaddresses$ | async)?.length==0" >
+                <td colspan="8" class="center">{{ commontxt.norecords }}</td>
+                </tr>
+                    </tbody>
+                    </table>
+                </div>
+            
+            <div class="row col-12 pad-left pad-right">
+				<div class="col-6">
+					<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+					<div *ngIf="!(service.loading$ | async)">
+					Displaying {{ (changeaddresses$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (changeaddresses$ | async).length }} of {{ (total$ | async) }} results.
+					</div>
+				</div>
+				<div class="col-6 pad-right text-right">						
+				<ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+					<ng-template ngbPaginationFirst>First</ng-template>
+					<ng-template ngbPaginationPrevious>Prev</ng-template>
+					<ng-template ngbPaginationNext>Next</ng-template>			  
+					<ng-template ngbPaginationLast>Last</ng-template>			  
+				</ngb-pagination>						
+				</div>
+			</div>
+          </div>
+        </div>
+      </div>
+    
+    </form>
+    
+    <ng-template #commonModel let-modal>
+        
+      <div class="modal-header">
+            <h4 class="modal-title" id="modal-basic-title">Message</h4>
+            <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('close')">
+          <span class="c-icon" aria-hidden="true">&times;</span>
+            </button>
+        </div>
+      
+        <div class="modal-body text-center" style="font-size:16px;padding:5px;">
+        <div class="alert alert-info" *ngIf="alertInfoMessage">{{alertInfoMessage}}</div>
+        <div class="alert alert-success" *ngIf="alertSuccessMessage">{{alertSuccessMessage}}</div>
+        <div class="alert alert-danger" *ngIf="alertErrorMessage">{{alertErrorMessage}}</div>
+      </div>	
+      
+        <div class="modal-footer text-center"  *ngIf="buttonshow">
+        <button type="button" class="btn btn-success" *ngIf="okBtn" (click)="commonModalAction();">Ok</button>
+            <button type="button" class="btn btn-outline-secondary" *ngIf="cancelBtn" (click)="modal.dismiss('cancel')">Cancel</button>        
+        </div>
+      
+    </ng-template>

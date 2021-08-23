@@ -1,0 +1,326 @@
+<div class="row">
+	<!--
+	<div class="col-sm-12">
+		<div class="page-title-box p-b-30">
+			<h4 class="page-title">Process Addition</h4>
+			<div class="clearfix"></div>
+			<div class="text-right float-right">
+				<a class="btn btn-secondary btn-sm active" href="#" role="button" *ngIf="!id && redirecttype=='process'" [routerLink]="['/change-scope/process-addition/request']" >Back</a>
+				<a class="btn btn-secondary btn-sm active" href="#" role="button" *ngIf="id  && redirecttype=='process'" [routerLink]="['/change-scope/process-addition/list']" >Back</a>
+
+				<a class="btn btn-secondary btn-sm active" href="#" role="button" *ngIf="!new_app_id  && !redirecttype" [routerLink]="['/change-scope/process-addition/list']" >Back</a>
+
+				<a class="btn btn-secondary btn-sm active" href="#" role="button" *ngIf="new_app_id  && !redirecttype" [routerLink]="['/application/apps/view']" [queryParams]="{id:new_app_id}"  >Back</a>
+			</div>
+		</div>	
+	</div>
+	-->
+	
+	<div class="col-12 row pad-right" >
+		<div class="col-8">
+		<h4 class="page-title">Process Addition</h4>
+		</div>
+		<div class="col-4 text-right pad-right">
+			<a class="btn btn-secondary btn-sm active" href="#" role="button" *ngIf="!id && redirecttype=='process'" [routerLink]="['/change-scope/process-addition/request']" >Back</a>
+			<a class="btn btn-secondary btn-sm active" href="#" role="button" *ngIf="id  && redirecttype=='process'" [routerLink]="['/change-scope/process-addition/list']" >Back</a>
+			<a class="btn btn-secondary btn-sm active" href="#" role="button" *ngIf="!new_app_id  && !redirecttype" [routerLink]="['/change-scope/process-addition/list']" >Back</a>
+			<a class="btn btn-secondary btn-sm active" href="#" role="button" *ngIf="new_app_id  && !redirecttype" [routerLink]="['/application/apps/view']" [queryParams]="{id:new_app_id}"  >Back</a>
+		</div>
+	</div>
+	
+</div>
+
+
+	
+<div class="row" *ngIf="applicationdata" >
+    <div class="col-sm-12 mat-accordion">
+			
+        <div class="clearfix"></div>
+		
+		
+		<form #appform="ngForm"  >
+			<div class="clearfix"></div>
+			
+
+				<!--
+				<div class="mat-accordion">
+					<div class="card-box enq-view">
+						<h3>Application Details</h3>
+						<ul>
+							<li><span class="label-pad">Number</span>   <span class="name-pad">{{ applicationdata.code }}</span></li>
+							<li><span class="label-pad">Created Date &amp; Time</span>   <span class="name-pad">{{ applicationdata.created_at }}</span></li>				
+							<li><span class="label-pad">Status</span>   <span class="name-pad">{{ applicationdata.status }}</span></li>
+							<li><span class="label-pad">Tax/GST File</span>   <span class="name-pad">
+									<a href="javascript:void(0);" (click)="downloadCompanyFile(applicationdata.company_file);open(downloading);" >{{ applicationdata.company_file }}</a>
+							</span></li>
+						</ul>
+					</div>
+	
+				</div>
+				
+				<div class="mat-accordion">
+					<div class="card-box enq-view">
+						<h3>Company Details</h3>
+						<ul>
+							<li><span class="label-pad">Company Name</span>   <span class="name-pad">{{ applicationdata.company_name }}</span></li>
+							<li><span class="label-pad">Postal Code</span>   <span class="name-pad">{{ applicationdata.zipcode }}</span></li>				
+							<li><span class="label-pad">Address</span>   <span class="name-pad" [innerHTML]="applicationdata.address" ></span></li>
+							<li><span class="label-pad">Country</span>   <span class="name-pad">{{ applicationdata.country_id_name }}</span></li>				
+							<li><span class="label-pad">State</span>   <span class="name-pad">{{ applicationdata.state_id_name }}</span></li>				
+							<li><span class="label-pad">City</span>   <span class="name-pad">{{ applicationdata.city }}</span></li>				
+						</ul>
+					</div>
+				</div>
+				-->
+				
+				<div class="clearfix"></div>
+
+				<div style="margin-bottom:10px; margin-top:10px;" *ngIf="app_id">					
+					<mat-accordion>
+						<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+							<mat-expansion-panel-header>
+								<mat-panel-title>
+								View Application Details
+								</mat-panel-title>
+							</mat-expansion-panel-header>
+							
+							<div class="row">
+								<div class="col-sm-12">
+									<div class="clearfix"></div>			
+									<app-appdetail [id]="app_id" ></app-appdetail>							
+								</div>				
+							</div>
+						</mat-expansion-panel>                
+					</mat-accordion>
+				</div>
+				
+				<!--
+				<div class="mat-accordion" *ngIf="userdetails?.user_type!=2 && applicationdata?.franchise">
+					<div class="card-box enq-view">
+						<h3>Franchise Details</h3>
+						<ul>
+							<li><span class="label-pad">Company Name </span> <span class="name-pad">{{ applicationdata.franchise.company_name }}</span></li>
+							<li><span class="label-pad">Contact Name</span> <span class="name-pad">{{ applicationdata.franchise.contact_name }}</span></li>
+							<li><span class="label-pad">Telephone</span> <span class="name-pad">{{ applicationdata.franchise.company_telephone }}</span></li>
+							<li><span class="label-pad">Country</span> <span class="name-pad">{{ applicationdata.franchise.company_country_name }}</span></li>	
+							<li><span class="label-pad">City</span> <span class="name-pad">{{ applicationdata.franchise.company_city }}</span></li>
+							<li><span class="label-pad">Email Address</span> <span class="name-pad">{{ applicationdata.franchise.company_email }}</span></li>						
+						</ul>		
+					</div>
+				</div>
+				 
+				<div class="card-box enq-view lst">
+					<h3>Standard Information</h3>
+						
+							
+					<ul>
+						<li *ngFor="let standard of applicationdata.standards; ">
+						<span>{{ standard }}</span></li>
+					</ul>
+							
+							
+				</div>
+				
+				
+				
+				
+				<div class="card-box enq-view m-t-10 ">
+					<h3>Product Details</h3>
+					<table class="table table-bordered col-12" style="font-size:13px;">
+						<thead>
+						<tr>
+							<th scope="col" class="center">S.No</th>
+							<th scope="col"  >Product Category</th>
+							<th scope="col"  >Type of Product</th>
+							<th scope="col" class="center" >Wastage (%)</th>
+							<th scope="col" >Material Composition</th>
+							<th scope="col"  >Standard</th>
+							<th scope="col"  >Label Grade</th>
+						</tr>
+						</thead>
+						<tbody>
+							<ng-container *ngFor="let product of applicationdata.productDetails; index as i">
+								<tr>
+									<td scope="row" class="center"   >{{  1+ i }}</td>
+									<td >{{ product.name }}</td>
+									<td >{{ product.product_type_name }}</td>
+									<td class="center">{{ product.wastage }}</td>
+									<td >
+										{{ product.materialcompositionname }}
+									</td>
+									<td>{{ product.standard_name }}</td>
+									<td>{{ product.label_grade_name }}</td>
+								</tr> 
+								
+							</ng-container>               
+						</tbody>
+					</table>
+				</div>
+				-->
+									
+				<div class="un-lst"><h3>Facility Details</h3></div> 
+				<div *ngFor="let unit of applicationdata.units; index as i" style="margin-bottom:5px;" >
+				<mat-accordion >
+					<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true" [expanded]="true">
+						<mat-expansion-panel-header>
+							<mat-panel-title>
+							{{ unit.unit_type_name}} : {{ unit.name }}
+							</mat-panel-title>
+						</mat-expansion-panel-header>
+						<div class="card-box enq-view">
+						
+							<h3>{{ unit.unit_type_name}} Details</h3>
+							<table class="table-secondary m-b-15">
+								<tr>
+									<th width="20%">Name</th>
+									<td width="30%">{{ unit.name }}</td>
+									<th width="20%">Postal Code</th>
+									<td width="30%">{{ unit.zipcode }}</td>
+								</tr>
+								<tr>
+									<th width="20%">Address</th>
+									<td colspan="3">{{ unit.address }}</td>
+								</tr>
+								<tr>
+									<th width="20%">Country</th>
+									<td width="30%">{{ unit.country_id_name }}</td>
+									<th width="20%">State</th>
+									<td width="30%">{{ unit.state_id_name }}</td>
+								</tr>
+								<tr>
+									<th width="20%">City</th>
+									<td width="30%">{{ unit.city }}</td>
+									<th width="20%">No. of Employees</th>
+									<td width="30%">{{ unit.no_of_employees }}</td>
+								</tr>
+							</table>
+
+						 			
+							<div class="mat-accordion">
+								<div class="card-box enq-view">
+									<h3>{{ unit.unit_type_name}} Process Details</h3>
+									<table class="table-secondary m-b-15">
+										<tr>
+											<th width="20%">Process(es)</th>
+											<td width="80%"><span *ngFor="let prs of unit.process; let isLast=last;" >{{ prs }} {{isLast ? '' : ', '}}</span></td>
+										</tr>
+									</table>
+								</div>
+							</div>
+
+							<div class="mat-accordion">
+								<div class="card-box enq-view">
+									<h3>Add New Process</h3>
+
+
+									<div class="line-sec" style="margin:0px;">
+						
+										<div class="form-group row">
+				                            <div class="col-6">
+				                                    <label>Process List</label>
+				                                <table id="datatable" class="table table-bordered tab-bor col-12" >
+				                                    <thead>
+				                                    <tr>
+				                                        <th scope="col" class="center">S.No</th>
+				                                        <th scope="col"  >Process Name</th>
+				                                        <th scope="col" class="center" >Action</th>
+				                                    </tr>
+				                                    </thead>
+				                                    <tbody>
+				                                        <tr *ngIf="processEntries[unit.id]?.length==0">
+				                                            <td colspan="3" class="center">No Process Added</td>
+				                                        </tr>
+				                                        <ng-container *ngIf="processEntries[unit.id]" >
+					                                        <tr *ngFor="let processEntry of processEntries[unit.id]; let i=index; ">
+					                                            <td scope="row" class="center">{{  1+ i }}</td>
+					                                            <td>{{ processEntry.name }}</td>
+					                                            <td  class="center">
+					                                                <a href="javascript:void(0);" (click)="removeProcess(processEntry.id,unit.id)" > <i class="fa fa-trash text-danger"></i> </a>
+					                                            </td>
+					                                        </tr>
+					                                    </ng-container>
+				                                    </tbody>
+				                                </table>
+				                            </div>
+				                            <div class="col-4">
+				                                <label>Process(es) <span class="text-danger">*</span></label>
+				                                <select  class="form-control select2 m-t-3"  [(ngModel)]="process_ids['qtd_'+unit.id]" name="qtd_{{unit.id}}" #processids="ngModel" >
+				                                    <option value="" >-- Process --</option>
+				                                    <option *ngFor="let process of unitprocessList[unit.id]" value= {{process.id}}>{{process.name}}</option>
+				                                </select>
+				                                <div *ngIf="processerror[unit.id]" class="validationerror">
+				                                    Process is required
+				                                    
+				                                </div>
+				                            </div>
+				                        
+				                            <div class="col-2" style="padding-top:25px;">
+				                                <a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button"  (click)="addProcess(unit.id)"  >+Add Process</a>
+				                            </div>
+				                            <div  *ngIf="processErrors" class="col-8 validationerror">{{processErrors}}</div>
+				                        </div>
+
+				                    </div>
+								 
+								</div>
+							 
+							</div>
+						</div>
+					</mat-expansion-panel>                
+				</mat-accordion>
+			</div>	
+				
+				
+			<div class="col-12 text-center m-t-10" >
+				 
+				<button (click)="onSubmit('draft')" [disabled]="loading?.button || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+					<span *ngIf="loading?.button" class="spinner-border spinner-border-sm mr-1"></span>
+					Save
+				</button>
+			 	&nbsp;&nbsp;
+				<button (click)="onSubmit('addition')" *ngIf="!new_app_id" [disabled]="loading?.button || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+					<span *ngIf="loading?.button" class="spinner-border spinner-border-sm mr-1"></span>
+					Save & Submit for Addition
+				</button>
+				 
+			</div>
+	
+
+			
+				
+				
+				
+				
+				<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+				<div class="card-box enq-view">
+					
+				</div>
+		</form>
+    </div>				
+</div>
+
+<ng-template #selfapproverconfirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to assign this application to you as approver?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>
+
+
+<ng-template #downloading let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Please wait, your file is downloading ...
+	</div>
+</ng-template>

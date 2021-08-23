@@ -1,0 +1,132 @@
+<form>
+  
+<div class="row">
+  <div class="col-12">
+      <div class="card-box table-responsive">
+     		
+		<div class="row col-12 m-b-5 pad-right">
+          <div class="col-8 pad-left">
+            <h4 class="page-title"><i class="fa fa-list-ul"></i> Generate Quotation List</h4>
+            <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+          </div>
+        </div>
+		
+		<div class="row col-12 m-b-5 pad-right">
+            <div class="col-2 text-left pad-left">
+				<select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+              </select>
+            </div>
+            <div class="col-6 text-left">
+				<select class="custom-select" style="width: 25%; font-size:13px;" name="statusFilter" [(ngModel)]="service.statusFilter">
+					<option value="">All</option>
+					<option  *ngFor="let item of statuslist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+				</select>
+				&nbsp;
+				<mat-select style="width: 28%;font-size:13px;" placeholder="-- Standard --" #standardFilter name="standardFilter" [(ngModel)]="service.standardFilter" multiple class="custom-select"  >
+					<mat-select-trigger>
+					<span *ngIf="standardFilter.value?.length == 1" >{{standardFilter.value ?  getSelectedValue(standardFilter.value) : ''}}</span>
+					<span *ngIf="standardFilter.value?.length > 1" class="example-additional-selection">
+						{{standardFilter.value.length}} {{ 'selected' }}
+					</span>
+					</mat-select-trigger>
+					<mat-option *ngFor="let std of standardList" [value]="std.id">{{std.code}}</mat-option>
+				</mat-select>
+				&nbsp;
+				<ng-container  *ngIf="userType!=2">
+					<mat-select style="width: 23%;font-size:13px;" placeholder="-- OSS --" #franchiseFilter name="franchiseFilter" [(ngModel)]="service.franchiseFilter" multiple class="custom-select"  >
+						<mat-select-trigger>
+						<span *ngIf="franchiseFilter.value?.length == 1" >{{franchiseFilter.value ?  getSelectedFranchiseValue(franchiseFilter.value) : ''}}</span>
+						<span *ngIf="franchiseFilter.value?.length > 1" class="example-additional-selection">
+							{{franchiseFilter.value.length}} {{ 'selected' }}
+						</span>
+						</mat-select-trigger>
+						<mat-option *ngFor="let osp of franchiseList" [value]="osp.id">{{osp.osp_details}}</mat-option>					
+					</mat-select>
+				</ng-container>
+            </div>
+            <div class="col-4 text-right pad-right">
+				<input class="search-pad" type="text" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+            </div>
+        </div>
+
+		<div class="col-12 pad-left">
+			<table id="datatable" class="table table-bordered" >
+			  <thead>
+			  <tr>
+				<th scope="col" class="center">S.No</th>
+				<th scope="col" sortable="t.code" (sort)="onSort($event)" >Application Number</th>				
+				<th scope="col" sortable="t.company_name" (sort)="onSort($event)" >Company Name</th>
+				<th scope="col" class="text-center" *ngIf="userType!=2">OSS</th>
+				<th scope="col" class="center">No.of Unit(s)</th>
+				<th scope="col">Standard(s)</th>
+				<th scope="col" sortable="t.first_name" (sort)="onSort($event)" >Contact Person</th>
+				<!--<th scope="col" sortable="t.email_address" (sort)="onSort($event)" >Email Address</th>-->
+				<!--
+				<th scope="col" sortable="type" (sort)="onSort($event)" >City</th>
+				-->
+				<th scope="col"  >Telephone</th>
+				<th scope="col" sortable="ofr.status" (sort)="onSort($event)" >Status</th>
+				<th scope="col" width="10%" sortable="t.created_at" (sort)="onSort($event)" class="center">Created Date</th>
+				<th scope="col" class="center" width="8%">Action</th>
+			  </tr>
+			  </thead>
+			  <tbody>
+					<tr *ngFor="let application of applications$ | async; let i=index; ">
+					<th scope="row" class="center">{{ i+1+ service.pageNo }}</th>
+					<td><ngb-highlight [result]="application.code" [term]="service.searchTerm"></ngb-highlight></td>					
+					<td><ngb-highlight [result]="application.company_name" [term]="service.searchTerm"></ngb-highlight></td>
+					<td class="text-center" *ngIf="userType!=2">{{application.oss_label}}</td>
+					<td class="center"><ngb-highlight [result]="application.application_unit_count"></ngb-highlight></td>
+					<td><ngb-highlight [result]="application.application_standard"></ngb-highlight></td>
+					<td><ngb-highlight [result]="application.first_name" [term]="service.searchTerm"></ngb-highlight></td>
+					<!--<td><ngb-highlight [result]="application.email_address" [term]="service.searchTerm"></ngb-highlight></td>-->
+					<!--
+					<td><ngb-highlight [result]="application.city" [term]="service.searchTerm"></ngb-highlight></td>
+					-->
+					<td><ngb-highlight [result]="application.telephone" [term]="service.searchTerm"></ngb-highlight></td>
+					<td><ngb-highlight [result]="application.offer_status_name" [term]="service.searchTerm"></ngb-highlight></td>
+					<td class="center"><ngb-highlight [result]="application.created_at" [term]="service.searchTerm"></ngb-highlight></td>
+					<td class="center">
+						<!--  (application.offer_status==0 || application.offer_status==1 || application.offer_status==4) && (userdetails.resource_access==1 || ((userType==3 ||userType==1) && userdetails.rules.includes('generate_offer')) )-->
+						<a href="javascript:void(0);" *ngIf="application.can_edit_offer" [routerLink]="['/offer/offer-generate']" [queryParams]="{id:application.id,offer_id:application.offer_id}" title="Edit" alt="Edit" class="pl-2"><i class="fa fa-edit"></i></a>
+						<a href="javascript:void(0);" *ngIf="application.offer_status!=0" [routerLink]="['/offer/view-offer']" [queryParams]="{id:application.id,offer_id:application.offer_id}" title="View" alt="View" class="pl-2"><i class="fa fa-eye"></i> </a>
+						<a href="javascript:void(0);" *ngIf="application.offer_status!=0" (click)="downloadFile(application.code,application.id,application.offer_id);open(downloading)"   title="Download as PDF" alt="Download as PDF" class="pl-2"><i class="fa fa-file-pdf-o"></i> </a>
+					</td>
+					</tr>
+					<tr  *ngIf="(applications$ | async)?.length==0" >
+						<td colspan="11" class="center">{{ commontxt.norecords }}</td>
+					</tr>
+			  </tbody>
+			</table>
+        </div>
+		
+         <div class="row col-12 pad-left pad-right">
+			<div class="col-6">
+				<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+				<div *ngIf="!(service.loading$ | async)">
+				Displaying {{ (applications$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (applications$ | async).length }} of {{ (total$ | async) }} results.
+				</div>
+			</div>
+			<div class="col-6 pad-right text-right">						
+			<ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+				<ng-template ngbPaginationFirst>First</ng-template>
+				<ng-template ngbPaginationPrevious>Prev</ng-template>
+				<ng-template ngbPaginationNext>Next</ng-template>			  
+				<ng-template ngbPaginationLast>Last</ng-template>			  
+			</ngb-pagination>						
+			</div>
+		</div>
+      </div>
+    </div>
+  </div>
+
+</form>
+<ng-template #downloading let-modal>
+	<div class="modal-header">
+			<h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+			Please wait, your file is downloading ...
+	</div>
+</ng-template>

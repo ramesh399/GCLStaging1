@@ -1,0 +1,47 @@
+<div class="row">
+    <div class="col-12 row pad-right" >
+		<div class="col-8">
+			<h4 class="page-title">View Renewal Request </h4>
+		</div>
+		<div class="col-4 text-right pad-right">
+			<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/application/renewal-request/list']" >Back</a>
+		</div>
+	</div>
+</div>
+
+<div class="row" *ngIf="requestdata" >
+    <div class="col-sm-12 mat-accordion">
+			
+        <div class="clearfix"></div>
+		
+		<div class="m-t-10" style="margin-bottom:10px;" >
+			<mat-accordion>
+				<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+					<mat-expansion-panel-header>
+						<mat-panel-title>View Application Details</mat-panel-title>
+					</mat-expansion-panel-header>
+					
+					<div class="row" >
+						<div class="col-sm-12">
+							<div class="clearfix"></div>			
+							<app-appdetail [id]="app_id" ></app-appdetail>							
+						</div>				
+					</div>
+				</mat-expansion-panel>                
+			</mat-accordion>
+        </div>
+
+        <div class="mat-accordion" >
+            <div class="card-box enq-view">
+                <h3>Renewal Request Details</h3>
+                <ul>
+                    <li><span class="label-pad">Company Name</span>   <span class="name-pad">{{ requestdata.company_name }}</span></li>
+                    <li><span class="label-pad">Requested By</span>   <span class="name-pad">{{ requestdata.user_name }}</span></li>
+                    <li><span class="label-pad">Requested At</span>   <span class="name-pad">{{ requestdata.created_at }}</span></li>
+                    <li><span class="label-pad">Status</span>   <span class="name-pad">{{ requestdata.change_status_name }}</span></li>		<li style="width:100%;"><span class="label-pad">Requested Standard</span> <span class="name-pad">{{ requestdata.application_standard }}</span></li>					
+                </ul>
+            </div>
+        </div>
+
+    </div>				
+</div>

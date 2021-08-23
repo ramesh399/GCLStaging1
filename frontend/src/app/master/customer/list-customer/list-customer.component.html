@@ -1,0 +1,133 @@
+<form>
+  
+<div class="row">
+  <div class="col-12">
+      <div class="card-box table-responsive">
+
+
+        <div class="row col-12 m-b-5 pad-right">
+          <div class="col-8 pad-left">
+            <h4 class="page-title"><i class="fa fa-list-ul"></i> Customer List</h4>
+            <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+          </div>
+          <div class="col-4 text-right pad-right">
+            <a class="btn btn-primary btn-sm" href="#" role="button" [routerLink]="['/master/customer/add']" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('add_customer')"><i class="fa fa-plus text-white"></i> Add Customer</a>
+          </div>
+
+        </div>
+
+        <div class="row col-12 m-b-5 pad-right">
+            <div class="col-4 text-left pad-left">
+				<select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+					<option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+				</select>
+            </div>
+            <div class="col-4 text-left">
+                <mat-select style="width: 45%;font-size:13px;" placeholder="-- Country --" #countryFilter name="countryFilter" [(ngModel)]="service.countryFilter" multiple class="custom-select"  >
+                  <mat-select-trigger>
+                    <span *ngIf="countryFilter.value?.length == 1" >{{countryFilter.value ?  getSelectedCountryValue(countryFilter.value) : ''}}</span>
+                    <span *ngIf="countryFilter.value?.length > 1" class="example-additional-selection">
+                      {{countryFilter.value.length}} {{ 'selected' }}
+                    </span>
+                  </mat-select-trigger>
+					        <mat-option *ngFor="let std of countryList" [value]="std.id">{{std.name}}</mat-option>
+                </mat-select>
+                &nbsp;&nbsp;
+                <select class="custom-select" style="width: 38%; font-size:13px;" name="statusFilter" [(ngModel)]="service.statusFilter">
+                  <option value="">All</option>
+                  <option  *ngFor="let item of statusList | keyvalue" value="{{item.key}}">{{item.value}}</option>
+                </select>	 
+            </div>
+            
+            <div class="col-4 text-right pad-right">
+              <input class="search-pad" type="text" placeholder="Type here to search" name="searchTerm" [(ngModel)]="service.searchTerm"/>
+            </div>
+        </div>
+
+        <div class="col-12 pad-left" >
+          <table id="datatable" class="table table-bordered tab-bor" >
+            <thead class="top-bor1">
+				<tr>
+					  <th width="3%" scope="col" class="center">S.No</th>
+					  <th width="7%" scope="col" class="center" sortable="user.customer_number" (sort)="onSort($event)">GCL ID</th>
+					  <th scope="col" sortable="usercompanyinfo.company_name" (sort)="onSort($event)" >Company Name</th>
+					  <th scope="col" sortable="usercompanyinfo.contact_name" (sort)="onSort($event)" >Contact Name</th>
+					  <th scope="col" sortable="companycountry.name" (sort)="onSort($event)" >Country</th>
+					  <th scope="col">Telephone</th>
+					  <th scope="col">Email</th>
+					 <!-- <th scope="col">Customer Number</th>-->
+					  <th width="10%" scope="col" class="center" sortable="created_at" (sort)="onSort($event)">Date</th>            
+					  <th width="11%" scope="col" class="center">Action</th>
+				</tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let user of users$ | async; let i=index; ">
+              <th scope="row" class="center">{{  1+ i + service.pageNo }}</th>
+			  <td class="center"><ngb-highlight [result]="user.customer_number" [term]="service.searchTerm"></ngb-highlight></td>
+             <!-- <td>{{user.registration_id}}</td>   -->    
+              <td><ngb-highlight [result]="user.company_name" [term]="service.searchTerm"></ngb-highlight></td>
+              <td><ngb-highlight [result]="user.contact_name" [term]="service.searchTerm"></ngb-highlight></td>
+              <td><ngb-highlight [result]="user.company_country" [term]="service.searchTerm"></ngb-highlight></td>
+              <td><ngb-highlight [result]="user.company_telephone" [term]="service.searchTerm"></ngb-highlight></td>
+              <td><a href="mailto:{{ user.company_email }}"><ngb-highlight [result]="user.company_email" [term]="service.searchTerm"></ngb-highlight></a></td>
+			  
+              <td class="center"><ngb-highlight [result]="user.created_at" [term]="service.searchTerm"></ngb-highlight></td>
+              <td class="text-center">
+                  <a href="javascript:void(0);" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('customer_master')" [routerLink]="['/master/customer/view']" [queryParams]="{id:user.id}" title="View" alt="View"><i class="fa fa-eye"></i></a>
+                  <a href="javascript:void(0);" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('edit_customer')" [routerLink]="['/master/customer/edit']" [queryParams]="{id:user.id}" class="pl-2" title="Edit" alt="Edit"><i class="fa fa-edit"></i></a>
+                  <a href="javascript:void(0);" *ngIf="user.status==0 && userdetails.resource_access==1 || userdetails.rules.includes('deactivate_customer')" (click)="open(commonModel,'deactivate',user.id)" class="pl-2" title="Active" alt="Active"><i class="fa fa-toggle-on text-success"></i></a>	
+                  <a href="javascript:void(0);" *ngIf="user.status==1 && userdetails.resource_access==1 || userdetails.rules.includes('activate_customer')" (click)="open(commonModel,'activate',user.id)" class="pl-2" title="In-active" alt="In-active"><i class="fa fa-toggle-off text-danger"></i></a>	
+                  <a href="javascript:void(0);" *ngIf="(userdetails.resource_access==1 || userdetails.rules.includes('delete_customer'))" (click)="open(commonModel,'delete',user.id)" class="pl-2" title="Delete" alt="Delete"><i class="fa fa-trash text-danger"></i></a>	
+                </td>
+            </tr>
+            <tr  *ngIf="(users$ | async)?.length==0" >
+              <td colspan="9" class="center">{{ commontxt.norecords }}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="row col-12 pad-left pad-right">
+			<div class="col-6">
+				<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+				<div *ngIf="!(service.loading$ | async)">
+				Displaying {{ (users$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (users$ | async).length }} of {{ (total$ | async) }} results.
+				</div>
+			</div>
+			<div class="col-6 pad-right text-right">						
+			<ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+				<ng-template ngbPaginationFirst>First</ng-template>
+				<ng-template ngbPaginationPrevious>Prev</ng-template>
+				<ng-template ngbPaginationNext>Next</ng-template>			  
+				<ng-template ngbPaginationLast>Last</ng-template>			  
+			</ngb-pagination>						
+			</div>
+		</div>
+		
+      </div>
+    </div>
+  </div>
+
+</form>
+
+<ng-template #commonModel let-modal>
+    
+    <div class="modal-header">
+          <h4 class="modal-title" id="modal-basic-title">Message</h4>
+          <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('close')">
+        <span class="c-icon" aria-hidden="true">&times;</span>
+          </button>
+      </div>
+    
+      <div class="modal-body text-center" style="font-size:16px;padding:5px;">
+      <div class="alert alert-info" *ngIf="alertInfoMessage">{{alertInfoMessage}}</div>
+      <div class="alert alert-success" *ngIf="alertSuccessMessage">{{alertSuccessMessage}}</div>
+      <div class="alert alert-danger" *ngIf="alertErrorMessage">{{alertErrorMessage}}</div>
+    </div>	
+    
+      <div class="modal-footer text-center">
+      <button type="button" class="btn btn-success" *ngIf="okBtn" (click)="commonModalAction();">Ok</button>
+          <button type="button" class="btn btn-outline-secondary" *ngIf="cancelBtn" (click)="modal.dismiss('cancel')">Cancel</button>        
+      </div>
+    
+  </ng-template>

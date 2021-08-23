@@ -1,0 +1,175 @@
+<form>
+  
+<div class="row">
+  <div class="col-12">
+      <div class="card-box table-responsive">
+     		
+		<div class="row col-12 m-b-5 pad-right">
+          <div class="col-8 pad-left">
+            <h4 class="page-title"><i class="fa fa-list-ul"></i> Certificate List</h4>
+            <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+          </div>
+        </div>
+		
+		<div class="row col-12 m-b-5 pad-right">
+            <div class="col-10 text-left pad-left">
+				<select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+					<option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+				</select>
+				&nbsp;
+				<select class="custom-select" style="width: auto; font-size:13px;width: 13%;" name="statusFilter" [(ngModel)]="service.statusFilter">
+					<option value="">All</option>
+					<option  *ngFor="let item of statuslist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+				</select>
+				&nbsp;
+				<mat-select style="width: 13%;font-size:13px;" placeholder="-- Standard --" #standardFilter name="standardFilter" [(ngModel)]="service.standardFilter" multiple class="custom-select"  >
+					<mat-select-trigger>
+					<span *ngIf="standardFilter.value?.length == 1" >{{standardFilter.value ?  getSelectedValue(standardFilter.value) : ''}}</span>
+					<span *ngIf="standardFilter.value?.length > 1" class="example-additional-selection">
+						{{standardFilter.value.length}} {{ 'selected' }}
+					</span>
+					</mat-select-trigger>
+					<mat-option *ngFor="let std of standardList" [value]="std.id">{{std.code}}</mat-option>
+				</mat-select>  
+				&nbsp;
+				<mat-select *ngIf="userType!=2" style="width: 15%;font-size:13px;" placeholder="-- Country --" #countryFilter name="countryFilter" [(ngModel)]="service.countryFilter" multiple class="custom-select"  >
+					<mat-select-trigger>
+					<span *ngIf="countryFilter.value?.length == 1" >{{countryFilter.value ?  getSelectedCountryValue(countryFilter.value) : ''}}</span>
+					<span *ngIf="countryFilter.value?.length > 1" class="example-additional-selection">
+						{{countryFilter.value.length}} {{ 'selected' }}
+					</span>
+					</mat-select-trigger>
+					<mat-option *ngFor="let std of countryList" [value]="std.id">{{std.name}}</mat-option>
+				</mat-select>	
+				&nbsp;
+				<input style="width: 12%; display: inline-block;" class="form-control"  type="text" placeholder="Valid From" matInput [matDatepicker]="from_date" [(ngModel)]="service.from_date" name="from_date" (click)="from_date.open()">
+				<mat-datepicker-toggle matSuffix  [for]="from_date"></mat-datepicker-toggle>
+				<mat-datepicker #from_date></mat-datepicker>
+				&nbsp;
+				<input  style="width: 12%; display: inline-block;" class="form-control" type="text" placeholder="Valid To" matInput [matDatepicker]="to_date" (click)="to_date.open()"  name="to_date" [(ngModel)]="service.to_date" >
+				<mat-datepicker-toggle matSuffix  [for]="to_date"></mat-datepicker-toggle>
+				<mat-datepicker #to_date></mat-datepicker>	
+			</div>	
+			<div class="col-2 text-right pad-left pad-right">
+				<input class="search-pad" type="text" style="width:178px !important;" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+			</div>
+        </div>
+
+		<div class="col-12 pad-left">
+			<table id="datatable" class="table table-bordered" >
+			  <thead>
+			  <tr>
+				<th width="5%" scope="col" class="center">S.No</th>
+				<!--
+				<th scope="col" sortable="company_name" (sort)="onSort($event)">Company Name</th>
+				-->
+				<th scope="col"  >Code</th>
+				<!-- <th scope="col"  >Customer Number</th> -->
+				<!--<th scope="col">Email Address</th>-->
+				
+				
+				<th scope="col">Company Name</th>
+				<th *ngIf="userdetails.resource_access!=1" scope="col">Brand</th>
+				<th *ngIf="userdetails.resource_access!=1"scope="col">Brand Group</th>
+				<th scope="col">Country</th>
+				
+				<!--
+				<th scope="col">Country</th>
+				<th scope="col" (sort)="onSort($event)" width="10%" class="center">No.of Units</th>
+				-->
+				<th class="center" scope="col" (sort)="onSort($event)" width="10%">Standard</th>
+				
+				<!--
+				<th scope="col" (sort)="onSort($event)" width="10%">Country</th>
+				<th scope="col" (sort)="onSort($event)" width="10%">City</th>
+				-->
+				<th class="center" scope="col" (sort)="onSort($event)" width="7%">Version</th>
+				<th class="center" scope="col" (sort)="onSort($event)" width="11%">Certified Date</th>
+				<th class="center" scope="col" (sort)="onSort($event)" width="11%">Valid Until</th>
+				
+				<th class="center" scope="col" (sort)="onSort($event)" width="10%">Type</th>
+				<th class="center" scope="col" (sort)="onSort($event)" width="8%">Status</th>
+				<th class="center" scope="col" (sort)="onSort($event)" width="8%">Is Valid?</th>				
+				<!-- <th class="center" width="10%" scope="col" (sort)="onSort($event)">Created By</th>				 -->
+				
+				<!--
+				<th scope="col" sortable="status" (sort)="onSort($event)" width="8%">Status</th>
+
+				<th width="10%" scope="col" sortable="created_at" (sort)="onSort($event)">Created By</th>				
+				<th scope="col" sortable="type" (sort)="onSort($event)" >Created Date</th>
+				-->
+				<th class="center" width="8%" scope="col">Action</th>
+			  </tr>
+			  </thead>
+			  <tbody>
+			  <tr *ngFor="let offer of invoices$ | async; let i=index; ">
+				<th scope="row" class="center">{{ i+1+ service.pageNo }}</th>
+				<td><ngb-highlight [result]="offer.code"  [term]="service.searchTerm"></ngb-highlight></td>
+				<!-- <td><ngb-highlight [result]="offer.customer_number"  [term]="service.searchTerm"></ngb-highlight></td> -->
+				<!--<td><ngb-highlight [result]="offer.email_address" [term]="service.searchTerm"></ngb-highlight></td>-->
+
+				<td><ngb-highlight [result]="offer.company_name" [term]="service.searchTerm"></ngb-highlight></td>
+				<td  *ngIf="userdetails.resource_access!=1"><ngb-highlight [result]="offer.brand_name" [term]="service.searchTerm"></ngb-highlight></td>
+				<td  *ngIf="userdetails.resource_access!=1"><ngb-highlight [result]="offer.brand_group" [term]="service.searchTerm"></ngb-highlight></td>
+				<td><ngb-highlight [result]="offer.application_country" [term]="service.searchTerm"></ngb-highlight></td>
+				
+				<!--
+				<td><ngb-highlight [result]="offer.application_country" [term]="service.searchTerm"></ngb-highlight></td>
+				<td class="center"><ngb-highlight [result]="offer.application_unit_count" [term]="service.searchTerm"></ngb-highlight></td>
+				-->
+				<td class="center"><ngb-highlight [result]="offer.application_standard" [term]="service.searchTerm"></ngb-highlight></td>
+				<td class="center"><ngb-highlight [result]="offer.version" [term]="service.searchTerm"></ngb-highlight></td>
+				<!--
+				<td><ngb-highlight [result]="offer.application_country" [term]="service.searchTerm"></ngb-highlight></td>
+				<td><ngb-highlight [result]="offer.application_city" [term]="service.searchTerm"></ngb-highlight></td>
+				-->
+				<td class="center">{{offer.certificate_generated_date}}</td>
+				<td class="center">{{offer.certificate_valid_until}}</td>						
+				<td class="center">{{offer.type_label}}</td>				
+				<td class="center">{{offer.status_label}}</td>				
+				<td class="center"><ngb-highlight [result]="offer.certificate_status_name" [term]="service.searchTerm"></ngb-highlight></td>
+				<!-- <td class="center"><ngb-highlight [result]="offer.creator" [term]="service.searchTerm"></ngb-highlight></td> -->
+				<!--
+				<td><ngb-highlight [result]="offer.created_at" [term]="service.searchTerm"></ngb-highlight></td>
+				-->
+				<td class="center">
+				<a href="javascript:void(0);" *ngIf="offer.offer_status!=0 && (userType==2 || userType==3 || (userType==1 && !userdetails.rules.includes('brand_management'))) " [routerLink]="['/certification/view-certificate']" [queryParams]="{id:offer.id,certificate_id:offer.certificate_id}" title="View" alt="View"><i class="fa fa-eye"></i> </a>				
+				<a href="javascript:void(0);" *ngIf="offer.certificate_status==2 && userType==1 && userdetails.rules.includes('brand_management')" (click)="openmodal(downloading);DownloadFile(offer.certificate_id,offer.filename)" class="pl-2" title="Download" alt="Download"><i class="fa fa-file-pdf-o text-danger"></i></a>	
+				</td>
+				</tr>
+				<tr  *ngIf="(invoices$ | async)?.length==0" >
+          <td colspan="13" class="center">{{ commontxt.norecords }}</td>
+        </tr>
+			  </tbody>
+			</table>
+        </div>
+		
+        <div class="row col-12 pad-left pad-right">
+			<div class="col-6">
+				<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+				<div *ngIf="!(service.loading$ | async)">
+				Displaying {{ (invoices$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (invoices$ | async).length }} of {{ (total$ | async) }} results.
+				</div>
+			</div>
+			<div class="col-6 pad-right text-right">						
+			<ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+				<ng-template ngbPaginationFirst>First</ng-template>
+				<ng-template ngbPaginationPrevious>Prev</ng-template>
+				<ng-template ngbPaginationNext>Next</ng-template>			  
+				<ng-template ngbPaginationLast>Last</ng-template>			  
+			</ngb-pagination>						
+			</div>
+		</div>
+      </div>
+    </div>
+  </div>
+
+</form>
+<ng-template #downloading let-modal>
+	<div class="modal-header">
+			<h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+			Please wait, your file is downloading ...
+	</div>
+</ng-template>

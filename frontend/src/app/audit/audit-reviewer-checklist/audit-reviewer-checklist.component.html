@@ -1,0 +1,84 @@
+<div class="row">
+    <div class="col-12">
+        <div class="add card-box table-responsive">
+            <form #checklistForm="ngForm"   >
+    
+        
+                <div class="col-12 row pad-right" >
+                    <div class="col-8">
+                        <h4 class="page-title">Audit Reviewer Review Checklist</h4>
+                    </div>
+                    <div class="col-4 text-right pad-right">
+                        <a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:this.audit_id}" >Back</a>
+                    </div>
+                </div>
+                
+                <div >
+                   
+                    <div class="col-12" *ngIf="loading">
+                        <span class="spinner-border spinner-border-sm mr-1"></span>
+                    </div>
+                    <div *ngIf="questionList?.length" style="border:1px solid #cfcfcf;">
+                            
+                        <table  class="table table-striped tempdrivenform" style="margin-bottom:0px;">
+                            
+                            <tbody>
+                            
+                                <tr *ngFor="let question of questionList; index as j ">
+                                    <td><p>{{ 1+j }}. {{ question.name }} <a href="javascript:void(0);" (click)="toggleGuidance(question.id)" *ngIf="question.guidance"  ><i class="fa fa-info-circle" aria-hidden="true"></i></a></p>
+                                        <div class="checklist_guidance" *ngIf="guidanceIncludeList.includes(question.id)" [innerHTML]="question.guidance " ></div>
+                                        <div class="ans-cmt col-12 row">    
+                                            <div class="col-4">     
+                                                <h4>Answer</h4>
+                                                <div class="row" >
+                                                    <div class="col-10">
+                                                        
+                                                        <select class="form-control" name="qtd{{question.id}}" (change)="getReviewerAnswer($event.target.value,question.id)" #qtdAnswer="ngModel" [(ngModel)]="reviewcommentlist['qtd'+question.id]"  required >
+                                                            <option value="">-- Options --</option>
+                                                            <option *ngFor="let answer of question.findings" value="{{answer.id}}" >{{ answer.name }}</option>
+                                                        </select>
+                                                        <div class="validationerror" *ngIf="!qtdAnswer.valid && qtdAnswer.touched">
+                                                            Please select the Answer
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                            </div>
+                                            <div class="col-8">
+                                                <h4>Comment</h4>
+                                                <div class="md-form">
+                                                    <textarea type="text" #qtdComment="ngModel" name="qtd_comments{{question.id}}" [(ngModel)]="reviewcommentlist['qtd_comments'+question.id]" class="md-textarea form-control" required  mdbInput style="height:50px"></textarea>
+                                                </div>
+                                                <div class="validationerror" *ngIf="!qtdComment.valid && qtdComment.touched">
+                                                    Please enter the comment
+                                                </div>
+                                            </div>
+                                        </div>  
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+               
+                <div class="col-lg-12 text-center" style="border-top: 1px solid #cecece;">
+                    <button (click)="onSubmit(checklistForm,'decline')"  *ngIf="reviewerCorrection.length>0" [disabled]="loading || buttonDisable" class="btn btn-info btn-custom waves-effect w-md waves-light m-r-10 m-b-5 m-t-10" style="background-color:#0b88b7;"  >
+                        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                        Decline
+                    </button>
+
+                    <button [disabled]="loading || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10" (click)="onSubmit(checklistForm)" >
+                        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                        Submit
+                    </button>
+                    
+                </div>
+
+                    
+                <app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+                
+            </form>
+        </div>
+    </div>
+</div>

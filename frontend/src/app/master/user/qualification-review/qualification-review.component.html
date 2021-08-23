@@ -1,0 +1,226 @@
+<div class="row">
+    <div class="col-12">
+        <div class="add card-box table-responsive">
+            <form #checklistForm="ngForm"   >
+    
+        
+                <div class="col-12 row pad-right" >
+                    <div class="col-8">
+						<h4 class="page-title">User Qualification Review Checklist</h4>
+                    </div>
+                    <div class="col-4 text-right pad-right">
+                        <a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/master/user/list']" >Back</a>
+                    </div>
+                </div>
+				
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view reviewquestion">
+					
+					<div class="form-group row">
+						<div class="col-4">
+                            <h3>User</h3>
+                             
+
+                            <mat-select placeholder="User *" #userId="ngModel" name="user_id" [(ngModel)]="user_id" class="form-control select2" (selectionChange)="getUserDetails($event.value)" >
+                                 <!-- <mat-select-trigger>
+                              <span *ngIf="f.standard.value?.length == 1" >{{f.standard.value ? getSelectedValue('standard', f.standard.value): ''}}</span>
+                                <span *ngIf="f.standard.value?.length > 1" class="example-additional-selection">
+                                    {{f.standard.value.length}} {{ 'selected' }}
+                                </span> 
+                                </mat-select-trigger>-->
+                                <mat-select-search name="userFilterCtrl"  [(ngModel)]="userFilterCtrl" ></mat-select-search>
+                                <mat-option *ngFor="let user of filteredprocessMulti | async" [value]="user.id">{{ user.first_name +' '+user.last_name }}</mat-option>
+                            </mat-select>
+
+                            <!--
+                            <div class="row" >
+                                <div class="col-10">
+                                    <select class="form-control" name="user_id"  [(ngModel)]="user_id"  required >
+                                        <option value="">-- Options --</option>
+                                        <option *ngFor="let user of userList " value="{{user.id}}" >{{ user.first_name +' '+user.last_name }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            -->
+							<!--<input type="text" formControlName="first_name" [class.is-invalid]="f.first_name.invalid &&
+							f.first_name.touched " class="form-control" placeholder="First Name *" >
+							<div *ngIf="f.first_name.errors" class="invalid-feedback">
+								<div *ngIf="f.first_name.errors.required" >
+									First Name is required
+								</div>
+							</div>-->
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-3">
+                            <h3>Standard</h3>
+                            <mat-select placeholder="Standard *" #standardSel="ngModel" name="standard" [(ngModel)]="standard" multiple class="form-control select2" (selectionChange)="getSector()"  >
+                                <mat-select-trigger>
+                                <span *ngIf="standardSel.value?.length == 1" >{{standardSel.value ? getSelectedValue('standard', standardSel.value): ''}}</span>
+                                <span *ngIf="standardSel.value?.length > 1" class="example-additional-selection">
+                                    {{standardSel.value.length}} {{ 'selected' }}
+                                </span>
+                                </mat-select-trigger>
+                                <mat-option *ngFor="let standards of standardList" [value]="standards.id">{{standards.name}}</mat-option>
+                            </mat-select>
+                            <span *ngIf="this.loadingInfo?.stdrole" class="spinner-border spinner-border-sm mr-1"></span>
+                            
+                        </div>
+                       <!-- <div class="col-4">
+                            <h3>Process</h3>
+                            <mat-select placeholder="Process *" #processSel="ngModel" name="process" [(ngModel)]="process" multiple class="form-control select2"  (selectionChange)="getBusinessSector()"  >
+                                <mat-select-trigger>
+                                <span *ngIf="processSel.value?.length == 1" >{{processSel.value ? getSelectedValue('process', processSel.value): ''}}</span>
+                                <span *ngIf="processSel.value?.length > 1" class="example-additional-selection">
+                                    {{processSel.value.length}} {{ 'selected' }}
+                                </span>
+                                </mat-select-trigger>
+                                <mat-option *ngFor="let process of processList" [value]="process.id">{{process.name}}</mat-option>
+                            </mat-select>
+                            <span *ngIf="this.loadingInfo?.stdrole" class="spinner-border spinner-border-sm mr-1"></span>
+                            
+                        </div> -->
+
+                        <div class="col-3">
+                            <h3>Role</h3>
+                            <mat-select placeholder="Role *" #roleSel="ngModel" name="role" [(ngModel)]="role" multiple class="form-control select2" (selectionChange)="getQuestion()"  >
+								<mat-select-trigger>
+								<span *ngIf="roleSel.value?.length == 1" >{{roleSel.value ? getSelectedValue('role',roleSel.value) : ''}}</span>
+								<span *ngIf="roleSel.value?.length > 1" class="example-additional-selection">
+									{{roleSel.value.length}} {{ 'selected' }}
+								</span>
+								</mat-select-trigger>
+								<mat-option *ngFor="let roles of roleList" [value]="roles.id">{{roles.name}}</mat-option>
+							</mat-select>
+                        </div>
+                     
+                        <div class="col-3">
+                            <h3>Business Sector</h3>
+                            <mat-select placeholder="Business Sector *" #sectorSel="ngModel" name="business_sector" [(ngModel)]="business_sector" multiple class="form-control select2" (selectionChange)="getSectorGroup()"  >
+								<mat-select-trigger>
+								<span *ngIf="sectorSel.value?.length == 1" >{{sectorSel.value ? getSelectedValue('sector',sectorSel.value) : ''}}</span>
+								<span *ngIf="sectorSel.value?.length > 1" class="example-additional-selection">
+									{{sectorSel.value.length}} {{ 'selected' }}
+								</span>
+								</mat-select-trigger>
+								<mat-option *ngFor="let sector of businessSectorList" [value]="sector.id">{{sector.name}}</mat-option>
+							</mat-select>
+                        </div>
+                        <div class="col-3">
+                            <h3>Business Sector Group</h3>
+                            <mat-select placeholder="Business Sector Group *" #groupSel="ngModel" name="business_sector_group" [(ngModel)]="business_sector_group" multiple class="form-control select2" (selectionChange)="getQuestion()"  >
+								<mat-select-trigger>
+								<span *ngIf="groupSel.value?.length == 1" >{{groupSel.value ? getSelectedValue('group',groupSel.value) : ''}}</span>
+								<span *ngIf="groupSel.value?.length > 1" class="example-additional-selection">
+									{{groupSel.value.length}} {{ 'selected' }}
+								</span>
+								</mat-select-trigger>
+								<mat-option *ngFor="let group of businessSectorGroupList" [value]="group.id">{{group.name}}</mat-option>
+							</mat-select>
+                        </div>
+                    </div>
+
+                   
+                    <!-- <app-usermessage [success]="success[0]" [error]="error[0]"  ></app-usermessage> -->
+                    <div class="col-12" *ngIf="this.loadingInfo?.questions">
+                        <span class="spinner-border spinner-border-sm mr-1"></span>
+                    </div>
+                    <div *ngIf="questionList?.length" style="border:1px solid #cfcfcf;">
+                       <!-- <mat-accordion *ngIf="!hideStatus[standard.id]"  >
+                            <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false" [expanded]="true">
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title>
+                                            {{ standard.name }}
+                                    </mat-panel-title>
+                                </mat-expansion-panel-header>
+                            -->     
+                                    <table  class="table table-striped tempdrivenform" style="margin-bottom:0px;">
+                                        
+                                        <tbody>
+                                        
+                                            <tr *ngFor="let question of questionList; index as j ">
+                                                    <td><p>{{ 1+j }}. {{ question.name }} <a href="javascript:void(0);" (click)="toggleGuidance(question.id)" *ngIf="question.guidance"  ><i class="fa fa-info-circle" aria-hidden="true"></i></a></p>
+                                                        <div class="checklist_guidance" *ngIf="guidanceIncludeList.includes(question.id)" [innerHTML]="question.guidance " ></div>
+                                                        <div class="ans-cmt col-12 row">    
+                                                            <div class="col-4">     
+                                                                <h4>Answer</h4>
+                                                                <div class="row" >
+                                                                    <div class="col-10">
+                                                                        
+                                                                        <select class="form-control" name="qtd{{question.id}}" #qtdAnswer="ngModel" [(ngModel)]="reviewcommentlist['qtd'+question.id]"  required >
+                                                                            <option value="">-- Options --</option>
+                                                                            <option *ngFor="let answer of answerArr | keyvalue; " value="{{answer.key}}" >{{ answer.value }}</option>
+                                                                        </select>
+                                                                        <div class="validationerror" *ngIf="!qtdAnswer.valid && qtdAnswer.touched">
+                                                                            Please select the Answer
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                            </div>
+                                                            <div class="col-8">
+                                                                <h4>Comment</h4>
+                                                                <div class="md-form">
+                                                                    <textarea type="text" #qtdComment="ngModel" name="qtd_comments{{question.id}}" [(ngModel)]="reviewcommentlist['qtd_comments'+question.id]" class="md-textarea form-control" [required]="(qtdAnswer.value==2)?true:false" mdbInput style="height:50px"></textarea>
+                                                                </div>
+                                                                <div class="validationerror" *ngIf="!qtdComment.valid && qtdComment.touched">
+                                                                    Please enter the comment
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-4" *ngIf="question.file_upload_required==1">
+                                                                <h4>File</h4>
+                                                                <div class="md-form">
+                                                                    <input type="file"  #qtdReviewFile="ngModel" (change)="fileChange($event,question.id)" name="qtd_file{{question.id}}" [(ngModel)]="reviewcommentlist['qtd_file'+question.id]"    >
+                                                                    <br><div style="font-size:11px;" >supported file formats: <span *ngFor="let docs of this.userService.validDocs; let last=last;">{{ docs}}<span *ngIf="!last">, </span> </span></div>
+                                                                </div>
+                                                                <div class="validationerror"  *ngIf="fileErrList[question.id]" > Please upload the valid file</div>
+                                                                
+                                                                <div *ngIf="questionfile[question.id]" style="padding:5px; border:1px solid #cecece; background-color: beige; height:32px;width: 100%;">
+                                                                    {{ questionfile[question.id].name }}
+                                                                    <a href="javascript:void(0);"  (click)="removeFile(question.id)" style="color:red; font-weight:bold;" >X</a>
+                                                                </div>
+                                                                
+                                                            </div>
+                                                        </div>  
+                                                    </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+
+                                    <div class="col-lg-12 text-center" style="border-top: 1px solid #cecece;">
+
+                                        <!-- <button *ngIf="approvestd[standard.id]" [disabled]="loading[standard.id]" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10" (click)="onSubmit(standard.id,checklistForm,1)" >
+                                            <span *ngIf="loading[standard.id]" class="spinner-border spinner-border-sm mr-1"></span>
+                                            Approve
+                                        </button> 
+                                        <button [disabled]="loading[standard.id]" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10" (click)="onSubmit(standard.id,checklistForm)" >
+                                            <span *ngIf="loading[standard.id]" class="spinner-border spinner-border-sm mr-1"></span>
+                                            Submit
+                                        </button>-->
+                                        <button [disabled]="loading || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10" (click)="onSubmit(checklistForm)" >
+                                            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                                            Submit
+                                        </button>
+                                       
+                                        <!--<div *ngIf="success[standard.id]" class="alert alert-success mt-3 mb-0">{{success[standard.id]}}</div>
+                                        <div *ngIf="error[standard.id]" class="col-12 alert alert-danger mt-3 mb-0 errorSummary" >{{error[standard.id]}}</div>
+                                        -->
+                                        
+                                    </div>
+
+                           <!--     
+                            </mat-expansion-panel>                
+                        </mat-accordion>
+                        <br><br>-->
+                    </div>
+                    <app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+                    <div *ngIf="!this.loadingInfo?.stdrole && userId.value >0 && (businessSectorList==undefined || businessSectorGroupList==undefined || standardList==undefined || roleList==undefined || businessSectorList.length<=0  || businessSectorGroupList.length<=0 || standardList.length<=0  || roleList.length<=0)" class="col-12 alert alert-info mt-3 mb-0" >
+                        There are no questions found
+                    </div>
+                    <!-- {{ notFoundList.join('/') }} for the user -->
+                    <div class="col-12 alert alert-danger mt-0 mb-5 errorSummary"   *ngIf="userId.value >0 && sectorSel.value !==undefined && groupSel.value !== undefined && standardSel.value !==undefined && roleSel.value !== undefined && standardSel.value.length>0  && roleSel.value.length>0 && sectorSel.value.length>0 && groupSel.value.length>0 && questionList.length<= 0">Questions not found</div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

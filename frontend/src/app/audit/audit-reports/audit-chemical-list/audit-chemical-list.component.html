@@ -1,0 +1,679 @@
+<!--
+<div class="row"  >
+    <div class="col-12">
+        <div class="card-box table-responsive">
+        	<div class="row col-12 m-b-5 pad-right">
+              	<div class="col-8 pad-left">
+                <h4 class="page-title">Audit RA Scope Holder</h4>
+                <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+                
+              	</div>
+               
+            </div>
+        
+            <div class="row col-12 m-b-5 pad-right">
+                <div class="col-4 text-left pad-left">
+                    <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                        <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+                    </select>
+                </div>
+                <div class="col-4 text-left p-t-5"></div>
+                <div class="col-4 text-right pad-right">
+                    Search: <input class="search-pad" type="text" name="searchTerm" [(ngModel)]="service.searchTerm"/>
+                </div>
+            </div>
+			
+			<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+			-->
+			<!--
+			<h3>Use of Processing Aids, Chemicals, Dyes</h3>
+			-->
+			
+			<div class="col-12 row enq-view pad-right">
+				<div class="col-8 text-primary" style="border-bottom: 1px solid #d7d7d7;font-size:16px;padding-left:0px;">
+					Use of Processing Aids, Chemicals, Dyes
+				</div>
+				
+				<div class="col-4 text-right pad-right" style="border-bottom: 1px solid #d7d7d7;">
+					<ng-container *ngIf="!cond_viewonly && dataloaded">
+						<div class="radio" >
+							Is it applicable?&nbsp;&nbsp;&nbsp;						
+							<input type="radio" id="yes" [checked]="this.isItApplicable?true:false" value="1" (change)="isItApp(1)"><label for="yes">Yes</label>
+							&nbsp;&nbsp;&nbsp;
+							<input type="radio" id="no" [checked]="!this.isItApplicable?true:false" value="2" (change)="isItApp(2)"><label for="no">No</label>										
+						</div>
+					</ng-container>
+				</div>
+			</div>
+			<div class="col-12" *ngIf="!dataloaded">
+				<span class="spinner-border spinner-border-sm mr-1"></span>
+			</div>
+			<div *ngIf="!isItApplicable && dataloaded" class="m-t-5">
+				<form  [formGroup]="remarkForm">
+					<div class="form-group row">					
+						<div class="col-12">
+							<label>Remarks <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Remarks" matTooltipClass="tooltip-text-size" aria-tooltip="Remarks" matTooltipPosition="right"></i>
+							<ng-container *ngIf="cond_viewonly">
+								<div>{{rf.remark.value }}</div>
+							</ng-container>
+							<ng-container *ngIf="!cond_viewonly">
+								<textarea rows="5" formControlName="remark" [class.is-invalid]="rf.remark.invalid && rf.remark.touched" placeholder="Remarks" class="form-control" ></textarea>
+								<div *ngIf="rf.remark.errors" class="invalid-feedback">
+									<div *ngIf="rf.remark.errors.required">Remarks cannot be blank.</div>
+									<div *ngIf="rf.remark.hasError('whitespace')">Invalid Remarks</div>
+								</div>
+							</ng-container>
+						</div>				
+					</div> 											
+					<ng-container *ngIf="!cond_viewonly">		
+						<div class="col-lg-12 text-center mt-4 mb-4">
+							<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="addRemark()">
+								<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+								{{editStatus == 1 ? 'Update' : 'Save'}}	
+							</button>
+							<button [disabled]="loading['button'] || buttonDisable" type="button" (click)="remarkFormreset()"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Reset</button>
+							<div class="clearfix"></div>				
+						</div>
+					</ng-container>
+				</form>
+			</div>
+			
+			<div *ngIf="isItApplicable && dataloaded">
+				<div class="text-info">Please list all additives, chemicals and dyes which you (or your subcontractors) use for GOTS production. Please check also whether they are listed in GOTS approval list and please submit safet data sheet and letter of approval.</div>
+				<div class="col-12 pad-left">
+					<table id="datatable" class="table table-bordered" >
+						<thead>
+							<tr>
+								<th width="3%" scope="col" class="center" style="vertical-align:middle;">S.No</th>
+								<th scope="col" width="5%" style="vertical-align:middle;">Ingredient Name</th>	
+								<th width="5%" scope="col" style="vertical-align:middle;">Supplier Name </th>
+								<th width="5%" scope="col" style="vertical-align:middle;">Utilization on Product</th>
+								<th width="5%" scope="col" style="vertical-align:middle;">MSDS date</th>
+								<th width="5%" scope="col" class="center" style="vertical-align:middle;">MSDS File</th>
+								<th width="9%" class="text-center" scope="col" style="vertical-align:middle;">Action</th>	
+							</tr>
+						</thead>
+						<tbody>
+							<tr *ngFor="let chemical of chemicals$ | async; let i=index; ">
+								<td scope="row" class="center">{{ 1+i+ service.pageNo }}</td>
+							   
+								<td><ngb-highlight [result]="chemical.ingredient_name"  [term]="service.searchTerm"></ngb-highlight></td>
+								<td><ngb-highlight [result]="chemical.supplier_name"  [term]="service.searchTerm"></ngb-highlight></td>
+								<td><ngb-highlight [result]="chemical.utilization_product"  [term]="service.searchTerm"></ngb-highlight></td>
+								
+								<td class="center"><ngb-highlight [result]="chemical.msds_issued_date"  [term]="service.searchTerm"></ngb-highlight></td>
+								<td class="center"><a href="javascript:void(0);"
+									(click)="downloadFile(chemical.id,'msds_file',chemical.msds_file);openmodal(downloading);">
+									<i class="fa fa-download"></i>&nbsp;{{ chemical.msds_file }}</a></td>
+
+								<td  class="center">
+									<a href="javascript:void(0);" (click)="viewChemical(chemicalDetails,chemical)" title="View" alt="View"> <i class="fa fa-eye"></i> </a>
+									<ng-container *ngIf="!cond_viewonly">
+										<a href="javascript:void(0);" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('edit_audit_chemical') || (userType==1 && userdetails.rules.includes('audit_execution'))" (click)="editChemical(i,chemical)" title="Edit" alt="Edit" class="pl-2"> <i class="fa fa-edit"></i> </a>
+										<a href="javascript:void(0);" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('delete_audit_chemical') || (userType==1 && userdetails.rules.includes('audit_execution'))" (click)="removeChemical(confirmcontent,i,chemical)" title="Delete" alt="Delete" class="pl-2"> <i class="fa fa-trash text-danger"></i> </a>
+									</ng-container>
+								</td>
+							</tr>
+							<tr  *ngIf="(chemicals$ | async)?.length==0" >
+								<td colspan="12" class="center">{{ commontxt.norecords }}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>	
+			<!--
+            <div class="d-flex justify-content-between p-2">
+                <ngb-pagination maxSize="10" rotate=true [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+                    <ng-template ngbPaginationPrevious>Prev</ng-template>
+                    <ng-template ngbPaginationNext>Next</ng-template>			  
+                </ngb-pagination>
+            </div>
+   		</div>
+	</div>
+</div>
+-->
+<div class="clearfix"></div>
+<ng-container *ngIf="!cond_viewonly && dataloaded">
+	<div class="row" *ngIf="isItApplicable && (userdetails.resource_access==1 || userdetails.rules.includes('add_audit_chemical')  || (userType==1 && userdetails.rules.includes('audit_execution')) || (userdetails.rules.includes('edit_audit_chemical') && chemicalData))">
+		<div class="col-12 m-t-15">
+			<!--
+			<div class="add card-box table-responsive enq-view">   
+			-->		
+				<h3>{{editStatus == 1 ? 'Update' : 'Add'}} Chemical List </h3>                             
+				<form  [formGroup]="form" (ngSubmit)="onSubmit()">
+					
+                    <!-- <div>
+					<div class="form-group row">
+						<div class="col-4">
+							<label>Trade Name <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Trade Name" matTooltipClass="tooltip-text-size" aria-tooltip="Trade Name" matTooltipPosition="right"></i>
+							<input type="text" formControlName="trade_name"  class="form-control" placeholder="Trade Name" [class.is-invalid]="f.trade_name.invalid && f.trade_name.touched">
+							<div *ngIf="f.trade_name.errors" class="invalid-feedback">
+								<div *ngIf="f.trade_name.errors.required">Trade Name is required</div>
+								<div *ngIf="f.trade_name.hasError('whitespace')" >Invalid Trade Name</div>
+								<div *ngIf="f.trade_name.errors.maxlength">Trade Name cannot exceed 255 characters</div>
+							</div>
+						</div>  
+						<div class="col-4">
+							<label>Company (Input Supplier) <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Company (Input Supplier)" matTooltipClass="tooltip-text-size" aria-tooltip="Company (Input Supplier)" matTooltipPosition="right"></i>
+							<input type="text" formControlName="suppier"  class="form-control" placeholder="Company (Input Supplier)" [class.is-invalid]="f.suppier.invalid && f.suppier.touched">
+							<div *ngIf="f.suppier.errors" class="invalid-feedback">
+								<div *ngIf="f.suppier.errors.required">Company (Input Supplier) is required</div>
+								<div *ngIf="f.suppier.hasError('whitespace')">Invalid Company (Input Supplier)</div>
+								<div *ngIf="f.suppier.errors.maxlength">Company (Input Supplier) cannot exceed 255 characters</div>
+							</div>
+						</div>
+						<div class="col-4">
+							<label>Country <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Country" matTooltipClass="tooltip-text-size" aria-tooltip="Country" matTooltipPosition="right"></i>
+							<select formControlName="country_id" class="form-control select2" [class.is-invalid]="f.country_id.invalid && f.country_id.touched ">
+								<option value="" >-- Country --</option>
+								<option *ngFor="let country of countryList" value= {{country.id}}>{{country.name}}</option>
+							</select>
+							<div *ngIf="f.country_id.errors" class="invalid-feedback">
+								<div *ngIf="f.country_id.errors.required">Country is required</div>								
+							</div>
+						</div>
+					</div> 
+					<div class="form-group row">															 
+						<div class="col-4">
+							<label>Type / Utilization <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Utilization" matTooltipClass="tooltip-text-size" aria-tooltip="Utilization" matTooltipPosition="right"></i>
+							<input type="text" formControlName="utilization"  class="form-control" placeholder="Utilization" [class.is-invalid]="f.utilization.invalid && f.utilization.touched">
+							<div *ngIf="f.utilization.errors" class="invalid-feedback">
+								<div *ngIf="f.utilization.errors.required">Utilization is required</div>
+								<div *ngIf="f.utilization.hasError('whitespace')" >Invalid Utilization</div>
+								<div *ngIf="f.utilization.errors.maxlength">Utilization cannot exceed 255 characters</div>
+							</div>
+						</div>
+						<div class="col-4">
+							<label>Letter of approval available? <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Letter of approval available?" matTooltipClass="tooltip-text-size" aria-tooltip="Letter of approval available?" matTooltipPosition="right"></i>
+							<select formControlName="proof" class="form-control select2" [class.is-invalid]="f.proof.invalid && f.proof.touched ">
+								<option value="" >-- Letter of approval available? --</option>
+								<option *ngFor="let proof of prooflist | keyvalue" value= {{proof.key}}>{{proof.value}}</option>
+							</select>
+							<div *ngIf="f.proof.errors" class="invalid-feedback">
+								<div *ngIf="f.proof.errors.required">Letter of approval available? is required</div>								
+							</div>
+						</div>
+						<div class="col-4">
+							<label>Validity or Issue Date <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Validity or Issue Date" matTooltipClass="tooltip-text-size" aria-tooltip="Validity or Issue Date" matTooltipPosition="right"></i><br>
+							<input  style="width: 70%; display: inline;float:left;" type="text" formControlName="validity_or_issue_date" class="form-control" placeholder="Validity or Issue Date" [class.is-invalid]="f.validity_or_issue_date.invalid && f.validity_or_issue_date.touched" matInput [matDatepicker]="validity_or_issue_date" (click)="validity_or_issue_date.open()">
+							<mat-datepicker-toggle matSuffix  [for]="validity_or_issue_date"></mat-datepicker-toggle>
+							<mat-datepicker #validity_or_issue_date></mat-datepicker>
+							
+							<div *ngIf="f.validity_or_issue_date.errors" class="invalid-feedback">
+								<div *ngIf="f.validity_or_issue_date.errors.required">Validity or Issue Date is required</div>
+							</div>
+						</div>	
+					</div>
+					<div class="form-group row">                    
+						<div class="col-4">
+							<label>MSDS available? <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="MSDS available?" matTooltipClass="tooltip-text-size" aria-tooltip="MSDS available?" matTooltipPosition="right"></i><br>
+							<select formControlName="msds_available" class="form-control select2" [class.is-invalid]="f.msds_available.invalid && f.msds_available.touched">
+								<option value="" >-- MSDS available --</option>
+								<option *ngFor="let msds of msdslist | keyvalue" value= {{msds.key}}>{{msds.value}}</option>
+							</select>
+							<div *ngIf="f.msds_available.errors" class="invalid-feedback">
+								<div *ngIf="f.msds_available.errors.required">MSDS available is required</div>								
+							</div>
+						</div>
+						<div class="col-4">
+							<label>Conformity <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Conformity" matTooltipClass="tooltip-text-size" aria-tooltip="Conformity" matTooltipPosition="right"></i>
+							<select formControlName="conformity_auditor" class="form-control select2" [class.is-invalid]="f.conformity_auditor.invalid && f.conformity_auditor.touched">
+								<option value="" >-- Conformity --</option>
+								<option *ngFor="let msds of conformitylist" value= {{msds.id}}>{{msds.name}}</option>
+							</select>
+							<div *ngIf="f.conformity_auditor.errors" class="invalid-feedback">
+								<div *ngIf="f.conformity_auditor.errors.required">MSDS available is required</div>								
+							</div>
+						</div>
+					</div>
+				    </div> -->
+
+					<div class="form-group row">
+						<div class="col-4">
+							<label>Ingredient Name <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Ingredient Name" matTooltipClass="tooltip-text-size" aria-tooltip="Ingredient Name" matTooltipPosition="right"></i>
+							<input type="text" formControlName="ingredient_name"  class="form-control" placeholder="Ingredient Name" [class.is-invalid]="f.ingredient_name.invalid && f.ingredient_name.touched">
+							<div *ngIf="f.ingredient_name.errors" class="invalid-feedback">
+								<div *ngIf="f.ingredient_name.errors.required">Ingredient Name is required</div>
+								<div *ngIf="f.ingredient_name.hasError('whitespace')" >Invalid Ingredient Name</div>
+								<div *ngIf="f.ingredient_name.errors.maxlength">Ingredient Name cannot exceed 255 characters</div>
+							</div>
+						</div> 
+						
+						<div class="col-4">
+							<label>Supplier Name <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Supplier Name" matTooltipClass="tooltip-text-size" aria-tooltip="Supplier Name" matTooltipPosition="right"></i>
+							<input type="text" formControlName="supplier_name"  class="form-control" placeholder="Supplier Name" [class.is-invalid]="f.supplier_name.invalid && f.supplier_name.touched">
+							<div *ngIf="f.supplier_name.errors" class="invalid-feedback">
+								<div *ngIf="f.supplier_name.errors.required">Supplier Name is required</div>
+								<div *ngIf="f.supplier_name.hasError('whitespace')" >Invalid Supplier Name</div>
+								<div *ngIf="f.supplier_name.errors.maxlength">Supplier Name cannot exceed 255 characters</div>
+							</div>
+						</div> 
+						<div class="col-4">
+							<label>Utilization on Product <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="( Mention the purpose of this Ingredient / Chemical / Dye in the process )       Eg - Wetting agent - They help to reduce the surface tension by penetrating in between the water molecules and thus reducing the cohesion between them )" matTooltipClass="tooltip-text-size" aria-tooltip="( Mention the purpose of this Ingredient / Chemical / Dye in the process )       Eg - Wetting agent - They help to reduce the surface tension by penetrating in between the water molecules and thus reducing the cohesion between them )" matTooltipPosition="right"></i>
+							<input type="text" formControlName="product_name"  class="form-control" placeholder="Utilization on product" [class.is-invalid]="f.product_name.invalid && f.product_name.touched">
+							<div *ngIf="f.product_name.errors" class="invalid-feedback">
+								<div *ngIf="f.product_name.errors.required">Utilization on product is required</div>
+								<div *ngIf="f.product_name.hasError('whitespace')" >Invalid Utilization on product</div>
+								<div *ngIf="f.product_name.errors.maxlength">Utilization on product cannot exceed 255 characters</div>
+							</div>
+						</div> 
+
+					</div>
+					<div class="form-group row">
+						<div class="col-4">
+							<label>MSDS date <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Msds date" matTooltipClass="tooltip-text-size" aria-tooltip="Msds date" matTooltipPosition="right"></i><br>
+							<input style="width: 70%; display: inline;float:left;" type="text" formControlName="msds_issued_date" class="form-control" placeholder="Msds date" [class.is-invalid]="f.msds_issued_date.invalid && f.msds_issued_date.touched" matInput [matDatepicker]="msds_issued_date" (click)="msds_issued_date.open()">
+							<mat-datepicker-toggle matSuffix  [for]="msds_issued_date"></mat-datepicker-toggle>
+							<mat-datepicker #msds_issued_date></mat-datepicker>
+							
+							<div *ngIf="f.msds_issued_date.errors" class="invalid-feedback">
+								<div *ngIf="f.msds_issued_date.errors.required">Msds date is required</div>
+							</div>
+						</div>
+						<div class="col-4"> 
+							<label>MSDS File <span class="text-danger">*</span></label><i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="MSDS file" matTooltipClass="tooltip-text-size" aria-tooltip="MSDS file" matTooltipPosition="right"></i><br>
+							<input type="file" formControlname="msds_file" (change)="msdsfileChange($event)"  >
+							<br><div style="font-size:11px;" >supported file formats: <span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs}}<span *ngIf="!last">, </span> </span></div>
+							<div *ngIf="msds_file" style="padding:5px; border:1px solid #cecece; background-color: beige; height:32px;">
+								{{ msds_file }}
+								<a href="javascript:void(0);"  (click)="removemsdsFile()" style="color:red; font-weight:bold;margin-right: 5px;float:right;" >X</a>
+							</div>
+							<div *ngIf="msdsFileError" class="validationerror" >
+								{{msdsFileError}}
+							</div>
+						</div>
+						</div>
+						<div *ngIf="standard_ids.length!=0 &&  (standard_ids.includes(1))">
+							<div class="form-group row">  
+							<div class="col-4">
+								<label>GOTS Version Number <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="GOTS version no.( Mention NA if a basic chemical)" matTooltipClass="tooltip-text-size" aria-tooltip="GOTS version no.( Mention NA if a basic chemical)" matTooltipPosition="right"></i>
+								<input type="text" formControlName="version_name"  class="form-control" placeholder="Version Number" [class.is-invalid]="f.version_name.invalid && f.version_name.touched">
+								<div *ngIf="f.version_name.errors" class="invalid-feedback">
+									<div *ngIf="f.version_name.errors.required">Version Number is required</div>
+									<div *ngIf="f.version_name.hasError('whitespace')" >Invalid Version Number</div>
+									<div *ngIf="f.version_name.errors.maxlength">Version Number cannot exceed 255 characters</div>
+								</div>
+							</div> 
+
+							<div class="col-4">
+								<label>GOTS Approval Letter Number <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="GOTS Approval Letter no..( Mention NA if a basic chemical)" matTooltipClass="tooltip-text-size" aria-tooltip="GOTS Approval Letter no..( Mention NA if a basic chemical)" matTooltipPosition="right"></i>
+								<input type="text" formControlName="approval_no"  class="form-control" placeholder="Approval Number" [class.is-invalid]="f.approval_no.invalid && f.approval_no.touched">
+								<div *ngIf="f.approval_no.errors" class="invalid-feedback">
+									<div *ngIf="f.approval_no.errors.required">Supplier Name is required</div>
+									<div *ngIf="f.approval_no.hasError('whitespace')" >Invalid Supplier Name</div>
+									<div *ngIf="f.approval_no.errors.maxlength">Supplier Name cannot exceed 255 characters</div>
+								</div>
+							</div> 
+
+						 <div class="col-4">
+							<label>GOTS Approval Date <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Date of approval.( Mention NA if a basic chemical)" matTooltipClass="tooltip-text-size" aria-tooltip="Date of approval.( Mention NA if a basic chemical)" matTooltipPosition="right"></i><br>
+							<input  style="width: 70%; display: inline;float:left;" type="text" formControlName="approval_date" class="form-control" placeholder="Approval Date" [class.is-invalid]="f.approval_date.invalid && f.approval_date.touched" matInput [matDatepicker]="approval_date" (click)="approval_date.open()">
+							<mat-datepicker-toggle matSuffix  [for]="approval_date"></mat-datepicker-toggle>
+							<mat-datepicker #approval_date></mat-datepicker>
+							
+							<div *ngIf="f.approval_date.errors" class="invalid-feedback">
+								<div *ngIf="f.approval_date.errors.required">Approval Date is required</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-group row"> 
+					<div class="col-4" >
+						<label>Is this compliance to GOTS <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="GOTS?" matTooltipClass="tooltip-text-size" aria-tooltip="GOTS?" matTooltipPosition="right"></i><br>
+						<select formControlName="complygots" class="form-control select2" [class.is-invalid]="f.complygots.invalid && f.complygots.touched">
+							<option value="" >-- GOTS--</option>
+							<option *ngFor="let msds of msdslist | keyvalue" value= {{msds.key}}>{{msds.value}}</option>
+						</select>
+						<div *ngIf="f.complygots.errors" class="invalid-feedback">
+							<div *ngIf="f.complygots.errors.required">GOTS Compliance is required</div>								
+						</div>
+					</div>	
+					</div>	
+				</div>
+				<div class="form-group row"> 
+					
+					
+					</div>
+						<div *ngIf="standard_ids.length!=0 && (standard_ids.includes(3))">
+						
+							<div class="form-group row">
+										 
+								<div class="col-4">
+									<label>CAS Number <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="CAS No" matTooltipClass="tooltip-text-size" aria-tooltip="CAS No" matTooltipPosition="right"></i>
+									<input type="text" formControlName="cas_no"  class="form-control" placeholder="CAS Number" [class.is-invalid]="f.cas_no.invalid && f.cas_no.touched">
+									<div *ngIf="f.cas_no.errors" class="invalid-feedback">
+										<div *ngIf="f.cas_no.errors.required">CAS Number is required</div>
+										<div *ngIf="f.cas_no.hasError('whitespace')" >Invalid CAS Number</div>
+										<div *ngIf="f.cas_no.errors.maxlength">CAS Number cannot exceed 255 characters</div>
+									</div>
+								</div> 
+								<div class="col-4">
+								<span class="label-pad"  style="width:330px;"><label>Is Hcode Identified?<span class="text-danger">*</span></label></span> - <br> <span class="name-pad">
+									<input type="radio" id="hcodeyes" [checked]="f.hcode_ch.value=='1'?true:false" formControlName="hcode_ch" value="1" >&nbsp; <label for="hcodeyes">Yes</label>
+									&nbsp;&nbsp;&nbsp;&nbsp;
+									<input type="radio" id="hcodeno" [checked]="f.hcode_ch.value=='2'?true:false" formControlName="hcode_ch" value="2">&nbsp;<label for="hcodeno"> No</label>
+								</span>
+								<div *ngIf="f.hcode_ch.value==''" class="validationerror">
+									{{hcodeError}}							
+								</div>
+							</div>
+								<div class="col-4" *ngIf="f.hcode_ch.value==1">
+									<label>Hcode Number <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Hcode No" matTooltipClass="tooltip-text-size" aria-tooltip="CAS No" matTooltipPosition="right"></i>
+									<input type="text" formControlName="hcode_no"  class="form-control" placeholder="Hcode Number" [class.is-invalid]="f.hcode_no.invalid && f.hcode_no.touched">
+									<div *ngIf="f.hcode_no.errors" class="invalid-feedback">
+										<div *ngIf="f.hcode_no.errors.required">Hcode Number is required</div>
+										<div *ngIf="f.hcode_no.hasError('whitespace')" >Invalid Hcode Number</div>
+										<div *ngIf="f.hcode_no.errors.maxlength">HCode Number cannot exceed 255 characters</div>
+									</div>
+								</div>
+								</div>
+								<div class="form-group row">
+									<div class="col-4">
+										<label>Comply to D2.1 <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Applicable to all chemicals" aria-hidden="true" matTooltipClass="tooltip-text-size" aria-tooltip="Applicable to all chemicals" matTooltipPosition="right"></i> - <a href="https://echa.europa.eu/candidate-list-table " target="_blank">Refer the Candidate-List-Table</a><br>
+										<select formControlName="complyone" class="form-control select2" [class.is-invalid]="f.complyone.invalid && f.complyone.touched">
+											<option value="" >-- Comply to D2.1 --</option>
+											<option *ngFor="let msds of msdslist | keyvalue" value= {{msds.key}}>{{msds.value}}</option>
+										</select>
+										<div *ngIf="f.complyone.errors" class="invalid-feedback">
+											<div *ngIf="f.complyone.errors.required">Comply to D2.1 is required</div>								
+										</div>
+									</div>
+								<div class="col-4">
+									<label>Comply to D2.2 <span class="text-danger">*</span></label> <i matTooltip="Applicable only whene D.3 is not applicable (chemicals used in material other than textile, Accessories, Nonwovens, leather, printing if any)" class="fa fa-info-circle text-info ml-1 info-icon-size"  matTooltipClass="tooltip-text-size" aria-tooltip="Applicable only whene D.3 is not applicable (chemicals used in material other than textile, Accessories, Nonwovens, leather, printing if any)"  matTooltipPosition="right"></i> - <a href="https://echa.europa.eu" target="_blank">Refer the Chemicals</a><br>
+									<select formControlName="complytwo" class="form-control select2" [class.is-invalid]="f.complytwo.invalid && f.complytwo.touched">
+										<option value="" >-- Comply to D2.2 --</option>
+										<option *ngFor="let msds of d22list | keyvalue" value= {{msds.key}}>{{msds.value}}</option>
+									</select>
+									<div *ngIf="f.complytwo.errors" class="invalid-feedback">
+										<div *ngIf="f.complytwo.errors.required">Comply to D2.2 is required</div>								
+									</div>
+								</div>
+							   </div>
+								
+							<div class="form-group row">
+								<div class="col-4">
+									<span class="label-pad"  style="width:330px;"><label>Comply D2.3? <span class="text-danger">*</span> - <i matTooltip="Applicable to (chemicals used in material -textile, Accessories, Nonwovens, lether, printing if any) verification source-GOTS approval letter,  ZDHC MRSL Level-1 Confirmance letter, ZDHC MRSL Test report, GOTS Letter of approval, Bluesign, Test reports for ZDHC, ECO PASSPORT, or any other level-2 & level-3 certificate . to get list of approved certifier & lab" class="fa fa-info-circle text-info ml-1 info-icon-size"  matTooltipClass="tooltip-text-size" aria-tooltip="Applicable to (chemicals used in material -textile, Accessories, Nonwovens, lether, printing if any) verification source-GOTS approval letter,  ZDHC MRSL Level-1 Confirmance letter, ZDHC MRSL Test report, GOTS Letter of approval, Bluesign, Test reports for ZDHC, ECO PASSPORT, or any other level-2 & level-3 certificate .   to get list of approved certifier & lab"  matTooltipPosition="right"></i> - <a href="https://www.roadmaptozero.com/landingpage/lab-certifier-accreditation" target="_blank">Refer the Lab-Certifier-Accreditation </a>  </label></span> -  <br><span class="name-pad">
+										<input type="radio" id="comyes" [checked]="f.comply_ch.value=='1'?true:false" formControlName="comply_ch" value="1" >&nbsp; <label for="comyes">Yes</label>
+										&nbsp;&nbsp;&nbsp;&nbsp;
+										<input type="radio" id="comno" [checked]="f.comply_ch.value=='2'?true:false" formControlName="comply_ch" value="2">&nbsp;<label for="comno"> No</label>
+										&nbsp;&nbsp;&nbsp;&nbsp;
+										<input type="radio" id="comnot" [checked]="f.comply_ch.value=='3'?true:false" formControlName="comply_ch" value="3">&nbsp;<label for="comnot"> Not Applicable</label>
+									</span>
+									<div *ngIf="f.comply_ch.value==''" class="validationerror">
+										{{complythreeError}}							
+									</div>
+								</div>
+									<div class="col-4" *ngIf="f.hcode_ch.value==1 && f.comply_ch.value==1">
+										<label>Comply File <span class="text-danger">*</span></label><i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Comply file" matTooltipClass="tooltip-text-size" aria-tooltip="Comply file" matTooltipPosition="right"></i><br>
+										<input type="file" formControlname="comply_file" (change)="complyfileChange($event)">
+										<br>
+										<div style="font-size:11px;">supported file formats: <span
+												*ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs}}<span *ngIf="!last">, </span>
+											</span></div>
+										<div *ngIf="comply_file" style="padding:5px; border:1px solid #cecece; background-color: beige; height:32px;">
+											{{ comply_file }}
+											<a href="javascript:void(0);" (click)="removecomplyFile()"
+												style="color:red; font-weight:bold;margin-right: 5px;float:right;">X</a>
+										</div>
+										<div *ngIf="complyFileError" class="validationerror">
+											{{complyFileError}}
+										</div>
+									</div>
+									
+									</div>
+									<div class="form-group row">
+									<div class="col-4" >
+										<label>Is this compliance to GRS <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="GRS?" matTooltipClass="tooltip-text-size" aria-tooltip="GRS?" matTooltipPosition="right"></i><br>
+										<select formControlName="complygrs" class="form-control select2" [class.is-invalid]="f.complygrs.invalid && f.complygrs.touched">
+											<option value="" >-- GRS --</option>
+											<option *ngFor="let msds of msdslist | keyvalue" value= {{msds.key}}>{{msds.value}}</option>
+										</select>
+										<div *ngIf="f.complygrs.errors" class="invalid-feedback">
+											<div *ngIf="f.complygrs.errors.required">GRS Compliance is required</div>								
+										</div>
+									</div>
+								</div>
+									</div>
+					
+						
+				
+				
+				  <!-- <div *ngIf="displayElement"> -->
+					  
+				
+
+                    <!-- <div class="form-group row">   
+						<div class="col-12">
+							<label>Comments <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Comments" matTooltipClass="tooltip-text-size" aria-tooltip="Comments" matTooltipPosition="right"></i>
+							<textarea formControlName="comments"  [class.is-invalid]="f.comments.invalid && f.comments.touched" rows="4" class="form-control" placeholder="Comments"></textarea>
+							<div *ngIf="f.comments.errors" class="invalid-feedback">
+								<div *ngIf="f.comments.errors.required">Comments is required</div>
+								<div *ngIf="f.comments.errors.pattern || f.comments.hasError('whitespace')" >Invalid Comments</div>
+							</div>
+						</div>
+					</div>	 -->
+		
+					<div class="col-lg-12 text-center mt-4 mb-4">
+						<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="addchemical()">
+							<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+							{{editStatus == 1 ? 'Update' : 'Save'}}	
+						</button>
+						<button [disabled]="loading['button'] || buttonDisable" type="button" (click)="chemicalFormreset()"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Reset</button>
+
+						<div class="clearfix"></div>					
+						</div>
+				</form>
+
+					
+					<div class="col-12 pad-left">
+					<table id="datatable" class="table table-bordered" >
+						<thead>
+							<tr>
+								<th  scope="col" class="center" style="vertical-align:middle;">Do's</th>
+								<th scope="col" class="center" style="vertical-align:middle;">Don’t's</th>	
+								
+							</tr>
+						</thead>
+						<tbody>
+							<tr >
+								<td scope="row" class="left">Mention only the ingredients in the product like Dyes, Chemicals, Plastizers, Prints, Polishing, Glues, Glycols etc…</td>
+								<td scope="row" class="left">
+									Don’t mention any chemicals that are not used in the processing of products. For example don’t mention the oils used on machinary for lubrication
+
+								</td>
+							</tr>
+							<tr >
+								<td scope="row" class="left">Atleast mention 5% of chemicals in each steps of utilization, refer the flow of Dyeing below which should be used for allthe other procsses</td>
+								<td scope="row" class="left">
+								Coating is not allowed as per GOTS
+								</td>
+							</tr>
+							<tr >
+								<td scope="row" class="left">Dyeing of Fabric</td>
+								<td scope="row" class="left">
+								</td>
+							</tr>
+							<tr >
+								<td scope="row" class="left">Utilization</td>
+								<td scope="row" class="left">
+									Chemical
+								</td>
+							</tr>
+							<tr >
+								<td scope="row" class="left">Desizing  - removing the size paste</td>
+								<td scope="row" class="left">
+								acetic acid or enzymes
+								</td>
+							</tr>
+							<tr >
+								<td scope="row" class="left">Scouring - removing impurities from the cotton fabric</td>
+								<td scope="row" class="left">
+								Soda ash, caustic soda, wetting agent
+								</td>
+							</tr>
+							<tr >
+								<td scope="row" class="left">Bleaching - removing of natural impurities</td>
+								<td scope="row" class="left">
+									Hydrogen per oxide
+								</td>
+							</tr>
+							<tr >
+								<td scope="row" class="left">Mercerization - improving luster of the fabric</td>
+								<td scope="row" class="left">
+									Caustic acid 
+								</td>
+							</tr>
+							<tr >
+								<td scope="row" class="left">Dyeing of Fabric</td>
+								<td scope="row" class="left">
+									Dyes
+								</td>
+							</tr>
+							<tr >
+								<td scope="row" class="left">Washing - Remove of excess dyes from the fabric</td>
+								<td scope="row" class="left">
+								Wetting agent, Soap
+								</td>
+							</tr>
+							<tr >
+								<td scope="row" class="left">Finishing - Adding softness, anti water repllent etc…</td>
+								<td scope="row" class="left">
+									Based on the finishes
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+					
+		</div>
+	</div>
+</ng-container>
+<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+
+<ng-template #chemicalDetails let-modal>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+	<div class="modal-body" style="font-size:16px;">
+		<div class="card-box enq-view">	
+			<table class="table-secondary m-b-15" *ngIf="ChemicalData">
+				<!-- <tr>
+					<th width="20%">Trade Name</th>
+					<td width="30%">{{ ChemicalData.trade_name }}</td>
+					<th width="20%">Company (Input Supplier)</th>
+					<td width="30%">{{ ChemicalData.suppier }}</td>
+				</tr>	
+				<tr>
+					<th width="20%">Country</th>
+					<td width="30%">{{ ChemicalData.country_id_label }}</td>
+					<th width="20%">Type / Utilization</th>
+					<td width="30%">{{ ChemicalData.utilization }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Letter of approval available?</th>
+					<td width="30%">{{ ChemicalData.proof_label }}</td>
+					<th width="20%">Validity or Issue date</th>
+					<td width="30%">{{ ChemicalData.validity_or_issue_date }}</td>
+				</tr>
+				<tr>
+					<th width="20%">MSDS available?</th>
+					<td width="30%">{{ ChemicalData.msds_available_label }}</td>
+					<th width="20%">Conformity</th>
+					<td width="30%" [style.color]="ChemicalData.conformity_auditor_label_color" ><b>{{ ChemicalData.conformity_auditor_label }}</b></td>
+				</tr> -->
+				<tr >
+					<th width="20%">Ingredient Name</th>
+					<td width="30%">{{ ChemicalData.ingredient_name }}</td>
+					<th width="20%">Supplier Name</th>
+					<td width="30%">{{ ChemicalData.supplier_name }}</td>
+					
+				</tr>	
+				<tr >
+					<th width="20%">Utilization on Product</th>
+					<td width="30%">{{ ChemicalData.utilization_product }}</td>
+					<th width="20%">MSDS Date</th>
+					<td width="30%">{{ ChemicalData.msds_issued_date }}</td>
+				</tr>
+				<tr >
+					<th width="20%">MSDS File</th>
+					<td width="30%"><a href="javascript:void(0);"
+						(click)="downloadFile(ChemicalData.id,'msds_file',ChemicalData.msds_file);openmodal(downloading);">
+						<i class="fa fa-download"></i>&nbsp;{{ ChemicalData.msds_file }}</a></td>
+				</tr>
+				<tr *ngIf="showgots">
+					<th width="20%">GOTS Version Number</th>
+					<td width="30%">{{ ChemicalData.gots_version }}</td>
+					<th width="20%">GOTS Approval Letter.No</th>
+					<td width="30%">{{ ChemicalData.gots_approval_no}}</td>
+					
+				</tr>
+				<tr *ngIf="showgots">
+					<th width="20%">Date of Approval</th>
+					<td width="30%">{{ ChemicalData.gots_approval_date }}</td>
+					<th width="20%">Is this Compliance to GOTS?</th>
+					<td width="30%">{{ ChemicalData.comply_gots_label }}</td>
+				</tr>
+				<tr *ngIf="showgrs">
+					<th width="20%">CAS Number</th>
+					<td width="30%">{{ ChemicalData.cas_no }}</td>
+					<th width="20%">Is HCodes Identifieed</th>
+					<td width="30%">{{ ChemicalData.is_hcode_identified_label }}</td>
+				</tr>
+				<tr *ngIf="showgrs">
+					<th width="20%">Hcode Number</th>
+					<td width="30%">{{ ChemicalData.hcode_no }}</td>
+					<th width="20%">Is this Compliance to GRS?</th>
+					<td width="30%">{{ ChemicalData.comply_grs_label }}</td>
+				</tr>
+				<tr *ngIf="showgrs">
+					<th width="20%">Comply to D2.1</th>
+					<td width="30%">{{ ChemicalData.comply_d21_label }}</td>	
+					<th width="20%">Comply to D2.2</th>
+					<td width="30%">{{ ChemicalData.comply_d22_label }}</td>
+				</tr>
+				<tr *ngIf="showgrs">
+					<th width="20%">Comply to D2.3</th>
+					<td width="30%">{{ ChemicalData.comply_d23_label }}</td>
+					<th width="20%">Comply File</th>
+					<td width="30%"><a href="javascript:void(0);"
+						(click)="downloadFile(ChemicalData.id,'comply_file',ChemicalData.comply_file);openmodal(downloading);">
+						<i class="fa fa-download"></i>&nbsp;{{ ChemicalData.comply_file }}</a></td>
+				</tr>
+				<tr>
+					<th width="20%">Created By</th>
+					<td width="30%">{{ ChemicalData.created_by_label }}</td>
+					<th width="20%">Created Date</th>
+					<td width="30%">{{ ChemicalData.created_at }}</td>
+				</tr>	
+				
+
+			</table>
+			<div style="text-align: center;">
+				<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="modal.dismiss('cancel click')" >Close</a>
+			</div>
+		</div>
+    </div>
+</ng-template>
+<ng-template #confirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to delete the data?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+		
+	</div>
+</ng-template>
+<ng-template #downloading let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Please wait, your file is downloading ...
+	</div>
+</ng-template>

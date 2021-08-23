@@ -1,0 +1,283 @@
+<div class="row">
+    <div class="col-12">
+        <div class="add card-box table-responsive">
+           
+				<div class="row">
+					<div class="col-12 pad-right" >
+						<div class="col-6" style="padding-left:0px;" >
+							<h3 class="page-title">Audit Plan Details</h3></div>
+						<div class="text-right float-right col-6">
+							<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:this.audit_id}" >Back</a>
+						</div>
+					</div>
+				</div>
+
+				<div style="margin-bottom:20px;" *ngIf="audit_id" >
+	                <mat-accordion>
+	                    <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+	                        <mat-expansion-panel-header>
+	                            <mat-panel-title>
+	                            View Audit Plan Details
+	                            </mat-panel-title>
+	                        </mat-expansion-panel-header>
+	                        
+	                        <div class="row" >
+	                            <div class="col-sm-12">
+	                                <div class="clearfix"></div>            
+	                                <app-auditdetail [id]="audit_id" ></app-auditdetail>                            
+	                            </div>              
+	                        </div>
+
+	                    </mat-expansion-panel>                
+	                </mat-accordion>
+	            </div>
+
+	            
+
+		        <form  [formGroup]="form">           
+                                                
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 pad-left pad-right enq-view">
+
+					<div class="form-group row">
+						
+						<div class="tbl-sec">
+							<table id="datatable" class="table table-bordered tab-bor col-12" >
+								<thead>
+								<tr>
+									<th width="5%" scope="col" class="center">S.No</th>
+									<th scope="col">Location</th>
+									<th scope="col">Activity</th>
+									<th scope="col">Inspector</th>	
+                                    <th scope="col" class="center">Date</th>
+                                    <th scope="col" class="center">Start Time</th>
+									<th scope="col" class="center">End Time</th>	
+									<th scope="col">Persons need to be present</th>	
+									<!--
+									<th width="12%" class="text-center" scope="col" sortable="created_at" >Date</th>
+									-->									
+									<th width="8%" scope="col" class="text-center">Action</th>
+								</tr>
+								</thead>
+								<tbody>
+									<tr *ngIf="inspectionplanEntries?.length==0">
+										<td colspan="9" class="center">No Inspection Plan Added</td>
+									</tr>
+									<tr *ngFor="let instimeEntry of inspectionplanEntries; let i=index; ">
+										<td scope="row" class="center">{{  1+ i }}</td>
+										<td>{{ instimeEntry.application_unit_name }}</td>
+										<td>{{ instimeEntry.activity }}</td>
+										<td>{{ instimeEntry.inspectors }}</td>		
+										<td class="text-center">{{ instimeEntry.date }}</td>
+                                        <td class="text-center">{{ instimeEntry.start_time }}</td>
+                                        <td class="text-center">{{ instimeEntry.end_time }}</td>
+                                        <td>{{ instimeEntry.person_need_to_be_present }}</td>
+										
+										<td  class="center">
+											<a href="javascript:void(0);" (click)="editInspectionPlan(i,instimeEntry)" > <i class="fa fa-edit"></i> </a>
+											&nbsp;&nbsp;
+											<a href="javascript:void(0);" (click)="removeInspectionPlan(confirmcontent,i,instimeEntry)" > <i class="fa fa-trash text-danger"></i> </a>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+
+							
+
+							<div class="col-12 pad-right text-right" *ngIf="inspectionplanEntries && inspectionplanEntries.length>0">
+
+								<button (click)="open(approveInspectionContent,'approveplanbyauditor',this.id)" *ngIf="showInspectionApproval"  type="button" [disabled]="loading['button']" class="btn but-cust green m-b-5 ml-2"  style="width:250px;">
+									<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+								Approve Audit Plan</button>
+
+								<button (click)="open(sendInspectionContent,'sendtocustomer',this.id)" *ngIf="showsendtocustomer"   type="button" [disabled]="loading['button']" class="btn but-cust green m-b-5 ml-2"  style="width:auto;">
+									<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+								Send Audit Plan to Customer</button>
+							</div>
+						</div>
+						<div class="form-group row col-12 m-t-10 pad-right">
+							<div class="col-12 " >
+								<h3>{{inspdata ? 'Update' : 'Add'}} Inspection Plan</h3>
+							</div>
+						</div>
+						<div class="form-group row col-12 pad-right">
+							
+							<div class="col-4">
+                                <label>Location <span class="text-danger">*</span></label>						
+								<select formControlName="application_unit_id" class="form-control select2" [class.is-invalid]="f.application_unit_id.invalid && f.application_unit_id.touched" (change)="getInspectors($event.target.value)">
+									<option value="" >-- Application Unit --</option>
+									<option *ngFor="let appunit of application_units" value= {{appunit.id}}>{{appunit.name}}</option>
+								</select>
+								<div *ngIf="f.application_unit_id.errors" class="invalid-feedback">
+									<div *ngIf="f.application_unit_id.errors.required">Location is required</div>
+								</div>
+							</div>
+																						
+							<div class="col-4">
+								<label>Inspector <span class="text-danger">*</span></label>
+								<mat-select placeholder="-- Inspector --" formControlName="inspector" multiple class="form-control select2" [class.is-invalid]="f.inspector.invalid && f.inspector.touched">
+									<mat-select-trigger>
+									<span *ngIf="f.inspector.value && f.inspector.value?.length == 1" >{{f.inspector.value ? getSelectedValue(f.inspector.value): ''}}</span>
+									<span *ngIf="f.inspector.value && f.inspector.value?.length > 1" class="example-additional-selection">
+										{{f.inspector.value.length}} {{ 'selected' }}
+									</span>
+									</mat-select-trigger>
+									<mat-option *ngFor="let inspector of inspectorList" [value]="inspector.id">{{inspector.name}}</mat-option>
+								</mat-select>  
+
+								<span *ngIf="loading['inspector']" class="spinner-border spinner-border-sm mr-1"></span>
+								<div *ngIf="f.inspector.errors" class="invalid-feedback">
+									<div *ngIf="f.inspector.errors.required">Inspector is required</div>
+								</div>
+							</div>
+
+							<div class="col-4">
+								<label>Activity <span class="text-danger">*</span></label>
+								<input type="text" formControlName="activity"  class="form-control" placeholder="Activity *" [class.is-invalid]="f.activity.invalid && f.activity.touched">
+								<div *ngIf="f.activity.errors" class="invalid-feedback">
+									<div *ngIf="f.activity.errors.required">Activity is required</div>
+									<div *ngIf="f.activity.hasError('whitespace')" >Invalid Activity</div>
+									<div *ngIf="f.activity.errors.maxlength">Activity cannot exceed 255 characters</div>
+								</div>
+							</div>
+
+						</div>
+
+						<div class="form-group row col-12 pad-right">	
+							<div class="col-4">
+								<label  style="width:100%">Date <span class="text-danger">*</span></label>
+								<!--(change)="checkInspectionPlan();"-->
+								<input type="text" [matDatepickerFilter]="myFilter" style="width: 85%; display: inline;" formControlName="date"  (click)="date.open()" [matDatepicker]="date" matInput class="form-control" placeholder="Date *"  [class.is-invalid]="f.date.invalid && f.date.touched">
+								<mat-datepicker-toggle matSuffix  [for]="date" ></mat-datepicker-toggle>
+								<mat-datepicker #date [startAt]="startDate" ></mat-datepicker>
+								<div *ngIf="f.date.errors" class="invalid-feedback">
+									<div *ngIf="f.date.errors.required">Date is required</div>
+								</div>
+							</div>
+
+							
+							<div class="col-2">
+                                <label>Start Time <span class="text-danger">*</span></label>
+                                <!--<input type="text" formControlName="start_time"  class="form-control" placeholder="hh:mm *" [class.is-invalid]="f.start_time.invalid && f.start_time.touched">-->
+								<ngb-timepicker formControlName="start_time" required ></ngb-timepicker>
+								<div *ngIf="f.start_time.errors && f.end_time.touched" class="text-danger" style="font-size: 10px;">
+									<div *ngIf="f.start_time.errors.required">Start Time cannot be blank.</div>
+									<div *ngIf="f.start_time.errors.pattern">Invalid Start Time</div>
+								</div>
+								<!--<hr>
+								<pre>Selected time: {{time | json}}</pre> -->
+                            </div>
+
+                            <div class="col-2">
+                                <label>End Time <span class="text-danger">*</span></label>
+								<!--<input type="text" formControlName="end_time"  class="form-control" placeholder="hh:mm *" [class.is-invalid]="f.end_time.invalid && f.end_time.touched">-->
+								<ngb-timepicker  formControlName="end_time" required  ></ngb-timepicker>
+								<div *ngIf="f.end_time.errors && f.end_time.touched" class="text-danger" style="font-size: 10px;" >
+									<div *ngIf="f.end_time.errors.required">End Time cannot be blank.</div>
+									<div *ngIf="f.end_time.errors.pattern">Invalid End Time</div>
+								</div>
+								 
+							</div>
+							
+							<div class="col-4">
+                                <label>Persons need to be present <span class="text-danger">*</span></label>
+                                <input type="text" formControlName="person_need_to_be_present"  class="form-control" placeholder="Persons need to be present *" [class.is-invalid]="f.person_need_to_be_present.invalid && f.person_need_to_be_present.touched">
+                                <div *ngIf="f.person_need_to_be_present.errors" class="invalid-feedback">
+									<div *ngIf="f.person_need_to_be_present.errors.required">Persons is required</div>
+									<div *ngIf="f.person_need_to_be_present.hasError('whitespace')" >Invalid Persons</div>
+									<div *ngIf="f.person_need_to_be_present.errors.maxlength">Persons cannot exceed 255 characters</div>
+								</div>
+							</div>    
+							
+							
+                        </div>
+                        
+            
+						
+					</div>
+																	
+																		
+					<div class="col-lg-12 text-center mt-4 row pad-right">
+						<div class="col-9" >
+							<button [disabled]="loading['button']" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="addInspectionPlan()">
+								<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+								{{ inspdata?'Update':'Save' }}
+							</button>
+							<button [disabled]="loading['button']" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2" (click)="resetInspectionPlan()">
+								<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+								Reset
+							</button>
+						</div>
+						
+						<!--<div class="clearfix"></div>
+						<button (click)="open(sendInspectionContent,'followup_sendtocustomer',this.id)" *ngIf="(auditPlanData.status == auditPlanData.arrEnumStatus['followup_inspection_plan_inprocess'] )&& (userdetails.resource_access==1 || (userType==1 && userdetails.uid==auditPlanData.followup_application_lead_auditor && userdetails.rules.includes('audit_execution')) ) "  type="button" [disabled]="loading" class="btn but-cust green m-b-5 ml-2"  style="width:270px;">
+							<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+						Send Followup Audit Plan to Customer</button>-->
+						
+					</div>
+					
+					
+					<!-- <div class="col-lg-12 error">
+					Note: After completing your actions, please click "Submit" button to store the data.
+					</div> -->
+						
+				</div>
+				<div class="col-lg-12  col-12 row" style="width: 100%;">
+					<div class="col-12 " >
+					<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+				</div>
+				</div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<ng-template #confirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to delete the data?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+		
+	</div>
+</ng-template>
+
+<ng-template #sendInspectionContent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to send the Audit Plan to the customer?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close()">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+		
+	</div>
+</ng-template>
+
+<ng-template #approveInspectionContent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to Approve the Audit Plan?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close()">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+		
+	</div>
+</ng-template>

@@ -1,0 +1,127 @@
+<div class="row">
+	<div class="col-sm-12">
+		<div class="col-12 row" style="padding-right:0px;" >
+            <div class="col-8">
+			     <h4 class="page-title">Change of Address Details</h4>
+			</div>  
+            <div class="col-4 text-right" style="padding-right:0px;">
+				<a class="btn btn-secondary btn-sm active" href="#" role="button" *ngIf="id" [routerLink]="['/change-scope/change-address/list']" >Back to Address List</a>
+			</div>
+		</div>	
+	</div>
+</div>
+<span *ngIf="loading['data']" class="spinner-border spinner-border-sm mr-1"></span>
+<ng-container *ngIf="!loading['data']" >
+    <div class="row"  >
+        <div class="col-sm-12 mat-accordion">
+    			
+            <div class="clearfix"></div>
+
+            <div style="margin-bottom:10px; margin-top:10px;">
+                <div class="un-lst"><h3>Application Details</h3></div>
+                <mat-accordion>
+                    <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                            View Application Details
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        
+                        <div class="row" *ngIf="app_id" >
+                            <div class="col-sm-12">
+                                <div class="clearfix"></div>			
+                                <app-appdetail [id]="app_id" ></app-appdetail>							
+                            </div>				
+                        </div>
+                    </mat-expansion-panel>                
+                </mat-accordion>
+            </div>
+
+            <div class="mat-accordion" *ngIf="addressdata">
+                <div class="card-box enq-view">
+                    <h3>Company Details</h3>
+                    <table class="table-secondary m-b-15">
+						<tr>
+							<th width="20%">Company</th>
+							<td width="30%">{{ addressdata.app_name }}</td>
+							<th width="20%">Unit</th>
+							<td width="30%">{{ addressdata.unit_name }}</td>
+                        </tr>
+                    </table>
+                </div>
+
+            </div>
+            
+            <div class="mat-accordion" *ngIf="addressdata">
+                <div class="card-box enq-view">
+                    <h3>Scope Holder Details</h3>
+                    <table class="table-secondary m-b-15">
+						<tr>
+							<th width="20%">Company Name</th>
+							<td width="30%">{{ addressdata.name }}</td>
+							<th width="20%">Postal Code</th>
+							<td width="30%">{{ addressdata.zipcode }}</td>
+						</tr>
+						<tr>
+							<th width="20%">Address</th>
+							<td width="30%">{{ addressdata.address }}</td>
+							<th width="20%">Country</th>
+							<td width="30%">{{ addressdata.country_name }}</td>
+						</tr>
+						<tr>
+							<th width="20%">State</th>
+							<td width="30%">{{ addressdata.state_name }}</td>
+							<th width="20%">City</th>
+							<td width="30%">{{ addressdata.city }}</td>
+						</tr>
+					</table>
+                </div>
+
+            </div>
+
+            <div class="mat-accordion" *ngIf="addressdata">
+                <div class="card-box enq-view">
+                    <h3>Main Contact Person</h3>
+                    <table class="table-secondary m-b-15">
+						<tr>
+							<th width="20%">Salutation</th>
+							<td width="30%">{{ addressdata.name }}</td>
+							<th width="20%">First Name</th>
+							<td width="30%">{{ addressdata.first_name }}</td>
+						</tr>
+						<tr>
+							<th width="20%">Last Name</th>
+							<td width="30%">{{ addressdata.last_name }}</td>
+							<th width="20%">Job Title</th>
+							<td width="30%">{{ addressdata.job_title }}</td>
+						</tr>
+						<tr>
+							<th width="20%">Telephone</th>
+							<td width="30%">{{ addressdata.telephone }}</td>
+							<th width="20%">Email</th>
+							<td width="30%">{{ addressdata.email_address }}</td>
+						</tr>
+					</table>
+                </div>
+
+            </div>
+
+            <!-- <div class="mat-accordion" *ngIf="reviewdata?.reviewer">
+                <div class="card-box enq-view">
+                    <h3>Reviewer Details</h3>
+                    <ul>
+                        <li><span class="label-pad">Reviewer</span>   <span class="name-pad">{{ reviewdata.reviewer.reviewer }}</span></li>
+                        <li><span class="label-pad">Assigned at</span>   <span class="name-pad">{{ reviewdata.reviewer.assigned_date }}</span></li>  
+                    </ul>
+                </div>
+            </div> -->
+
+             
+        </div>				
+    </div>
+
+
+
+</ng-container>
+
+

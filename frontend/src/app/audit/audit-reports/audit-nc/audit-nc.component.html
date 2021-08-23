@@ -1,0 +1,472 @@
+<div class="clearfix"></div>
+<h3>AUDIT AND NON-CONFORMITY REPORT</h3>
+<div class="col-12" *ngIf="!dataloaded">
+	<span class="spinner-border spinner-border-sm mr-1"></span>
+</div>
+<div class="col-12 pad-left" *ngIf="dataloaded">
+	
+	<div class="clearfix"></div>
+	<div class="col-12 row enq-view pad-right">
+		<div class="col-10 text-primary" style="padding-left:0px;">Client Details</div>
+		<div class="col-2 text-right pad-right text-primary"></div>
+	</div>
+	
+	<table style="border-collapse: collapse;border: 1px solid #d7d7d7;width:100%;">		
+		<tr>
+			<td style="border: 1px solid #d7d7d7;width:15%;padding-left:5px;">Client /Operator</td>
+			<td style="border: 1px solid #d7d7d7;width:2%;" class="text-center">:</td>
+			<td style="border: 1px solid #d7d7d7;padding-left:5px;width:25%;">{{ unitdetails['unit_name'] }}</td>
+			<td style="border: 1px solid #d7d7d7;width:15%;padding-left:5px;">Operator ID</td>
+			<td style="border: 1px solid #d7d7d7;width:2%;" class="text-center">:</td>
+			<td style="border: 1px solid #d7d7d7;padding-left:5px;width:12%;">{{ unitdetails['operator_id'] }}</td>
+			<td style="border: 1px solid #d7d7d7;width:15%;padding-left:5px;">Audit Type</td>
+			<td style="border: 1px solid #d7d7d7;width:2%;" class="text-center">:</td>
+			<td style="border: 1px solid #d7d7d7;padding-left:5px;width:12%;">Initial Audit</td>
+		</tr>
+		<tr>
+			<td style="border: 1px solid #d7d7d7;padding-left:5px;">Client Address</td>
+			<td style="border: 1px solid #d7d7d7;" class="text-center">:</td>
+			<td style="border: 1px solid #d7d7d7;padding-left:5px;" colspan="7">{{ unitdetails['unit_address'] }}</td>
+		</tr>
+		<tr>
+			<td style="border: 1px solid #d7d7d7;padding-left:5px;">Audit Start Date</td>
+			<td style="border: 1px solid #d7d7d7;" class="text-center">:</td>
+			<td style="border: 1px solid #d7d7d7;padding-left:5px;">{{ unitdetails['start_date'] }}</td>
+			<td style="border: 1px solid #d7d7d7;padding-left:5px;">Audit End Date</td>
+			<td style="border: 1px solid #d7d7d7;" class="text-center">:</td>
+			<td style="border: 1px solid #d7d7d7;padding-left:5px;" colspan="5">{{ unitdetails['end_date'] }}</td>
+		</tr>
+		
+		<tr>
+			<td style="border: 1px solid #d7d7d7;padding-left:5px;">Lead Auditor</td>
+			<td style="border: 1px solid #d7d7d7;" class="text-center">:</td>
+			<td style="border: 1px solid #d7d7d7;padding-left:5px;">{{ unitdetails['lead_auditor'] }}</td>
+			<td style="border: 1px solid #d7d7d7;padding-left:5px;">Auditor(s)</td>
+			<td style="border: 1px solid #d7d7d7;" class="text-center">:</td>
+			<td style="border: 1px solid #d7d7d7;padding-left:5px;" colspan="5">{{ unitdetails['auditors']?unitdetails['auditors'].join(', '):'NA' }}</td>
+		</tr>
+		
+		<tr>
+			<td style="border: 1px solid #d7d7d7;padding-left:5px;">Technical Expert</td>
+			<td style="border: 1px solid #d7d7d7;" class="text-center">:</td>
+			<td style="border: 1px solid #d7d7d7;padding-left:5px;">{{ unitdetails['technical_expert']?unitdetails['technical_expert']:'NA' }}</td>
+			<td style="border: 1px solid #d7d7d7;padding-left:5px;">Translator</td>
+			<td style="border: 1px solid #d7d7d7;" class="text-center">:</td>
+			<td style="border: 1px solid #d7d7d7;padding-left:5px;" colspan="5">{{ unitdetails['translator']?unitdetails['translator']:'NA' }}</td>
+		</tr>
+		<tr>
+			<td style="border: 1px solid #d7d7d7;padding-left:5px;">Observer</td>
+			<td style="border: 1px solid #d7d7d7;" class="text-center">:</td>
+			<td style="border: 1px solid #d7d7d7;padding-left:5px;">{{ unitdetails['observer']?unitdetails['observer']:'NA' }}</td>
+			<td style="border: 1px solid #d7d7d7;padding-left:5px;">Trainee Auditor</td>
+			<td style="border: 1px solid #d7d7d7;" class="text-center">:</td>
+			<td style="border: 1px solid #d7d7d7;padding-left:5px;" colspan="5">{{ unitdetails['trainee_auditor']?unitdetails['trainee_auditor']:'NA' }}</td>
+		</tr>	
+	</table>
+	
+	<form [formGroup]="form">
+		<div class="clearfix"></div>
+		<div class="col-12 p-t-5 m-t-10 row enq-view pad-right">
+			<div class="col-10 text-primary" style="border-bottom: 1px solid #d7d7d7;padding-left:0px;">
+				Previously identified Non-conformities and Effectiveness of the Corrective actions:
+			</div>
+
+			
+			<div class="col-2 text-right pad-right text-primary" style="border-bottom: 1px solid #d7d7d7;">
+				<ng-container *ngIf="!cond_viewonly">
+				<i class="fa fa-plus" *ngIf="!effectiveness_of_corrective_actions" (click)="fnAdd('effectiveness_of_corrective_actions')" style="cursor:pointer;"></i>
+				<i class="fa fa-edit" *ngIf="effectiveness_of_corrective_actions" (click)="fnAdd('effectiveness_of_corrective_actions')" style="cursor:pointer;padding-left: 10px;"></i>					
+				</ng-container>
+			</div>
+			
+		</div>	
+		
+		<div class="col-12 pad-left pad-right m-l-0 p-l-0" *ngIf="!showTextarea_effectiveness_of_corrective_actions && effectiveness_of_corrective_actions">
+			{{ effectiveness_of_corrective_actions }}
+		</div>	
+		
+		<ng-container *ngIf="!cond_viewonly">
+			<div class="form-group row" *ngIf="showTextarea_effectiveness_of_corrective_actions">
+				<div class="col-12">
+					<textarea rows="5" formControlName="effectiveness_of_corrective_actions" [class.is-invalid]="f.effectiveness_of_corrective_actions.invalid && f.effectiveness_of_corrective_actions.touched" placeholder="Previously identified Non-conformities and Effectiveness of the Corrective actions" class="form-control" ></textarea>
+					<div *ngIf="f.effectiveness_of_corrective_actions.errors" class="invalid-feedback">
+						<div *ngIf="f.effectiveness_of_corrective_actions.errors.required">This field is required</div>
+						<div *ngIf="f.effectiveness_of_corrective_actions.hasError('whitespace')">Invalid Effectiveness of the Corrective actions</div>
+					</div>
+				</div>	
+				<div class="col-lg-12 text-center m-t-5">
+					<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light" (click)="fnSave('effectiveness_of_corrective_actions')">
+					<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+					{{ effectiveness_of_corrective_actions?'Update':'Save'}}	
+					</button>
+					<button [disabled]="loading['button'] || buttonDisable" type="button" (click)="fnClose('effectiveness_of_corrective_actions')"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Close</button>
+				</div>
+			</div>	
+		</ng-container>		
+		
+		<div class="clearfix"></div>
+		<div class="col-12 p-t-5 m-t-10 row enq-view pad-right">
+			<div class="col-10 text-primary" style="border-bottom: 1px solid #d7d7d7;padding-left:0px;">
+				Audit Team Recommendation:
+			</div>
+			
+			<div class="col-2 text-right pad-right text-primary" style="border-bottom: 1px solid #d7d7d7;">
+				<ng-container *ngIf="!cond_viewonly">
+				<i class="fa fa-plus" *ngIf="!audit_team_recommendation" (click)="fnAdd('audit_team_recommendation')" style="cursor:pointer;"></i>
+				<i class="fa fa-edit" *ngIf="audit_team_recommendation" (click)="fnAdd('audit_team_recommendation')" style="cursor:pointer;padding-left: 10px;"></i>
+				<!--<i class="fa fa-eye" (click)="fnTCEdit('request_view')"></i>
+				-->
+				</ng-container>
+			</div>
+			
+		</div>
+		
+		<div class="col-12 pad-left pad-right m-l-0 p-l-0" *ngIf="!showTextarea_audit_team_recommendation && audit_team_recommendation">
+			{{ audit_team_recommendation }}
+		</div>
+		
+		<ng-container *ngIf="!cond_viewonly">
+			<div class="form-group row" *ngIf="showTextarea_audit_team_recommendation">
+				<div class="col-12">
+					<textarea rows="5" formControlName="audit_team_recommendation" [class.is-invalid]="f.audit_team_recommendation.invalid && f.audit_team_recommendation.touched" placeholder="Audit Team Recommendation" class="form-control" ></textarea>
+					<div *ngIf="f.audit_team_recommendation.errors" class="invalid-feedback">
+						<div *ngIf="f.audit_team_recommendation.errors.required">This field is required</div>
+						<div *ngIf="f.audit_team_recommendation.hasError('whitespace')">Invalid Audit Team Recommendation</div>
+					</div>
+				</div>	
+				<div class="col-lg-12 text-center m-t-5">
+					<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light" (click)="fnSave('audit_team_recommendation')">
+					<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+					{{ audit_team_recommendation?'Update':'Save'}}	
+					</button>
+					<button [disabled]="loading['button'] || buttonDisable" type="button" (click)="fnClose('audit_team_recommendation')"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Close</button>
+				</div>
+			</div>
+		</ng-container>	
+				
+		<div class="clearfix"></div>
+		<div class="col-12 p-t-5 m-t-10 row enq-view pad-right">
+			<div class="col-10 text-primary" style="border-bottom: 1px solid #d7d7d7;padding-left:0px;">
+				Summary of evidence relating to the capability of client and its system to meet applicable requirements and expected outcomes:
+			</div>	
+			
+			<div class="col-2 text-right pad-right text-primary" style="border-bottom: 1px solid #d7d7d7;">
+				<ng-container *ngIf="!cond_viewonly">
+				<i class="fa fa-plus" *ngIf="!summary_of_evidence" (click)="fnAdd('summary_of_evidence')" style="cursor:pointer;"></i>
+				<i class="fa fa-edit" *ngIf="summary_of_evidence" (click)="fnAdd('summary_of_evidence')" style="cursor:pointer;padding-left: 10px;"></i>
+				<!--<i class="fa fa-eye" (click)="fnTCEdit('request_view')"></i>
+				-->
+				</ng-container>
+			</div>
+			
+		</div>
+		
+		<div class="col-12 pad-left pad-right m-l-0 p-l-0" *ngIf="!showTextarea_summary_of_evidence && summary_of_evidence">
+			{{ summary_of_evidence }}
+		</div>
+		
+		<ng-container *ngIf="!cond_viewonly">
+			<div class="form-group row" *ngIf="showTextarea_summary_of_evidence">
+				<div class="col-12">
+					<textarea rows="5" formControlName="summary_of_evidence" [class.is-invalid]="f.summary_of_evidence.invalid && f.summary_of_evidence.touched" placeholder="Summary of evidence relating to the capability of client and its system to meet applicable requirements and expected outcomes" class="form-control" ></textarea>
+					<div *ngIf="f.summary_of_evidence.errors" class="invalid-feedback">
+						<div *ngIf="f.summary_of_evidence.errors.required">This field is required</div>
+						<div *ngIf="f.summary_of_evidence.hasError('whitespace')">Invalid Summary of evidence</div>
+					</div>
+				</div>	
+				<div class="col-lg-12 text-center m-t-5">
+					<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light" (click)="fnSave('summary_of_evidence')">
+					<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+					{{ summary_of_evidence?'Update':'Save'}}	
+					</button>
+					<button [disabled]="loading['button'] || buttonDisable" type="button" (click)="fnClose('summary_of_evidence')"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Close</button>
+				</div>
+			</div>	
+		</ng-container>				
+		
+		<div class="clearfix"></div>
+		<div class="col-12 p-t-5 m-t-10 row enq-view pad-right">
+			<div class="col-10 text-primary" style="border-bottom: 1px solid #d7d7d7;padding-left:0px;">
+				Any Potential high-risk situations:
+			</div>
+			
+			<div class="col-2 text-right pad-right text-primary" style="border-bottom: 1px solid #d7d7d7;">
+				<ng-container *ngIf="!cond_viewonly">
+				<i class="fa fa-plus" *ngIf="!potential_high_risk_situations" (click)="fnAdd('potential_high_risk_situations')" style="cursor:pointer;"></i>
+				<i class="fa fa-edit" *ngIf="potential_high_risk_situations" (click)="fnAdd('potential_high_risk_situations')" style="cursor:pointer;padding-left: 10px;"></i>
+				<!--<i class="fa fa-eye" (click)="fnTCEdit('request_view')"></i>
+				-->
+				</ng-container>
+			</div>
+			
+		</div>
+		
+		<div class="col-12 pad-left pad-right m-l-0 p-l-0" *ngIf="!showTextarea_potential_high_risk_situations && potential_high_risk_situations">
+			{{ potential_high_risk_situations }}
+		</div>
+		
+		<ng-container *ngIf="!cond_viewonly">
+			<div class="form-group row" *ngIf="showTextarea_potential_high_risk_situations">
+				<div class="col-12">
+					<textarea rows="5" formControlName="potential_high_risk_situations" [class.is-invalid]="f.potential_high_risk_situations.invalid && f.potential_high_risk_situations.touched" placeholder="Any Potential high-risk situations" class="form-control" ></textarea>
+					<div *ngIf="f.potential_high_risk_situations.errors" class="invalid-feedback">
+						<div *ngIf="f.potential_high_risk_situations.errors.required">This field is required</div>
+						<div *ngIf="f.potential_high_risk_situations.hasError('whitespace')">Invalid Potential high-risk situations</div>
+					</div>
+				</div>	
+				<div class="col-lg-12 text-center m-t-5">
+					<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light" (click)="fnSave('potential_high_risk_situations')">
+					<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+					{{ potential_high_risk_situations?'Update':'Save'}}	
+					</button>
+					<button [disabled]="loading['button'] || buttonDisable" type="button" (click)="fnClose('potential_high_risk_situations')"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Close</button>
+				</div>
+			</div>
+		</ng-container>				
+		
+		<div class="clearfix"></div>
+		<div class="col-12 p-t-5 m-t-10 row enq-view pad-right">
+			<div class="col-10 text-primary" style="border-bottom: 1px solid #d7d7d7;padding-left:0px;">
+				Entities and Processes visited (including facilities and subcontractors):
+			</div>
+			
+			<div class="col-2 text-right pad-right text-primary" style="border-bottom: 1px solid #d7d7d7;">
+				<ng-container *ngIf="!cond_viewonly">
+				<i class="fa fa-plus" *ngIf="!entities_and_processes_visited" (click)="fnAdd('entities_and_processes_visited')" style="cursor:pointer;"></i>
+				<i class="fa fa-edit" *ngIf="entities_and_processes_visited" (click)="fnAdd('entities_and_processes_visited')" style="cursor:pointer;padding-left: 10px;"></i>
+				<!--<i class="fa fa-eye" (click)="fnTCEdit('request_view')"></i>
+				-->
+				</ng-container>
+			</div>
+			
+		</div>
+		
+		<div class="col-12 pad-left pad-right m-l-0 p-l-0" *ngIf="!showTextarea_entities_and_processes_visited && entities_and_processes_visited">
+			{{ entities_and_processes_visited }}
+		</div>
+		
+		<ng-container *ngIf="!cond_viewonly">
+			<div class="form-group row" *ngIf="showTextarea_entities_and_processes_visited">
+				<div class="col-12">
+					<textarea rows="5" formControlName="entities_and_processes_visited" [class.is-invalid]="f.entities_and_processes_visited.invalid && f.entities_and_processes_visited.touched" placeholder="Entities and Processes visited (including facilities and subcontractors)" class="form-control" ></textarea>
+					<div *ngIf="f.entities_and_processes_visited.errors" class="invalid-feedback">
+						<div *ngIf="f.entities_and_processes_visited.errors.required">This field is required</div>
+						<div *ngIf="f.entities_and_processes_visited.hasError('whitespace')">Invalid Entities and Processes visited</div>
+					</div>
+				</div>	
+				<div class="col-lg-12 text-center m-t-5">
+					<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light" (click)="fnSave('entities_and_processes_visited')">
+					<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+					{{ entities_and_processes_visited?'Update':'Save'}}	
+					</button>
+					<button [disabled]="loading['button'] || buttonDisable" type="button" (click)="fnClose('entities_and_processes_visited')"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Close</button>
+				</div>
+			</div>
+		</ng-container>
+			
+		<div class="clearfix"></div>
+		<div class="col-12 p-t-5 m-t-10 row enq-view pad-right">
+			<div class="col-10 text-primary" style="border-bottom: 1px solid #d7d7d7;padding-left:0px;">
+				People interviewed:
+			</div>
+			
+			<div class="col-2 text-right pad-right text-primary" style="border-bottom: 1px solid #d7d7d7;">
+				<ng-container *ngIf="!cond_viewonly">
+				<i class="fa fa-plus" *ngIf="!people_interviewed" (click)="fnAdd('people_interviewed')" style="cursor:pointer;"></i>
+				<i class="fa fa-edit" *ngIf="people_interviewed" (click)="fnAdd('people_interviewed')" style="cursor:pointer;padding-left: 10px;"></i>
+				<!--<i class="fa fa-eye" (click)="fnTCEdit('request_view')"></i>
+				-->
+				</ng-container>
+			</div>
+			
+		</div>
+		
+		<div class="col-12 pad-left pad-right m-l-0 p-l-0" *ngIf="!showTextarea_people_interviewed && people_interviewed">
+			{{ people_interviewed }}
+		</div>
+		
+		<ng-container *ngIf="!cond_viewonly">
+			<div class="form-group row" *ngIf="showTextarea_people_interviewed">
+				<div class="col-12">
+					<textarea rows="5" formControlName="people_interviewed" [class.is-invalid]="f.people_interviewed.invalid && f.people_interviewed.touched" placeholder="People interviewed" class="form-control" ></textarea>
+					<div *ngIf="f.people_interviewed.errors" class="invalid-feedback">
+						<div *ngIf="f.people_interviewed.errors.required">This field is required</div>
+						<div *ngIf="f.people_interviewed.hasError('whitespace')">Invalid Entities and People interviewed</div>
+					</div>
+				</div>	
+				<div class="col-lg-12 text-center m-t-5">
+					<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light" (click)="fnSave('people_interviewed')">
+					<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+					{{ people_interviewed?'Update':'Save'}}	
+					</button>
+					<button [disabled]="loading['button'] || buttonDisable" type="button" (click)="fnClose('people_interviewed')"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Close</button>
+				</div>
+			</div>
+		</ng-container>
+		
+		<div class="clearfix"></div>
+		<div class="col-12 p-t-10 m-t-10 row enq-view pad-right">
+			<div class="col-10 text-primary" style="border-bottom: 1px solid #d7d7d7;padding-left:0px;">
+				Type of documents reviewed:
+			</div>
+			
+			<div class="col-2 text-right pad-right text-primary" style="border-bottom: 1px solid #d7d7d7;">
+				<ng-container *ngIf="!cond_viewonly">
+				<i class="fa fa-plus" *ngIf="!type_of_documents_reviewed" (click)="fnAdd('type_of_documents_reviewed')" style="cursor:pointer;"></i>
+				<i class="fa fa-edit" *ngIf="type_of_documents_reviewed" (click)="fnAdd('type_of_documents_reviewed')" style="cursor:pointer;padding-left: 10px;"></i>
+				<!--<i class="fa fa-eye" (click)="fnTCEdit('request_view')"></i>
+				-->
+				</ng-container>
+			</div>
+			
+		</div>
+		
+		<div class="col-12 pad-left pad-right m-l-0 p-l-0" *ngIf="!showTextarea_type_of_documents_reviewed && type_of_documents_reviewed">
+			{{ type_of_documents_reviewed }}
+		</div>
+		
+		<ng-container *ngIf="!cond_viewonly">
+			<div class="form-group row" *ngIf="showTextarea_type_of_documents_reviewed">
+				<div class="col-12">
+					<textarea rows="5" formControlName="type_of_documents_reviewed" [class.is-invalid]="f.type_of_documents_reviewed.invalid && f.type_of_documents_reviewed.touched" placeholder="Type of documents reviewed" class="form-control" ></textarea>
+					<div *ngIf="f.type_of_documents_reviewed.errors" class="invalid-feedback">
+						<div *ngIf="f.type_of_documents_reviewed.errors.required">This field is required</div>
+						<div *ngIf="f.type_of_documents_reviewed.hasError('whitespace')">Invalid Type of documents reviewed</div>
+					</div>
+				</div>	
+				<div class="col-lg-12 text-center m-t-5">
+					<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light" (click)="fnSave('type_of_documents_reviewed')">
+					<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+					{{ type_of_documents_reviewed?'Update':'Save'}}	
+					</button>
+					<button [disabled]="loading['button'] || buttonDisable" type="button" (click)="fnClose('type_of_documents_reviewed')"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Close</button>
+				</div>
+			</div>
+		</ng-container>		
+	</form>
+	
+	<div class="clearfix"></div>
+	<div class="col-12 p-t-5 m-t-15 row enq-view pad-right">
+		<div class="col-10 text-primary" style="padding-left:0px;">
+		Non-Conformities
+		</div>
+		<div class="col-2 text-right pad-right text-primary">			
+		</div>
+	</div>	
+	<table class="table table-bordered col-12">
+		<thead>
+			<tr>
+				<th>S.No</th>
+				<!--<th>Name of the Unit</th>	-->
+				<th>STD Clause no.</th>	
+				<th>Standard Clause</th>	
+				<th>Finding</th>	
+				<th>Confirmity</th>
+				<th>Root Cause & Corrective Action</th>	
+				<th>Due By</th>	
+				<th>LA Verification</th>	
+				<th>Close Date</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr *ngIf="unitWiseFindingsContent?.length==0">
+				<td colspan="9" class="center">No NC Found</td>
+			</tr>
+			<ng-container *ngFor="let finding of unitWiseFindingsContent; index as j ">
+				<tr >
+					<td [attr.rowspan]="finding.rowspan<=0?1:finding.rowspan">{{ 1+j}}</td>
+					<!--<td [attr.rowspan]="finding.rowspan<=0?1:finding.rowspan" >{{ finding.unit_name }}</td>	-->
+					<td >{{ finding.clause_content && finding.clause_content.length>0? finding.clause_content[0].clause_no:'' }}</td>	
+					<td>{{ finding.clause_content && finding.clause_content.length>0?finding.clause_content[0].clause:'' }}</td>	
+					<td [attr.rowspan]="finding.rowspan<=0?1:finding.rowspan" >{{ finding.finding }}</td>
+					<td [attr.rowspan]="finding.rowspan<=0?1:finding.rowspan" >{{ finding.severity }}</td>
+					<td [attr.rowspan]="finding.rowspan<=0?1:finding.rowspan" >{{ finding.root_cause }}</td>
+					<td [attr.rowspan]="finding.rowspan<=0?1:finding.rowspan" >{{ finding.due_by }}</td>
+					<td [attr.rowspan]="finding.rowspan<=0?1:finding.rowspan" >{{ finding.la_verification }}</td>
+					<td [attr.rowspan]="finding.rowspan<=0?1:finding.rowspan" >{{ finding.close_date }}</td>
+
+				</tr>
+				<ng-container *ngIf="finding.clause_content && finding.clause_content.length>1">
+					<tr  *ngFor="let clauseentry of finding.clause_content | slice:1;" >
+						<td>{{ clauseentry['clause_no'] }}</td>
+						<td>{{ clauseentry['clause'] }}</td>
+					</tr>
+				</ng-container>
+			</ng-container>
+			 
+		</tbody>	
+	</table>	
+	
+	<div class="text-info">
+		<strong>Statement of Confidentiality</strong>
+		<p>
+		GCL agrees not to disclose any information relating to the client’s business or affairs except information, which is in their possession after the receipt of an enquiry for registration with GCL.  Where GCL are required to disclose information to a third party either by law the client shall be informed of the information as required by law. 
+		The only other exception to confidentiality is that GCL has right to exchange operators’ information with other Certification Bodies, accreditation bodies, Textile Exchange and the Global Standard gGmbH to verify the authenticity of the information.. Such information can be validated on the GCL web site using the registration number.
+		</p>
+		<strong>Declaration of Impartiality</strong>
+		<p>
+		Prior to the Audit/audit taking place the client was written to with background details of all inspector team members. No objections was made by the client to any member on the team and confirmation was made by the client that no Audit team member has ever worked directly for or on behalf of any other person or organization in any capacity
+		</p>
+		<strong>Basis of Findings</strong>
+		<p>
+		Files and records were sampled as well as interviews with staff at all levels as well as the evidence collected with the interviews during this visit were based on random sampling techniques to provide the GCL Lead Inspector with confidence that the product system has been effectively implemented and/or maintained. Due to the nature of sampling it could be that there are issues within the product system that are in existence but not discovered by the Audit. If such issues are known they action is required to be taken by the company. 
+		</p>
+		<p>
+		This audit report is the property of GCL International LTD and cannot be edited or copied without the express permission of GCL.	
+		</p>
+	</div>
+	
+	<div class="clearfix"></div>
+	<div class="col-12 p-t-5 row enq-view pad-right">
+		<div class="col-6">
+			<table class="table table-bordered col-12">
+				<tr>
+					<td style="height:100px;"></td>				
+				</tr>				
+			</table>
+			<div class="center">Signature of the Operator</div>
+		</div>
+		<div class="col-6">
+			<table class="table table-bordered col-12">
+				<tr>
+					<td style="height:100px;"></td>				
+				</tr>					
+			</table>
+			<div class="center">Signature of the Auditor</div>
+		</div>
+	</div>
+	
+	<!--
+	<mat-tab-group >
+		<mat-tab label="Corrective Actions">
+			<h3>Previously identified Non-conformities and Effectiveness of the Corrective actions:</h3>
+		</mat-tab>
+		<mat-tab label="Audit Team Recommendation">
+		
+		</mat-tab>
+		<mat-tab label="Summary of Evidence">
+		
+		</mat-tab>
+		<mat-tab label="Potential High-Risk">
+		
+		</mat-tab>
+		<mat-tab label="Entities and Processes Visited">
+		
+		</mat-tab>
+		
+		<mat-tab label="People Interviewed">
+		
+		</mat-tab>
+		
+		<mat-tab label="Type of Documents Reviewed">
+		
+		</mat-tab>
+		
+		<mat-tab label="Non Conformity">
+		
+		</mat-tab>	
+		
+</mat-tab-group>
+-->
+</div>
+		

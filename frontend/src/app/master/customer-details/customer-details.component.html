@@ -1,0 +1,357 @@
+<div class="row">
+    <div class="col-12">
+        <div class="add card-box table-responsive enq-view m-t-15">  
+            <div class="col-12 row pad-right" >
+                <div class="col-8">
+                <h4 class="page-title">{{title}}</h4>
+                </div>
+                <div class="col-4 text-right pad-right">
+                <a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/master/customer-report/index']" >Back</a>
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+
+
+            <mat-tab-group>
+              <mat-tab label="Application" *ngIf="id">
+                <div class="clearfix"></div>
+                <div style="margin-bottom:10px;">
+                  <mat-accordion>
+                    <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true" [expanded]="true">
+                      <mat-expansion-panel-header>
+                        <mat-panel-title>
+                        View Application Details
+                        </mat-panel-title>
+                      </mat-expansion-panel-header>
+                      
+                      <div class="row" *ngIf="id" >
+                        <div class="col-sm-12">
+                          <div class="clearfix"></div>			
+                          <app-appdetail [id]="id" ></app-appdetail>							
+                        </div>				
+                      </div>
+                
+                    </mat-expansion-panel>                
+                  </mat-accordion>
+                </div>
+              </mat-tab>
+              
+              <mat-tab label="Quotation" *ngIf="offerdata">
+                <div class="clearfix"></div>
+                <div class="add card-box table-respons!ive" *ngIf="offerdata">
+                      
+                  <div class="col-sm-12">
+                    <div style="text-align: left;width:48%;float:left;display: inline-block;">
+                      <img src="http://www.gcldemo.com.php73-39.lan3-1.websitetestlink.com/backend/web/images/header-img.jpg" border="0">
+                      
+                    </div>
+                    <div style="width:50%;float:right;display: inline-block;">
+                      <div style="border: 1px solid black;padding:5px;">
+                        <b>GCL INTERNATIONAL LTD</b><br>
+                        level 1| Devonshire House|One Mayfair Place London | W1J 8AJ| United Kingdom
+                      </div>
+                      <div>
+                        <p>Quotation Number: {{ offerdata.offer.offer_code }} <br>
+                        Date: {{offerdata.offer.updated_at}}</p>
+                      </div>
+                    </div>
+                  </div>
+          
+                  <div class="clearfix"></div>
+                  <div class="col-sm-12 p-t-10">
+                      <div class="text-center"><h4>QUOTATION/PROFORMA INVOICE</h4></div>
+                      <table style="border-collapse: collapse;border: 1px solid black;width:100%;">
+                        <tr>
+                          <td style="border: 1px solid black;padding-left:5px;" class="font-bold" colspan="5"><u>Part 1- Operator/Company Details</u></td>
+                        </tr>
+                        <tr>
+                          <td style="border: 1px solid black;width:25%;padding-left:5px;">Operator Name</td>
+                          <td style="border: 1px solid black;width:2%;" class="text-center">:</td>
+                          <td style="border: 1px solid black;padding-left:5px;" colspan="3">{{offerdata.company_name}}</td>
+                        </tr>
+                        <tr>
+                          <td style="border: 1px solid black;padding-left:5px;">Operator Address</td>
+                          <td style="border: 1px solid black;" class="text-center">:</td>
+                          <td style="border: 1px solid black;padding-left:5px;" colspan="3">{{offerdata.address}}, {{offerdata.city}} - {{offerdata.zipcode}}, {{offerdata.country_id_name}}</td>
+                        </tr>
+                        <tr>
+                          <td style="border: 1px solid black;width:25%;padding-left:5px;">Attention</td>
+                          <td style="border: 1px solid black;width:2%;" class="text-center">:</td>
+                          <td style="border: 1px solid black;padding-left:5px;">{{offerdata.first_name}} {{offerdata.last_name}}</td>
+                          <td style="border: 1px solid black;width:25%;padding-left:5px;">Standard(s) :</td>
+                          <td style="border: 1px solid black;padding-left:5px;">
+                          <span *ngFor="let standard of offerdata?.standards; let isLast=last;" >{{ standard }} {{isLast ? '' : ', '}}</span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style="border: 1px solid black;width:25%;padding-left:5px;">Email</td>
+                          <td style="border: 1px solid black;width:2%;" class="text-center">:</td>
+                          <td style="border: 1px solid black;padding-left:5px;">{{offerdata.email_address}}</td>
+                          <td style="border: 1px solid black;width:25%;padding-left:5px;">Phone:</td>
+                          <td style="border: 1px solid black;padding-left:5px;">{{offerdata.telephone}}</td>
+                        </tr>
+                        <tr>
+                          <td style="border: 1px solid black;width:25%;padding-left:5px;">Subcontractor/s) Name</td>
+                          <td style="border: 1px solid black;width:2%;" class="text-center">:</td>
+                          <td style="border: 1px solid black;padding-left:5px;">
+                          <span *ngFor="let unit of offerdata?.units; let isLast=last;" >{{ unit.name }} {{isLast ? '' : ', '}}</span>
+                          </td>
+                          <td style="border: 1px solid black;width:25%;padding-left:5px;">No: Sub-con</td>
+                          <td style="border: 1px solid black;padding-left:5px;">{{offerdata.units.length}}</td>
+                        </tr>
+                        <tr>
+                          <td style="border: 1px solid black;width:25%;padding-left:5px;">Inspection Type</td>
+                          <td style="border: 1px solid black;width:2%;" class="text-center">:</td>
+                          <td style="border: 1px solid black;padding-left:5px;">Initial Audit</td>
+                          <td style="border: 1px solid black;width:25%;padding-left:5px;">Inspection Man day:</td>
+                          <td style="border: 1px solid black;padding-left:5px;">{{offerdata.mandays  | number :'1.1-2'}}</td>
+                        </tr>
+                      </table><br>
+                      <table style="border-collapse: collapse;border: 1px solid black;width:100%;" *ngIf="offerdata.offer"> 
+                        <tr>
+                          <td style="border: 1px solid black;border-right: none;width:35%;padding-left:5px;" class="font-bold"><u>Part 2-Certification Fee</u></td>
+                          <td style="border: 1px solid black;border-left: none;padding-left:5px;"><b>Description</b></td>
+                          <td style="border: 1px solid black;width:15%;padding-left:5px;" class="text-center"><b>Amount ({{offerdata.offer.currency}})</b></td>
+                        </tr>
+                        <tr *ngFor="let offer_certification_f of offerdata?.offer_certification_fee; let isLast=last;">
+                          <td style="border: 1px solid black;padding-left:5px;">{{offer_certification_f.activity}}</td>
+                          <td style="border: 1px solid black;border-left: none;padding-left:5px;">{{offer_certification_f.description}}</td>
+                          <td style="border: 1px solid black;padding-right:5px;" class="text-right">{{offerdata.offer.currency}} {{offer_certification_f.amount | number :'1.2-2'}}</td>
+                        </tr>
+                        <tr>
+                          <td style="border: 1px solid black;border-right: none;padding-right:5px;" colspan="2" align="right"><b><u>Sub-Total of Certification Fee:</u></b></td>
+                          <td style="border: 1px solid black;padding-right:5px;" class="text-right"><b>{{offerdata.offer.currency}} {{offerdata.offer.certification_fee_sub_total | number :'1.2-2'}}</b></td>
+                        </tr>
+                        <tr>
+                          <td style="border: 1px solid black;padding-left:5px;"><b><u>Other Expenses{{offerdata.offer_other_expenses.length}}</u></b></td>
+                          <td style="border: 1px solid black;"></td>
+                          <td style="border: 1px solid black;"></td>
+                        </tr>
+                        <tr *ngFor="let offer_other_expense of offerdata?.offer_other_expenses; let isLast=last;">
+                          <td style="border: 1px solid black;padding-left:5px;">{{offer_other_expense.activity}}</td>
+                          <td style="border: 1px solid black;border-left: none;padding-left:5px;">{{offer_other_expense.description}}</td>
+                          <td style="border: 1px solid black;padding-right:5px;" class="text-right">{{offerdata.offer.currency}} {{offer_other_expense.amount | number :'1.2-2'}}</td>
+                        </tr>
+                        <tr>
+                          <td style="border: 1px solid black;border-right: none;padding-right:5px;" colspan="2" align="right"><b><u>Sub-Total of Other Expenses:</u></b></td>
+                          <td style="border: 1px solid black;padding-right:5px;" class="text-right"><b>{{offerdata.offer.currency}} {{offerdata.offer.other_expense_sub_total | number :'1.2-2'}}</b></td>
+                        </tr>
+                        <tr>
+                          <td style="border: 1px solid black;border-right: none;padding-right:5px;" colspan="2" align="right"><b><u>Total:</u></b></td>
+                          <td style="border: 1px solid black;padding-right:5px;" class="text-right"><b>{{offerdata.offer.currency}} {{offerdata.offer.total | number :'1.2-2'}}</b></td>
+                        </tr>
+                        
+                        <!--
+                        <tr *ngIf="offerdata.offer.discount>0">
+                          <td style="border: 1px solid black;border-right: none;padding-right:5px;" colspan="2" align="right"><b><u>Discount:</u></b></td>
+                          <td style="border: 1px solid black;padding-right:5px;" class="text-right"><b>{{offerdata.offer.currency}} {{offerdata.offer.discount | number :'1.2-2'}}</b></td>
+                        </tr>
+                        
+                        <tr *ngIf="offerdata.offer.discount>0">
+                          <td style="border: 1px solid black;border-right: none;padding-right:5px;" colspan="2" align="right"><b><u>Grand Total:</u></b></td>
+                          <td style="border: 1px solid black;padding-right:5px;" class="text-right"><b>{{offerdata.offer.currency}} {{offerdata.offer.grand_total_fee | number :'1.2-2'}}</b></td>
+                        </tr>
+                        -->
+                        
+                        <tr>
+                          <td style="border: 1px solid black;padding-right:5px;" colspan="2" align="right"><b>{{offerdata.offer.taxname}} Rate</b></td>
+                          <td style="border: 1px solid black;padding-right:5px;" class="text-right"><b>{{offerdata.offer.currency}} {{offerdata.offer.gst_rate | number :'1.2-2'}}</b></td>
+                        </tr>
+                        <tr>
+                          <td style="border: 1px solid black;padding-right:5px;" colspan="2" align="right"><b><u>TOTAL Payable Amount</u></b></td>
+                          <td style="border: 1px solid black;padding-right:5px;" class="text-right"><b>{{offerdata.offer.currency}} {{offerdata.offer.total_payable_amount | number :'1.2-2'}}</b></td>
+                        </tr>
+                        
+                        <tr *ngIf="offerdata.offer.conversion_required_status==1">
+                          <td style="border: 1px solid black;" colspan="2" align="center" class="text-center">
+                            <b>Conversion rate  {{offerdata.offer.currency}} 1.00 = {{offerdata.offer.conversion_currency_code}} {{offerdata.offer.conversion_rate | number :'1.2-2'}}</b>
+                            <br>
+                            Conversion rate is valid for next 30 days
+                          </td>
+                          <td style="border: 1px solid black;padding-right:5px;" class="text-right"><strong>{{offerdata.offer.conversion_currency_code}} {{offerdata.offer.conversion_total_payable | number :'1.2-2'}}</strong></td>
+                        </tr>							
+                        
+                      </table>
+                      <label><u>Travel expenses and Accommodation fee will be born by Operator</u></label>
+          
+                      <table style="border: none;width:100%;margin-top:5px;"> 
+                        <tr>
+                          <td valign="top" style="border:none;font-weight:bold;">Agreement Acceptance:</td>
+                          <td style="border:none;">
+                            <p>In accepting this agreement, the Company confirms the information contained
+                            above is correct and agrees to comply with the <b>GCL International Ltd</b> Scheme
+                            Rules (http://gcl-intl.com/about-us/rules-of-registration/) and agree to pay all fees
+                            relating to the provision of certification services. All figures are <b>inclusive</b> of all
+                            expenses.</p>
+                            <p>The Company shall update <b>GCL International Ltd</b> if there are any changes in legal
+                            status, organization and management including number of employees, addresses
+                            and sites, scope of operation and major changes to the management system /
+                            processes.</p>
+                          </td>
+                        </tr>
+                      </table>	
+          
+                      <table style="border: none;width:100%;margin-top:15px;"> 
+                        <tr>
+                          <td style="border:none;">Signed:</td>
+                          <td style="border:none;">............................</td>
+                          <td style="border:none;">Date:</td>
+                          <td style="border:none;">............................</td>
+                        </tr>
+                      </table>
+          
+                      
+                      <div class="mat-accordion col-12"  *ngIf="offerdata?.approve_comment.length>0">
+                        <div class="un-lst"><h3>Approval Details</h3></div> 
+                        <div class="mat-accordion card-box enq-view">
+                          <ul>
+                            <li><span class="label-pad">Approved By</span>   <span class="name-pad">{{ offerdata.approve_comment[0].created_by_name }}</span></li>				
+                            <li><span class="label-pad">Approval Date</span>   <span class="name-pad">{{ offerdata.approve_comment[0].created_at }}</span></li>
+                            <li style="width:100%;"><span class="label-pad">Comment</span>   <span class="name-pad">{{ offerdata.approve_comment[0].comment }}</span></li>
+                          </ul>
+                        </div>
+                      </div>
+                      
+                      <div class="clearfix"></div>
+          
+                      <ng-container *ngIf="offerdata?.reject_comment.length>0" >
+                        <div class="un-lst col-12" ><h3>Reject Details</h3></div> 
+          
+                        <mat-accordion *ngFor="let cmt of offerdata.reject_comment; index as i">
+                          <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+                            <mat-expansion-panel-header>
+                              <mat-panel-title>
+                                Reject Details {{i+1}}
+                              </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div class="card-box enq-view">
+                              <ul>
+                                <li><span class="label-pad">Rejected By</span>   <span class="name-pad">{{ cmt.created_by_name }}</span></li>				
+                                <li><span class="label-pad">Rejected Date</span>   <span class="name-pad">{{ cmt.created_at }}</span></li>
+                                <li style="width:100%;"><span class="label-pad">Comment</span>   <span class="name-pad">{{ cmt.comment }}</span></li>						
+                              </ul>
+                            </div>
+                          </mat-expansion-panel>                
+                        </mat-accordion>
+                      </ng-container>
+                      
+                      
+                      <div class="col-lg-12 mt-4 mb-4" *ngIf="offerdata.offer.offer_status==offerdata?.offerenumstatus['customer_approved'] || offerdata.offer.offer_status==offerdata?.offerenumstatus['finalized']" >
+							
+							
+                        <div class="row m-t-15">
+                          <div class="col-12">
+                            <div class="card-box enq-view">
+                              <h3>Audit Report Details</h3>                     
+                              <ul class="tempdrivenform" style="margin-bottom:10px;">
+                                <li style="width:100%;"  ><span class="label-pad" style="width: 50%;">Quotation:</span>  
+                                  <span class="label-pad" style="width:50%;" >
+                                    <a href="javascript:void(0);" (click)="downloadFile(offerdata.offer.offerlist_id,offerdata.offer.quotation_file,'quotation');openmodal(downloading);" >{{ offerdata.offer.quotation_file }}</a>
+                                  </span>
+                                </li>
+                                <li *ngFor="let processorfile of offerdata.offer.processor_files; let i=index; " style="width:100%;"  ><span class="label-pad" style="width:50%;">Processor File for {{processorfile.unit_name}}:</span>  
+                                  <span class="label-pad" style="width:50%;" >
+                                    <a href="javascript:void(0);" (click)="downloadProcessorFile(offerdata.offer.offerlist_id,processorfile.unit_id,processorfile.id,processorfile.processor_file);openmodal(downloading);" >{{ processorfile.processor_file }}</a>
+                                  </span>
+                                </li>
+                                <li style="width:100%;" *ngIf="offerdata.offer.audit_report_file" ><span class="label-pad" style="width: 50%;">Risk Assessment:</span>  
+                                  <span class="label-pad" style="width:50%;" >
+                                    <a href="javascript:void(0);" (click)="downloadFile(offerdata.offer.offerlist_id,offerdata.offer.risk_assessment_file,'risk_assessment_file');openmodal(downloading);" >{{ offerdata.offer.audit_report_file }}</a>
+                                  </span>
+                                </li>
+                                <li style="width:100%;" *ngIf="offerdata.offer.reconciliation_report_file" ><span class="label-pad" style="width: 50%;">Reconciliation report:</span>  
+                                  <span class="label-pad" style="width:50%;" >
+                                    <a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offer.offerlist_id,offerdata.offer.reconciliation_report_file,'reconciliation_report_file');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.offer.reconciliation_report_file }}</a>
+                                  </span>
+                                </li>
+                                <li style="width:100%;" *ngIf="offerdata.offer.reconciliation_report_file" ><span class="label-pad" style="width: 50%;">Volume Reconciliation Formula:</span>  
+                                     {{ offerdata.offer.volume_reconciliation_formula }}
+                                </li>
+                                <li style="width:100%;" *ngIf="offerdata.offer.content_claim_standard_file" ><span class="label-pad" style="width: 50%;">Content Claim Standard:</span>  
+                                  <span class="label-pad" style="width:50%;" >
+                                    <a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offer.offerlist_id,offerdata.offer.content_claim_standard_file,'content_claim_standard_file');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.offer.content_claim_standard_file }}</a>
+                                  </span>
+                                </li>
+                                <li style="width:100%;" *ngIf="offerdata.offer.chemical_declaration_file" ><span class="label-pad" style="width: 50%;">Chemical Declaration:</span>  
+                                  <span class="label-pad" style="width:50%;" >
+                                    <a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offer.offerlist_id,offerdata.offer.chemical_declaration_file,'chemical_declaration_file');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.offer.chemical_declaration_file }}</a>
+                                  </span>
+                                </li>
+                                <li style="width:100%;" *ngIf="offerdata.offer.social_declaration_file" ><span class="label-pad" style="width: 50%;">Social Declaration:</span>  
+                                  <span class="label-pad" style="width:50%;" >
+                                    <a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offer.offerlist_id,offerdata.offer.social_declaration_file,'social_declaration_file');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.offer.social_declaration_file }}</a>
+                                  </span>
+                                </li>
+                                <li style="width:100%;" *ngIf="offerdata.offer.environmental_declaration_file" ><span class="label-pad" style="width: 50%;">Environmental Declaration:</span>  
+                                  <span class="label-pad" style="width:50%;" >
+                                    <a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offer.offerlist_id,offerdata.offer.environmental_declaration_file,'environmental_declaration_file');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.offer.environmental_declaration_file }}</a>
+                                  </span>
+                                </li>
+                                <li style="width:100%;" *ngIf="offerdata.offer.environmental_report_file" ><span class="label-pad" style="width: 50%;">Environmental Report:</span>  
+                                  <span class="label-pad" style="width:50%;" >
+                                    <a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offer.offerlist_id,offerdata.offer.environmental_report_file,'environmental_report_file');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.offer.environmental_report_file }}</a>
+                                  </span>
+                                </li>
+                                <li style="width:100%;" *ngIf="offerdata.offer.chemical_list_file" ><span class="label-pad" style="width: 50%;">Chemical List:</span>  
+                                  <span class="label-pad" style="width:50%;" >
+                                    <a href="javascript:void(0);" (click)="downloadUploadedFile(offerdata.offer.offerlist_id,offerdata.offer.chemical_list_file,'chemical_list_file');openmodal(downloading);" ><i class="fa fa-download"></i> {{ offerdata.offer.chemical_list_file }}</a>
+                                  </span>
+                                </li>
+        
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+        
+                        
+                      </div>
+                      
+          
+                  </div>
+                    
+                </div>
+              </mat-tab>
+
+              <mat-tab label="Audit" *ngIf="audit_id">
+                <div class="clearfix"></div>
+                <div style="margin-bottom:20px;">
+                  <mat-accordion>
+                    <mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true" [expanded]="true">
+                      <mat-expansion-panel-header>
+                        <mat-panel-title>
+                        View Audit Plan Details
+                        </mat-panel-title>
+                      </mat-expansion-panel-header>
+                      
+                      <div class="row" *ngIf="id" >
+                        <div class="col-sm-12">
+                          <div class="clearfix"></div>            
+                          <app-auditdetail [id]="audit_id" ></app-auditdetail>                            
+                        </div>              
+                      </div>
+            
+                    </mat-expansion-panel>                
+                  </mat-accordion>
+                </div>
+              </mat-tab>
+            </mat-tab-group>
+            
+
+            
+            
+
+
+            
+              
+        </div>
+    </div>
+</div>
+<ng-template #downloading let-modal>
+	<div class="modal-header">
+			<h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+			Please wait, your file is downloading ...
+	</div>
+</ng-template>

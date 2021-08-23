@@ -1,0 +1,746 @@
+<!--
+<div class="row"  >
+    <div class="col-12">
+        <div class="card-box table-responsive">
+        	<div class="row col-12 m-b-5 pad-right">
+              	<div class="col-8 pad-left">
+                <h4 class="page-title">Audit Interview Employee</h4>
+                <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+                
+              	</div>
+               
+            </div>
+        
+            <div class="row col-12 m-b-5 pad-right">
+                <div class="col-4 text-left pad-left">
+                    <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                        <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+                    </select>
+                </div>
+                <div class="col-4 text-left p-t-5"></div>
+                <div class="col-4 text-right pad-right">
+                    Search: <input class="search-pad" type="text" name="searchTerm" [(ngModel)]="service.searchTerm"/>
+                </div>
+            </div>
+			-->
+			<!--
+			<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+			
+			<h3>Interview</h3>
+            <div class="col-12 pad-left">
+                <table id="datatable" class="table table-bordered" >
+                    <thead>
+						<tr>
+							<th width="5%" scope="col" class="center">S.No</th>
+							<th scope="col">Name</th>	
+							<th width="15%" scope="col">Position</th>
+                            <th width="15%" scope="col">Created At</th>	
+							<th width="10%" class="text-center" scope="col">Action</th>	
+						</tr>
+                    </thead>
+                    <tbody>
+						<tr *ngFor="let employee of employees$ | async; let i=index; ">
+							<td scope="row" class="center">{{ 1+i+ service.pageNo }}</td>
+						   
+							<td><ngb-highlight [result]="employee.name"  [term]="service.searchTerm"></ngb-highlight></td>
+							<td><ngb-highlight [result]="employee.position"  [term]="service.searchTerm"></ngb-highlight></td>
+                            <td><ngb-highlight [result]="employee.created_at"  [term]="service.searchTerm"></ngb-highlight></td>
+							<td  class="center">
+								<a href="javascript:void(0);" (click)="viewEmployee(employeeDetails,employee)" title="View" alt="View"> <i class="fa fa-eye"></i> </a>
+								<a href="javascript:void(0);" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('edit_audit_employee')" (click)="editEmployee(i,employee)" title="Edit" alt="Edit" class="pl-2"> <i class="fa fa-edit"></i> </a>
+								<a href="javascript:void(0);" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('delete_audit_employee')" (click)="removeEmployee(confirmcontent,i,employee)" title="Delete" alt="Delete" class="pl-2"> <i class="fa fa-trash text-danger"></i> </a>
+							</td>
+						</tr>
+						<tr  *ngIf="(employees$ | async)?.length==0" >
+							<td colspan="5" class="center">{{ commontxt.norecords }}</td>
+						</tr>
+                    </tbody>
+                </table>
+            </div>
+			-->
+			
+			<!--
+            <div class="d-flex justify-content-between p-2">
+                <ngb-pagination maxSize="10" rotate=true [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+                    <ng-template ngbPaginationPrevious>Prev</ng-template>
+                    <ng-template ngbPaginationNext>Next</ng-template>			  
+                </ngb-pagination>
+            </div>
+   		</div>
+	</div>
+</div>
+-->
+
+
+ <div class="col-12 row enq-view pad-right">
+	<div class="col-8 text-primary" style="border-bottom: 1px solid #d7d7d7;font-size:16px;padding-left:0px;">
+		Worker Interview <a href="javascript:void(0);" (click)="openguidance(showguidance,'interviewannex')"  ><i class="fa fa-info-circle fa-sm" aria-hidden="true" style="margin-left: 5px;"></i></a>
+	</div>
+	<div class="col-4 text-right pad-right" style="border-bottom: 1px solid #d7d7d7;">
+		<ng-container *ngIf="!cond_viewonly && dataloaded">
+			<div class="radio" >
+				Is it applicable?&nbsp;&nbsp;&nbsp;						
+				<input type="radio" id="yes" [checked]="this.isItApplicable?true:false" value="1" (change)="isItApp(1)"><label for="yes">Yes</label>
+				&nbsp;&nbsp;&nbsp;
+				<input type="radio" id="no" [checked]="!this.isItApplicable?true:false" value="2" (change)="isItApp(2)"><label for="no">No</label>										
+			</div>					
+		</ng-container>
+	</div>
+</div>
+<div class="col-12" *ngIf="!dataloaded">
+	<span class="spinner-border spinner-border-sm mr-1"></span>
+</div>
+<div *ngIf="!isItApplicable && dataloaded" class="m-t-5">
+	<form  [formGroup]="remarkForm">
+		<div class="form-group row">					
+			<div class="col-12">
+				<label>Remarks <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Remarks" matTooltipClass="tooltip-text-size" aria-tooltip="Remarks" matTooltipPosition="right"></i>
+				<ng-container *ngIf="!cond_viewonly">
+					<textarea rows="5" formControlName="remark" [class.is-invalid]="rf.remark.invalid && rf.remark.touched" placeholder="Remarks" class="form-control" ></textarea>
+					<div *ngIf="rf.remark.errors" class="invalid-feedback">
+						<div *ngIf="rf.remark.errors.required">Remarks cannot be blank.</div>
+						<div *ngIf="rf.remark.hasError('whitespace')">Invalid Remarks</div>
+					</div>
+				</ng-container>
+				<ng-container *ngIf="cond_viewonly">
+					<div>{{rf.remark.value }}</div>
+				</ng-container>
+			</div>				
+		</div> 											
+		<ng-container *ngIf="!cond_viewonly">			
+			<div class="col-lg-12 text-center mt-4 mb-4">
+				<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="addRemark()">
+					<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+					{{editStatus == 1 ? 'Update' : 'Save'}}	
+				</button>
+				<button [disabled]="loading['button'] || buttonDisable" type="button" (click)="remarkFormreset()"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Reset</button>
+				<div class="clearfix"></div>				
+			</div>
+		</ng-container>
+	</form>
+</div>
+
+<div class="clearfix"></div>
+<div class="row" *ngIf="isItApplicable && dataloaded && ((userType==1 && userdetails.rules.includes('audit_execution')) || userdetails.resource_access==1 || userdetails.rules.includes('add_audit_employee') || (userdetails.rules.includes('edit_audit_employee') && employeeData))">
+<div class="col-12">
+	<!--
+	<div class="add card-box table-responsive enq-view"> 
+	-->
+		<!--
+		<h3>Worker Interview <a href="javascript:void(0);" (click)="openguidance(showguidance,'interviewannex')"  ><i class="fa fa-info-circle fa-sm" aria-hidden="true" style="margin-left: 5px;"></i></a></h3> 			
+		-->
+		<mat-tab-group>
+			<mat-tab label="Employee Interview List"> 
+				<div class="col-12 m-t-15">	
+					<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+					<div class="col-12 pad-left">
+						<table id="datatable" class="table table-bordered" >
+							<thead>
+								<tr>
+									<th width="5%" scope="col" class="center">S.No</th>
+									<th scope="col">Name</th>	
+									<th width="15%" scope="col">Position</th>
+									<th width="15%" scope="col">Gender</th>
+									<th width="15%" scope="col">Type </th>
+									<th width="15%"  class="text-center" scope="col">Created At</th>	
+									<th width="10%" class="text-center" scope="col">Action</th>	
+								</tr>
+							</thead>
+							<tbody>
+								<tr *ngFor="let employee of employees$ | async; let i=index; ">
+									<td scope="row" class="center">{{ 1+i+ service.pageNo }}</td>
+								
+									<td><ngb-highlight [result]="employee.name"  [term]="service.searchTerm"></ngb-highlight></td>
+									<td><ngb-highlight [result]="employee.position"  [term]="service.searchTerm"></ngb-highlight></td>
+									<td><ngb-highlight [result]="employee.gender_label"  [term]="service.searchTerm"></ngb-highlight></td>
+									<td><ngb-highlight [result]="employee.type_label"  [term]="service.searchTerm"></ngb-highlight></td>
+									<td  class="text-center"><ngb-highlight [result]="employee.created_at"  [term]="service.searchTerm"></ngb-highlight></td>
+									<td  class="center">
+										<a href="javascript:void(0);" (click)="viewEmployee(employeeDetails,employee)" title="View" alt="View"> <i class="fa fa-eye"></i> </a>
+										<ng-container *ngIf="!cond_viewonly">
+											<a href="javascript:void(0);" *ngIf="(userType==1 && userdetails.rules.includes('audit_execution')) || userdetails.resource_access==1 || userdetails.rules.includes('edit_audit_employee')" (click)="editEmployee(i,employee)" title="Edit" alt="Edit" class="pl-2"> <i class="fa fa-edit"></i> </a>
+											<a href="javascript:void(0);" *ngIf="(userType==1 && userdetails.rules.includes('audit_execution')) || userdetails.resource_access==1 || userdetails.rules.includes('delete_audit_employee')" (click)="removeEmployee(confirmcontent,i,employee)" title="Delete" alt="Delete" class="pl-2"> <i class="fa fa-trash text-danger"></i> </a>
+										</ng-container>
+									</td>
+								</tr>
+								<tr  *ngIf="(employees$ | async)?.length==0" >
+									<td colspan="7" class="center">{{ commontxt.norecords }}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<ng-container *ngIf="!cond_viewonly">
+						<div style="margin-top: 15px;"> 
+							<h3>{{editStatus == 1 ? 'Update' : 'Add'}} Interview Employee</h3> 
+							<form  [formGroup]="form"  >
+								<div class="form-group row">
+
+									<div class="col-6">
+										<label>Name <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Name" matTooltipClass="tooltip-text-size" aria-tooltip="Name" matTooltipPosition="right"></i>
+										<input type="text" formControlName="name"  class="form-control" placeholder="Name" [class.is-invalid]="f.name.invalid && f.name.touched">
+										
+										<div *ngIf="f.name.errors" class="invalid-feedback">
+											<div *ngIf="f.name.errors.required">Name is required</div>
+											<div *ngIf="f.name.hasError('whitespace')" >Invalid Name</div>
+											<div *ngIf="f.name.errors.maxlength">Name cannot exceed 255 characters</div>
+
+										</div>
+									</div>      
+
+									<div class="col-6">
+										<label>Position <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Position" matTooltipClass="tooltip-text-size" aria-tooltip="Position" matTooltipPosition="right"></i>
+										<input type="text" formControlName="position"  class="form-control" placeholder="Position" [class.is-invalid]="f.position.invalid && f.position.touched">
+										
+										<div *ngIf="f.position.errors" class="invalid-feedback">
+											<div *ngIf="f.position.errors.required">Position is required</div>
+											<div *ngIf="f.position.hasError('whitespace')" >Invalid Position</div>
+											<div *ngIf="f.position.errors.maxlength">Position cannot exceed 255 characters</div>
+
+										</div>
+									</div>
+
+									
+								</div> 
+								
+								<div class="form-group row">
+									
+									<div class="col-4">
+										<label>Gender <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Gender" matTooltipClass="tooltip-text-size" aria-tooltip="Gender" matTooltipPosition="right"></i>
+										<select formControlName="gender" [class.is-invalid]="f.gender.invalid && f.gender.touched" class="form-control select2">
+											<option value="">-- Gender --</option>
+											<option *ngFor="let gender of genderlist | keyvalue" value= {{gender.key}}>{{gender.value}}</option>
+										</select>
+										<div *ngIf="f.gender.errors" class="invalid-feedback">
+											<div *ngIf="f.gender.errors.required" >Gender is required</div>
+										</div>
+									</div>
+
+									
+
+									<div class="col-4">
+										<label>Type <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Type" matTooltipClass="tooltip-text-size" aria-tooltip="Type" matTooltipPosition="right"></i>
+										<select formControlName="type" [class.is-invalid]="f.type.invalid && f.type.touched" class="form-control select2">
+											<option value="">-- Type --</option>
+											<option *ngFor="let type of typelist | keyvalue" value= {{type.key}}>{{type.value}}</option>
+										</select>
+										<div *ngIf="f.type.errors" class="invalid-feedback">
+											<div *ngIf="f.type.errors.required" >Type is required</div>
+										</div>
+									</div>
+
+
+
+									<div class="col-4">
+										<label>Worker's Representative <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Migrant" matTooltipClass="tooltip-text-size" aria-tooltip="Migrant" matTooltipPosition="right"></i>
+										<select formControlName="migrant" [class.is-invalid]="f.migrant.invalid && f.migrant.touched" class="form-control select2">
+											<option value="">-- Worker's Representative --</option>
+											<option *ngFor="let migrant of migrantlist | keyvalue" value= {{migrant.key}}>{{migrant.value}}</option>
+										</select>
+										<div *ngIf="f.migrant.errors" class="invalid-feedback">
+											<div *ngIf="f.migrant.errors.required" >Worker's Representative is required</div>
+										</div>
+									</div>
+
+
+									
+									
+								</div>	
+								
+								<div class="form-group row">
+									<div class="col-12">
+										<label>Notes <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Notes" matTooltipClass="tooltip-text-size" aria-tooltip="Notes" matTooltipPosition="right"></i>
+												
+										<textarea rows="3" formControlName="notes" [class.is-invalid]="f.notes.invalid && f.notes.touched" placeholder="Notes" class="form-control" ></textarea>
+										<div *ngIf="f.notes.errors" class="invalid-feedback">
+											<div *ngIf="f.notes.errors.required">Notes cannot be blank.</div>
+											<div *ngIf="f.notes.hasError('whitespace')">Invalid Notes</div>
+										</div>
+									</div>
+								</div>
+											
+								<div class="col-lg-12 text-center mt-4 mb-4">
+									<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="addemployee()">
+										<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+										{{editStatus == 1 ? 'Update' : 'Save'}}	
+									</button>
+									<button [disabled]="loading['button'] || buttonDisable" type="button" (click)="employeeFormreset()"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Reset</button>
+
+									<div class="clearfix"></div>		
+								</div>
+								
+							</form>	
+						</div>
+					</ng-container>	
+				</div>	
+			</mat-tab>	
+			<mat-tab label="Interview Requirements">
+				<ng-container *ngIf="cond_viewonly=='1'">
+					<app-audit-interview-viewchecklist [cond_viewonly]="1"></app-audit-interview-viewchecklist>  
+				</ng-container>
+				<ng-container *ngIf="cond_viewonly!='1'">
+					<div class="col-12 m-t-15">
+						<h3>Interview Requirements</h3>
+						<form #checklistForm="ngForm"  (ngSubmit)="onSubmit(checklistForm)">
+							<div class="review-check">
+								<table class="table table-striped tempdrivenform">
+									<!--
+									<thead>
+										<tr>
+										<th>Interview Requirements</th>         
+										</tr>
+									</thead>								
+									-->
+									<tbody>
+										<tr *ngFor="let requirement of interviewrequirements; index as i ">
+											<td><p>{{ 1+i }}. {{ requirement.name }} </p>
+												<div class="ans-cmt col-12 row">    
+													<div class="col-4">     
+														<h4>Answer <span class="text-danger">*</span></h4>
+														<div class="row" >
+															<div class="col-10">
+						
+																<ng-container *ngIf="cond_viewonly">{{ answerArr[reviewcommentlist['qtd'+''+requirement.id]] }}</ng-container>
+																<ng-container *ngIf="!cond_viewonly">
+																	<select class="form-control" #qtdAnswer="ngModel" name="qtd{{requirement.id}}"  [(ngModel)]="reviewcommentlist['qtd'+''+requirement.id]"  required >
+																		<option value="">-- Answer --</option>
+																		<option *ngFor="let risk of answerArr | keyvalue " value="{{risk.key}}" >{{ risk.value }}</option>
+																	</select>
+																	<div class="validationerror" *ngIf="!qtdAnswer.valid && qtdAnswer.touched">
+																		Please select the Answer
+																	</div>
+																</ng-container>
+															</div>
+														</div>
+													</div> 
+													<div class="col-8">
+														<h4>Comment</h4>
+														
+														<ng-container *ngIf="cond_viewonly">{{ reviewcommentlist['qtd_comments'+''+requirement.id] }}</ng-container>
+														<ng-container *ngIf="!cond_viewonly">
+															<div class="md-form">
+																<!-- [required]="(qtdAnswer.value !== undefined && qtdAnswer.value!='' && qtdAnswer.value!=1)?true:false" -->
+																<textarea #qtdComments="ngModel" required name="qtd_comments{{requirement.id}}" [(ngModel)]="reviewcommentlist['qtd_comments'+''+requirement.id]" class="md-textarea form-control" mdbInput style="height:50px"></textarea>
+															</div>
+															<div class="validationerror" *ngIf="!qtdComments.valid && qtdComments.touched">
+																Please enter the comment
+															</div>
+														</ng-container>
+													</div>												
+												</div>  
+											</td>
+										</tr>
+									</tbody>
+								</table>
+								<ng-container *ngIf="!cond_viewonly">
+									<div class="col-lg-12 text-center mt-4 mb-4" *ngIf="interviewrequirements && interviewrequirements.length>0">
+										
+										<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10">
+											<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+											Submit
+										</button>
+										<!-- <button [disabled]="loading['button'] || buttonDisable" type="button" [routerLink]="['/application/apps/view']" [queryParams]="{id:this.id}" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2 m-t-10">
+											<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+											Cancel
+										</button> -->
+						
+									</div>
+								</ng-container>
+							</div>
+						</form>
+					</div>	
+				</ng-container>
+			</mat-tab>
+			<mat-tab label="Summary">				
+
+				<div class="col-12 m-t-15">
+					<h3>Inspection Manday</h3>
+						
+						<table id="datatable" class="table table-bordered " >
+							<thead  >
+								<tr>
+									<th width="5%" scope="col" class="center align-middle">S.No</th>
+									<th width="30%" scope="col" class="center align-middle">No of Employee and Processes</th>	
+									<th width="15%" class="text-center align-middle" scope="col">1-3 Processes</th>
+									<th width="15%" class="text-center align-middle" scope="col">4-6 Processes</th>	
+									<th width="15%" class="text-center align-middle" scope="col">7-10 Processes</th>	
+									<th width="15%"  class="text-center align-middle" scope="col">10 and + Processes</th>	
+								</tr>
+							</thead>
+							<tbody>									
+									<tr>
+										<td class="center">1</td>
+										<td class="center">1-100</td>
+										<td class="center">1 man day</td>
+										<td class="center">2 man day</td>
+										<td class="center">2.5 man day</td>
+										<td class="center">3 man day</td>
+									</tr>																			
+									<tr>
+										<td class="center">2</td>
+										<td class="center">101-500</td>
+										<td class="center">2 man day</td>
+										<td class="center">2.5 man day</td>
+										<td class="center">3 man day</td>
+										<td class="center">3.5 man day</td>
+									</tr>																			
+									<tr>
+										<td class="center">3</td>
+										<td class="center">501-1000</td>
+										<td class="center">2.5 man day</td>
+										<td class="center">3 man day</td>
+										<td class="center">3.5 man day</td>
+										<td class="center">4 man day</td>
+									</tr>																			
+									<tr>
+										<td class="center">4</td>
+										<td class="center">1001-+</td>
+										<td class="center">3 man day</td>
+										<td class="center">3.5 man day</td>
+										<td class="center">4 man day</td>
+										<td class="center">4.5 man day</td>
+									</tr>																			
+							</tbody>
+						</table>
+						
+				</div>
+				<div class="col-12 m-t-15">
+					<h3>Interview Sampling Plan</h3>
+						
+						<table id="datatable" class="table table-bordered " >
+							<thead  >
+								<tr>
+									<th width="5%" scope="col" class="center align-middle">S.No</th>
+									<th width="15%" scope="col" class="center align-middle">No.of employees From</th>	
+									<th width="15%" scope="col" class="center align-middle">No.of employees To</th>
+									<th width="15%" class="text-center align-middle" scope="col">Total employees interviewed</th>
+									<th width="15%" class="text-center align-middle" scope="col">Worker files/time and Wage records checked per month</th>	
+									<th width="20%" class="text-center align-middle" scope="col">Effective time spent on interviews</th>	
+									<th width="20%"  class="text-center align-middle" scope="col">Employees to be interviewed</th>	
+								</tr>
+							</thead>
+							<tbody>
+								<ng-container *ngIf="sampleplan && sampleplan.length>0" >
+									<tr *ngFor="let sdetails of sampleplan; index as i "  >
+										<td class="center">{{ 1+i }}</td>
+										<!-- <td class="center">{{ sdetails.audit_man_days }}</td> -->
+										<td class="center">{{ sdetails.no_of_employees_from }}</td>
+										<td class="center">{{ sdetails.no_of_employees_to }}</td>
+										<td class="center">{{ sdetails.total_employees_interviewed }}</td>
+										<td class="center">{{ sdetails.records_checked_per_month }}</td>
+										<td class="center">{{ sdetails.time_spent_on_interviews }}</td>
+										<ng-container *ngIf="i==0" >
+											<td class="center"  [attr.rowspan]="sampleplan.length" >{{total_employees_interviewed}}</td>
+										</ng-container>
+									</tr>
+									<tr >
+										
+									</tr>
+								</ng-container>
+								<tr *ngIf="!sampleplan || sampleplan.length<=0"  >
+									<td colspan="6" class="center"> No Data Found</td>
+								</tr>
+							</tbody>
+						</table>
+						
+				</div>
+				<form #summaryForm="ngForm"  (ngSubmit)="onSummarySubmit(summaryForm)">
+					<div class="col-12 m-t-15">
+						<h3>Summary of Total Worker & Sample</h3>
+							
+							<table id="datatable" class="table table-bordered" >
+								<thead>
+									<tr>
+										<th width="5%" scope="col" class="center">S.No</th>
+										<th width="15%" scope="col">Gender</th>	
+										<th width="15%" class="text-center" scope="col">Total Employees</th>
+										<th width="15%" class="text-center" scope="col">% of M&F</th>	
+										<th width="20%" class="text-center" scope="col">To be Sampled Employees</th>	
+										<th width="20%"  class="text-center" scope="col">No. Sampled Employees</th>	
+									</tr>
+								</thead>
+								<tbody>
+									<ng-container *ngIf="summarydetails && summarydetails.length>0" >
+										<tr *ngFor="let sdetails of summarydetails; index as i "  >
+											<td class="center">{{ 1+i }}</td>
+											<td class="align-middle">{{ sdetails.gender_name }}</td>
+											<td class="center align-middle">
+												<ng-container *ngIf="cond_viewonly">
+													<div class="text-right">
+														{{ sampledemployeelist['qtd'+sdetails.id] }}
+													</div>
+												</ng-container>
+												<ng-container *ngIf="!cond_viewonly">
+													<input type="text" class="form-control text-right" pattern="^[0-9]*$"  #qtdSample="ngModel" name="qtd{{sdetails.id}}"  [(ngModel)]="sampledemployeelist['qtd'+sdetails.id]"  required >
+													<div class="validationerror" *ngIf="!qtdSample.valid && qtdSample.touched">
+														Please enter the valid number
+													</div>
+												</ng-container>
+												<!--{{ sdetails.total_employees }}-->
+											</td>
+											<td class="center align-middle">
+												<ng-container *ngIf="cond_viewonly">
+													{{ sdetails.total_employee_percentage }}%
+												</ng-container>
+												<ng-container *ngIf="!cond_viewonly">
+													{{ getEmpPercent(sdetails.id) }}%
+												</ng-container>
+												 <!--{{ sdetails.total_employee_percentage }}-->
+											</td>
+											<td class="center align-middle">
+												<ng-container *ngIf="cond_viewonly">
+													{{ sdetails.to_be_sampled_employees }}
+												</ng-container>
+												<ng-container *ngIf="!cond_viewonly">
+													{{ this.empTobeSmpArr[sdetails.id] }}
+												</ng-container>
+												<!-- {{ getToBeSampled(sdetails.id) }}--> <!--{{ sdetails.to_be_sampled_employees }}-->
+											</td>
+											<td class="center align-middle">
+												{{ sdetails.no_of_sampled_employees }}
+												<!--{{ sdetails.no_of_sampled_employees }} -->
+												<!--
+												<input type="text" class="form-control" pattern="^[0-9]*$"  #qtdSample="ngModel" name="qtd{{sdetails.id}}"  [(ngModel)]="sampledemployeelist['qtd'+sdetails.id]"  required >
+												<div class="validationerror" *ngIf="!qtdSample.valid && qtdSample.touched">
+													Please enter the valid number
+												</div>
+												-->
+											</td>
+										</tr>
+										<tr >
+												
+											<td class="text-right" colspan="2"><b>Total</b></td>
+											<td class="text-right"><!--{{ getTotalEmp(sdetails.id) }}--> {{ totalDetails.total_employees }}</td>
+											<td class="center"><!--{{ getTotalPercentEmp(sdetails.id) }}--> {{ totalDetails.total_employee_percentage }}%</td>
+											<td class="center"><!--{{ getTotalTobeSampled(sdetails.id) }}--> {{ totalDetails.to_be_sampled_employees }}</td>
+											<td class="center">{{ totalDetails.no_of_sampled_employees }}</td>
+										</tr>
+									</ng-container>
+									<tr *ngIf="!summarydetails || summarydetails.length<=0"  >
+										<td colspan="6" class="center"> No Data Found</td>
+									</tr>
+								</tbody>
+							</table>
+							<ng-container *ngIf="!cond_viewonly">
+								<div class="col-lg-12 text-center mt-4 mb-4" *ngIf="summarydetails && summarydetails.length>0">
+									<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10">
+										<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+										Submit
+									</button>
+								</div>
+							</ng-container>
+							
+					</div>	
+				</form>
+			</mat-tab>
+		</mat-tab-group> 
+	<!--		
+	</div>
+	-->
+</div>
+</div>
+<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+
+<ng-template #employeeDetails let-modal>
+<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+	<span class="c-icon" aria-hidden="true">&times;</span>
+</button>
+<div class="modal-body" style="font-size:16px;">
+	<div class="card-box enq-view">	
+		<table class="table-secondary m-b-15" *ngIf="EmployeeData">
+			<tr>
+				<th width="20%">Name</th>
+				<td width="30%">{{ EmployeeData.name }}</td>
+				<th width="20%">Position</th>
+				<td width="30%">{{ EmployeeData.position }}</td>
+			</tr>
+			<tr>
+				<th width="20%">Gender</th>
+				<td width="30%">{{ EmployeeData.gender_label }}</td>
+				<th width="20%">Worker's Representative</th>
+				<td width="30%">{{ EmployeeData.migrant_label }}</td>
+			</tr>	
+			<tr>
+				<th width="20%">Type</th>
+				<td colspan="3">{{ EmployeeData.type_label }}</td>
+			</tr>
+			<tr>
+				<th width="20%">Notes</th>
+				<td colspan="3">{{ EmployeeData.notes }}</td>
+			</tr>
+			<tr>
+				<th width="20%">Created By</th>
+				<td width="30%">{{ EmployeeData.created_by_label }}</td>
+				<th width="20%">Created Date</th>
+				<td width="30%">{{ EmployeeData.created_at }}</td>
+			</tr>	
+		</table>
+		<div style="text-align: center;">
+			<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="modal.dismiss('cancel click')" >Close</a>
+		</div>
+	</div>
+</div>
+</ng-template>
+<ng-template #confirmcontent let-modal>
+<div class="modal-header">
+	<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+	<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+</div>
+<div class="modal-body" style="font-size:16px;">
+	Are you sure, do you want to delete the data?
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+	<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	
+</div>
+</ng-template>
+<ng-template #showguidance let-modal>
+<!-- <div class="modal-header">
+	<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+	<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+</div> -->
+<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+	<span class="c-icon" aria-hidden="true">&times;</span>
+</button>
+<div class="modal-body">
+		<div class="col-12">
+			<strong>ANNEX- Questions</strong>
+			<table class="table table-bordered">
+				
+				<tr>
+					<td width="1%" class="center">1</td>
+					<td width="47.5%">Could you describe your job?</td>
+					<td width="1%"></td>
+					<td width="1%" class="center">17</td>
+					<td width="47.5%">Have you ever been punished?</td>					
+				</tr>
+				
+				<tr>
+					<td class="center">2</td>
+					<td>How long have you been working in this company?</td>
+					<td></td>
+					<td class="center">18</td>
+					<td>How much is your wage? Any deduction from it?</td>					
+				</tr>
+				
+				<tr>
+					<td class="center">3</td>
+					<td>Where do you live?</td>
+					<td></td>
+					<td class="center">19</td>
+					<td>How your wage is paid?</td>					
+				</tr>
+				
+				<tr>
+					<td class="center">4</td>
+					<td>How do you get to the workplace?</td>
+					<td></td>
+					<td class="center">20</td>
+					<td>Are you involved in any worker unionised? If not, why?</td>					
+				</tr>
+				
+				<tr>
+					<td class="center">5</td>
+					<td>Have you ever seen any children or young worker doing some work in the company premises?</td>
+					<td></td>
+					<td class="center">21</td>
+					<td>Did the company informed you about your right of association?</td>					
+				</tr>
+				
+				<tr>
+					<td class="center">6</td>
+					<td>Children and young persons under 18 shall not be employed at night or in hazardous conditions.</td>
+					<td></td>
+					<td class="center">22</td>
+					<td>Does the company provides you a hygienic and healthy workplace with clean toilets, pure water facilities, rest areas, food consuming areas and sanitary facilities for food storage shall be provided</td>					
+				</tr>
+				<tr>
+					<td class="center">7</td>
+					<td>What are your working hours? What is your normal work week?</td>
+					<td></td>
+					<td class="center">23</td>	
+					<td>Accommodation, where provided, shall be clean, safe and meet the basic needs of the workers</td>
+				</tr>
+				<tr>	
+					<td class="center">8</td>
+					<td>How the working time is recorded? In and Out?</td>
+					<td></td>
+					<td class="center">24</td>
+					<td>Have you ever had any accident?</td>
+				</tr>
+				<tr>
+					<td class="center">9</td>
+					<td>Do you do often overtime?</td>
+					<td></td>
+					<td class="center">25</td>
+					<td>Do you know what the procedure in case of accident is?</td>
+				</tr>
+
+				<tr>
+					<td class="center">10</td>
+					<td>Is it the overtime continuous?</td>
+					<td></td>
+					<td class="center">26</td>
+					<td>Have you being trained on the Health and Safety also first aid procedure?</td>
+				</tr>
+				
+				<tr>
+					<td class="center">11</td>
+					<td>Are you free to decide to do overtime or not?</td>
+					<td></td>
+					<td class="center">27</td>
+					<td>Do you know the evacuation procedures?</td>
+				</tr>
+				
+				<tr>
+					<td class="center">12</td>
+					<td>Do you know how overtime is rated?</td>
+					<td></td>
+					<td class="center">28</td>
+					<td>Have the company provided the PPI's, and explained how to use them?</td>
+				</tr>
+				
+				<tr>
+					<td class="center">13</td>
+					<td>Do you know who the worker representatives and his role is?</td>
+					<td></td>
+					<td class="center">29</td>
+					<td>Are you aware about the complaint box for the comments available in the workshop (if available) and what happen after your communication?</td>
+				</tr>
+				
+				<tr>
+					<td class="center">14</td>
+					<td>In your opinion in this company are there discriminations based on age, sex, religion...?</td>
+					<td></td>
+					<td class="center">30</td>
+					<td>There is no forced or bonded labour.</td>
+				</tr>
+				
+				<tr>
+					<td class="center">15</td>
+					<td>All female workers receive proper respect in the organisation?</td>
+					<td></td>
+					<td class="center">31</td>
+					<td>Workers are not required to lodge "deposits" or their identity papers with their employer and are free to leave their employer after reasonable notice.</td>
+				</tr>
+				
+				<tr>
+					<td class="center">16</td>
+					<td>Is there any punishment procedure for any disciplinary action?</td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				
+			</table>
+		</div>
+</div>
+<!-- <div class="modal-footer">
+	<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	<button type="button" class="btn btn-success " (click)="modal.close('')">Ok</button>
+</div> -->
+</ng-template>

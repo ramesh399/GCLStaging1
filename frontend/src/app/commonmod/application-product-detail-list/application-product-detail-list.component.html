@@ -1,0 +1,59 @@
+<div class="enq-view"> 
+   
+    <ng-container  *ngIf="pageloading" >
+        <span  class="spinner-border spinner-border-sm mr-1"></span>
+    </ng-container>
+    <ng-container  *ngIf="!pageloading" >
+        <table class="table table-bordered col-12 m-b-15">
+            <thead>
+            <tr>
+                <th scope="col" class="center">S.No</th>
+                <th scope="col">Product Category</th>
+                <th scope="col">Type of Product</th>
+                <th scope="col" class="center">Wastage (%)</th>
+                <th scope="col">Material Composition</th>
+                <th scope="col">Standard</th>
+                <th scope="col">Label Grade</th>
+                <th scope="col">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let product of productListDetails; index as i">
+                    <tr>
+                        <td scope="row" class="center">{{  1+ i }}</td>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.product_type_name }}</td>
+                        <td class="center">{{ product.wastage }}</td>
+                        <td>
+                            {{ product.materialcompositionname }}
+                        </td>
+                        <td>{{ product.standard_name }}</td>
+                        <td>{{ product.label_grade_name }}</td>
+                        <td style="vertical-align:middle;" class="center" width="5%">
+                            <input id="productCheckbox{{product.id}}" class="checkboxpdt" (change)="onChange(product.pdt_autoid, $event.target.checked);" [checked]="!product.temp_exists" type="checkbox" value="{{product.pdt_autoid}}">	
+                        </td>
+                    </tr> 
+                    
+                </ng-container>               
+            </tbody>
+        </table>
+        
+        <button *ngIf="productListDetails && productListDetails.length>0" [disabled]="submittedloading" type="button" class="btn btn-sm btn-success " (click)="addUnitProductFromPop()" style="float: right; width: 130px;;">
+            <span *ngIf="submittedloading" class="spinner-border spinner-border-sm mr-1"></span>
+            Submit
+        </button>	
+    </ng-container>
+    
+    <div class="col-12 pad-left pad-right" style="font-size:14px;padding:5px; float:left;">
+        <app-usermessage [success]="productsuccess" [error]="producterror"  ></app-usermessage>
+    </div>
+    <div class="row col-12 error">
+    Note: The selected product(s) will only be listed in the "Scope Certificate" product section.
+    </div>
+    <!--
+    <div class="modal-body text-center col-12" style="font-size:14px;padding:5px; float:left;">
+        <div class="alert alert-success" *ngIf="productsuccess">{{productsuccess}}</div>
+        <div class="alert alert-danger" *ngIf="producterror">{{producterror}}</div>
+    </div>
+    -->
+</div>

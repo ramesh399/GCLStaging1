@@ -1,0 +1,2378 @@
+<!--
+<div class="row"  *ngIf="userData" >
+    <div class="col-sm-12">
+        <div class="page-title-box p-b-30">
+            <h4 class="page-title">View {{ userData.first_name }} {{ userData.last_name }}'s Details</h4>
+            <div class="text-right float-right">
+                <a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/master/user/list']" >Back</a>
+            </div>
+        </div>	
+    </div>
+</div>
+-->
+
+      
+<div class="row" *ngIf="userData">
+		
+	<div>				
+		<button type="button" *ngIf="userdetails.resource_access==1 || userType==3 || userdetails.rules.includes('view_user_personnel_details') || id==userdetails.uid" (click)="changeUserTab('personnel_details')" class="btn btn-sm {{personnel_details_status ? 'btn-success' : 'btn-primary'}}">Personnel</button>
+		<button type="button" *ngIf="id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_roles') || userType==3 || id==userdetails.uid)" (click)="changeUserTab('role')" class="btn btn-sm {{role_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Roles</button>					
+		<button type="button" *ngIf="id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_qualification_details') || userType==3 || id==userdetails.uid)" (click)="changeUserTab('qualification_details')" class="btn btn-sm {{qualification_details_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Academic</button>
+		<button type="button" *ngIf="id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_working_experience') || userType==3 || id==userdetails.uid)" (click)="changeUserTab('working_experience')" class="btn btn-sm {{working_experience_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Work</button>
+		<button type="button" *ngIf="id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_consultancy') || userType==3 || id==userdetails.uid)" (click)="changeUserTab('consultancy_experience')" class="btn btn-sm {{consultancy_experience_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Consultancy</button>
+		<button type="button" *ngIf="id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_cpd') || userType==3 || id==userdetails.uid)" (click)="changeUserTab('cpd')" class="btn btn-sm {{cpd_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">CPD</button>
+		<button type="button" *ngIf="id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_inspection') || userType==3 || id==userdetails.uid)" (click)="changeUserTab('inspection_audit_experience')" class="btn btn-sm {{inspection_audit_experience_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Audit</button>
+		<button type="button" *ngIf="id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_declaration') || userType==3 || id==userdetails.uid)" (click)="changeUserTab('declaration')" class="btn btn-sm {{declaration_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Declaration</button>
+		<button type="button" *ngIf="id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_standard') || userType==3 || id==userdetails.uid)" (click)="changeUserTab('standards_business_sectors')" class="btn btn-sm {{standards_business_sectors_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Standard</button>
+		<button type="button" *ngIf="id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_business_group') || userType==3 || id==userdetails.uid)" (click)="changeUserTab('business_sectors')" class="btn btn-sm {{business_sectors_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Business Group</button>
+		<button type="button" *ngIf="id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_map_group_user_role') || userType==3 || id==userdetails.uid)" (click)="changeUserTab('map_group_user_role')" class="btn btn-sm {{map_group_user_role_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Assigned Roles</button>
+		<button type="button" *ngIf="id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_te_business_group') || userType==3 || id==userdetails.uid)" (click)="changeUserTab('te_business_sectors')" class="btn btn-sm {{te_business_sectors_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">TE Group</button>
+		<button type="button" *ngIf="id" (click)="changeUserTab('user_qualification')" class="btn btn-sm btn-primary" style="margin-left:3px;">Group Status</button>
+	</div>
+	
+	<!--
+	<div>				
+		<button type="button" *ngIf="userdetails.resource_access==1 || userType==3 || userdetails.rules.includes('view_user_personnel_details')" (click)="changeUserTab('personnel_details')" class="btn btn-sm {{personnel_details_status ? 'btn-success' : 'btn-primary'}}">Personnel</button>
+		<button type="button" *ngIf="id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_roles') || userType==3)" (click)="changeUserTab('role')" class="btn btn-sm {{role_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Roles</button>					
+		<button type="button" *ngIf="id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_qualification_details') || userType==3)" (click)="changeUserTab('qualification_details')" class="btn btn-sm {{qualification_details_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Academic</button>
+		<button type="button" *ngIf="id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_working_experience') || userType==3)" (click)="changeUserTab('working_experience')" class="btn btn-sm {{working_experience_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Work</button>
+		<button type="button" *ngIf="id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_consultancy') || userType==3)" (click)="changeUserTab('consultancy_experience')" class="btn btn-sm {{consultancy_experience_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Consultancy</button>
+		<button type="button" *ngIf="userData && userData.is_auditor==1 && id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_certificate_details') || userType==3)" (click)="changeUserTab('certificate_details')" class="btn btn-sm {{cpd_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">CPD</button>
+		<button type="button" *ngIf="id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_inspection') || userType==3)" (click)="changeUserTab('inspection_audit_experience')" class="btn btn-sm {{inspection_audit_experience_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Inspection</button>
+		
+		<button type="button" *ngIf="id && (userdetails.resource_access==1 || userdetails.rules.includes('add_edit_user_cpd') || userType==3)" (click)="changeUserTab('cpd')" class="btn btn-sm btn-primary" style="margin-left:3px;">CPD</button>
+		
+		<button type="button" *ngIf="id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_declaration') || userType==3)" (click)="changeUserTab('declaration')" class="btn btn-sm {{declaration_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Declaration</button>
+		<button type="button" *ngIf="id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_standard') || userType==3)" (click)="changeUserTab('standards_business_sectors')" class="btn btn-sm {{standards_business_sectors_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Standard</button>
+		<button type="button" *ngIf="id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_business_group') || userType==3)" (click)="changeUserTab('business_sectors')" class="btn btn-sm {{business_sectors_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Business Group</button>
+		<button type="button" *ngIf="id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_te_business_group') || userType==3)" (click)="changeUserTab('te_business_sectors')" class="btn btn-sm {{te_business_sectors_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Technical Expert Business Group</button>
+		<button type="button" *ngIf="id" (click)="changeUserTab('user_qualification')" class="btn btn-sm btn-primary" style="margin-left:3px;">Qualification Status</button>
+	</div>
+	-->
+	 
+	<div class="clear"></div>
+	<div class="mat-accordion" style="width: 99%;">            
+		
+		<div class="col-12 add card-box table-responsive details-view">
+
+			<div class="enq-view col-12 pad-left" *ngIf="(userdetails.resource_access==1 || userType==3 || userdetails.rules.includes('add_user_personnel_details') || id==userdetails.uid) && personnel_details_status">
+				<!--
+				<div class="add card-box table-responsive details-view p-t-10">
+				-->
+					<h3>Personnel</h3>
+					<table class="table-secondary m-b-15">
+						
+						<tr>
+							<th width="20%">First Name</th>
+							<td width="30%">{{ userData.first_name }}</td>
+							<th width="20%">Last Name</th>
+							<td width="30%">{{ userData.first_name }}</td>
+						</tr>
+						
+						<tr>
+							<th width="20%">Email</th>
+							<td width="30%"><a href="mailto:{{ userData.email }}">{{ userData.email }}</a></td>
+							<th width="20%">Telephone</th>
+							<td width="30%">{{ userData.telephone }}</td>
+						</tr>
+						
+						<tr>
+							<th width="20%">Country</th>
+							<td width="30%">{{ userData.country_name }}</td>
+							<th width="20%">State</th>
+							<td width="30%">{{ userData.state_name }}</td>
+						</tr>
+						
+						<tr>
+							<th width="20%">Passport/ID</th>
+							<td width="30%"><a href="javascript:void(0);" (click)="downloadUserFile(userData.passport_file,'passport');openmodal(downloading)" ><i class="fa fa-download"></i> {{ userData.passport_file }}</a></td>
+							<th width="20%">Member Agreement/Contract</th>
+							<td width="30%"><a href="javascript:void(0);" (click)="downloadUserFile(userData.contract_file,'contract');openmodal(downloading)" ><i class="fa fa-download"></i> {{ userData.contract_file }}</a></td>
+						</tr>
+						
+						<tr>
+							<th width="20%">Created By</th>
+							<td width="30%">{{ userData.created_by }}</td>
+							<th width="20%">Created Date</th>
+							<td width="30%">{{ userData.created_at }}</td>
+						</tr>
+						
+					</table>
+				<!--	
+				</div>
+				-->
+				
+				<!--				
+				<h3>Personnel</h3>
+				<table class="table table-bordered tab-bor col-12" >
+					<tr>
+						<td>First Name</td><td>{{ userData.first_name }}</td>
+						<td>Last Name</td><td>{{ userData.last_name }}</td>
+					</tr>
+					<tr>
+						<td>Email</td><td>{{ userData.email }}</td>
+						<td>Telephone</td><td>{{ userData.telephone }}</td>
+					</tr>
+					<tr>
+						<td>Country</td><td>{{ userData.country_name }}</td>
+						<td>State</td><td>{{ userData.state_name }}</td>
+					</tr>
+					<tr>
+						<td>Passport/ID</td>
+						<td><a href="javascript:void(0);" (click)="downloadUserFile(userData.passport_file,'passport');openmodal(downloading)" ><i class="fa fa-download"></i> {{ userData.passport_file }}</a></td>
+						<td>Member Agreement/Contract</td>
+						<td><a href="javascript:void(0);" (click)="downloadUserFile(userData.contract_file,'contract');openmodal(downloading)" ><i class="fa fa-download"></i> {{ userData.contract_file }}</a></td>
+					</tr>
+					<tr>
+						<td>Created By</td><td>{{ userData.created_by }}</td>
+						<td>Created Date</td><td>{{ userData.created_at }}</td>
+					</tr>
+				</table>
+				-->				
+				
+				<!--
+				<div class="mat-accordion">
+					<div class="card-box enq-view" style="display:inline">					
+						<ul>
+							<li><span class="label-pad">First Name</span>   <span class="name-pad">{{ userData.first_name }}</span></li>
+							<li><span class="label-pad">Last Name</span>   <span class="name-pad">{{ userData.last_name }}</span></li>
+							<li><span class="label-pad">Email</span>   <span class="name-pad">{{ userData.email }}</span></li>
+							<li><span class="label-pad">Telephone</span>   <span class="name-pad">{{ userData.telephone }}</span></li>
+							<li><span class="label-pad">Country</span>   <span class="name-pad">{{ userData.country_name }}</span></li>
+							<li><span class="label-pad">State</span>   <span class="name-pad">{{ userData.state_name }}</span></li>
+							<li><span class="label-pad">Passport/ID<br><br></span> <span class="name-pad">
+									<a href="javascript:void(0);" (click)="downloadUserFile(userData.passport_file,'passport');openmodal(downloading)" ><i class="fa fa-download"></i> {{ userData.passport_file }}</a>
+								</span>
+							</li>
+							<li><span class="label-pad">Member Agreement/Contract</span>   <span class="name-pad">
+								<a href="javascript:void(0);" (click)="downloadUserFile(userData.contract_file,'contract');openmodal(downloading)" ><i class="fa fa-download"></i> {{ userData.contract_file }}</a>
+							</span></li>
+							<li><span class="label-pad">Created By</span>  <span class="name-pad">{{ userData.created_by }}</span></li>
+							<li><span class="label-pad">Created Date</span>  <span class="name-pad">{{ userData.created_at }}</span></li>
+						</ul>
+						
+					</div>
+	
+				</div>
+				-->
+
+				<!--*ngIf="id && (userdetails.resource_access==1 || userdetails.rules.includes('user_role_approval') || userdetails.rules.includes('declaration_approval') || userdetails.rules.includes('business_group_approval') || userdetails.rules.includes('standard_approval') )" -->
+				<div class="col-sm-12 mat-accordion tabDiv enq-view " style="margin-top:20px;">
+					<h3>Waiting for Approval</h3>
+					<mat-tab-group>
+						<mat-tab label="Role  ({{userData.role_id_waiting_approval?.length}})" >
+							
+							<div class="card-box enq-view lst">
+								<table id="datatable" class="table table-bordered tab-bor col-12" >
+									<thead>
+									<tr>
+										<th scope="col" width="3%" class="center">S.No</th>
+										<!--
+										<th scope="col">Username</th>
+										-->
+										<th scope="col">OSS</th>
+										<th scope="col">Role</th>										
+										<th scope="col" style="width:10%;" class="center" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('user_role_approval')">Review</th>
+									</tr>
+									</thead>
+									<tbody>
+										<tr *ngIf="!userData.role_id_waiting_approval || userData.role_id_waiting_approval?.length==0">
+											<td colspan="5" class="center">No User Roles Waiting for Approval</td>
+										</tr>
+										<tr *ngFor="let userEntry of userData.role_id_waiting_approval; let i=index; " >
+											<td scope="row" class="center">{{  1+ i }}</td>
+											<!--
+											<td>{{ userEntry.username }}</td>
+											-->
+											<td>{{ userEntry.franchise_name }}</td>
+											<td>{{ userEntry.role_name }}</td>											
+											<td class="center"  *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('user_role_approval')"><a href="javascript:void(0);" title="Review Role" alt="Review Role" (click)="open(userRoleReviewContent,'role',userEntry.user_role_id,'Role',userEntry)" ><i class="fa fa-check" style="font-size: 20px;"></i></a></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</mat-tab>
+						<mat-tab label="Standard ({{userData.standard_approvalwaiting?.length}})" >
+							<div class="tbl-sec">
+								<table id="datatable" class="table table-bordered tab-bor col-12" >
+									<thead>
+									<tr>
+										<th scope="col" width="3%" class="center">S.No</th>
+										<th scope="col">Standard</th>
+										<th scope="col">Standard Exam Date</th>
+										<th scope="col">Standard Exam File</th>
+										<th scope="col">Recycle Exam Date</th>
+										<th scope="col">Recycle Exam File</th>
+										<th scope="col">Social Exam Date</th>
+										<th scope="col">Social Exam File</th>
+										<th scope="col" style="width:10%;" class="center"  *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('standard_approval')">Review</th>
+									</tr>
+									</thead>
+									<tbody>
+										<tr *ngIf="!userData.standard_approvalwaiting || userData.standard_approvalwaiting?.length==0">
+												<td colspan="8" class="center">No Standard Waiting for Approval</td>
+										</tr>
+										<tr *ngFor="let standard of userData.standard_approvalwaiting; let i=index; "   >
+											<td scope="row" class="center">{{  1+ i }}</td>
+											<td>{{ standard.standard_name }}</td>
+											<td class="center">{{ standard.standard_exam_date }}</td>
+											<td class="center"><a *ngIf="standard.standard_exam_file" href="javascript:void(0);" (click)="downloadstdFile(standard.id,'standard',standard.standard_exam_file);openmodal(downloading)" ><i class="fa fa-download"></i> {{ standard.standard_exam_file }}</a></td>
+											<td>{{ standard.recycle_exam_date }}</td>
+											<td><a *ngIf="standard.recycle_exam_file!='' && standard.recycle_exam_file" href="javascript:void(0);" (click)="downloadstdFile(standard.id,'recycle',standard.recycle_exam_file);openmodal(downloading)" ><i class="fa fa-download"></i> {{ standard.recycle_exam_file }}</a></td>
+											<td>{{ standard.social_course_exam_date }}</td>
+											<td><a *ngIf="standard.social_course_exam_file" href="javascript:void(0);" (click)="downloadstdFile(standard.id,'social',standard.social_course_exam_file);openmodal(downloading)" ><i class="fa fa-download"></i> {{ standard.social_course_exam_file }}</a></td>
+											<td class="center" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('standard_approval')"><a  href="javascript:void(0);" title="Review Standard" alt="Review Standard" (click)="open(approverStandardConfirmContent,'standard',standard.id,'Standard')" ><i class="fa fa-check" style="font-size: 20px;"></i></a></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</mat-tab>
+						<mat-tab  label="Declaration ({{userData.declaration_approvalwaiting?.length}})" >
+							<form>
+								<div class="tabDiv" >
+									<div class="form-group row">
+										<div class="tbl-sec">
+											<table id="datatable" class="table table-bordered tab-bor col-12" >
+												<thead>
+												<tr>
+													<th scope="col" width="3%" class="center">S.No</th>
+													<th scope="col">Company</th>
+													<th scope="col">Contract</th>
+													<th scope="col">Interest</th>
+													<th scope="col" class="center">Start Year</th>
+													<th scope="col" class="center">End Year</th>
+													<th scope="col" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('declaration_approval')">Review</th>
+												</tr>
+												</thead>
+												<tbody>
+													<tr *ngIf="!userData.declaration_approvalwaiting || userData.declaration_approvalwaiting?.length==0">
+															<td colspan="7" class="center">No Declaration Waiting for Approval</td>
+													</tr>
+													<ng-container  *ngIf="userData.declaration_approvalwaiting?.length>0">
+														<tr *ngFor="let declarationEntry of userData.declaration_approvalwaiting; let i=index; " >
+															<td scope="row" class="center">{{  1+ i }}</td>
+															<td>{{ declarationEntry.declaration_company }}</td>
+															<td>{{ declarationEntry.declaration_contract }}</td>
+															<td>{{ declarationEntry.declaration_interest }}</td>
+															<td class="center">{{ declarationEntry.declaration_start_year }}</td>
+															<td class="center">{{ declarationEntry.declaration_end_year }}</td>
+															<td class="center" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('declaration_approval')"><a  href="javascript:void(0);" title="Review Declaration" alt="Review Declaration" (click)="open(approverConfirmContent,'declaration',declarationEntry.id,'Declaration')" ><i class="fa fa-check" style="font-size: 20px;"></i></a></td>
+														</tr>
+													</ng-container>
+												</tbody>
+											</table>
+										</div>	
+									</div>
+								</div>
+							</form>
+						</mat-tab>
+						<mat-tab  label="Business Group ({{userData.businessgroup_approvalwaiting?.length}})">
+							<form>
+								<div class="tabDiv" >
+									<div class="form-group row">
+										<div class="tbl-sec">
+											<table id="datatable" class="table table-bordered tab-bor col-12" >
+												<thead>
+												<tr>
+													<th scope="col" width="3%" class="center">S.No</th>
+													<th scope="col">Standard</th>
+													<th scope="col">Business Sector</th>
+													<th scope="col">Academic Qualification Available</th>
+													<th scope="col">Exam File</th>
+													<th scope="col">Technical Interview File</th>
+													<th scope="col">Business Sector Group</th>
+													<th scope="col" style="width:10%;" class="center"  *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('business_group_approval')">Review</th>
+												</tr>
+												</thead>
+												<tbody>
+													<tr *ngIf="userData.businessgroup_approvalwaiting?.length==0">
+															<td colspan="8" class="center">No Business Group Waiting for Approval</td>
+													</tr>
+													<ng-container *ngFor="let businessEntry of userData.businessgroup_approvalwaiting; let i=index; " >
+														<tr>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  scope="row" class="center">{{  1+ i }}</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length" >{{ businessEntry.standard_name }}</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  class="center">{{ businessEntry.business_sector_name }}</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  class="center">{{ businessEntry.academic_qualification_name }}</td>
+															
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  ><a *ngIf="businessEntry.academic_qualification!=1 && businessEntry?.examfilename" href="javascript:void(0);" (click)="downloadbgroupFile(businessEntry.id,'exam',businessEntry?.examfilename);openmodal(downloading)" ><i class="fa fa-download" *ngIf="businessEntry?.examfilename"></i> {{ businessEntry?.examfilename }}</a></td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length" ><a *ngIf="businessEntry?.technicalfilename" href="javascript:void(0);" (click)="downloadbgroupFile(businessEntry.id,'interview',businessEntry?.technicalfilename);openmodal(downloading)" ><i class="fa fa-download" *ngIf="businessEntry?.technicalfilename"></i> {{ businessEntry?.technicalfilename }}</a></td>
+															<td class="center">{{ businessEntry.business_sector_group_name_arr[0] }}</td>
+															<td class="center" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('business_group_approval')"><a  href="javascript:void(0);" title="Review Business Group" alt="Review Business Group" (click)="open(approverConfirmContent,'businessgroup',businessEntry.business_sector_group_code_id[0],'Business Group')" ><i class="fa fa-check" style="font-size: 20px;"></i></a></td>
+														</tr>
+														<ng-container *ngIf="businessEntry.business_sector_group_name_arr.length>1">
+															<tr *ngFor="let bEntry of businessEntry.business_sector_group_name_arr | slice:1; let ib=index;" >
+																<td class="center">{{ bEntry }}</td>
+																<td class="center" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('business_group_approval')"><a  href="javascript:void(0);" title="Review Business Group" alt="Review Business Group" (click)="open(approverConfirmContent,'businessgroup',businessEntry.business_sector_group_code_id[1+ib],'Business Group')" ><i class="fa fa-check" style="font-size: 20px;"></i></a></td>
+															</tr>
+														</ng-container>
+													</ng-container>
+													<!--<tr *ngFor="let businessEntry of userData.businessgroup_approvalwaiting; let i=index; "   >
+														<td scope="row" class="center">{{  1+ i }}</td>
+														<td>{{ businessEntry.standard_name }}</td>
+														<td class="center">{{ businessEntry.business_sector_name }}</td>
+														<td class="center">{{ businessEntry.business_sector_group_name }}</td>
+														<td><a href="javascript:void(0);" (click)="downloadbgroupFile(businessEntry.id,'exam',businessEntry.examfilename);openmodal(downloading)" ><i class="fa fa-download" *ngIf="businessEntry.examfilename"></i>{{ businessEntry.examfilename }}</a></td>
+														<td><a href="javascript:void(0);" (click)="downloadbgroupFile(businessEntry.id,'interview',businessEntry.technicalfilename);openmodal(downloading)" ><i class="fa fa-download" *ngIf="businessEntry.technicalfilename"></i>{{ businessEntry.technicalfilename }}</a></td>
+														<td class="center" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('business_group_approval')"><a  href="javascript:void(0);" title="Review Business Group" alt="Review Business Group" (click)="open(approverConfirmContent,'businessgroup',businessEntry.id,'Business Group')" ><i class="fa fa-check" style="font-size: 20px;"></i></a></td>
+													</tr>-->
+												</tbody>
+											</table>
+										</div>
+								
+									</div>
+								</div>
+							</form>
+						</mat-tab>
+
+						
+
+						<mat-tab  label="Technical Expert Business Group ({{userData.tebusinessgroup_approvalwaiting?.length}})">
+							<form>
+								<div class="tabDiv" >
+									<div class="form-group row">
+										<div class="tbl-sec">
+											<table id="datatable" class="table table-bordered tab-bor col-12" >
+												<thead>
+												<tr>
+													<th scope="col" width="3%" class="center">S.No</th>
+													<th scope="col">Role</th>
+													<th scope="col">Business Sector</th>
+													
+													<th scope="col">Academic Qualification Available</th>
+													<th scope="col">Exam File</th>
+													<th scope="col">Technical Interview File</th>
+													<th scope="col">Business Sector Group</th>
+													<th scope="col" style="width:10%;" class="center"  *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('tebusiness_group_approval')">Review</th>
+												</tr>
+												</thead>
+												<tbody>
+													<tr *ngIf="userData.tebusinessgroup_approvalwaiting?.length==0">
+															<td colspan="8" class="center">No Business Group Waiting for Approval</td>
+													</tr>
+													<ng-container *ngFor="let businessEntry of userData.tebusinessgroup_approvalwaiting; let i=index; " >
+														<tr>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  scope="row" class="center">{{  1+ i }}</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length" >{{ businessEntry.role_name }}</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  class="center">{{ businessEntry.business_sector_name }}</td>
+
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  class="center">{{ businessEntry.academic_qualification_name }}</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  ><a *ngIf="businessEntry.academic_qualification!=1 && businessEntry?.examfilename" href="javascript:void(0);" (click)="downloadtebgroupFile(businessEntry.id,'exam',businessEntry?.examfilename);openmodal(downloading)" ><i class="fa fa-download" *ngIf="businessEntry?.examfilename"></i> {{ businessEntry?.examfilename }}</a></td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length" ><a *ngIf="businessEntry?.technicalfilename" href="javascript:void(0);" (click)="downloadtebgroupFile(businessEntry.id,'interview',businessEntry?.technicalfilename);openmodal(downloading)" ><i class="fa fa-download" *ngIf="businessEntry?.technicalfilename"></i> {{ businessEntry?.technicalfilename }}</a></td>
+															
+															<td class="center">{{ businessEntry.business_sector_group_name_arr[0] }}</td>
+															<td class="center" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('tebusiness_group_approval')"><a  href="javascript:void(0);" title="Review Business Group" alt="Review Business Group" (click)="open(approverConfirmContent,'te_business_group',businessEntry.business_sector_group_code_id[0],'Technical Expert Business Group')" ><i class="fa fa-check" style="font-size: 20px;"></i></a></td>
+														</tr>
+														<ng-container *ngIf="businessEntry.business_sector_group_name_arr.length>1">
+															<tr *ngFor="let bEntry of businessEntry.business_sector_group_name_arr | slice:1; let ib=index;" >
+																<td class="center">{{ bEntry }}</td>
+																<td class="center" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('tebusiness_group_approval')"><a  href="javascript:void(0);" title="Review Business Group" alt="Review Business Group" (click)="open(approverConfirmContent,'te_business_group',businessEntry.business_sector_group_code_id[1+ib],'Technical Expert Business Group')" ><i class="fa fa-check" style="font-size: 20px;"></i></a></td>
+															</tr>
+														</ng-container>
+													</ng-container>
+												</tbody>
+											</table>
+										</div>
+								
+									</div>
+								</div>
+							</form>
+						</mat-tab>
+					</mat-tab-group>
+				</div>
+			</div>
+			
+			<div class="enq-view col-12 pad-left" *ngIf="(id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_roles') || userType==3 || id==userdetails.uid)) && role_status">
+				<h3>Roles</h3>
+				<mat-tab-group>
+					<mat-tab label="New ({{userData.role_id?.length}})">
+						<div class="card-box enq-view lst">
+							<table id="datatable" class="table table-bordered tab-bor col-12" >
+								<thead>
+								<tr>
+									<th scope="col" width="3%" class="center">S.No</th>
+									<th scope="col">OSS</th>
+									<th scope="col">Role</th>									
+								</tr>
+								</thead>
+								<tbody>
+									<tr *ngIf="userData.role_id?.length==0">
+										<td colspan="5" class="center">No User Roles Added</td>
+									</tr>
+									<tr *ngFor="let userEntry of userData.role_id; let i=index; " >
+										<td scope="row" class="center">{{  1+ i }}</td>
+										<td>{{ userEntry.franchise_name }}</td>
+										<td>{{ userEntry.role_name }}</td>										
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</mat-tab>
+					<mat-tab label="Approved ({{userData.role_id_approved?.length}})">
+						<div class="card-box enq-view lst">
+							<table id="datatable" class="table table-bordered tab-bor col-12" >
+								<thead>
+								<tr>
+									<th scope="col" width="3%" class="center">S.No</th>
+									<th scope="col">OSS</th>
+									<th scope="col">Role</th>									
+									<th scope="col">Username</th>
+									<th scope="col" width="10%" class="center" >Action</th>
+								</tr>
+								</thead>
+								<tbody>
+									<tr *ngIf="userData.role_id_approved?.length==0">
+										<td colspan="5" class="center">No User Roles Approved</td>
+									</tr>
+									<tr *ngFor="let userEntry of userData.role_id_approved; let i=index; " >
+										<td scope="row" class="center">{{  1+ i }}</td>
+										<td>{{ userEntry.franchise_name }}</td>										
+										<td>{{ userEntry.role_name }}</td>
+										<td>{{ userEntry.username }}</td>
+										<td class="center">
+											<a href="javascript:void(0);" (click)="showApprovedRoleDetails(RoleDetails,i)" title="View" alt="View"><i class="fa fa-eye"></i></a>
+
+											<a href="javascript:void(0);" *ngIf="userdetails.resource_access==1 && (userEntry.username!==null && userEntry.resource_access!==3 && userEntry.resource_access!==4 && userEntry.resource_access!==8)" class="pl-2" (click)="editCredentials(Credentials,userEntry)" title="Edit" alt="Edit"><i class="fa fa-edit"></i></a>
+										
+											<a href="javascript:void(0);" *ngIf="(userdetails.resource_access==1 || userdetails.rules.includes('edit_user_roles')) && userEntry.status==0" (click)="openConfirm(confirmAction,'deactivate',userEntry.id,'role')" class="pl-2" title="Active" alt="Active"><i class="fa fa-toggle-on text-success"></i></a>	
+
+											<a href="javascript:void(0);" *ngIf="(userdetails.resource_access==1 || userdetails.rules.includes('edit_user_roles')) && userEntry.status==1" (click)="openConfirm(confirmAction,'activate',userEntry.id,'role')" class="pl-2" title="In-active" alt="In-active"><i class="fa fa-toggle-off text-danger"></i></a>	
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</mat-tab>
+					<mat-tab label="Rejected ({{userData.role_id_rejected?.length}})">
+						<div class="card-box enq-view lst">
+							<table id="datatable" class="table table-bordered tab-bor col-12" >
+								<thead>
+								<tr>
+									<th scope="col" width="3%" class="center">S.No</th>
+									<!--
+									<th scope="col">Username</th>
+									-->
+									<th scope="col">OSS</th>
+									<th scope="col">Role</th>									
+									<th scope="col" width="10%" class="center" >More Details</th>
+								</tr>
+								</thead>
+								<tbody>
+									<tr *ngIf="userData.role_id_rejected?.length==0">
+										<td colspan="5" class="center">No User Roles Rejected</td>
+									</tr>
+									<tr *ngFor="let userEntry of userData.role_id_rejected; let i=index; " >
+										<td scope="row" class="center">{{  1+ i }}</td>
+										<!--
+										<td>{{ userEntry.username }}</td>
+										-->
+										<td>{{ userEntry.franchise_name }}</td>
+										<td>{{ userEntry.role_name }}</td>										
+										<td class="center"><a href="javascript:void(0);" (click)="showRejectedRoleDetails(RoleDetails,i)" title="View" alt="View"><i class="fa fa-eye"></i></a></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</mat-tab>
+				</mat-tab-group>
+			</div>
+			
+			<div *ngIf="(id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_standard') || userType==3 || id==userdetails.uid)) && standards_business_sectors_status">
+				<div class="card-box enq-view lst"> 
+					<h3>Standard</h3>
+					<mat-tab-group>
+						<mat-tab label="New">
+							<div class="tbl-sec pl-0 pr-0">
+								<table id="datatable" class="table table-bordered tab-bor col-12" >
+									<thead>
+									<tr>
+										<th scope="col" width="3%" class="center">S.No</th>
+										<th scope="col">Standard</th>
+										<th scope="col">Standard Exam Date</th>
+										<th scope="col">Standard Exam File</th>
+										<th scope="col">Recycle Exam Date</th>
+										<th scope="col">Recycle Exam File</th>
+										<th scope="col">Social Exam Date</th>
+										<th scope="col">Social Exam File</th>
+									</tr>
+									</thead>
+									<tbody>
+										<tr *ngIf="userData.standard?.length==0">
+												<td colspan="8" class="center">No Standard Added</td>
+										</tr>
+										<tr *ngFor="let standard of userData.standard; let i=index; "  >
+											<td scope="row" class="center">{{  1+ i }}</td>
+											<td>{{ standard.standard_name }}</td>
+											<td class="center">{{ standard.standard_exam_date }}</td>
+											<td class="center"><a href="javascript:void(0);" (click)="downloadstdFile(standard.id,'standard',standard.standard_exam_file);openmodal(downloading)" ><i class="fa fa-download"></i> {{ standard.standard_exam_file }}</a></td>
+											<td>{{ standard.recycle_exam_date }}</td>
+											<td><a *ngIf="standard.recycle_exam_file" href="javascript:void(0);" (click)="downloadstdFile(standard.id,'recycle',standard.recycle_exam_file);openmodal(downloading)" ><i class="fa fa-download"></i> {{ standard.recycle_exam_file }}</a></td>
+											<td>{{ standard.social_course_exam_date }}</td>
+											<td><a *ngIf="standard.social_course_exam_file" href="javascript:void(0);" (click)="downloadstdFile(standard.id,'social',standard.social_course_exam_file);openmodal(downloading)" ><i class="fa fa-download"></i> {{ standard.social_course_exam_file }}</a></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</mat-tab>
+						<!-- <mat-tab label="Waiting for Approval">
+							<div class="tbl-sec">
+								<table id="datatable" class="table table-bordered tab-bor col-12" >
+									<thead>
+									<tr>
+										<th scope="col" width="3%" class="center">S.No</th>
+										<th scope="col">Standard</th>
+										<th scope="col">Standard Exam Date</th>
+										<th scope="col">Standard Exam File</th>
+										<th scope="col">Recycle Exam Date</th>
+										<th scope="col">Recycle Exam File</th>
+										<th scope="col">Social Exam Date</th>
+										<th scope="col">Social Exam File</th>
+									</tr>
+									</thead>
+									<tbody>
+										<tr *ngIf="userData.standard_approvalwaiting?.length==0">
+												<td colspan="8" class="center">No Standard Waiting for Approval</td>
+										</tr>
+										<tr *ngFor="let standard of userData.standard_approvalwaiting; let i=index; " [class.currentedit]="this.businessIndex===i" >
+											<td scope="row" class="center">{{  1+ i }}</td>
+											<td>{{ standard.standard_name }}</td>
+											<td class="center">{{ standard.standard_exam_date }}</td>
+											<td class="center">{{ standard.standard_exam_file }}</td>
+											<td>{{ standard.recycle_exam_date }}</td>
+											<td>{{ standard.recycle_exam_file }}</td>
+											<td>{{ standard.social_exam_date }}</td>
+											<td>{{ standard.social_exam_file }}</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</mat-tab> -->
+						<mat-tab label="Approved ({{userData.standard_approved?.length}})">
+							<div class="tbl-sec">
+								<table id="datatable" class="table table-bordered tab-bor col-12" >
+									<thead>
+									<tr>
+										<th scope="col" width="3%" class="center">S.No</th>
+										<th scope="col">Standard</th>
+										<th scope="col">Standard Exam Date</th>
+										<th scope="col">Standard Exam File</th>
+										<th scope="col">Witness Date</th>
+										<th scope="col">Witness File</th>
+										<th scope="col">Witness Valid Until</th>
+										<th scope="col">More Details</th>
+										<!-- <th scope="col">Recycle Exam Date</th>
+										<th scope="col">Recycle Exam File</th>
+										<th scope="col">Social Exam Date</th>
+										<th scope="col">Social Exam File</th> -->
+									</tr>
+									</thead>
+									<tbody>
+										<tr *ngIf="userData.standard_approved?.length==0">
+												<td colspan="8" class="center">No Standard Approved</td>
+										</tr>
+										<tr *ngFor="let standard of userData.standard_approved; let i=index; " >
+											<td scope="row" class="center">{{  1+ i }}</td>
+											<td>{{ standard.standard_name }}</td>
+											<td class="center">{{ standard.standard_exam_date }}</td>
+											<td class="center"><a href="javascript:void(0);" (click)="downloadstdFile(standard.id,'standard',standard.standard_exam_file);openmodal(downloading)" ><i class="fa fa-download" *ngIf="standard.standard_exam_file"></i> {{ standard.standard_exam_file }}</a></td>
+											<td class="center">{{ standard.witness_date }}</td>
+											<td class="center"><a href="javascript:void(0);" (click)="downloadstdFile(standard.id,'witness',standard.witness_file);openmodal(downloading)" ><i class="fa fa-download" *ngIf="standard.witness_file"></i> {{ standard.witness_file }}</a></td>
+											<td class="center">{{ standard.witness_valid_until }}</td>
+											<!-- <td>{{ standard.recycle_exam_date }}</td>
+											<td><a href="javascript:void(0);" (click)="downloadstdFile(standard.id,'recycle',standard.recycle_exam_file);openmodal(downloading)" ><i class="fa fa-download" *ngIf="standard.recycle_exam_file"></i>{{ standard.recycle_exam_file }}</a></td>
+											<td>{{ standard.social_course_exam_date }}</td>
+											<td><a href="javascript:void(0);" (click)="downloadstdFile(standard.id,'social',standard.social_course_exam_file);openmodal(downloading)" ><i class="fa fa-download" *ngIf="standard.social_course_exam_file"></i>{{ standard.social_course_exam_file }}</a></td> -->
+											<td class="center">
+												<a href="javascript:void(0);" (click)="showApprovedStdDetails(StdDetails,i)" title="View" alt="View"><i class="fa fa-eye"></i></a>
+												<a *ngIf="standard.rejected_history?.length > 0" href="javascript:void(0);" class="pl-2" (click)="showApprovedStdHistoryDetails(StandardRejectDetails,i)" title="Reject History" alt="Reject History"><i class="fa fa-flag"></i></a>
+											</td>
+								</tr>
+									</tbody>
+								</table>
+							</div>
+						</mat-tab>
+						<mat-tab label="Rejected ({{userData.standard_rejected?.length}})">
+							<div class="tbl-sec">
+								<table id="datatable" class="table table-bordered tab-bor col-12" >
+									<thead>
+									<tr>
+										<th scope="col" width="3%" class="center">S.No</th>
+										<th scope="col">Standard</th>
+										<th scope="col">Standard Exam Date</th>
+										<th scope="col">Standard Exam File</th>
+										<th scope="col">Witness Date</th>
+										<th scope="col">Witness File</th>
+										<th scope="col">Witness Valid Until</th>
+										<th scope="col">More Details</th>
+										<!-- <th scope="col">Recycle Exam Date</th>
+										<th scope="col">Recycle Exam File</th>
+										<th scope="col">Social Exam Date</th>
+										<th scope="col">Social Exam File</th> -->
+									</tr>
+									</thead>
+									<tbody>
+										<tr *ngIf="userData.standard_rejected?.length==0">
+												<td colspan="8" class="center">No Standard Rejected</td>
+										</tr>
+										<tr *ngFor="let standard of userData.standard_rejected; let i=index; "  >
+											<td scope="row" class="center">{{  1+ i }}</td>
+											<td>{{ standard.standard_name }}</td>
+											<td class="center">{{ standard.standard_exam_date }}</td>
+											<td class="center"><a href="javascript:void(0);" (click)="downloadstdFile(standard.id,'standard',standard.standard_exam_file);openmodal(downloading)" ><i class="fa fa-download" *ngIf="standard.standard_exam_file"></i> {{ standard.standard_exam_file }}</a></td>
+											<td class="center">{{ standard.witness_date }}</td>
+											<td class="center"><a href="javascript:void(0);" (click)="downloadstdFile(standard.id,'witness',standard.witness_file);openmodal(downloading)" ><i class="fa fa-download" *ngIf="standard.witness_file"></i> {{ standard.witness_file }}</a></td>
+											<td class="center">{{ standard.witness_valid_until }}</td>
+											<!-- <td>{{ standard.recycle_exam_date }}</td>
+											<td><a href="javascript:void(0);" (click)="downloadstdFile(standard.id,'recycle',standard.recycle_exam_file);openmodal(downloading)" ><i class="fa fa-download" *ngIf="standard.recycle_exam_file"></i>{{ standard.recycle_exam_file }}</a></td>
+											<td>{{ standard.social_course_exam_date }}</td>
+											<td><a href="javascript:void(0);" (click)="downloadstdFile(standard.id,'social',standard.social_course_exam_file);openmodal(downloading)" ><i class="fa fa-download" *ngIf="standard.social_course_exam_file"></i>{{ standard.social_course_exam_file }}</a></td> -->
+											<td class="center"><a href="javascript:void(0);" (click)="showRejectedStdDetails(StdDetails,i)" title="View" alt="View"><i class="fa fa-eye"></i></a>
+											<a *ngIf="standard.rejected_history?.length > 0" href="javascript:void(0);" class="pl-2" (click)="showRejectedStdHistoryDetails(StandardRejectDetails,i)" title="Reject History" alt="Reject History"><i class="fa fa-flag"></i></a>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</mat-tab>
+					</mat-tab-group>	
+				</div>
+				
+			</div>
+			
+			<div class="enq-view col-12 pad-left" *ngIf="(id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_business_group') || userType==3 || id==userdetails.uid)) && business_sectors_status">
+				<div class="card-box enq-view lst">
+					<h3>Business Group</h3>
+					<mat-tab-group>	
+						<mat-tab  label="New ({{userData.businessgroup_new.length}})">
+							<form>
+								<div class="tabDiv" >
+									<div class="form-group">
+										<div class="tbl-sec pl-0 pr-0">
+											<table id="datatable" class="table table-bordered tab-bor col-12" >
+												<thead>
+												<tr>
+													<th scope="col" width="3%" class="center">S.No</th>
+													<th scope="col">Standard</th>
+													<th scope="col">Business Sector</th>
+													<th scope="col">Business Sector Group</th>
+													<th scope="col">Academic Qualification Available</th>
+													<th scope="col">Exam File</th>
+													<th scope="col">Technical Interview File</th>
+												</tr>
+												</thead>
+												<tbody>
+													<tr *ngIf="userData.businessgroup_new?.length==0">
+															<td colspan="7" class="center">No Business Group Added</td>
+													</tr>
+													<ng-container *ngFor="let businessEntry of userData.businessgroup_new; let i=index; " >
+														<tr>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  scope="row" class="center">{{  1+ i }}</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length" >{{ businessEntry.standard_name }}</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  class="center">{{ businessEntry.business_sector_name }}</td>
+															<td class="center">{{ businessEntry.business_sector_group_name_arr[0] }}</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  class="center">{{ businessEntry.academic_qualification_name }}</td>
+															
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  ><a *ngIf="businessEntry.academic_qualification!=1" href="javascript:void(0);" (click)="downloadbgroupFile(businessEntry.id,'exam',businessEntry?.examfilename);openmodal(downloading)" ><i class="fa fa-download" *ngIf="businessEntry?.examfilename"></i> {{ businessEntry?.examfilename }}</a></td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length" ><a *ngIf="businessEntry?.technicalfilename" href="javascript:void(0);" (click)="downloadbgroupFile(businessEntry.id,'interview',businessEntry?.technicalfilename);openmodal(downloading)" ><i class="fa fa-download" *ngIf="businessEntry?.technicalfilename"></i> {{ businessEntry?.technicalfilename }}</a></td>
+															
+														</tr>
+														<ng-container *ngIf="businessEntry.business_sector_group_name_arr.length>1">
+															<tr *ngFor="let bEntry of businessEntry.business_sector_group_name_arr | slice:1; let ib=index;" >
+																<td class="center">{{ bEntry }}</td>
+															</tr>
+														</ng-container>
+													</ng-container>
+
+													<!--
+													<tr *ngFor="let businessEntry of userData.businessgroup_new; let i=index; " >
+														<td scope="row" class="center">{{  1+ i }}</td>
+														<td>{{ businessEntry.standard_name }}</td>
+														<td class="center">{{ businessEntry.business_sector_name }}</td>
+														<td class="center">
+															<span *ngFor="let groupcode of businessEntry.business_sector_group_name_arr;" class="txt-bg-3d">
+																{{groupcode}}
+															</span>
+														</td>
+														<td class="center">{{ businessEntry.academic_qualification_name }}</td>
+														<td><a *ngIf="businessEntry.examfilename" href="javascript:void(0);" (click)="downloadbgroupFile(businessEntry.id,'exam',businessEntry.examfilename);openmodal(downloading)" ><i class="fa fa-download" *ngIf="businessEntry.examfilename"></i>{{ businessEntry.examfilename }}</a></td>
+														<td><a *ngIf="businessEntry.technicalfilename"  href="javascript:void(0);" (click)="downloadbgroupFile(businessEntry.id,'interview',businessEntry.technicalfilename);openmodal(downloading)" ><i class="fa fa-download" *ngIf="businessEntry.technicalfilename"></i>{{ businessEntry.technicalfilename }}</a></td>
+													</tr>-->
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+							</form>
+						</mat-tab>
+						<!-- <mat-tab  label="Waiting for Approval">
+							<form>
+								<div class="tabDiv" >
+									<div class="form-group row">
+										<div class="tbl-sec">
+											<table id="datatable" class="table table-bordered tab-bor col-12" >
+												<thead>
+												<tr>
+													<th scope="col" width="3%" class="center">S.No</th>
+													<th scope="col">Standard</th>
+													<th scope="col">Business Sector</th>
+													<th scope="col">Business Sector Group</th>
+													<th scope="col">Exam File</th>
+													<th scope="col">Technical Interview File</th>
+												</tr>
+												</thead>
+												<tbody>
+													<tr *ngIf="userData.businessgroup_approvalwaiting?.length==0">
+															<td colspan="6" class="center">No Business Group Added</td>
+													</tr>
+													<tr *ngFor="let businessEntry of userData.businessgroup_approvalwaiting; let i=index; " [class.currentedit]="this.businessIndex===i" >
+														<td scope="row" class="center">{{  1+ i }}</td>
+														<td>{{ businessEntry.standard_name }}</td>
+														<td class="center">{{ businessEntry.business_sector_name }}</td>
+														<td class="center">{{ businessEntry.business_sector_group_name }}</td>
+														<td>{{ examfilename }}</td>
+														<td>{{ technicalfilename }}</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+								
+									</div>
+								</div>
+							</form>
+						</mat-tab> -->
+						<mat-tab  label="Approved ({{userData.businessgroup_approved.length}})">
+							<form>
+								<div class="tabDiv" >
+									<div class="form-group row">
+										<div class="tbl-sec">
+											<table id="datatable" class="table table-bordered tab-bor col-12" >
+												<thead>
+												<tr>
+													<th scope="col" width="3%" class="center">S.No</th>
+													<th scope="col">Standard</th>
+													<th scope="col">Business Sector</th>
+													<th scope="col">Business Sector Group</th>
+													<th scope="col">Academic Qualification Available</th>
+													<th scope="col">Exam File</th>
+													<th scope="col">Technical Interview File</th>
+													<th scope="col">More Details</th>
+												</tr>
+												</thead>
+												<tbody>
+													<tr *ngIf="userData.businessgroup_approved?.length==0">
+															<td colspan="8" class="center">No Business Group Added</td>
+													</tr>
+													<ng-container *ngFor="let businessEntry of userData.businessgroup_approved; let i=index; " >
+														<tr>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  scope="row" class="center">{{  1+ i }}</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length" >{{ businessEntry.standard_name }}</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  class="center">{{ businessEntry.business_sector_name }}</td>
+															<td class="center">{{ businessEntry.business_sector_group_name_arr[0] }}</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  class="center">{{ businessEntry.academic_qualification_name }}</td>
+															
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  ><a *ngIf="businessEntry.academic_qualification!=1" href="javascript:void(0);" (click)="downloadbgroupFile(businessEntry.id,'exam',businessEntry?.examfilename);openmodal(downloading)" ><i class="fa fa-download" *ngIf="businessEntry?.examfilename"></i> {{ businessEntry?.examfilename }}</a></td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length" ><a *ngIf="businessEntry?.technicalfilename" href="javascript:void(0);" (click)="downloadbgroupFile(businessEntry.id,'interview',businessEntry?.technicalfilename);openmodal(downloading)" ><i class="fa fa-download" *ngIf="businessEntry?.technicalfilename"></i> {{ businessEntry?.technicalfilename }}</a></td>
+															
+															<td class="center">
+																<a href="javascript:void(0);" (click)="showApprovedbgroupDetails(bgroupDetails,i,0)" title="View" alt="View"><i class="fa fa-eye"></i></a>
+
+																<a *ngIf="businessEntry.rejected_history?.length > 0" href="javascript:void(0);" class="pl-2" (click)="showApprovedbgroupHistoryDetails(bgroupHistoryDetails,i,businessEntry.rejected_history[businessEntry.business_sector_group_id_arr[0]])" title="Rejected History" alt="Rejected History"><i class="fa fa-flag"></i></a>
+																
+																<a href="javascript:void(0);" class="pl-2" (click)="openConfirm(confirmAction,'delete',businessEntry.id,'business_group_code',businessEntry.business_sector_group_code_id[0])" title="Delete" alt="Delete"> <i class="fa fa-trash text-danger"></i> </a>
+															</td>
+														</tr>
+														<ng-container *ngIf="businessEntry.business_sector_group_name_arr.length>1">
+															<tr *ngFor="let bEntry of businessEntry.business_sector_group_name_arr | slice:1; let ib=index;" >
+																<td class="center">{{ bEntry }}</td>
+																<td class="center">
+																	<a href="javascript:void(0);" (click)="showApprovedbgroupDetails(bgroupDetails,i,1+ib)" title="View" alt="View"><i class="fa fa-eye"></i></a>
+
+																	<a *ngIf="businessEntry.rejected_history[businessEntry.business_sector_group_id_arr[1+ib]]?.length > 0" href="javascript:void(0);" class="pl-2" (click)="showApprovedbgroupHistoryDetails(bgroupHistoryDetails,i,businessEntry.rejected_history[businessEntry.business_sector_group_id_arr[1+ib]])" title="Rejected History" alt="Rejected History"><i class="fa fa-flag"></i></a>
+
+																	<a href="javascript:void(0);" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('add_edit_user_business_group')" class="pl-2" (click)="openConfirm(confirmAction,'delete',businessEntry.id,'business_group_code',businessEntry.business_sector_group_code_id[1+ib])" title="Delete" alt="Delete"> <i class="fa fa-trash text-danger"></i> </a>
+																</td>
+															</tr>
+														</ng-container>
+													</ng-container>
+													<!--
+													<tr *ngFor="let businessEntry of userData.businessgroup_approved; let i=index; "  >
+														<td scope="row" class="center">{{  1+ i }}</td>
+														<td>{{ businessEntry.standard_name }}</td>
+														<td class="center">{{ businessEntry.business_sector_name }}</td>
+														<td class="center"><span *ngFor="let groupcode of businessEntry.business_sector_group_name_arr;" class="txt-bg-3d">
+																{{groupcode}}
+															</span></td>
+														<td class="center">{{ businessEntry.academic_qualification_name }}</td>
+														<td><a *ngIf="businessEntry.examfilename" href="javascript:void(0);" (click)="downloadbgroupFile(businessEntry.id,'exam',businessEntry.examfilename);openmodal(downloading)" ><i class="fa fa-download" *ngIf="businessEntry.examfilename"></i>{{ businessEntry.examfilename }}</a></td>
+														<td><a *ngIf="businessEntry.technicalfilename" href="javascript:void(0);" (click)="downloadbgroupFile(businessEntry.id,'interview',businessEntry.technicalfilename);openmodal(downloading)" ><i class="fa fa-download" *ngIf="businessEntry.technicalfilename"></i>{{ businessEntry.technicalfilename }}</a></td>
+														<td class="center"><a href="javascript:void(0);" (click)="showApprovedbgroupDetails(bgroupDetails,i)" title="View" alt="View"><i class="fa fa-eye"></i></a></td>
+													</tr>-->
+												</tbody>
+											</table>
+										</div>
+										
+									</div>
+								</div>
+							</form>
+						</mat-tab>
+						<mat-tab  label="Rejected ({{userData.businessgroup_rejected.length}})">
+							<form>
+								<div class="tabDiv" >
+									<div class="form-group row">
+										<div class="tbl-sec">
+											<table id="datatable" class="table table-bordered tab-bor col-12" >
+												<thead>
+												<tr>
+													<th scope="col" width="3%" class="center">S.No</th>
+													<th scope="col">Standard</th>
+													<th scope="col">Business Sector</th>
+													<th scope="col">Business Sector Group</th>
+													<th scope="col">Academic Qualification Available</th>
+													<th scope="col">Exam File</th>
+													<th scope="col">Technical Interview File</th>
+													<th scope="col">More Details</th>
+												</tr>
+												</thead>
+												<tbody>
+													<tr *ngIf="userData.businessgroup_rejected?.length==0">
+															<td colspan="8" class="center">No Business Group Added</td>
+													</tr>
+													<ng-container *ngFor="let businessEntry of userData.businessgroup_rejected; let i=index; " >
+														<tr>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  scope="row" class="center">{{  1+ i }}</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length" >{{ businessEntry.standard_name }}</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  class="center">{{ businessEntry.business_sector_name }}</td>
+															<td class="center">{{ businessEntry.business_sector_group_name_arr[0] }}</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  class="center">{{ businessEntry.academic_qualification_name }}</td>
+															
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  ><a *ngIf="businessEntry.academic_qualification!=1" href="javascript:void(0);" (click)="downloadbgroupFile(businessEntry.id,'exam',businessEntry?.examfilename);openmodal(downloading)" ><i class="fa fa-download" *ngIf="businessEntry?.examfilename"></i> {{ businessEntry?.examfilename }}</a></td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length" ><a *ngIf="businessEntry?.technicalfilename" href="javascript:void(0);" (click)="downloadbgroupFile(businessEntry.id,'interview',businessEntry?.technicalfilename);openmodal(downloading)" ><i class="fa fa-download" *ngIf="businessEntry?.technicalfilename"></i> {{ businessEntry?.technicalfilename }}</a></td>
+															
+															<td class="center">
+																<a href="javascript:void(0);" (click)="showRejectedbgroupDetails(bgroupDetails,i,0)" title="View" alt="View"><i class="fa fa-eye"></i></a>
+
+																<a *ngIf="businessEntry.rejected_history[businessEntry.business_sector_group_id_arr[0]]?.length > 0" href="javascript:void(0);" class="pl-2" (click)="showRejectedbgroupHistoryDetails(bgroupHistoryDetails,i,businessEntry.rejected_history[businessEntry.business_sector_group_id_arr[0]])" title="Rejected History" alt="Rejected History"><i class="fa fa-flag"></i></a>
+															</td>
+														</tr>
+														<ng-container *ngIf="businessEntry.business_sector_group_name_arr.length>1">
+															<tr *ngFor="let bEntry of businessEntry.business_sector_group_name_arr | slice:1; let ib=index;" >
+																<td class="center">{{ bEntry }}</td>
+																<td class="center">
+																	<a href="javascript:void(0);" (click)="showRejectedbgroupDetails(bgroupDetails,i,1+ib)" title="View" alt="View"><i class="fa fa-eye"></i></a>
+																	<a *ngIf="businessEntry.rejected_history[businessEntry.business_sector_group_id_arr[1+ib]]?.length > 0" href="javascript:void(0);" class="pl-2" (click)="showRejectedbgroupHistoryDetails(bgroupHistoryDetails,i,businessEntry.rejected_history[businessEntry.business_sector_group_id_arr[1+ib]])" title="Rejected History" alt="Rejected History"><i class="fa fa-flag"></i></a>
+																</td>
+															</tr>
+														</ng-container>
+													</ng-container>
+													<!--
+													<tr *ngFor="let businessEntry of userData.businessgroup_rejected; let i=index; "  >
+														<td scope="row" class="center">{{  1+ i }}</td>
+														<td>{{ businessEntry.standard_name }}</td>
+														<td class="center">{{ businessEntry.business_sector_name }}</td>
+														<td class="center"><span *ngFor="let groupcode of businessEntry.business_sector_group_name_arr;" class="txt-bg-3d">
+																{{groupcode}}
+															</span></td>
+														<td class="center">{{ businessEntry.academic_qualification_name }}</td>
+														<td><a *ngIf="businessEntry.examfilename"  href="javascript:void(0);" (click)="downloadbgroupFile(businessEntry.id,'exam',businessEntry.examfilename);openmodal(downloading)" ><i class="fa fa-download" *ngIf="businessEntry.examfilename"></i>{{ businessEntry.examfilename }}</a></td>
+														<td><a *ngIf="businessEntry.technicalfilename"  href="javascript:void(0);" (click)="downloadbgroupFile(businessEntry.id,'interview',businessEntry.technicalfilename);openmodal(downloading)" ><i class="fa fa-download" *ngIf="businessEntry.technicalfilename"></i>{{ businessEntry.technicalfilename }}</a></td>
+														<td class="center"><a href="javascript:void(0);" (click)="showRejectedbgroupDetails(bgroupDetails,i)" title="View" alt="View"><i class="fa fa-eye"></i></a></td>
+													</tr>
+												-->
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+							</form>
+						</mat-tab>
+					</mat-tab-group>
+				</div>	
+			</div>
+			<div class="enq-view col-12 pad-left"  *ngIf="(id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_map_group_user_role') || userType==3)) && map_group_user_role_status">
+				<h3>Map Business Group to User Role Except Technical Expert</h3>
+				<div class="card-box enq-view">
+					<table id="datatable" class="table table-bordered tab-bor col-12" >
+						<thead>
+						<tr>
+							<th scope="col" width="6%" class="center">S.No</th>
+							<th scope="col">User Role</th>
+							<th scope="col">Standard</th>
+							<th scope="col">Business Sector</th>
+							<th scope="col">Business Sector Group</th>
+							<th scope="col">Document</th>
+						</tr>
+						</thead>
+						<tbody>
+							<tr *ngIf="userData.mapuserrole?.length==0">
+									<td colspan="6" class="center">No Business Group Added</td>
+							</tr>
+							<ng-container *ngFor="let businessEntry of userData.mapuserrole; let i=index; " >
+							<tr>
+								<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  scope="row" class="center">{{  1+ i }}</td>
+								<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length" >{{ businessEntry.role_name }}</td>
+								<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length" >{{ businessEntry.standard_name }}</td>
+								<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  class="center">{{ businessEntry.business_sector_name }}</td>
+								<td>{{ businessEntry.business_sector_group_name_arr[0] }}</td>
+								<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length" ><a *ngIf="businessEntry.document && businessEntry.document!='NA'" href="javascript:void(0);" (click)="downloaddocumentFile(businessEntry.id,businessEntry.document);openmodal(downloading)" ><i class="fa fa-download" ></i>{{ businessEntry.document }}</a></td>
+							</tr>
+							<ng-container *ngIf="businessEntry.business_sector_group_name_arr.length>1">
+								<tr *ngFor="let bEntry of businessEntry.business_sector_group_name_arr | slice:1;" >
+									<td>{{ bEntry }}</td>
+								</tr>
+							</ng-container>
+						</ng-container>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="enq-view col-12 pad-left" *ngIf="(id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_te_business_group') || userType==3 || id==userdetails.uid)) && te_business_sectors_status">
+				<div class="card-box enq-view lst">
+					<h3>Technical Expert Business Group</h3>
+					<mat-tab-group>	
+						<mat-tab  label="New ({{userData.tebusinessgroup_new.length}})">
+							<form>
+								<div class="tabDiv" >
+									<div class="form-group">
+										<div class="tbl-sec pl-0 pr-0">
+											<table id="datatable" class="table table-bordered tab-bor col-12" >
+												<thead>
+												<tr>
+													<th scope="col" width="3%" class="center">S.No</th>
+													<th scope="col">Role</th>
+													<th scope="col">Business Sector</th>
+													<th scope="col">Business Sector Group</th>
+													<th scope="col">Academic Qualification Available</th>
+													<th scope="col">Exam File</th>
+													<th scope="col">Technical Interview File</th>
+												</tr>
+												</thead>
+												<tbody>
+													<tr *ngIf="userData.tebusinessgroup_new?.length==0">
+															<td colspan="7" class="center">No Business Group Added</td>
+													</tr>
+													<ng-container *ngFor="let businessEntry of userData.tebusinessgroup_new; let i=index; " >
+														<tr>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  scope="row" class="center">{{  1+ i }}</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length" >{{ businessEntry.role_name }}</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  class="center">{{ businessEntry.business_sector_name }}</td>
+															<td class="center">{{ businessEntry.business_sector_group_name_arr[0] }}</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  class="center">{{ businessEntry.academic_qualification_name }}</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  >
+																<a *ngIf="businessEntry.academic_qualification!=1 && businessEntry?.examfilename && businessEntry?.examfilename != 'NA'" href="javascript:void(0);" (click)="downloadtebgroupFile(businessEntry.id,'exam',businessEntry?.examfilename);openmodal(downloading)" ><i class="fa fa-download" ></i> {{ businessEntry?.examfilename }}</a>
+																<ng-container *ngIf="businessEntry?.examfilename && businessEntry?.examfilename=='NA'" >{{ businessEntry?.examfilename}}</ng-container>
+															</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length" >
+																<a *ngIf="businessEntry?.technicalfilename && businessEntry?.technicalfilename != 'NA'" href="javascript:void(0);" (click)="downloadtebgroupFile(businessEntry.id,'interview',businessEntry?.technicalfilename);openmodal(downloading)" ><i class="fa fa-download"  ></i> {{ businessEntry?.technicalfilename }}</a>
+																<ng-container *ngIf="businessEntry?.technicalfilename && businessEntry?.technicalfilename=='NA'" >{{ businessEntry?.technicalfilename}}</ng-container>
+															</td>
+														</tr>
+														<ng-container *ngIf="businessEntry.business_sector_group_name_arr.length>1">
+															<tr *ngFor="let bEntry of businessEntry.business_sector_group_name_arr | slice:1; let ib=index;" >
+																<td class="center">{{ bEntry }}</td>
+															</tr>
+														</ng-container>
+													</ng-container>
+
+												
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+							</form>
+						</mat-tab>
+						
+						<mat-tab  label="Approved ({{userData.tebusinessgroup_approved.length}})">
+							<form>
+								<div class="tabDiv" >
+									<div class="form-group row">
+										<div class="tbl-sec">
+											<table id="datatable" class="table table-bordered tab-bor col-12" >
+												<thead>
+												<tr>
+													<th scope="col" width="3%" class="center">S.No</th>
+													<th scope="col">Role</th>
+													<th scope="col">Business Sector</th>
+													<th scope="col">Academic Qualification Available</th>
+													<th scope="col">Exam File</th>
+													<th scope="col">Technical Interview File</th>
+													
+													<th scope="col">Business Sector Group</th>
+													<th scope="col">More Details</th>
+												</tr>
+												</thead>
+												<tbody>
+													<tr *ngIf="userData.tebusinessgroup_approved?.length==0">
+														<td colspan="8" class="center">No Business Group Added</td>
+													</tr>
+													<ng-container *ngFor="let businessEntry of userData.tebusinessgroup_approved; let i=index; " >
+														<tr>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  scope="row" class="center">{{  1+ i }}</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length" >{{ businessEntry.role_name }}</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  class="center">{{ businessEntry.business_sector_name }}</td>
+
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  class="center">{{ businessEntry.academic_qualification_name }}</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  >
+																<a *ngIf="businessEntry.academic_qualification!=1 && businessEntry?.examfilename && businessEntry?.examfilename != 'NA'" href="javascript:void(0);" (click)="downloadtebgroupFile(businessEntry.id,'exam',businessEntry?.examfilename);openmodal(downloading)" ><i class="fa fa-download" ></i> {{ businessEntry?.examfilename }}</a>
+																<ng-container *ngIf="businessEntry?.examfilename && businessEntry?.examfilename=='NA'" >{{ businessEntry?.examfilename}}</ng-container>
+															</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length" >
+																<a *ngIf="businessEntry?.technicalfilename && businessEntry?.technicalfilename != 'NA'" href="javascript:void(0);" (click)="downloadtebgroupFile(businessEntry.id,'interview',businessEntry?.technicalfilename);openmodal(downloading)" ><i class="fa fa-download"  ></i> {{ businessEntry?.technicalfilename }}</a>
+																<ng-container *ngIf="businessEntry?.technicalfilename && businessEntry?.technicalfilename=='NA'" >{{ businessEntry?.technicalfilename}}</ng-container>
+															</td>
+
+															<td class="center">{{ businessEntry.business_sector_group_name_arr[0] }}</td>
+															<td class="center">
+																<a href="javascript:void(0);" (click)="showApprovedtebgroupDetails(tebgroupDetails,i,0)" title="View" alt="View"><i class="fa fa-eye"></i></a>
+
+																<a *ngIf="businessEntry.rejected_history?.length > 0" href="javascript:void(0);" class="pl-2" (click)="showApprovedtebgroupHistoryDetails(tebgroupHistoryDetails,i,businessEntry.rejected_history[businessEntry.business_sector_group_id_arr[0]])" title="Rejected History" alt="Rejected History"><i class="fa fa-flag"></i></a>
+															</td>
+														</tr>
+														<ng-container *ngIf="businessEntry.business_sector_group_name_arr.length>1">
+															<tr *ngFor="let bEntry of businessEntry.business_sector_group_name_arr | slice:1; let ib=index;" >
+																<td class="center">{{ bEntry }}</td>
+																<td class="center">
+																	<a href="javascript:void(0);" (click)="showApprovedtebgroupDetails(tebgroupDetails,i,1+ib)" title="View" alt="View"><i class="fa fa-eye"></i></a>
+																	<a *ngIf="businessEntry.rejected_history[businessEntry.business_sector_group_id_arr[1+ib]]?.length > 0" href="javascript:void(0);" class="pl-2" (click)="showApprovedtebgroupHistoryDetails(tebgroupHistoryDetails,i,businessEntry.rejected_history[businessEntry.business_sector_group_id_arr[1+ib]])" title="Rejected History" alt="Rejected History"><i class="fa fa-flag"></i></a>
+																</td>
+															</tr>
+														</ng-container>
+													</ng-container>
+												
+												</tbody>
+											</table>
+										</div>
+										
+									</div>
+								</div>
+							</form>
+						</mat-tab>
+						<mat-tab  label="Rejected ({{userData.tebusinessgroup_rejected.length}})">
+							<form>
+								<div class="tabDiv" >
+									<div class="form-group row">
+										<div class="tbl-sec">
+											<table id="datatable" class="table table-bordered tab-bor col-12" >
+												<thead>
+												<tr>
+													<th scope="col" width="3%" class="center">S.No</th>
+													<th scope="col">Role</th>
+													<th scope="col">Business Sector</th>
+													<th scope="col">Academic Qualification Available</th>
+													<th scope="col">Exam File</th>
+													<th scope="col">Technical Interview File</th>
+													
+													<th scope="col">Business Sector Group</th>
+													<th scope="col">More Details</th>
+												</tr>
+												</thead>
+												<tbody>
+													<tr *ngIf="userData.tebusinessgroup_rejected?.length==0">
+															<td colspan="8" class="center">No Business Group Added</td>
+													</tr>
+													<ng-container *ngFor="let businessEntry of userData.tebusinessgroup_rejected; let i=index; " >
+														<tr>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  scope="row" class="center">{{  1+ i }}</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length" >{{ businessEntry.role_name }}</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  class="center">{{ businessEntry.business_sector_name }}</td>
+															
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  class="center">{{ businessEntry.academic_qualification_name }}</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length"  >
+																<a *ngIf="businessEntry.academic_qualification!=1 && businessEntry?.examfilename && businessEntry?.examfilename != 'NA'" href="javascript:void(0);" (click)="downloadtebgroupFile(businessEntry.id,'exam',businessEntry?.examfilename);openmodal(downloading)" ><i class="fa fa-download" ></i> {{ businessEntry?.examfilename }}</a>
+																<ng-container *ngIf="businessEntry?.examfilename && businessEntry?.examfilename=='NA'" >{{ businessEntry?.examfilename}}</ng-container>
+															</td>
+															<td [attr.rowspan]="businessEntry.business_sector_group_name_arr.length<=0?1:businessEntry.business_sector_group_name_arr.length" >
+																<a *ngIf="businessEntry?.technicalfilename && businessEntry?.technicalfilename != 'NA'" href="javascript:void(0);" (click)="downloadtebgroupFile(businessEntry.id,'interview',businessEntry?.technicalfilename);openmodal(downloading)" ><i class="fa fa-download"  ></i> {{ businessEntry?.technicalfilename }}</a>
+																<ng-container *ngIf="businessEntry?.technicalfilename && businessEntry?.technicalfilename=='NA'" >{{ businessEntry?.technicalfilename}}</ng-container>
+															</td>
+															
+															<td class="center">{{ businessEntry.business_sector_group_name_arr[0] }}</td>
+															<td class="center">
+																<a href="javascript:void(0);" (click)="showRejectedtebgroupDetails(tebgroupDetails,i,0)" title="View" alt="View"><i class="fa fa-eye"></i></a>
+
+																<a *ngIf="businessEntry.rejected_history[businessEntry.business_sector_group_id_arr[0]]?.length > 0" href="javascript:void(0);" class="pl-2" (click)="showRejectedtebgroupHistoryDetails(tebgroupHistoryDetails,i,businessEntry.rejected_history[businessEntry.business_sector_group_id_arr[0]])" title="Rejected History" alt="Rejected History"><i class="fa fa-flag"></i></a>
+															</td>
+														</tr>
+														<ng-container *ngIf="businessEntry.business_sector_group_name_arr.length>1">
+															<tr *ngFor="let bEntry of businessEntry.business_sector_group_name_arr | slice:1; let ib=index;" >
+																<td class="center">{{ bEntry }}</td>
+																<td class="center">
+																	<a href="javascript:void(0);" (click)="showRejectedtebgroupDetails(tebgroupDetails,i,1+ib)" title="View" alt="View"><i class="fa fa-eye"></i></a>
+																	<a *ngIf="businessEntry.rejected_history[businessEntry.business_sector_group_id_arr[1+ib]]?.length > 0" href="javascript:void(0);" class="pl-2" (click)="showRejectedtebgroupHistoryDetails(tebgroupHistoryDetails,i,businessEntry.rejected_history[businessEntry.business_sector_group_id_arr[1+ib]])" title="Rejected History" alt="Rejected History"><i class="fa fa-flag"></i></a>
+																</td>
+															</tr>
+														</ng-container>
+													</ng-container>
+												
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+							</form>
+						</mat-tab>
+					</mat-tab-group>
+				</div>	
+			</div>
+			<div class="enq-view col-12 pad-left" *ngIf="(id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_qualification_details') || userType==3 || id==userdetails.uid)) && qualification_details_status">
+				<h3>Academic</h3>
+				<div class="card-box enq-view  ">
+					<table class="table table-bordered col-12" style="font-size:13px;">
+						<thead>
+						<tr>
+							<th scope="col" class="center"  width="3%">S.No</th>
+							<th scope="col" >Qualification</th>
+							<th scope="col" >Board/University</th>
+							<th scope="col" >Title</th>
+							<th scope="col" class="center"  width="15%" >Start Year</th>
+							<th scope="col"  class="center"  width="10%" >End Year</th>
+							<th scope="col"  class="center"  width="10%" >Certificate</th>
+						</tr>
+						</thead>
+						<tbody>
+							<tr *ngIf="userData.qualifications?.length==0">
+								<td colspan="7" class="center">No Academic Added</td>
+							</tr>
+							<tr *ngFor="let qualification of userData.qualifications; let i=index; "  >
+								<td scope="row" class="center">{{  1+ i }}</td>
+								<td>{{ qualification.qualification }}</td>
+								<td>{{ qualification.university }}</td>
+								<td>{{ qualification.subject }}</td>
+								<td class="center">{{ qualification.start_year }}</td>
+								<td class="center">{{ qualification.end_year }}</td>
+								<td class="center"><a href="javascript:void(0);" (click)="downloadacademicFile(qualification.id,qualification.academic_certificate);openmodal(downloading)" ><i class="fa fa-download" *ngIf="qualification.academic_certificate"></i> {{ qualification.academic_certificate }}</a></td>
+							</tr>              
+						</tbody>
+					</table>
+				</div>		
+				
+			</div>
+			
+			<div class="enq-view col-12 pad-left"  *ngIf="(id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_working_experience') || userType==3 || id==userdetails.uid)) && working_experience_status">
+				<h3>Work Experience</h3>
+				<div class="card-box enq-view ">
+					<table class="table table-bordered col-12" style="font-size:13px;">
+						<thead>
+						<tr>
+							<th scope="col" class="center" width="3%">S.No</th>
+							<th scope="col"  >Company Name</th>
+							<th scope="col"  >Job Title</th>
+							<th scope="col"  >Responsibility</th>
+							<th scope="col" class="center" width="10%" >From</th>
+							<th scope="col"  class="center" width="10%" >To</th>
+						</tr>
+						</thead>
+						<tbody>
+							<tr *ngIf="userData.experience?.length==0">
+								<td colspan="6" class="center">No Work Experience Added</td>
+							</tr>
+							<tr *ngFor="let experience of userData.experience; let i=index; "  >
+								<td scope="row" class="center">{{  1+ i }}</td>
+								<td>{{ experience.experience }}</td>
+								<td>{{ experience.job_title }}</td>
+								<td>{{ experience.responsibility }}</td>
+								<td  class="center">{{ experience.exp_from_date }}</td>
+								<td  class="center">{{ experience.exp_to_date }}</td>
+							</tr>              
+						</tbody>
+					</table>
+				</div>			
+			</div>
+			
+			<div class="enq-view"  *ngIf="(id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_inspection') || userType==3 || id==userdetails.uid)) && inspection_audit_experience_status">
+				<h3>Inspection</h3>
+				<form >
+					<div class="tabDiv" >
+						<div class="form-group row">                        
+							<div class="tbl-sec">
+								<table id="datatable" class="table table-bordered tab-bor col-12" >
+									<thead>
+									<tr>
+										<th scope="col" width="3%" class="center">S.No</th>
+										<th scope="col">Standard</th>
+										<th scope="col">Year</th>
+										<th scope="col">Company</th>
+										<th scope="col">Business Sector</th>
+										<th scope="col">Role in Audit</th>
+										<!-- <th scope="col" class="center">Process</th> -->
+										<th scope="col">CB</th>
+										<th scope="col" class="center">Days</th>
+									</tr>
+									</thead>
+									<tbody>
+										<tr *ngIf="userData.audit_experience?.length==0">
+											<td colspan="6" class="center">No Inspection Added</td>
+										</tr>
+										<tr *ngFor="let audexperienceEntry of userData.audit_experience; let i=index; "   >
+											<td scope="row" class="center">{{  1+ i }}</td>
+											<td>{{ audexperienceEntry.standard_name }}</td>
+											<td>{{ audexperienceEntry.year }}</td>
+											<td>{{ audexperienceEntry.company }}</td>
+											<td>{{ audexperienceEntry.sector_name }}</td>
+											<td>{{ audexperienceEntry.auditrolelist }}</td>
+											<td>{{ audexperienceEntry.cb_name }}</td>
+											<td class="center">{{ audexperienceEntry.days }}</td>
+										</tr>
+									</tbody>
+								</table>
+							</div> 
+						</div>
+					</div>
+				</form>				
+			</div>
+			
+			<div class="enq-view col-12 pad-left" *ngIf="(id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_consultancy') || userType==3 || id==userdetails.uid)) && consultancy_experience_status">
+				<h3>Consultancy</h3>
+				<form >
+					<div class="tabDiv" >
+						<div class="form-group row">
+															
+							<div class="tbl-sec">
+								<table id="datatable" class="table table-bordered tab-bor col-12" >
+									<thead>
+									<tr>
+										<th scope="col" width="6%" class="center">S.No</th>
+										<th scope="col">Standard</th>
+										<th scope="col">Year</th>
+										<th scope="col">Company</th>
+										<!-- <th scope="col" class="center">Process</th> -->
+										<th scope="col" class="center">Days</th>
+									</tr>
+									</thead>
+									<tbody>
+										<tr *ngIf="userData.consultancy_experience?.length==0">
+											<td colspan="5" class="center">No Consultancy Added</td>
+										</tr>
+										<tr *ngFor="let conexperienceEntry of userData.consultancy_experience; let i=index; " >
+											<td scope="row" class="center">{{  1+ i }}</td>
+											<td>{{ conexperienceEntry.standard_name }}</td>
+											<td>{{ conexperienceEntry.year }}</td>
+											<td>{{ conexperienceEntry.company }}</td>
+											<td>{{ conexperienceEntry.days }}</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</form>				
+			</div>
+			
+			<div class="enq-view col-12 pad-left" *ngIf="(id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_certificate_details') || userType==3 || id==userdetails.uid)) && cpd_status">
+				<h3>CPD</h3>
+				<div class="card-box enq-view ">
+					<table class="table table-bordered col-12" style="font-size:13px;">
+						<thead>
+						<tr>
+							<th scope="col" class="center"  width="3%">S.No</th>
+							<th scope="col">Certificate Name</th>
+							<th scope="col">Hour(s)</th>
+							<th scope="col"  class="center" width="15%">Completed Date</th>
+							<th scope="col">File</th>
+						</tr>
+						</thead>
+						<tbody>
+							<tr *ngIf="userData.certifications?.length==0">
+								<td colspan="5" class="center">No Certifications Added</td>
+							</tr>
+							<tr *ngFor="let certification of userData.certifications; let i=index; "  >
+								<td scope="row" class="center" >{{  1+ i }}</td>
+								<td>{{ certification.certificate_name }}</td>
+								<td>{{ certification.training_hours }}</td>								
+								<td  class="center">{{ certification.completed_date }}</td>
+								<td><a href="javascript:void(0);" (click)="downloadFile(certification.id,certification.filename);openmodal(downloading)" ><i class="fa fa-download" *ngIf="certification.filename"></i> {{ certification.filename }}</a></td>
+							</tr>              
+						</tbody>
+					</table>
+				</div>			
+			</div>
+			
+			<!--
+			<div *ngIf="(id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_certificate_details') || userType==3 || id==userdetails.uid)) && cpd_status">
+				<div class="card-box enq-view m-t-10 ">
+					<h3>CPD</h3>
+					<table class="table table-bordered col-12" style="font-size:13px;">
+						<thead>
+						<tr>
+							<th scope="col" class="center" width="3%">S.No</th>
+							<th scope="col">Subject</th>
+							<th scope="col"  class="center"  width="15%">Year</th>
+							<th scope="col"  class="center"  width="15%">Hour(s)</th>
+						</tr>
+						</thead>
+						<tbody>
+							<tr *ngIf="userData.training_info?.length==0">
+								<td colspan="4" class="center">No CPD Added</td>
+							</tr>
+							<tr *ngFor="let training_info of userData.training_info; let i=index; "  >
+								<td scope="row" class="center">{{  1+ i }}</td>
+								<td>{{ training_info.training_subject }}</td>
+								<td  class="center" >{{ training_info.training_date }}</td>
+								<td  class="center" >{{ training_info.training_hours }}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			-->
+			
+			<div class="enq-view col-12 pad-left" *ngIf="(id && (userdetails.resource_access==1 || userdetails.rules.includes('view_user_declaration') || userType==3 || id==userdetails.uid)) && declaration_status">
+				<div class="card-box enq-view lst">
+					<h3>Declaration</h3>
+					<mat-tab-group>	
+						<mat-tab  label="New ({{userData.declaration_new?.length}})">
+							<form>
+								<div class="tabDiv" >
+									<div class="form-group">
+										<div class="tbl-sec pl-0 pr-0">
+											<table id="datatable" class="table table-bordered tab-bor col-12" >
+												<thead>
+												<tr>
+													<th scope="col" width="6%" class="center">S.No</th>
+													<th scope="col">Company</th>
+													<th scope="col">Contract</th>
+													<th scope="col">Interest</th>
+													<th scope="col" >Name</th>
+													<th scope="col" class="center" >Type Of Relationship</th>
+													<th scope="col" class="center">Start Year</th>
+													<th scope="col" class="center">End Year</th>
+												</tr>
+												</thead>
+												<tbody>
+														<tr *ngIf="userData.declaration_new?.length==0">
+															<td colspan="6" class="center">No Declaration Added</td>
+														</tr>
+														<ng-container *ngFor="let declarationEntry of userData.declaration_new; let i=index; " >
+														<tr >
+															<td scope="row" class="center">{{  1+ i }}</td>
+															<td >{{ declarationEntry.declaration_company }}</td>
+															<td >{{ declarationEntry.declaration_contract }}</td>
+															<td >{{ declarationEntry.declaration_interest }}</td>
+															<td class="center" >{{ declarationEntry.name }}</td>
+															<td class="center" >{{ declarationEntry.type_name}}</td>
+															<td class="center">{{ declarationEntry.declaration_start_year }}</td>
+															<td class="center">{{ declarationEntry.declaration_end_year }}</td>
+														</tr>
+													</ng-container>
+												</tbody>
+											</table>
+										</div>
+										
+									
+										
+									</div>
+								</div>
+							</form>
+						</mat-tab>
+						<!-- <mat-tab  label="Waiting for Approval">
+							<form>
+								<div class="tabDiv" >
+									<div class="form-group row">
+										<div class="tbl-sec">
+											<table id="datatable" class="table table-bordered tab-bor col-12" >
+												<thead>
+												<tr>
+													<th scope="col" width="6%" class="center">S.No</th>
+													<th scope="col">Company</th>
+													<th scope="col">Contract</th>
+													<th scope="col">Interest</th>
+													<th scope="col" class="center">Start Year</th>
+													<th scope="col" class="center">End Year</th>
+												</tr>
+												</thead>
+												<tbody>
+													<ng-container  *ngIf="userData.declaration_approvalwaiting?.length>0">
+														<tr *ngFor="let declarationEntry of userData.declaration_approvalwaiting; let i=index; " >
+															<td scope="row" class="center">{{  1+ i }}</td>
+															<td>{{ declarationEntry.declaration_company }}</td>
+															<td>{{ declarationEntry.declaration_contract }}</td>
+															<td>{{ declarationEntry.declaration_interest }}</td>
+															<td class="center">{{ declarationEntry.declaration_start_year }}</td>
+															<td class="center">{{ declarationEntry.declaration_end_year }}</td>
+														</tr>
+													</ng-container>
+												</tbody>
+											</table>
+										</div>
+										
+									
+										
+									</div>
+								</div>
+							</form>
+						</mat-tab> -->
+						<mat-tab  label="Approved ({{userData.declaration_approved?.length}})">
+							<form>
+								<div class="tabDiv" >
+									<div class="form-group row">
+										<div class="tbl-sec">
+											<table id="datatable" class="table table-bordered tab-bor col-12" >
+												<thead>
+												<tr>
+													<th scope="col" width="6%" class="center">S.No</th>
+													<th scope="col">Company</th>
+													<th scope="col">Contract</th>
+													<th scope="col">Interest</th>
+													<th scope="col" >Name</th>
+													<th scope="col" class="center" >Type Of Relationship</th>
+													<th scope="col" class="center">Start Year</th>
+													<th scope="col" class="center">End Year</th>
+													<th scope="col" class="center">More Details</th>
+												</tr>
+												</thead>
+												<tbody>
+														<tr *ngIf="userData.declaration_approved?.length==0">
+															<td colspan="7" class="center">No Declaration Appoved</td>
+														</tr>
+														<ng-container *ngFor="let declarationEntry of userData.declaration_approved; let i=index; ">
+														<tr  >
+															<td scope="row" class="center">{{  1+ i }}</td>
+															<td >{{ declarationEntry.declaration_company }}</td>
+															<td >{{ declarationEntry.declaration_contract }}</td>
+															<td >{{ declarationEntry.declaration_interest }}</td>
+															<td class="center" >{{ declarationEntry.name }}</td>
+															<td class="center" >{{ declarationEntry.type_name}}</td>
+															<td  class="center">{{ declarationEntry.declaration_start_year }}</td>
+															<td class="center">{{ declarationEntry.declaration_end_year }}</td>
+															<td class="center"><a href="javascript:void(0);" (click)="showApprovedDeclarationDetails(DeclarationDetails,i)" title="View" alt="View"><i class="fa fa-eye"></i></a>
+															<a *ngIf="declarationEntry.rejected_history?.length > 0" href="javascript:void(0);" class="pl-2" (click)="showApprovedDecHistoryDetails(DeclarationRejectDetails,i)" title="Rejected History" alt="Rejected History"><i class="fa fa-flag"></i></a>
+															</td>
+														</tr>
+												</ng-container>
+												</tbody>
+											</table>
+										</div>
+										
+									
+										
+									</div>
+								</div>
+							</form>
+						</mat-tab>
+						<mat-tab  label="Rejected ({{userData.declaration_rejected?.length}})">
+							<form>
+								<div class="tabDiv" >
+									<div class="form-group row">
+										<div class="tbl-sec">
+											<table id="datatable" class="table table-bordered tab-bor col-12" >
+												<thead>
+												<tr>
+													<th scope="col" width="6%" class="center">S.No</th>
+													<th scope="col">Company</th>
+													<th scope="col">Contract</th>
+													<th scope="col">Interest</th>
+													<th scope="col" >Name</th>
+													<th scope="col" class="center" >Type Of Relationship</th>
+													<th scope="col" class="center">Start Year</th>
+													<th scope="col" class="center">End Year</th>
+													<th scope="col" class="center">More Details</th>
+												</tr>
+												</thead>
+												<tbody>
+														<tr *ngIf="userData.declaration_rejected?.length==0">
+															<td colspan="7" class="center">No Declaration Rejected</td>
+														</tr>
+														<ng-container *ngFor="let declarationEntry of userData.declaration_rejected; let i=index; ">
+														<tr  >
+															<td  scope="row" class="center">{{  1+ i }}</td>
+															<td >{{ declarationEntry.declaration_company }}</td>
+															<td >{{ declarationEntry.declaration_contract }}</td>
+															<td >{{ declarationEntry.declaration_interest }}</td>
+															<td class="center" >{{ declarationEntry.name }}</td>
+															<td class="center" >{{ declarationEntry.type_name}}</td>
+															<td  class="center">{{ declarationEntry.declaration_start_year }}</td>
+															<td  class="center">{{ declarationEntry.declaration_end_year }}</td>
+															<td class="center"><a href="javascript:void(0);" (click)="showRejectedDeclarationDetails(DeclarationDetails,i)" title="View" alt="View"><i class="fa fa-eye"></i></a>
+															<a *ngIf="declarationEntry.rejected_history?.length > 0" href="javascript:void(0);" class="pl-2" (click)="showRejectedDecHistoryDetails(DeclarationRejectDetails,i)" title="Rejected History" alt="Rejected History"><i class="fa fa-flag"></i></a>
+															</td>
+														</tr>
+													</ng-container>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+							</form>
+						</mat-tab>
+					</mat-tab-group>
+				</div>	
+			</div>
+				
+			<div class="enq-view col-12 pad-left"  *ngIf="id && user_qualification_status">
+				<h3>Qualification Status</h3>
+				<div class="card-box enq-view lst">
+					<table class="table table-bordered col-12" style="font-size:13px;">
+						<thead>
+						<tr>
+							<th scope="col" class="center"  width="3%">S.No</th>
+							<th scope="col" >Standard</th>
+							<th scope="col" >Business Sector</th>
+							<th scope="col" >Business Sector Group</th>
+							<th scope="col" class="center" >Status</th>
+						</tr>
+						</thead>
+						<tbody>
+								
+							<ng-container *ngFor="let qualification of userData.qualificationReviewStatusArr; let i=index; "  >
+								<tr>
+									<td scope="row" class="center">{{  1+ i }}</td>
+									<td>{{ qualification.standard_name }}</td>
+									<td>{{ qualification.sector_name }}</td>
+									<td>
+										<span *ngFor="let groupcode of qualification.sector_group_names;" class="txt-bg-3d">{{ groupcode }} </span>
+									</td>
+									<td *ngIf="qualification.qualification_status=='1'" class="center greencolor" >Qualified</td>
+									<td *ngIf="qualification.qualification_status=='0'" class="center redcolor" >Not Qualified</td>
+								</tr>  
+							</ng-container>
+						   <!-- <ng-container *ngIf="productEntry.productStandardList.length>1">
+								<tr  *ngFor="let productsEntry of productEntry.productStandardList | slice:1;" [class.currentedit]="this.productIndex===i"  >
+									<td>{{ productsEntry['standard_name'] }}</td>
+									<td>{{ productsEntry['label_grade_name'] }}</td>
+								</tr>
+							</ng-container>-->
+							<!--<ng-container *ngFor="let qualification of userData.qualificationReviewStatusArr; let i=index; "  >
+								<tr>
+									<td scope="row" class="center">{{  1+ i }}</td>
+									<td>{{ qualification.standard_name }}</td>
+									<td>{{ qualification.qual_role_names?qualification.qual_role_names:qualification.not_qual_role_names }}</td>
+									<td>{{ qualification.qual_sector_group_names?qualification.qual_sector_group_names:qualification.not_qual_sector_group_names }}</td>
+									<td *ngIf="qualification.qual_role_names!=''" class="center greencolor" >Qualified</td>
+									<td *ngIf="qualification.qual_role_names==''" class="center redcolor" >Not Qualified</td>
+								</tr>  
+								<tr *ngIf="qualification.qual_role_names!='' && qualification.not_qual_role_names!=''" >
+									<td rowspan="1">&nbsp;</td>
+									<td rowspan="1">&nbsp;</td>
+									<td>{{ qualification.not_qual_role_names }}</td>
+									<td>{{ qualification.not_qual_sector_group_names }}</td>
+									<td class="center redcolor" >Not Qualified</td>
+								</tr>             
+							</ng-container> -->
+						   <!-- <ng-container *ngFor="let qualification of userData.qualificationReviewStatusArr; let i=index; "  >
+								<tr>
+									<td scope="row" class="center">{{  1+ i }}</td>
+									<td>{{ qualification.standard_name }}</td>
+									<td>{{ qualification.qual_role_names?qualification.qual_role_names:qualification.not_qual_role_names }}</td>
+									<td>{{ qualification.qual_sector_group_names?qualification.qual_sector_group_names:qualification.not_qual_sector_group_names }}</td>
+									<td *ngIf="qualification.qual_role_names!=''" class="center greencolor" >Qualified</td>
+									<td *ngIf="qualification.qual_role_names==''" class="center redcolor" >Not Qualified</td>
+								</tr>  
+								<tr *ngIf="qualification.qual_role_names!='' && qualification.not_qual_role_names!=''" >
+									<td rowspan="1">&nbsp;</td>
+									<td rowspan="1">&nbsp;</td>
+									<td>{{ qualification.not_qual_role_names }}</td>
+									<td>{{ qualification.not_qual_sector_group_names }}</td>
+									<td class="center redcolor" >Not Qualified</td>
+								</tr>             
+							</ng-container> -->
+						</tbody>
+					</table>
+				</div>
+			</div>
+						
+			
+			<!--
+			<mat-tab-group>
+				<mat-tab  label="Personnel Details">
+					
+				</mat-tab>
+				<mat-tab   label="Role(s)">
+					
+				</mat-tab>
+
+				<mat-tab *ngIf="userData.role_id?.length>0"  label="Standards &amp; Business Sector">
+					
+				</mat-tab>
+				<mat-tab *ngIf="userData.role_id?.length>0" label="Qualification Details">
+					
+				</mat-tab>
+				<mat-tab *ngIf="userData.role_id?.length>0" label="Working Experience">
+					
+				</mat-tab>
+				<mat-tab  *ngIf="userData.role_id?.length>0" label="Inspection/Audit Experience">
+					
+				</mat-tab>
+				<mat-tab  *ngIf="userData.role_id?.length>0" label="Consultancy Experience">
+					
+				</mat-tab>
+				<mat-tab *ngIf="userData.role_id?.length>0" label="Certificate Details">
+					
+				</mat-tab>
+				<mat-tab *ngIf="userData.role_id?.length>0" label="CPD">
+					
+				</mat-tab>    
+				<mat-tab  *ngIf="userData.role_id?.length>0" label="Qualification Status">
+					
+				</mat-tab>
+				<mat-tab *ngIf="userData.role_id?.length>0" label="Declaration">
+						
+				</mat-tab>
+				<mat-tab *ngIf="userData.role_id?.length>0" label="Business Group">
+						
+				</mat-tab>
+			</mat-tab-group>
+			-->
+		</div>
+	</div>
+</div>          
+
+<ng-template #downloading let-modal>
+<div class="modal-header">
+	<h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+</div>
+<div class="modal-body" style="font-size:16px;">
+	Please wait, your file is downloading ...
+</div>
+</ng-template>
+
+<ng-template #bgroupHistoryDetails let-modal>
+<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+	<span class="c-icon" aria-hidden="true">&times;</span>
+</button>
+<div class="modal-body" style="font-size:16px;">
+	<mat-accordion *ngFor="let bgrouphistory of bgroupcodeData index as i">
+		<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+			<mat-expansion-panel-header>
+				<mat-panel-title>
+					Reject Details {{i+1}}
+				</mat-panel-title>
+			</mat-expansion-panel-header>
+			<div class="card-box enq-view">
+				<table class="table-secondary m-b-15">
+					<tr>
+						<th width="20%">Standard</th>
+						<td width="30%">{{ bgrouphistory.standard_name }}</td>
+						<th width="20%">Business Sector</th>
+						<td width="30%">{{ bgrouphistory.business_sector_name }}</td>
+					</tr>
+					<tr>
+						<th width="20%">Business Sector Group</th>
+						<td width="30%">{{ bgrouphistory.business_sector_group_name }}</td>
+						<th width="20%">Academic Qualification</th>
+						<td width="30%">{{ bgrouphistory.academic_qualification_name }}</td>
+					</tr>	
+					<tr *ngIf="bgrouphistory.academic_qualification==2">
+						<th width="20%">Exam File</th>
+						<td width="30%"><a href="javascript:void(0);" (click)="downloadbgroupFile(bgrouphistory.id,'exam',bgrouphistory.examfilename);openmodal(downloading)" ><i class="fa fa-download" *ngIf="bgrouphistory.examfilename"></i> {{ bgrouphistory.examfilename }}</a></td>
+						<th width="20%">Technical Interview File</th>
+						<td width="30%"><a href="javascript:void(0);" (click)="downloadbgroupFile(bgrouphistory.id,'interview',bgrouphistory.technicalfilename);openmodal(downloading)" ><i class="fa fa-download" *ngIf="bgrouphistory.technicalfilename"></i> {{ bgrouphistory.technicalfilename }}</a></td>
+					</tr>
+					<tr>
+						<th width="20%">Rejected By</th>
+						<td width="30%">{{ bgrouphistory.status_change_by }}</td>
+						<th width="20%">Rejected Date</th>
+						<td width="30%">{{ bgrouphistory.status_change_date }}</td>
+					</tr>	
+					<tr *ngIf="bgrouphistory.status_change_comment">
+						<th width="20%">Comment</th>
+						<td colspan="3">{{ bgrouphistory.status_change_comment }}</td>
+					</tr>
+				</table>	
+			</div>
+		</mat-expansion-panel>
+	</mat-accordion>
+</div>
+</ng-template>
+<ng-template #tebgroupHistoryDetails let-modal>
+<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+	<span class="c-icon" aria-hidden="true">&times;</span>
+</button>
+<div class="modal-body" style="font-size:16px;">
+	<mat-accordion *ngFor="let bgrouphistory of bgroupcodeData index as i">
+		<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+			<mat-expansion-panel-header>
+				<mat-panel-title>
+					Reject Details {{i+1}}
+				</mat-panel-title>
+			</mat-expansion-panel-header>
+			<div class="card-box enq-view">
+				<table class="table-secondary m-b-15">
+					<tr>
+						<th width="20%">Role</th>
+						<td colspan="3">{{ bgrouphistory.role_name }}</td>
+					</tr>	
+					<tr>
+						<th width="20%">Business Sector</th>
+						<td width="30%">{{ bgrouphistory.business_sector_name }}</td>
+						<th width="20%">Business Sector Group</th>
+						<td width="30%">{{ bgrouphistory.business_sector_group_name }}</td>
+					</tr>
+					<tr>
+						<th width="20%">Rejected By</th>
+						<td width="30%">{{ bgrouphistory.approval_by_name }}</td>
+						<th width="20%">Rejected Date</th>
+						<td width="30%">{{ bgrouphistory.approval_date }}</td>
+					</tr>	
+					<tr *ngIf="bgrouphistory.approval_comment">
+						<th width="20%">Comment</th>
+						<td colspan="3">{{ bgrouphistory.approval_comment }}</td>
+					</tr>	
+				</table>
+			</div>
+		</mat-expansion-panel>
+	</mat-accordion>
+</div>
+</ng-template>
+
+<ng-template #DeclarationRejectDetails let-modal>
+<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+	<span class="c-icon" aria-hidden="true">&times;</span>
+</button>
+<div class="modal-body" style="font-size:16px;">
+	<mat-accordion *ngFor="let dechistory of dechistoryData index as i">
+		<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+			<mat-expansion-panel-header>
+				<mat-panel-title>
+					Reject Details {{i+1}}
+				</mat-panel-title>
+			</mat-expansion-panel-header>
+			<div class="card-box enq-view">
+				<table class="table-secondary m-b-15">
+					<tr>
+						<th width="20%">Company</th>
+						<td colspan="3">{{ dechistory.declaration_company }}</td>
+					</tr>	
+					<tr>
+						<th width="20%">Contract</th>
+						<td width="30%">{{ dechistory.declaration_contract }}</td>
+						<th width="20%">Interest</th>
+						<td width="30%">{{ dechistory.declaration_interest }}</td>
+					</tr>
+					<tr>
+						<th width="20%">Start Year</th>
+						<td width="30%">{{ dechistory.declaration_start_year }}</td>
+						<th width="20%">End Year</th>
+						<td width="30%">{{ dechistory.declaration_end_year }}</td>
+					</tr>	
+					<tr>
+						<th width="20%">Rejected By</th>
+						<td width="30%">{{ dechistory.approval_by_name }}</td>
+						<th width="20%">Rejected Date</th>
+						<td width="30%">{{ dechistory.approval_date }}</td>
+					</tr>	
+					<tr *ngIf="dechistory.approval_comment">
+						<th width="20%">Comment</th>
+						<td colspan="3">{{ dechistory.approval_comment }}</td>
+					</tr>	
+				</table>
+			</div>
+		</mat-expansion-panel>
+	</mat-accordion>
+</div>
+</ng-template>
+
+<ng-template #StandardRejectDetails let-modal>
+<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+	<span class="c-icon" aria-hidden="true">&times;</span>
+</button>
+<div class="modal-body" style="font-size:16px;">
+	<mat-accordion *ngFor="let stdhistory of stdhistoryData index as i">
+		<mat-expansion-panel (opened)="panelOpenState = false" (closed)="panelOpenState = true">
+			<mat-expansion-panel-header>
+				<mat-panel-title>
+					Reject Details {{i+1}}
+				</mat-panel-title>
+			</mat-expansion-panel-header>
+			<div class="card-box enq-view">
+				<table class="table-secondary m-b-15">
+					<tr>
+						<th width="20%">Standard</th>
+						<td width="30%">{{ stdhistory.standard_name }}</td>
+						<th width="20%">Standard Exam Date</th>
+						<td width="30%">{{ stdhistory.standard_exam_date }}</td>
+					</tr>	
+					<tr>
+						<th width="20%">Standard Exam File</th>
+						<td colspan="3"><a href="javascript:void(0);" (click)="downloadstdFile(stdhistory.history_id,'standard',stdhistory.standard_exam_file);openmodal(downloading)" ><i class="fa fa-download" *ngIf="stdhistory.standard_exam_file"></i> {{ stdhistory.standard_exam_file }}</a></td>
+					</tr>	
+					<tr *ngIf="stdhistory.recycle_exam_date">
+						<th width="20%" >Recycle Exam Date</th>
+						<td colspan="3" >{{ stdhistory.recycle_exam_date }}</td>
+					</tr>
+					<tr *ngIf="stdhistory.recycle_exam_file">
+						<th width="20%" >Recycle Exam File</th>
+						<td colspan="3" ><a href="javascript:void(0);" (click)="downloadstdFile(stdhistory.history_id,'recycle',stdhistory.recycle_exam_file);openmodal(downloading)" ><i class="fa fa-download" *ngIf="stdhistory.standard_exam_file"></i> {{ stdhistory.recycle_exam_file }}</a></td>
+					</tr>
+					<tr *ngIf="stdhistory.social_course_exam_date">
+						<th width="20%" >Social Course Exam Date</th>
+						<td colspan="3">{{ stdhistory.social_course_exam_date }}</td>
+					</tr>
+					<tr *ngIf="stdhistory.social_course_exam_file">
+						<th width="20%" >Social Course Exam File</th>
+						<td colspan="3" ><a href="javascript:void(0);" (click)="downloadstdFile(stdhistory.history_id,'social',stdhistory.social_course_exam_file);openmodal(downloading)" ><i class="fa fa-download" *ngIf="stdhistory.social_course_exam_file"></i> {{ stdhistory.social_course_exam_file }}</a></td>
+					</tr>
+					<tr *ngIf="stdhistory.witness_date">
+						<th width="20%" >Witness Date</th>
+						<td colspan="3">{{ stdhistory.witness_date }}</td>
+					</tr>
+					<tr *ngIf="stdhistory.witness_file">
+						<th width="20%" >Witness File</th>
+						<td colspan="3" ><a href="javascript:void(0);" (click)="downloadstdFile(stdhistory.history_id,'witness',stdhistory.witness_file);openmodal(downloading)" ><i class="fa fa-download" *ngIf="stdhistory.witness_file"></i> {{ stdhistory.witness_file }}</a></td>
+					</tr>
+					<tr *ngIf="stdhistory.witness_valid_until">
+						<th width="20%" >Witness Valid Until</th>
+						<td colspan="3">{{ stdhistory.witness_valid_until }}</td>
+					</tr>
+					<tr *ngIf="stdhistory.witness_comment">
+						<th width="20%">Witness Comment</th>
+						<td colspan="3">{{ stdhistory.witness_comment }}</td>
+					</tr>
+					<tr>
+						<th width="20%" *ngIf="stdhistory.approval_by">Rejected By</th>
+						<td width="30%">{{ stdhistory.approval_by }}</td>
+						<th width="20%" *ngIf="stdhistory.approval_date">Rejected Date</th>
+						<td width="30%" *ngIf="stdhistory.approval_date">{{ stdhistory.approval_date }}</td>
+					</tr>		
+					<tr *ngIf="stdhistory.approval_comment">
+						<th width="20%">Comment</th>
+						<td colspan="3">{{ stdhistory.approval_comment }}</td>
+					</tr>	
+				</table>
+			</div>
+		</mat-expansion-panel>                
+	</mat-accordion>
+</div>
+</ng-template>
+
+<ng-template #bgroupDetails let-modal>
+<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+	<span class="c-icon" aria-hidden="true">&times;</span>
+</button>
+<div class="modal-body" style="font-size:16px;">
+	<div class="card-box enq-view">
+		<table class="table-secondary m-b-15" *ngIf="bgroupData">
+			<tr>
+				<th width="20%">Standard</th>
+				<td width="30%">{{ bgroupData.standard_name }}</td>
+				<th width="20%">Business Sector</th>
+				<td width="30%">{{ bgroupData.business_sector_name }}</td>
+			</tr>	
+			<tr>
+				<th width="20%">Business Sector Group</th>
+				<td width="30%">{{ bgroupData.business_sector_group_name }}</td>
+				<th width="20%">Academic Qualification</th>
+				<td width="30%">{{ bgroupData.academic_qualification_name }}</td>
+			</tr>
+			<tr *ngIf="bgroupData.academic_qualification==2">
+				<th width="20%">Exam File</th>
+				<td width="30%"><a href="javascript:void(0);" (click)="downloadbgroupFile(bgroupData.id,'exam',bgroupData.examfilename);openmodal(downloading)" ><i class="fa fa-download" *ngIf="bgroupData.examfilename"></i> {{ bgroupData.examfilename }}</a></td>
+				<th width="20%">Technical Interview File</th>
+				<td width="30%"><a href="javascript:void(0);" (click)="downloadbgroupFile(bgroupData.id,'interview',bgroupData.technicalfilename);openmodal(downloading)" ><i class="fa fa-download" *ngIf="bgroupData.technicalfilename"></i> {{ bgroupData.technicalfilename }}</a></td>
+			</tr>
+			<tr *ngIf="bgroupData.status==2">
+				<th width="20%">Approved Date</th>
+				<td width="30%">{{ bgroupData.bscode_approval_date[gpcoderow] }}</td>
+				<th width="20%">Approved By</th>
+				<td width="30%">{{ bgroupData.bscode_approval_by_name[gpcoderow] }}</td>
+			</tr>	
+			<tr *ngIf="bgroupData.status==3">
+				<th width="20%">Rejected Date</th>
+				<td width="30%">{{ bgroupData.approval_date[gpcoderow] }}</td>
+				<th width="20%">Rejected By</th>
+				<td width="30%">{{ bgroupData.approval_by_name[gpcoderow] }}</td>
+			</tr>	
+			<tr>
+				<th width="20%">Comments</th>
+				<td colspan="3">{{ bgroupData.approval_comment[gpcoderow] }}</td>
+			</tr>			
+		</table>
+	</div>
+</div>
+</ng-template>
+
+<ng-template #tebgroupDetails let-modal>
+<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+	<span class="c-icon" aria-hidden="true">&times;</span>
+</button>
+<div class="modal-body" style="font-size:16px;">
+	<div class="card-box enq-view">
+		<table class="table-secondary m-b-15" *ngIf="bgroupData">
+			<tr>
+				<th width="20%">Role</th>
+				<td width="30%">{{ bgroupData.role_name }}</td>
+				<th width="20%">Business Sector</th>
+				<td width="30%">{{ bgroupData.business_sector_name }}</td>
+			</tr>	
+			<tr>
+				<th width="20%">Business Sector Group</th>
+				<td colspan="3">{{ bgroupData.business_sector_group_name_arr[tcgpcoderow] }}</td>
+			</tr>
+			<tr *ngIf="bgroupData.approval_status==2">
+				<th width="20%">Approved Date</th>
+				<td width="30%">{{ bgroupData.approval_date[tcgpcoderow] }}</td>
+				<th width="20%">Approved By</th>
+				<td width="30%">{{ bgroupData.approval_by_name[tcgpcoderow] }}</td>
+			</tr>
+			<tr *ngIf="bgroupData.approval_status==3">
+				<th width="20%">Rejected Date</th>
+				<td width="30%">{{ bgroupData.approval_date[tcgpcoderow] }}</td>
+				<th width="20%">Rejected By</th>
+				<td width="30%">{{ bgroupData.approval_by_name[tcgpcoderow] }}</td>
+			</tr>	
+			<tr>
+				<th width="20%">Comments</th>
+				<td colspan="3">{{ bgroupData.approval_comment[tcgpcoderow] }}</td>
+			</tr>				
+		</table>
+	</div>
+</div>
+</ng-template>
+
+<ng-template #RoleDetails let-modal>
+<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+	<span class="c-icon" aria-hidden="true">&times;</span>
+</button>
+<div class="modal-body" style="font-size:16px;">
+	<div class="card-box enq-view">	
+		<table class="table-secondary m-b-15" *ngIf="roleData">
+			<tr>
+				<th width="20%">Role</th>
+				<td width="30%">{{ roleData.role_name }}</td>
+				<th width="20%">OSS</th>
+				<td width="30%">{{ roleData.franchise_name }}</td>
+			</tr>	
+			<tr>
+				<th width="20%">Username</th>
+				<td colspan="3">{{ roleData.username }}</td>
+			</tr>
+			<tr *ngIf="roleData.approval_status==2">
+				<th width="20%">Approved Date</th>
+				<td width="30%">{{ roleData.approval_date }}</td>
+				<th width="20%">Approved By</th>
+				<td width="30%">{{ roleData.approval_by_name }}</td>
+			</tr>
+			<tr *ngIf="roleData.approval_status==3">
+				<th width="20%">Rejected Date</th>
+				<td width="30%">{{ roleData.approval_date }}</td>
+				<th width="20%">Rejected By</th>
+				<td width="30%">{{ roleData.approval_by_name }}</td>
+			</tr>	
+			<tr>
+				<th width="20%">Comments</th>
+				<td colspan="3">{{ roleData.approval_comment }}</td>
+			</tr>		
+		</table>
+	</div>
+</div>
+</ng-template>
+
+<ng-template #StdDetails let-modal>
+<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+	<span class="c-icon" aria-hidden="true">&times;</span>
+</button>
+<div class="modal-body" style="font-size:16px;">
+	<div class="card-box enq-view">
+		<table class="table-secondary m-b-15" *ngIf="stdData">
+			<tr>
+				<th width="20%">Standard</th>
+				<td width="30%">{{ stdData.standard_name }}</td>
+				<th width="20%">Standard Exam Date</th>
+				<td width="30%">{{ stdData.standard_exam_date }}</td>
+			</tr>
+			<tr>
+				<th width="20%">Standard Exam File</th>
+				<td width="30%"><a href="javascript:void(0);" *ngIf="stdData.standard_exam_file" (click)="downloadstdFile(stdData.id,'standard',stdData.standard_exam_file);openmodal(downloading)" ><i class="fa fa-download" ></i> {{ stdData.standard_exam_file }}</a></td>
+				<th width="20%">Witness Date</th>
+				<td width="30%">{{ stdData.witness_date }}</td>
+			</tr>
+			<tr>
+				<th width="20%">Witness File</th>
+				<td width="30%"><a href="javascript:void(0);"  *ngIf="stdData.witness_file" (click)="downloadstdFile(stdData.id,'standard',stdData.witness_file);openmodal(downloading);" ><i class="fa fa-download"></i> {{ stdData.witness_file }}</a></td>
+				<th width="20%">Witness Valid Until</th>
+				<td width="30%">{{ stdData.witness_valid_until }}</td>
+			</tr>
+			<tr *ngIf="stdData.standard_code == 'GRS' || stdData.standard_code == 'RCS'">
+				<th width="20%">Recycle Exam Date</th>
+				<td width="30%">{{ stdData.recycle_exam_date }}</td>
+				<th width="20%">Recycle Exam File</th>
+				<td width="30%"><a href="javascript:void(0);" (click)="downloadstdFile(stdData.id,'recycle',stdData.recycle_exam_file);openmodal(downloading)" *ngIf="stdData.recycle_exam_file"><i class="fa fa-download" ></i> {{ stdData.recycle_exam_file }}</a></td>
+			</tr>
+			<tr *ngIf="stdData.standard_code == 'GRS' || stdData.standard_code == 'GOTS'">
+				<th width="20%">Social Exam Date</th>
+				<td width="30%">{{ stdData.social_course_exam_date }}</td>
+				<th width="20%">Social Exam File</th>
+				<td width="30%"><a href="javascript:void(0);" (click)="downloadstdFile(stdData.id,'social',stdData.social_course_exam_file);openmodal(downloading)" *ngIf="stdData.social_course_exam_file" ><i class="fa fa-download" ></i> {{ stdData.social_course_exam_file }}</a></td>
+			</tr>
+			<tr *ngIf="stdData && stdData.status==2">
+				<th width="20%">Approved Date</th>
+				<td width="30%">{{ stdData.approval_date }}</td>
+				<th width="20%">Approved By</th>
+				<td width="30%">{{ stdData.approval_by_name }}</td>
+			</tr>
+			<tr *ngIf="stdData && stdData.status==3">
+				<th width="20%">Rejected Date</th>
+				<td width="30%">{{ stdData.approval_date }}</td>
+				<th width="20%">Rejected By</th>
+				<td width="30%">{{ stdData.approval_by_name }}</td>
+			</tr>
+			<tr>
+				<th width="20%">Witness Comment</th>
+				<td colspan="3">{{ stdData.approval_comment }}</td>
+			</tr>
+		</table>
+	</div>
+</div>
+</ng-template>
+
+<ng-template #DeclarationDetails let-modal>
+<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+	<span class="c-icon" aria-hidden="true">&times;</span>
+</button>
+<div class="modal-body" style="font-size:16px;">
+	<div class="card-box enq-view">
+		<table class="table-secondary m-b-15" *ngIf="decData">
+			<tr>
+				<th width="20%">Company</th>
+				<td width="30%">{{ decData.declaration_company }}</td>
+				<th width="20%">Contract</th>
+				<td width="30%">{{ decData.declaration_contract }}</td>
+			</tr>	
+			<tr>
+				<th width="20%">Interest</th>
+				<td colspan="3">{{ decData.declaration_interest }}</td>
+			</tr>
+			<tr>
+				<th width="20%">Start Year</th>
+				<td width="30%">{{ decData.declaration_start_year }}</td>
+				<th width="20%">End Year</th>
+				<td width="30%">{{ decData.declaration_end_year }}</td>
+			</tr>	
+			<tr *ngIf="decData.status==2">
+				<th width="20%">Approved Date</th>
+				<td width="30%">{{ decData.approval_date }}</td>
+				<th width="20%">Approved By</th>
+				<td width="30%">{{ decData.approval_by_name }}</td>
+			</tr>	
+			<tr *ngIf="decData.status==3">
+				<th width="20%">Rejected Date</th>
+				<td width="30%">{{ decData.approval_date }}</td>
+				<th width="20%">Rejected By</th>
+				<td width="30%">{{ decData.approval_by_name }}</td>
+			</tr>	
+			<tr>
+				<th width="20%">Comments</th>
+				<td colspan="3">{{ decData.approval_comment }}</td>
+			</tr>
+			<tr *ngIf="decData.relation_consent==3">
+				<th width="20%">Close Relations Declaration</th>
+				<td width="30%">No</td>
+				<th width="20%">Spouse's Work</th>
+				<td width="30%">{{ decData.relation_work }}</td>
+
+			</tr>
+			<tr *ngIf="decData.relation_consent!=3">
+				<th width="20%">Close Relations Declaration</th>
+				<td width="30%">{{ userData.relAnsList[decData.relation_consent] }}</td>
+				<th width="20%" *ngIf="decData.relation_consent!=1">Relation's Work</th>
+				<td width="30%" *ngIf="decData.relation_consent!=1">{{ decData.relation_work }}</td>
+
+			</tr>
+			<tr>
+				<th width="20%">Name</th>
+				<td width="30%">{{ decData.name }}</td>
+				<th width="20%">Type Of Relationship</th>
+				<td width="30%">{{ decData.type_name }}</td>
+
+			</tr>	
+		</table>
+	</div>
+</div>
+</ng-template>
+
+<ng-template #approverConfirmContent let-modal>
+<div class="modal-header">
+	<h4 class="modal-title" id="modal-basic-title">Review {{titlename}}</h4>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+	<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+</div>
+<div class="modal-body">
+	<div class="alert alert-success" *ngIf="alertSuccessMessage">{{alertSuccessMessage}}</div>
+	<form>
+	<div class="form-group" *ngIf="!alertSuccessMessage">
+		<label for="status">Status</label>
+		<div class="input-group">
+					
+
+			<select name="status" [(ngModel)]="model.status"  class="form-control select2" style="width:120px; display:inline;" >
+					<option value="">-- Status --</option>
+					<option value="2">Approve</option>
+					<option value="3">Reject</option>
+			</select>     
+			
+		</div>
+		<div class="validationerror" *ngIf="status_error">Please select the status</div>
+	
+		<div class="form-group">
+			<label for="status">Comment(s)</label>
+			<div class="input-group">
+						
+				<textarea name="comment" [(ngModel)]="model.comment" rows="4" style="width:100%; display:inline;" ></textarea>
+				 
+				<div class="validationerror" *ngIf="comment_error"  >Please enter the comment</div>
+			</div>
+		</div>
+	</div>
+	</form>
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn btn-success " [disabled]="popupbtnDisable" (click)="commonModalAction();">Save</button>
+	<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	
+</div>
+</ng-template>
+
+<ng-template #approverStandardConfirmContent let-modal>
+<div class="modal-header">
+	<h4 class="modal-title" id="modal-basic-title">Review {{titlename}}</h4>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+	<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+</div>
+<div class="modal-body">
+	<div class="alert alert-success" *ngIf="alertSuccessMessage">{{alertSuccessMessage}}</div>
+	<form >
+		<div class="form-group row" *ngIf="!alertSuccessMessage">
+			<div class="col-12">
+				<label for="status">Status</label>
+				<div class="input-group">
+							
+
+					<select name="status" #standardstatus [(ngModel)]="model.status"  class="form-control select2" style="width:120px; display:inline;" >
+							<option value="">-- Status --</option>
+							<option value="2">Approve</option>
+							<option value="3">Reject</option>
+					</select>     
+					
+				</div>
+				<div class="validationerror" *ngIf="status_error">Please select the status</div>
+			</div>
+			
+			
+			
+				<div class="col-6">
+					<label>Witness Date</label>
+					<input type="text" [(ngModel)]="model.witness_date" #witdateref name="witness_date"  class="form-control" placeholder="Witness Date *" matInput [matDatepicker]="witness_date" [max]="minDate" (dateChange)="witnessdate_change($event.value)" (click)="witness_date.open()" style="width:80%; float:left;">
+					<mat-datepicker-toggle matSuffix  [for]="witness_date" style="float:left;"></mat-datepicker-toggle>
+						<mat-datepicker #witness_date></mat-datepicker>
+					<div class="validationerror" *ngIf="witness_date_error">{{witness_date_error}}</div>
+				</div>
+			<ng-container *ngIf="standardstatus.value==2">
+				<div class="col-6">
+					<label>Valid Until</label>
+					<input type="text" [(ngModel)]="model.valid_until" name="valid_until"  class="form-control" placeholder="Valid Until Date *" matInput [matDatepicker]="valid_until" [min]="minDate" (click)="valid_until.open()" style="width:80%; float:left;">
+					<mat-datepicker-toggle matSuffix  [for]="valid_until" style="float:left;"></mat-datepicker-toggle>
+						<mat-datepicker #valid_until></mat-datepicker>
+					<div class="validationerror" *ngIf="valid_until_error">{{valid_until_error}}</div>
+				</div>
+			</ng-container>
+				<div class="col-12">
+					<label>Witness File</label>
+					<input type="file"  name="witness_file" (change)="witnessfileChange($event)"  >
+					<div style="font-size:11px;" >supported file formats: 
+						<span *ngFor="let docs of this.errorSummary.validDocs; let last=last;">{{ docs}}<span *ngIf="!last">, </span> </span>
+					</div>
+					
+					<div *ngIf="model.witness_file" style="padding:5px; border:1px solid #cecece; background-color: beige; height:32px;width: 100%;">
+						<a href="javascript:void(0);" (click)="downloadstdFile(model.id,'witness',model.witness_file);open(downloading,'','','')" ><i class="fa fa-download"></i> {{ model.witness_file }}</a>
+						<a href="javascript:void(0);"  (click)="removestd_witnessFiles()" style="color:red; font-weight:bold;margin-right: 5px;float:right;" >X</a>
+					</div>
+
+					<div *ngIf="witness_fileErrors" class="validationerror" >
+						{{ witness_fileErrors }} 
+					</div>
+					
+				</div>
+			
+			<div class="col-12">
+				<label>Witness Comment</label>
+				<div class="input-group">
+							
+					<textarea name="comment" [(ngModel)]="model.comment" rows="3" style="width:100%; height:50px;display:inline;" ></textarea>
+					 
+					<div class="validationerror" *ngIf="comment_error"  >Please enter the comment</div>
+				</div>
+			</div>
+			<!--<div class="col-12">
+				<label>Witness Comment</label>
+				<textarea name="witness_comment" [(ngModel)]="model.witness_comment" rows="3" style="width:100%; height:50px;display:inline;" ></textarea>
+				<div class="validationerror" *ngIf="witness_comment_error">{{witness_comment_error}}</div>
+			</div>-->
+		</div>
+	</form>
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn btn-success " [disabled]="popupbtnDisable" (click)="commonModalAction('standard');">Save</button>
+	<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	
+</div>
+</ng-template>
+
+<ng-template #userRoleReviewContent let-modal>
+<div class="modal-header">
+	<h4 class="modal-title" id="modal-basic-title">Review Decision</h4>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+	<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+</div>
+
+<div class="modal-body text-center" style="font-size:16px;padding:5px;">
+	<div class="alert alert-info" *ngIf="alertInfoMessage">{{alertInfoMessage}}</div>
+	<div class="alert alert-success" *ngIf="alertSuccessMessage">{{alertSuccessMessage}}</div>
+	<div class="alert alert-danger" *ngIf="alertErrorMessage">{{alertErrorMessage}}</div>
+</div>
+
+<div *ngIf="!alertSuccessMessage" class="modal-body">
+	<form  [formGroup]="form">
+		<div class="form-group row">
+			<div class="col-6">
+				<label>Status <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Status" matTooltipClass="tooltip-text-size" aria-tooltip="Status" matTooltipPosition="right"></i>
+				<select formControlName="status" (change)="changeUserRoleStatus($event.target.value)" [class.is-invalid]="f.status.invalid && f.status.touched" class="form-control select2">
+					<option value="">-- Status --</option>
+					<option value="2">Approve</option>
+					<option value="3">Reject</option>
+				</select>					
+				<div *ngIf="f.status.errors" class="invalid-feedback">
+					<div *ngIf="f.status.errors.required">Status is required</div>
+				</div>	
+			</div>
+		</div>	
+		
+		<div *ngIf="roleApproveStatus && model.user_role_type" class="clearfix"></div>		
+		
+		<div *ngIf="roleApproveStatus && model.user_role_type" class="form-group row">
+			<div class="col-6">
+				<label>Username <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Username" matTooltipClass="tooltip-text-size" aria-tooltip="Username" matTooltipPosition="right"></i>
+				<input type="text" formControlName="username"  class="form-control" placeholder="Username" [class.is-invalid]="f.username.invalid && f.username.touched" >
+				<div *ngIf="f.username.errors" class="invalid-feedback">
+					<div *ngIf="f.username.errors.required">Username is required</div>
+					<div *ngIf="f.username.errors.minlength">Username must be at least 6 characters</div>
+					<div *ngIf="f.username.errors.maxlength">Username cannot exceed 25 characters</div>
+					<div *ngIf="f.username.errors.pattern || f.username.hasError('whitespace')">Please enter valid Username</div>
+					<div *ngIf="f.username.errors.cannotContainSpace">Username can not contain space.</div>
+				</div>
+				<div class="validationerror" *ngIf="usernameErrors && f.username.invalid">{{usernameErrors}}</div>
+			</div>
+		</div>				
+		
+		<div *ngIf="roleApproveStatus && model.user_role_type" class="clearfix"></div>
+		
+		<div *ngIf="roleApproveStatus && model.user_role_type" class="form-group row">
+			<div class="col-6">
+				<label>Password <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Password" matTooltipClass="tooltip-text-size" aria-tooltip="Password" matTooltipPosition="right"></i>
+				<input type="password" formControlName="user_password"  class="form-control" placeholder="Password" [class.is-invalid]="f.user_password.invalid && f.user_password.touched">
+				<div *ngIf="f.user_password.errors" class="invalid-feedback">
+					<div *ngIf="f.user_password.errors.required">Password is required</div>
+					<div *ngIf="f.user_password.errors.minlength">Password must be at least 6 characters</div>
+					<div *ngIf="f.user_password.errors.maxlength">Password cannot exceed 25 characters</div>
+					<div *ngIf="f.user_password.errors.pattern || f.user_password.hasError('whitespace')">Please enter valid Password</div>
+					<div *ngIf="f.user_password.errors.cannotContainSpace">Password can not contain space.</div>
+				</div>
+			</div>
+		</div>			
+		
+		<div class="clearfix"></div>		
+		
+		<div class="form-group row">
+			<div class="col-12">
+				<label>Comment <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Comment" matTooltipClass="tooltip-text-size" aria-tooltip="Comment" matTooltipPosition="right"></i>
+				<textarea formControlName="comment" placeholder="Comment"  [class.is-invalid]="f.comment.invalid && f.comment.touched" rows="5" class="form-control"></textarea>
+				<div *ngIf="f.comment.errors" class="invalid-feedback">
+					<div *ngIf="f.comment.errors.required">Comment is required</div>
+					<div *ngIf="f.comment.errors.pattern || f.comment.hasError('whitespace')">Invalid Comment</div>
+				</div>
+			</div>
+		</div>	
+				
+	</form>
+	
+</div>
+<div *ngIf="!alertSuccessMessage" class="modal-footer">
+	
+	<button type="button" [disabled]="loading" class="btn btn-success " (click)="checkUserSel()">
+		<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>Save</button>
+
+	<button type="button" [disabled]="loading" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">
+	<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>Cancel</button>
+	
+</div>
+</ng-template>
+
+<ng-template #Credentials let-modal>
+<div class="modal-header">
+	<h4 class="modal-title" id="modal-basic-title">Edit Login Credential</h4>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+	<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+</div>
+
+<div class="modal-body text-center" style="font-size:16px;padding:5px;">
+	<div class="alert alert-info" *ngIf="alertInfoMessage">{{alertInfoMessage}}</div>
+	<div class="alert alert-success" *ngIf="alertSuccessMessage">{{alertSuccessMessage}}</div>
+	<div class="alert alert-danger" *ngIf="alertErrorMessage">{{alertErrorMessage}}</div>
+</div>
+
+<div *ngIf="!alertSuccessMessage" class="modal-body">
+	<form  [formGroup]="roleform">	
+		
+		<div class="form-group row">
+			<div class="col-12">
+				<label>Username <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Username" matTooltipClass="tooltip-text-size" aria-tooltip="Username" matTooltipPosition="right"></i>
+				<input type="text" formControlName="username"  class="form-control" placeholder="Username" [class.is-invalid]="rf.username.invalid && rf.username.touched" >
+				<div *ngIf="rf.username.errors" class="invalid-feedback">
+					<div *ngIf="rf.username.errors.required">Username is required</div>
+					<div *ngIf="rf.username.errors.minlength">Username must be at least 6 characters</div>
+					<div *ngIf="rf.username.errors.maxlength">Username cannot exceed 25 characters</div>
+					<div *ngIf="rf.username.errors.pattern || rf.username.hasError('whitespace')">Please enter valid Username</div>
+					<div *ngIf="rf.username.errors.cannotContainSpace">Username can not contain space.</div>
+				</div>
+				<div class="validationerror" *ngIf="usernameErrors && rf.username.invalid">{{usernameErrors}}</div>
+			</div>
+		</div>				
+		
+		<div class="clearfix"></div>
+		
+		<div class="form-group row">
+			<div class="col-12">
+				<label>New Password <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Password" matTooltipClass="tooltip-text-size" aria-tooltip="Password" matTooltipPosition="right"></i>
+				<input type="password" formControlName="user_password"  class="form-control" placeholder="Password" [class.is-invalid]="rf.user_password.invalid && rf.user_password.touched">
+				<div *ngIf="rf.user_password.errors" class="invalid-feedback">
+					<div *ngIf="rf.user_password.errors.required">Password is required</div>
+					<div *ngIf="rf.user_password.errors.minlength">Password must be at least 6 characters</div>
+					<div *ngIf="rf.user_password.errors.maxlength">Password cannot exceed 25 characters</div>
+					<div *ngIf="rf.user_password.errors.pattern || rf.user_password.hasError('whitespace')">Please enter valid Password</div>
+					<div *ngIf="rf.user_password.errors.cannotContainSpace">Password can not contain space.</div>
+				</div>
+			</div>
+		</div>			
+		
+				
+	</form>
+	
+</div>
+<div *ngIf="!alertSuccessMessage" class="modal-footer">
+	<button type="button" [disabled]="loading" class="btn btn-success " (click)="SaveCredentials()">
+	<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>Save</button>
+
+	<button type="button" [disabled]="loading" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">
+	<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>Cancel</button>
+</div>
+</ng-template>
+<ng-template #confirmAction let-modal>
+<div class="modal-header">
+	<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+	<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+</div>
+<div class="modal-body text-center" style="font-size:16px;padding:5px;">
+<div class="alert alert-info" *ngIf="alertInfoMessage">{{alertInfoMessage}}</div>
+<div class="alert alert-success" *ngIf="alertSuccessMessage">{{alertSuccessMessage}}</div>
+<div class="alert alert-danger" *ngIf="alertErrorMessage">{{alertErrorMessage}}</div>
+</div>
+<div class="modal-footer" *ngIf="displayPopBtn">
+	<button type="button" class="btn btn-success" (click)="commonUpdateData();">Ok</button>
+
+	<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+</div>
+</ng-template>

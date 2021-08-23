@@ -1,0 +1,85 @@
+<div class="col-12 row pad-right" >
+	<div class="col-8">
+		<h4 class="page-title">{{title}}</h4>
+	</div>
+	<div class="col-4 text-right pad-right">
+		<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/change-scope/standard-addition/list']"><i class="fa fa-arrow-left text-white"></i> Back</a>
+	</div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="add card-box table-responsive">
+            <form  [formGroup]="form" (ngSubmit)="onSubmit()"  >
+            	
+				<!--
+				<div class="col-12 row pad-right" >
+                    <div class="col-8">
+                    <h4 class="page-title">{{title}}</h4>
+                    </div>
+                    <div class="col-4 text-right pad-right">
+                    <a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/change-scope/standard-addition/list']" >Back</a>
+                    </div>
+                </div>
+				-->         
+                   
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view">
+                    <h3>Company Details</h3>    
+					<div class="form-group row">
+					
+						<div class="col-6">
+							<label>Company <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Company" matTooltipClass="tooltip-text-size" aria-tooltip="Company" matTooltipPosition="right"></i>
+                            <!-- oncompanychange($event.target.value) -->
+							<select formControlName="company_id" [class.is-invalid]="f.company_id.invalid && f.company_id.touched" class="form-control select2" (change)='checkRequestedAddition($event.target.value)'>
+                                <option value="">-- Company --</option>
+                                <option *ngFor="let app of appdata" value = {{app.id}}>{{app.company_name}}</option>
+                            </select>
+                            <span *ngIf="loading?.company" class="spinner-border spinner-border-sm mr-1"></span>
+                            <div *ngIf="f.company_id.errors" class="invalid-feedback">
+                                <div *ngIf="f.company_id.errors.required" >Company Name is required</div>
+                            </div>	
+						</div>
+					
+						<div class="col-6">
+							<label>Standard <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Standard" matTooltipClass="tooltip-text-size" aria-tooltip="Standard" matTooltipPosition="right"></i>
+                            <mat-select placeholder="-- Standard --" formControlName="standard_id" multiple class="form-control select2" [class.is-invalid]="f.standard_id.invalid && f.standard_id.touched">
+                                <mat-select-trigger>
+                                <span *ngIf="f.standard_id.value?.length == 1" >{{f.standard_id.value ? getSelectedValue(f.standard_id.value): ''}}</span>
+                                <span *ngIf="f.standard_id.value?.length > 1" class="example-additional-selection">
+                                    {{f.standard_id.value.length}} {{ 'selected' }}
+                                </span>
+                                </mat-select-trigger>
+                                <mat-option *ngFor="let std of standardlist" [value]="std.id">{{std.name}}</mat-option>
+                            </mat-select>  
+                            <span *ngIf="loading?.standard" class="spinner-border spinner-border-sm mr-1"></span>
+                            <div *ngIf="f.standard_id.errors" class="invalid-feedback">
+                                <div *ngIf="f.standard_id.errors.required" >Standard is required</div>
+                            </div>	
+						</div>
+					
+						
+                    </div>
+
+										   
+					<div class="col-lg-12 text-center mt-4 mb-4">
+							<button [disabled]="loading?.button || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+								<span *ngIf="loading?.button" class="spinner-border spinner-border-sm mr-1"></span>
+								Submit
+							</button>
+							<!-- <button [disabled]="loading || buttonDisable" type="button" [routerLink]="['/transfer-certificate/request/list']" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2">
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+								Cancel
+							</button> -->
+														
+							<div class="clearfix"></div>
+							
+							<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+					</div>
+
+						
+				</div>
+                 
+            </form>
+        </div>
+    </div>
+</div>

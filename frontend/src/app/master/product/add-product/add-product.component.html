@@ -1,0 +1,75 @@
+<div class="col-12 row pad-right" >
+	<div class="col-8">
+		<h4 class="page-title">{{title}}</h4>
+	</div>
+	<div class="col-4 text-right pad-right">
+		<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/master/product/list']"><i class="fa fa-arrow-left text-white"></i> Back</a>
+	</div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="add card-box table-responsive">
+            <form  [formGroup]="form" (ngSubmit)="onSubmit()"  >
+                                                             
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view">
+					
+					<div class="form-group row">
+					
+						<div class="col-6">
+							<label>Name <span class="text-danger">*</span></label>
+							<input type="text" formControlName="name" [class.is-invalid]="f.name.invalid &&
+							f.name.touched " class="form-control" placeholder="Name" >
+							<div *ngIf="f.name.errors" class="invalid-feedback">
+								<div *ngIf="f.name.errors.required">Name is required</div>
+								<div *ngIf="f.name.errors.pattern || f.name.hasError('whitespace')">Invalid Name</div>
+								<div *ngIf="f.name.errors.maxlength">Name cannot exceed 255 characters</div>	
+								<div *ngIf="f.name.errors.incorrect">{{ nameErrors }}</div>
+							</div>
+													
+						</div> 
+
+						<div class="col-4">
+							<label>Code <span class="text-danger">*</span></label>
+							<input type="text" formControlName="code" [class.is-invalid]="f.code.invalid && f.code.touched " class="form-control" placeholder="Code" >
+							<div *ngIf="f.code.errors" class="invalid-feedback">
+								<div *ngIf="f.code.errors.required">Code is required</div>
+								<div *ngIf="f.code.errors.pattern || f.code.hasError('whitespace')">Invalid Code</div>
+								<div *ngIf="f.code.errors.maxlength">Code cannot exceed 50 characters</div>
+								<div *ngIf="f.code.errors.incorrect">{{ codeErrors }}</div>								
+							</div>							
+						</div>  
+						
+					</div>  
+					<div class="form-group row">		
+													
+						<div class="col-8">
+							<label>Description</label>
+							<textarea formControlName="description" class="form-control" placeholder="Description" [class.is-invalid]="f.description.invalid && f.description.touched "></textarea>
+							<div *ngIf="f.description.errors" class="invalid-feedback">
+								<div *ngIf="f.description.errors.incorrect">{{ descriptionErrors }}</div>
+								<div *ngIf="f.description.errors.pattern || f.description.hasError('whitespace')" >Invalid Description</div>
+							</div>
+						</div>
+					</div>		
+					
+					<div class="col-lg-12 text-center mt-4 mb-4">
+						<button [disabled]="loading || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+							<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+							{{btnLabel}}
+						</button>
+						<button [disabled]="loading || buttonDisable" type="button" [routerLink]="['/master/product/list']" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2">
+							<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+							Cancel
+						</button>
+						
+						<div class="clearfix"></div>
+						
+						<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+					</div>				
+						
+				</div>
+                 
+            </form>
+        </div>
+    </div>
+</div>

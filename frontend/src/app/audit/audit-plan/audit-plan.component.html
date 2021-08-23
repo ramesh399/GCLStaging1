@@ -1,0 +1,392 @@
+<div class="row" *ngIf="auditPlanData">
+    <div class="col-12">
+        <div class="card-box table-responsive ">
+            <form #form="ngForm"   >
+    
+        
+                <div class="col-12 row" style="padding-right:0px;" >
+                    <div class="col-8">
+                    <h4 class="page-title">{{title}}</h4>
+                    </div>  
+                    <div class="col-4 text-right" style="padding-right:0px;">
+                        <a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/audit/list-audit-plan']" >Back</a>                   
+                    </div>
+                </div> 
+				
+				<ng-container *ngFor="let unit of auditPlanData.units; index as ut">
+					<table class="table table-bordered tab-bor col-12" >
+						<thead>
+							<tr>                                        
+								<th scope="col" width="50%" style="vertical-align:middle;">{{unit.name}} [<ng-container *ngFor="let std of unit.standards; let stdi=index;">{{std.name}}<span *ngIf="stdi+1!=unit.standards.length">,</span></ng-container>]</th> 
+								<!-- <th scope="col" width="25%" style="vertical-align:middle;">Quotation Manday(s): {{unit.quotation_manday}}</th> -->
+								<th scope="col" width="20%" style="vertical-align:middle;">Final Manday(s): {{ manday && manday[ut]?.final_manday_withtrans  }} </th> 
+								<th scope="col" width="5%" class="center" style="vertical-align:middle;">
+									<a href="javascript:void(0);" *ngIf="activeUnit==ut" (click)="closeUnit()" class="text-white" title="Close" alt="Close"><i class="fa fa-close"></i></a>
+									<a href="javascript:void(0);" *ngIf="activeUnit!=ut" (click)="editUnit(ut,unit.id)" class="text-white" title="Edit" alt="Edit"><i class="fa fa-edit"></i></a>
+								</th>
+							</tr>
+						</thead>
+						<tbody>                                             
+							<tr style="background-color:#ffffff !important;" *ngIf="activeUnit==ut">	
+								<td colspan="4" width="100%">
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view ">				
+										<div class="form-group row">														
+											<div class="col-3">
+												<label>Date(s) <span class="text-danger">*</span></label><br>
+												<input style="width: 70%; display: inline;" #auditPlanDates name="unit_date_{{unit.id}}" [(ngModel)]="auditplanlist['unit_date_'+unit.id]" class="form-control"  placeholder="Date">
+												<button mat-icon-button [matMenuTriggerFor]="appMenu">
+												<mat-icon>calendar_today</mat-icon>
+												</button>
+												<mat-menu #appMenu="matMenu" class="drop-calendar" >
+													<div (click)="$event.stopPropagation();">
+														<!-- <mat-calendar #unit_dates (selectedChange)="select($event,unit_dates,unit.id,ut)" [dateClass]="isSelected"></mat-calendar> -->
+														
+														<mat-calendar #unit_dates [minDate]="minDate"  (selectedChange)="select($event,unit_dates,unit.id,ut)" [dateClass]="isSelected"></mat-calendar>
+														 
+													</div>
+												</mat-menu>
+												
+											</div>
+											
+																																					
+										</div>
+									</div>
+
+									<!--
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view ">				
+										<div class="form-group row" *ngFor="let sector_group of unit.sector_groups; index as sec">														
+											<div class="col-3">
+												Justified Person ({{sector_group.group_code}}) 
+											</div>
+											<div class="col-3">
+												<select name="recommended_auditor_{{unit.id}}_{{sector_group.id}}"  #recommendedAuditor="ngModel" [(ngModel)]="auditplanlist['justified_auditor_'+unit.id+'_'+sector_group.id]" required  style="margin-top:4px;" class="form-control"  >
+													<option value="">-- Justified Users -- </option>	
+																										
+												</select>
+											</div>
+										</div>
+									</div>
+									-->
+									
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view ">
+										<div class="form-group row">
+										
+										<div class="col-12">
+											<label class="text-primary">Justified Person(s)</label><br>
+											<table class="table table-bordered auditplanbgsector" style="font-size:13px;">
+												<thead>
+												<tr>
+													<th class="center" width="5%">S.No</th>
+													<th width="25%">Business Sector Group</th>
+													<th>Auditor(s)</th>
+													<th>Technical Expert(s)</th>
+												</tr>
+												</thead>
+												<tbody>
+												<ng-container>
+													<tr *ngFor="let bsec of sectorwiseusersList[unit.id]; index as isu;" >
+														<td class="center">{{ 1+ isu }}</td>
+														<td>{{ bsec.group_code }}</td>
+														<td>{{ bsec.auditorlistnames ? bsec.auditorlistnames : 'No Auditor Found'}}</td>
+														<td>{{ bsec.technicalexpertlistnames ? bsec.technicalexpertlistnames : 'No Technical Expert Found'}}</td>														
+													</tr>
+												</ng-container>
+												
+												<ng-container *ngIf="sectorwiseusersList[unit.id]===undefined || sectorwiseusersList[unit.id].length <=0">
+													<tr>
+														<td colspan="4" class="center">No Date Selected</td>
+													</tr>
+												</ng-container>
+											</tbody>
+											</table>
+											<!--
+											<select name="justified_{{unit.id}}"   class="form-control select2" >
+												<option>-- Justified Persons --</option>
+												<option *ngFor="let usersec of sectorwiseusersList[unit.id]; index as usec" value="{{usec}}">
+													{{usersec.group_code}} - {{ usersec.userlistnames }}</option>
+											</select>
+											-->
+											
+										</div>
+									</div>
+									</div>
+
+									<div class="clearfix"></div>
+									
+									<div class="col-12"><span *ngIf="loadings?.auditor" class="spinner-border spinner-border-sm mr-1"></span></div>
+									<!--
+									<table class="table-bordered tab-bor col-12" align="center" style="width:98%; margin-top:10px;">
+									-->
+									<div class="col-12">
+										<label class="text-primary">Audit Person(s)</label><br>
+										<table class="table table-bordered auditplanbgsector" style="font-size:13px;">
+											<thead>
+											<tr>
+												<th width="5%" scope="col" class="center">S.No</th>
+												<th width="20%" scope="col">Auditor</th>
+												<th scope="col">Date(s)</th>
+												<th width="5%" scope="col" class="center">Action</th>
+											</tr>
+											</thead>
+											<tbody>	
+												<tr *ngIf="!appAuditorsEntries[ut] || appAuditorsEntries[ut]?.length==0">
+													<td colspan="4" class="center">No Unit Auditor Added</td>
+												</tr>
+												<tr *ngFor="let unitAuditor of appAuditorsEntries[ut]; let i=index; ">
+													<td scope="row" class="center">{{  1+ i }}</td>
+													<td>{{ unitAuditor.auditor_name }}</td>
+													<td>
+														<!--
+														<span *ngFor="let date of unitAuditor.auditor_dates; let last=last;" class="txt-bg-3d">{{ date}}</span>
+														-->
+														<div *ngFor="let date of unitAuditor.auditor_dates; let last=last;" class="txt-bg-3d center" style="width:100px;float:left;">{{ date}}</div>
+													</td>
+													<td  class="center">
+														<a href="javascript:void(0);" (click)="editUnitAuditor(i,ut,unit.id)" title="Edit" alt="Edit"> <i class="fa fa-edit"></i> </a>														
+														<a href="javascript:void(0);" (click)="removeUnitAuditor(i,ut,unit.id)" title="Delete" alt="Delete" class="pl-2"> <i class="fa fa-trash text-danger"></i> </a>
+													</td>
+												</tr>
+												
+												 
+												
+											</tbody>
+										</table>
+									</div>	
+									
+									
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view m-t-5">				
+										<div class="form-group row">														
+											<div class="col-4">
+												<label>Auditor <span class="text-danger">*</span></label>
+												<select name="auditor_name_{{unit.id}}" #auditorName="ngModel" [(ngModel)]="auditorlist['auditor_name_'+ut+'_'+unit.id]" required class="form-control" >
+													<option value="">-- Auditor -- </option>
+													<option *ngFor="let auditors of auditorList[unit.id]" value="{{auditors.id}}">{{auditors.name}}</option>
+												</select>
+												
+												<!--
+												<mat-select placeholder="Auditor *" multiple class="form-control select2">
+													<mat-select-trigger>																
+													</mat-select-trigger>																
+												</mat-select>
+												-->
+												
+												<div class="validationerror" *ngIf="!auditorName.valid && auditorName.touched">
+												Please select the Auditor Name.
+												</div>	
+											</div>
+											
+											<div class="col-5">
+												<label>Date(s) <span class="text-danger">*</span></label><br>
+												<!--
+												<input style="width: 70%; display: inline;" matInput [matDatepicker]="auditor_dates" #auditorDate="ngModel" name="auditor_dates_{{unit.id}}" [(ngModel)]="auditorlist['auditor_dates_'+ut+'_'+unit.id]" class="form-control" required placeholder="Date(s) *">
+												<mat-datepicker-toggle matSuffix  [for]="auditor_dates"></mat-datepicker-toggle>
+												<mat-datepicker #auditor_dates></mat-datepicker>
+												<div class="validationerror" *ngIf="!auditorDate.valid && auditorDate.touched">
+												Please select the Date(s).
+												</div>
+												-->
+												
+												<mat-select  name="auditor_dates_{{unit.id}}" placeholder="Date(s)" #auditordates [(ngModel)]="auditorlist['auditor_dates_'+ut+'_'+unit.id]" multiple class="form-control select2">
+													<mat-select-trigger>
+													<span *ngIf="auditorlist['auditor_dates_'+ut+'_'+unit.id]" >
+														<span *ngIf="auditorlist['auditor_dates_'+ut+'_'+unit.id]?.length == 1">{{auditordates.value}}</span>													
+														<span *ngIf="auditorlist['auditor_dates_'+ut+'_'+unit.id]?.length >1" class="example-additional-selection">
+															{{auditorlist['auditor_dates_'+ut+'_'+unit.id].length}} {{ 'selected' }}
+														</span>
+													</span>
+													</mat-select-trigger>
+													<ng-container *ngIf="auditPlanDates.value">
+														<mat-option *ngFor="let datesel of auditPlanDates.value.split(' | ')" [value]="datesel">{{datesel}}</mat-option>
+													</ng-container>
+												</mat-select>
+												
+											</div>	
+
+											<div class="col-3" style="padding-top:22px;">
+												<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="addUnitAuditor(ut,unit.id)">+Add</a>
+												&nbsp;
+												<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="resetUnitAuditor(ut,unit.id)">Reset</a>
+											</div>														
+										</div>
+									</div>
+																		
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view m-t-5">
+										<div class="col-12 text-primary" style="border-bottom: 1px solid #d7d7d7;padding-left:0px;">
+											<label>Other Audit Person(s)</label>
+										</div> 
+										<div class="form-group row col-12 pad-left pad-right m-t-10">	
+											<div class="col-6">
+												<label>Lead Auditor <span class="text-danger">*</span></label>
+												<select name="lead_auditor_{{unit.id}}" (change)="getApplicationLeadAuditorList()" #leadAuditor="ngModel" [(ngModel)]="auditplanlist['lead_auditor_'+unit.id]" required  style="margin-top:4px;" class="form-control"  >
+													<option value="">-- Lead Auditor -- </option>	
+													<option *ngFor="let leadAuditor of appUnitLeadAuditorsEntries[ut]" value="{{leadAuditor.id}}">{{leadAuditor.name}}</option>													
+												</select>
+												<div class="validationerror" *ngIf="!leadAuditor.valid && leadAuditor.touched"> 
+												Please select the Lead Auditor
+												</div>
+											</div>
+											
+											<div class="col-6">
+												<label>Technical Expert</label>
+												<select name="technical_expert_{{unit.id}}" (change)="calculateManday(ut,unit.id)" #technicalExpert="ngModel" [(ngModel)]="auditplanlist['technical_expert_'+unit.id]"    style="margin-top:4px;" class="form-control" >
+													<option value="">-- Technical Expert -- </option>
+													<option *ngFor="let technicalExpert of technicalExpertList[unit.id]" value="{{technicalExpert.id}}">{{technicalExpert.name}}</option>													
+												</select>											
+											</div>
+										</div>	
+										<div class="form-group row col-12 pad-left pad-right">		
+											<div class="col-6">
+												<label>Translator</label>
+												<select name="translator_{{unit.id}}"  #translator="ngModel" [(ngModel)]="auditplanlist['translator_'+unit.id]"    style="margin-top:4px;" class="form-control" >
+													<option value="">-- Translator -- </option>	
+													<option *ngFor="let translator of translatorList[unit.id]" value="{{translator.id}}">{{translator.name}}</option>
+												</select>											
+											</div>
+											<div class="col-6">
+												<label>Observer</label>
+												<input name="observer_{{unit.id}}" #observer="ngModel" [(ngModel)]="auditplanlist['observer_'+unit.id]" style="margin-top:4px;" class="form-control"    placeholder="Observer">
+												
+											</div>
+										</div>
+										<div class="form-group row col-12 pad-left pad-right">	
+											<div class="col-6">
+											<label>Trainee Auditor</label>
+											<input name="trainee_auditor_{{unit.id}}" #trainee_auditor="ngModel" [(ngModel)]="auditplanlist['trainee_auditor_'+unit.id]" style="margin-top:4px;" class="form-control"    placeholder="Trainee Auditor">
+											
+										</div>
+									</div>
+									</div>	
+									
+								</td>																																					
+							</tr>		
+						</tbody>
+					</table>
+                </ng-container>  
+
+				<table class="table table-bordered tab-bor col-12" >
+					<thead>
+						<tr>                                        
+							<th scope="col" width="60%" style="vertical-align:middle;">Project Lead Auditor</th> 																	
+						</tr>
+					</thead>
+					<tbody>                                             
+						<tr style="background-color:#ffffff !important;">
+							<td>
+								<div class="col-4">
+									<label>Project Lead Auditor <span class="text-danger">*</span></label>
+									<select name="application_lead_auditor" #applicationLeadAuditor="ngModel" [(ngModel)]="application_lead_auditor" required  style="margin-top:4px;" class="form-control" >
+										<option value="">-- Project Lead Auditor -- </option>
+										<option *ngFor="let leadAuditor of appLeadAuditors" value="{{leadAuditor.id}}">{{leadAuditor.name}}</option>	
+									</select>
+									
+									<div class="validationerror" *ngIf="!applicationLeadAuditor.valid && applicationLeadAuditor.touched">
+									Please select the Project Lead Auditor.
+									</div>
+								</div>	
+							</td>
+						</tr>
+					</tbody>
+				</table>	
+				
+				<!--		
+				<table id="datatable" class="table table-bordered tab-bor col-12 tempdrivenform" >
+					<thead>
+						<tr>                                        
+							<th scope="col" style="vertical-align:middle;">Unit Name </th>
+							<th scope="col" style="vertical-align:middle;">Standard</th>
+							<th scope="col" style="vertical-align:middle;">From Date</th>
+							<th scope="col" style="vertical-align:middle;">To Date</th>
+							<th scope="col" style="vertical-align:middle;">Auditor</th>
+							<th scope="col" style="vertical-align:middle;">Lead Auditor</th>
+							<th scope="col" style="vertical-align:middle;">Original Mandays</th>
+							<th scope="col" style="vertical-align:middle;">Actual Mandays</th>                                       
+						</tr>
+					</thead>
+					<tbody>
+						<ng-container *ngFor="let unit of auditPlanData.units; index as ut">
+						    <ng-container *ngFor="let std of unit.standards; index as st">
+							<tr style="background-color:#ffffff !important;">								
+								<td *ngIf="st==0" [attr.rowspan]="unit.standards.length">{{unit.name}}</td>
+								<td width="10%">{{std.name}}</td>
+								<td>
+									
+									<input type="text" style="width:70%;display:inline;" required  matInput [matDatepicker]="ap_fromdate"  (click)="ap_fromdate.open()" name="ap_fromdate_{{unit.id}}_{{std.id}}" #apFromDate="ngModel"  [(ngModel)]="auditplanlist['ap_fromdate_'+unit.id+'_'+std.id]" (dateChange)="getAuditors(unit.id+'_'+std.id,'from_date')" class="form-control">
+									<mat-datepicker-toggle matSuffix  [for]="ap_fromdate"></mat-datepicker-toggle>
+									<mat-datepicker #ap_fromdate></mat-datepicker>
+									<div class="validationerror" *ngIf="!apFromDate.valid && apFromDate.touched">
+									Please select the From Date
+									</div>
+									
+								</td>
+								<td>
+									<input type="text" style="width:70%;display:inline;" [min]="apFromDate.value" required  matInput [matDatepicker]="ap_todate"  (click)="ap_todate.open()" name="ap_todate_{{unit.id}}_{{std.id}}" #apToDate="ngModel"  [(ngModel)]="auditplanlist['ap_todate_'+unit.id+'_'+std.id]" (dateChange)="getAuditors(unit.id+'_'+std.id,'to_date')" class="form-control">
+									<mat-datepicker-toggle matSuffix  [for]="ap_todate"></mat-datepicker-toggle>
+									<mat-datepicker #ap_todate></mat-datepicker>
+									<div class="validationerror" *ngIf="!apToDate.valid && apToDate.touched"> 
+									Please select the To Date
+									</div>
+									
+								</td>
+								<td width="15%">
+								   <mat-select placeholder="Auditor *" required #apAuditor="ngModel" name="ap_auditor_{{unit.id}}_{{std.id}}" [(ngModel)]="auditplanlist['ap_auditor_'+unit.id+'_'+std.id]" (selectionChange)="auditorChange(unit.id+'_'+std.id)" multiple class="form-control select2">
+										<mat-select-trigger>
+										
+										<span *ngIf="apAuditor.value?.length == 1" >{{apAuditor.value ? getSelectedValue(apAuditor.value,unit.id+'_'+std.id): ''}}</span>
+										<span *ngIf="apAuditor.value?.length > 1" class="example-additional-selection">
+											{{apAuditor.value.length}} {{ 'selected' }}
+										</span>
+										</mat-select-trigger>
+										<mat-option *ngFor="let auditors of auditorList[unit.id+'_'+std.id]" [value]="auditors.id">{{auditors.name}}</mat-option>
+									</mat-select>
+									
+									<div class="validationerror" *ngIf="!apAuditor.valid && apAuditor.touched">
+										Please select the Auditor
+									</div>
+									
+								</td>
+								<td width="15%">
+									<mat-select placeholder="Lead Auditor *" required #apLeadAuditor="ngModel" name="ap_leadauditor_{{unit.id}}_{{std.id}}" [(ngModel)]="auditplanlist['ap_leadauditor_'+unit.id+'_'+std.id]" class="form-control select2">
+										<mat-option *ngFor="let auditors of leadAuditorList[unit.id+'_'+std.id]" [value]="auditors.id">{{auditors.name}}</mat-option>
+									</mat-select>
+									
+									<div class="validationerror" *ngIf="!apLeadAuditor.valid && apLeadAuditor.touched">
+										Please select the Lead Auditor
+									</div>
+									
+								</td>
+								<td width="6%" *ngIf="st==0" [attr.rowspan]="unit.standards.length">
+									
+									<input type="text" [required]="true"  name="ap_original_manday_{{unit.id}}" #apOriginalManday="ngModel"  [(ngModel)]="auditplanlist['ap_original_manday_'+unit.id]"  class="form-control text-center">
+									<div class="validationerror" *ngIf="!apOriginalManday.valid && apOriginalManday.touched">
+										Please enter Original Manday
+									</div>
+									
+								</td>
+								<td width="6%" *ngIf="st==0" [attr.rowspan]="unit.standards.length">
+									
+									<input type="text" [required]="true"  name="ap_actual_manday_{{unit.id}}" #apActualManday="ngModel"  [(ngModel)]="auditplanlist['ap_actual_manday_'+unit.id]"  class="form-control text-center">
+									<div class="validationerror" *ngIf="!apActualManday.valid && apActualManday.touched">
+										Please enter Actual Manday
+									</div>								
+									
+								</td>																		
+							</tr>
+							</ng-container>						
+						</ng-container>					
+					</tbody>
+				</table>
+				-->
+				
+				<div class="col-lg-12 text-center">
+					<button [disabled]="loading || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10" (click)="onSubmit(form)" >
+						<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+						Submit
+					</button>					
+				</div>
+				
+				<app-usermessage [success]="success" [error]="error"></app-usermessage>			
+				
+			</form>             
+        </div>
+    </div>
+</div>

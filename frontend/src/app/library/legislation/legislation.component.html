@@ -1,0 +1,602 @@
+<div class="row"  >
+    <div class="col-12">
+        <div class="card-box table-responsive">
+        	<div class="row col-12 m-b-5 pad-right">
+              	<div class="col-8 pad-left">
+                <h4 class="page-title"><i class="fa fa-list-ul"></i> Legislation</h4>
+                <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+                
+              	</div>
+               
+            </div>
+        
+            <div class="row col-12 m-b-5 pad-right">
+                <div class="col-3 text-left pad-left">
+                    <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                        <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+                    </select>
+                </div>
+                <div class="col-5 text-right">
+                	<select name="countryFilter" style="width: 150px;font-size:13px;" [(ngModel)]="service.countryFilter"  class="custom-select"  >
+						<option value="">-- All Country --</option>
+						<option  *ngFor="let item of countryList" value="{{item.id}}">{{item.name}}</option>
+					</select>  
+					&nbsp;&nbsp;
+					<mat-select style="width: 220px;font-size:13px;" placeholder="-- Standard --" #standardFilter name="standardFilter" [(ngModel)]="service.standardFilter" multiple class="custom-select"  >
+                        <mat-select-trigger>
+                        <span *ngIf="standardFilter.value?.length == 1" >{{standardFilter.value ?  getSelectedValue('relevant_to_id',standardFilter.value) : ''}}</span>
+                        <span *ngIf="standardFilter.value?.length > 1" class="example-additional-selection">
+                            {{standardFilter.value.length}} {{ 'selected' }}
+                        </span>
+                        </mat-select-trigger>
+                        <mat-option *ngFor="let std of standardList" [value]="std.id">{{std.name}}</mat-option>
+                    </mat-select>
+                </div>
+                <div class="col-4 text-right pad-right">
+                    <input class="search-pad" type="text" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+                </div>
+            </div>
+
+
+
+            <div class="col-12 pad-left">
+                <table id="datatable" class="table table-bordered" >
+                    <thead>
+						<tr>
+							<th width="5%" scope="col" class="center">S.No</th>
+							<th width="18%" scope="col">Country</th>	
+							<th scope="col">Title</th>	
+							<th width="12%" scope="col">Update Method</th>	
+							<th width="10%" class="text-center" scope="col">Action</th>	
+						</tr>
+                    </thead>
+                    <tbody>
+						<tr *ngFor="let legislationEntry of legislations$ | async; let i=index; ">
+							<td scope="row" class="center">{{ 1+i+ service.pageNo }}</td>
+						   
+							<td><ngb-highlight [result]="legislationEntry.country_label"  [term]="service.searchTerm"></ngb-highlight></td>
+							<td><ngb-highlight [result]="legislationEntry.title"  [term]="service.searchTerm"></ngb-highlight></td>
+							<td><ngb-highlight [result]="legislationEntry.update_method_id_label"  [term]="service.searchTerm"></ngb-highlight></td>
+
+							<td  class="center">
+								<a href="javascript:void(0);" (click)="viewLegislation(legislationDetails,legislationEntry)" title="View" alt="View"> <i class="fa fa-eye"></i> </a>
+								<a *ngIf="(userType==1 && (userdetails.resource_access==1 || userdetails.rules.includes('edit_legislation'))) || userType==3" href="javascript:void(0);" (click)="editLegislation(i,legislationEntry)" title="Edit" alt="Edit" class="pl-2"> <i class="fa fa-edit"></i> </a>
+								<a *ngIf="(userType==1 && (userdetails.resource_access==1 || userdetails.rules.includes('delete_legislation'))) || userType==3" href="javascript:void(0);" (click)="removeLegislation(confirmcontent,i,legislationEntry)" title="Delete" alt="Delete" class="pl-2"> <i class="fa fa-trash text-danger"></i> </a>
+							</td>
+						</tr>
+						<tr  *ngIf="(legislations$ | async)?.length==0" >
+							<td colspan="5" class="center">{{ commontxt.norecords }}</td>
+						</tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="row col-12 pad-left pad-right">
+				<div class="col-6">
+					<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+					<div *ngIf="!(service.loading$ | async)">
+					Displaying {{ (legislations$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (legislations$ | async).length }} of {{ (total$ | async) }} results.
+					</div>
+				</div>
+				<div class="col-6 pad-right text-right">						
+				<ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+					<ng-template ngbPaginationFirst>First</ng-template>
+					<ng-template ngbPaginationPrevious>Prev</ng-template>
+					<ng-template ngbPaginationNext>Next</ng-template>			  
+					<ng-template ngbPaginationLast>Last</ng-template>			  
+				</ngb-pagination>						
+				</div>
+			</div>
+   		</div>
+	</div>
+</div>
+
+
+<!--
+<div class="row">
+    <div class="col-12">
+        <div class="add card-box table-responsive enq-view">                      
+			<h3>Legislation</h3>                             
+			<form  [formGroup]="form" (ngSubmit)="onSubmit()">
+				<div class="form-group row">
+					
+					<div class="col-4">
+						<label>OSP</label>
+						<select formControlName="franchise_id" [class.is-invalid]="f.franchise_id.invalid && f.franchise_id.touched" class="form-control select2">
+							<option value="">-- OSP --</option>
+							<option *ngFor="let osp of franchiseList" value = {{osp.id}}>{{osp.osp_details}}</option>
+						</select>
+						<div *ngIf="f.franchise_id.errors" class="invalid-feedback">
+							<div *ngIf="f.franchise_id.errors.required" >OSP is required</div>
+						</div>	
+					</div>
+
+					<div class="col-12 m-t-15">
+						<label>Title *</label>
+						<textarea type="text" formControlName="title" [class.is-invalid]="f.title.invalid && f.title.touched " class="form-control" placeholder="Title *" ></textarea>
+						<div *ngIf="f.title.errors" class="invalid-feedback">
+							<div *ngIf="f.title.errors.required" >Title is required</div>
+							<div *ngIf="f.title.hasError('whitespace')" >Invalid Title</div>
+						</div>
+					</div>                        
+												
+					<div class="col-12 m-t-15">
+						<label>Description</label>
+						<textarea type="text" formControlName="description" [class.is-invalid]="f.description.invalid && f.description.touched " class="form-control" placeholder="Description" ></textarea>
+						
+					</div>
+					
+					<div class="col-4 m-t-20">
+						<label>Relevant To</label>
+						<select formControlName="relevant_to_id" [class.is-invalid]="f.relevant_to_id.invalid && f.relevant_to_id.touched" class="form-control select2">
+							<option value="">-- Standards --</option>
+							
+							<option value="1">GRS</option>
+							<option value="2">RCS</option>
+							<option value="3">OCS</option>
+							<option value="4">GOTS</option>
+							<option value="5">FSC</option>
+							<option value="6">CCS</option>
+						</select>
+						<div *ngIf="f.relevant_to_id.errors" class="invalid-feedback">
+							<div *ngIf="f.relevant_to_id.errors.required" >Relevant To is required</div>
+						</div>	
+					</div>
+
+
+					<div class="col-4 m-t-20">
+						<label>Update Method</label>
+						<select formControlName="update_method_id" [class.is-invalid]="f.update_method_id.invalid && f.update_method_id.touched" class="form-control select2">
+							<option value="">-- Update Method --</option>
+							
+							<option value="1">Subcription</option>
+							<option value="2">Internet Search</option>
+						
+						</select>
+						<div *ngIf="f.update_method_id.errors" class="invalid-feedback">
+							<div *ngIf="f.update_method_id.errors.required" >Update Method to is required</div>
+						</div>	
+					</div>
+						
+					
+				</div>								
+							
+				<div class="col-lg-12 text-center mt-4 mb-4">
+					<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="addlegislation()">
+						<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+						Submit
+					</button>
+					<button [disabled]="loading['button'] || buttonDisable" type="button" (click)="legislationFormreset()"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Reset</button>
+
+					<div class="clearfix"></div>
+						
+					<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+				</div>
+			</form>				             
+        </div>
+    </div>
+</div>
+-->
+
+<div class="row"  *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('add_legislation') || (userdetails.rules.includes('edit_legislation') && legislationData) || userType==3" >
+    <div class="col-12">
+		<div class="col-12 pad-left">
+			<div class="add card-box table-responsive enq-view">     
+												  
+					<div class="col-12 row pad-right">
+							
+							<div class="tabDiv col-6">
+							<h3>{{editStatus == 1 ? 'Update' : 'Add'}} Legislation</h3> 
+								
+								<form  [formGroup]="form" (ngSubmit)="onSubmit()">
+									<div class="form-group row">
+										
+										<div class="col-8">
+											<label>Country <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Country" matTooltipClass="tooltip-text-size" aria-tooltip="Country" matTooltipPosition="right"></i>
+											<select formControlName="country_id" [class.is-invalid]="f.country_id.invalid && f.country_id.touched" class="form-control select2">
+												<option value="">-- Country --</option>											
+												<option *ngFor="let country of countryList" value= {{country.id}}>{{country.name}}</option>
+											</select>
+											<div *ngIf="f.country_id.errors" class="invalid-feedback">
+												<div *ngIf="f.country_id.errors.required" >Country is required</div>
+											</div>	
+										</div>
+
+										<div class="col-12 m-t-15">
+											<label>Title <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Title" matTooltipClass="tooltip-text-size" aria-tooltip="Title" matTooltipPosition="right"></i>
+											<textarea type="text" formControlName="title" [class.is-invalid]="f.title.invalid && f.title.touched " class="form-control" placeholder="Title" ></textarea>
+											<div *ngIf="f.title.errors" class="invalid-feedback">
+												<div *ngIf="f.title.errors.required">Title is required</div>											
+												<div *ngIf="f.title.errors.maxlength">Title cannot exceed 255 characters</div>
+												<div *ngIf="f.title.errors.pattern || f.title.hasError('whitespace')" >Invalid Title</div>							
+											</div>
+										</div>                        
+																	
+										<div class="col-12 m-t-15">
+											<label>Description</label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Description" matTooltipClass="tooltip-text-size" aria-tooltip="Description" matTooltipPosition="right"></i>
+											<textarea type="text" formControlName="description" [class.is-invalid]="f.description.invalid && f.description.touched " class="form-control" placeholder="Description" ></textarea>
+											<div *ngIf="f.description.errors" class="invalid-feedback">											
+												<div *ngIf="f.description.errors.pattern || f.description.hasError('whitespace')" >Invalid Description</div>							
+											</div>
+										</div>
+										
+										<div class="col-12 m-t-15"  > 
+											<label>Legislation Relevant To: <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Legislation Relevant To" matTooltipClass="tooltip-text-size" aria-tooltip="Legislation Relevant To" matTooltipPosition="right"></i>									
+											<mat-select placeholder="Standard" formControlName="relevant_to_id" multiple class="form-control select2" [class.is-invalid]="f.relevant_to_id.invalid && f.relevant_to_id.touched">
+												<mat-select-trigger>
+												<span *ngIf="f.relevant_to_id.value?.length == 1" >{{f.relevant_to_id.value ?  getSelectedValue('relevant_to_id',f.relevant_to_id.value) : ''}}</span>
+												<span *ngIf="f.relevant_to_id.value?.length > 1" class="example-additional-selection">
+													{{f.relevant_to_id.value.length}} {{ 'selected' }}
+												</span>
+												</mat-select-trigger>
+												<mat-option *ngFor="let std of standardList" [value]="std.id">{{std.name}}</mat-option>
+											</mat-select>
+											 
+											<div *ngIf="f.relevant_to_id.errors" class="invalid-feedback">
+												<div *ngIf="f.relevant_to_id.errors.required" >Legislation Relevant To is required</div>
+											</div>
+											<!-- *ngFor="let standardL of standardList; let i=index; "-->
+											<!--
+											<ng-container *ngFor="let name of relevantstandards.controls; index as i" >
+												<div class="form-group row" >
+													<div class="col-6 m-t-20">{{standardList[i].name}}</div>	
+													<div class="col-3 m-t-20">
+														
+														<select formControlName="{{i}}" class="form-control select2" [class.is-invalid]="name.invalid && name.touched">  
+															<option value="">-- Select --</option>
+															<option value="1">Yes</option>
+															<option value="2">No</option>													
+														</select>
+														-->
+														<!--
+														https://www.tektutorialshub.com/angular/angular-formarray-example-in-reactive-forms/
+														
+														<div *ngIf="f.relevant_to_id.errors" class="invalid-feedback">
+															<div *ngIf="f.relevant_to_id.errors.required" >Relevant To is required</div>
+														</div>
+														-->
+														
+														<!--
+														<select class="form-control" #rlvtReview="ngModel" name="rlvt{{standardL.id}}"  [(ngModel)]="reviewcommentlist['rlvt'+''+standardL.id]"  required >
+															<option value="">-- Select --</option>
+															<option value="1">Yes</option>
+															<option value="2">No</option>
+														</select>
+														<div class="validationerror" *ngIf="!rlvtReview.valid && rlvtReview.touched">
+															Please select the Answer
+														</div>
+														
+														
+													</div>
+												</div>	
+											</ng-container>	
+											-->
+											
+											<!--
+											<select formControlName="relevant_to_id" [class.is-invalid]="f.relevant_to_id.invalid && f.relevant_to_id.touched" class="form-control select2">
+												<option value="">-- Standards --</option>
+												
+												<option value="1">GRS</option>
+												<option value="2">RCS</option>
+												<option value="3">OCS</option>
+												<option value="4">GOTS</option>
+												<option value="5">FSC</option>
+												<option value="6">CCS</option>
+											</select>
+											<div *ngIf="f.relevant_to_id.errors" class="invalid-feedback">
+												<div *ngIf="f.relevant_to_id.errors.required" >Relevant To is required</div>
+											</div>
+											-->	
+											
+										</div>
+
+
+										<div class="col-6 m-t-15">
+											<label>Update Method <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Update Method" matTooltipClass="tooltip-text-size" aria-tooltip="Update Method" matTooltipPosition="right"></i>
+											<select formControlName="update_method_id" [class.is-invalid]="f.update_method_id.invalid && f.update_method_id.touched" class="form-control select2">
+												<option value="">-- Update Method --</option>
+												
+												<option value="1">Subcription</option>
+												<option value="2">Internet Search</option>
+											
+											</select>
+											<div *ngIf="f.update_method_id.errors" class="invalid-feedback">
+												<div *ngIf="f.update_method_id.errors.required" >Update Method to is required</div>
+											</div>	
+										</div>
+											
+										
+									</div>								
+												
+									<div class="col-lg-12 text-center mt-4 mb-4">
+										<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="addlegislation()">
+											<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+											{{editStatus == 1 ? 'Update' : 'Save'}}
+										</button>
+										<button [disabled]="loading['button'] || buttonDisable" type="button" (click)="legislationFormreset()"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Reset</button>
+
+										<div class="clearfix"></div>
+											
+										
+									</div>
+								</form>	
+								
+							</div>
+							
+							<div class="tabDiv col-6 pad-right" *ngIf="legislationData">
+								
+								<div style="float:right;">
+									<a href="javascript:void(0);" (click)="addlog(logEntryDetails)" title="Add Log" alt="Add Log"> <i class="fa fa-plus"></i> </a>
+								</div>							
+								<h3>Review</h3>
+								
+								<div class="tbl-sec pl-0 pr-0">
+									<span *ngIf="loading['logdata']" class="spinner-border spinner-border-sm mr-1"></span>
+									<table *ngIf="!loading['logdata']" id="datatable" class="table table-bordered tab-bor col-12" >
+										<thead>
+										<tr>
+											<th width="5%" scope="col" class="center">S.No</th>
+											<th scope="col">Status</th>	
+											<th scope="col">Legislation Changed</th>
+											<th width="10%" scope="col" class="text-center">Action</th>
+										</tr>
+										</thead>
+										<tbody>
+											<tr *ngIf="logEntries?.length==0">
+												<td colspan="5" class="center">No Review Added</td>
+											</tr>
+											<tr *ngFor="let logEntry of logEntries; let i=index; ">
+												<td scope="row" class="center">{{  1+ i }}</td>
+												<td>{{ logEntry.status_label }}</td>
+												<td>{{ logEntry.changed_label }}</td>
+												<td  class="center">
+													<a href="javascript:void(0);" (click)="viewLog(logDetails,logEntry)" title="View" alt="View"> <i class="fa fa-eye"></i> </a>
+													&nbsp;
+													<a href="javascript:void(0);" (click)="editLog(logEntryDetails,i,logEntry)" title="Edit" alt="Edit" > <i class="fa fa-edit"></i> </a>
+													&nbsp;
+													<a href="javascript:void(0);" (click)="removeLog(confirmcontent,logEntry)" title="Delete" alt="Delete"  > <i class="fa fa-trash text-danger"></i> </a>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+							<!--
+							<div class="tabDiv col-6" *ngIf="this.gisData">
+								
+								<div style="float:right;">
+									<a href="javascript:void(0);" (click)="addlog(logEntry)" title="Add Log" alt="Add Log"> <i class="fa fa-plus"></i> </a>
+								</div>							
+								<h3>Log</h3>														
+								
+								<div class="tbl-sec">
+									<span *ngIf="loading['logdata']" class="spinner-border spinner-border-sm mr-1"></span>
+									<table *ngIf="!loading['logdata']" id="datatable" class="table table-bordered tab-bor col-12" >
+										<thead>
+										<tr>
+											<th width="5%" scope="col" class="center">S.No</th>
+											<th scope="col">Date</th>	
+											<th scope="col">Type</th>	
+											<th class="text-center" scope="col">Details</th>	
+											<th width="10%" scope="col" class="text-center">Action</th>
+										</tr>
+										</thead>
+										<tbody>
+											<tr *ngIf="gislogEntries?.length==0">
+												<td colspan="5" class="center">No logs Added</td>
+											</tr>
+											<tr *ngFor="let gislogEntry of gislogEntries; let i=index; ">
+												<td scope="row" class="center">{{  1+ i }}</td>
+												<td>{{ gislogEntry.log_date }}</td>
+												<td>{{ gislogEntry.type_label }}</td>
+												<td>{{ gislogEntry.description }}</td>											
+												<td  class="center">
+													<a href="javascript:void(0);" (click)="editGislog(logEntry,i,gislogEntry)" title="Edit" alt="Edit" > <i class="fa fa-edit"></i> </a>
+													&nbsp;
+													<a href="javascript:void(0);" (click)="removeGislog(confirmcontent,gislogEntry)" title="Delete" alt="Delete"  > <i class="fa fa-trash text-danger"></i> </a>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+							-->
+							
+							<div class="tabDiv col-6">
+							</div>
+						
+																		
+																			
+						
+						
+						
+							
+					</div>
+				 
+			</div>
+		</div>
+	</div>	
+</div>
+<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+<ng-template #logDetails let-modal>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+	<div class="modal-body" style="font-size:16px;">
+		<div class="card-box enq-view">	
+			<table class="table-secondary m-b-15" *ngIf="viewlogData">
+				<tr>
+					<th width="20%">Status</th>
+					<td width="30%">{{ viewlogData.status_label }}</td>
+					<th width="20%">Legislation Changed</th>
+					<td width="30%">{{ viewlogData.changed_label }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Details</th>
+					<td colspan="3">{{ viewlogData.details }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Created by</th>
+					<td width="30%">{{ viewlogData.created_by }}</td>
+					<th width="20%">Created at</th>
+					<td width="30%">{{ viewlogData.created_at }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Updated by</th>
+					<td width="30%">{{ viewlogData.updated_by }}</td>
+					<th width="20%">Updated at</th>
+					<td width="30%">{{ viewlogData.updated_at }}</td>
+				</tr>	
+			</table>
+			<div style="text-align: center;">
+				<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="modal.dismiss('cancel click')" >Close</a>
+			</div>
+		</div>
+    </div>
+</ng-template>
+<ng-template #legislationDetails let-modal>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+	<div class="modal-body" style="font-size:16px;">
+		<div class="card-box enq-view">	
+			<table class="table-secondary m-b-15" *ngIf="LegislationData">
+				<tr>
+					<th width="20%">Title</th>
+					<td colspan="3">{{ LegislationData.title }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Country</th>
+					<td width="30%">{{ LegislationData.country_label }}</td>
+					<th width="20%">Update Method</th>
+					<td width="30%">{{ LegislationData.update_method_id_label }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Description</th>
+					<td colspan="3">{{ LegislationData.description }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Legislation Relevant To</th>
+					<td colspan="3">
+						<ng-container *ngFor="let item of LegislationData.relevant_to_id_label; let ix = index;">
+							<span *ngIf="ix>0" class="label-pad">&nbsp;</span> 
+							<span class="name-pad">{{ item }}</span><br>
+						</ng-container> 
+					</td>
+				</tr>
+				<tr>
+					<th width="20%">Created By</th>
+					<td colspan="3">{{ LegislationData.created_by_label }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Created at</th>
+					<td width="30%">{{ LegislationData.created_at }}</td>
+					<th width="20%">Updated at</th>
+					<td width="30%">{{ LegislationData.created_at }}</td>
+				</tr>	
+			</table>
+
+			<div class="tbl-sec pl-0 pr-0" >
+				<span *ngIf="loading['logviewdata']" class="spinner-border spinner-border-sm mr-1"></span>
+				<ng-container >
+					<table id="datatable" class="table table-bordered tab-bor col-12" style="font-size: 13px;" >
+						<thead>
+						<tr>
+							<th colspan="4" scope="col" class="center">Reviews</th>
+						</tr>
+						<tr>
+							<th width="5%" scope="col" class="center">S.No</th>
+							<th width="10%" scope="col">Changed</th>	
+							<th width="10%" scope="col">Status</th>	
+							<th class="text-center" scope="col">Details</th>	
+						</tr>
+						</thead>
+						<tbody>
+							<tr *ngIf="legislationviewEntries?.length==0">
+								<td colspan="4" class="center">No Reviews Added</td>
+							</tr>
+							<tr *ngFor="let reviewEntry of legislationviewEntries; let i=index; ">
+								<td scope="row" class="center">{{  1+ i }}</td>
+								<td>{{ reviewEntry.changed_label }}</td>
+								<td>{{ reviewEntry.status_label }}</td>
+								<td>{{ reviewEntry.details }}</td>
+							</tr>
+						</tbody>
+					</table>
+				</ng-container>
+	
+				<div style="text-align: center;">
+					<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="modal.dismiss('cancel click')" >Close</a>
+				</div>
+ 			</div>
+		</div>
+    </div>
+</ng-template>
+<ng-template #confirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to delete the data?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+	</div>
+</ng-template>
+
+<ng-template #logEntryDetails let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title" *ngIf="!this.logdata">Add Review</h4>
+		<h4 class="modal-title" id="modal-basic-title" *ngIf="this.logdata">Update Review</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<div class="alert alert-success" *ngIf="logsuccess">{{logsuccess}}</div>
+		<div *ngIf="!logsuccess" >
+			<h3>{{editStatus == 1 ? 'Update' : 'Add'}} Legislation</h3> 
+			<form>
+				<div class="form-group">
+					<label for="type">Status <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Status" matTooltipClass="tooltip-text-size" aria-tooltip="Status" matTooltipPosition="right"></i>
+					<div class="input-group">
+						<select name="type" [(ngModel)]="model.status"  class="form-control select2" >
+							<option value="">-- Status --</option>
+							<option  *ngFor="let item of arrLogstatus | keyvalue" value="{{item.key}}">{{item.value}}</option>
+						</select>     
+					</div>
+					<div class="validationerror" *ngIf="status_error">Please select the Status</div>
+				</div>
+				<div class="form-group">
+					<label for="type">Legislation Changed <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Legislation Changed" matTooltipClass="tooltip-text-size" aria-tooltip="Legislation Changed" matTooltipPosition="right"></i>
+					<div class="input-group">
+						<select name="type" [(ngModel)]="model.changed_id"  class="form-control select2" >
+							<option value="">-- Legislation Changed --</option>
+							<option  *ngFor="let item of arrChanged | keyvalue" value="{{item.key}}">{{item.value}}</option>
+						</select>     
+					</div>
+					<div class="validationerror" *ngIf="changed_id_error">Please select the Legislation Changed</div>
+				</div>
+				
+				<div class="form-group">
+					<label for="details">Details of any Changes <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Details of any Changes" matTooltipClass="tooltip-text-size" aria-tooltip="Details of any Changes" matTooltipPosition="right"></i>
+					<div class="input-group">
+						<textarea name="details" [(ngModel)]="model.details" rows="4" class="form-control"></textarea>
+					</div> 
+					<div class="validationerror" *ngIf="details_error"  >Please enter the Details</div>					
+				</div>
+			
+			</form>
+		</div>
+	</div>
+	<div class="modal-footer" *ngIf="!logsuccess">
+		<button type="button" class="btn btn-success " [disabled]="loading['logsbutton']" (click)="submitLogAction();">
+			<span *ngIf="loading['logsbutton']" class="spinner-border spinner-border-sm mr-1"></span>{{editLogStatus == 1 ? 'Update' : 'Save'}}</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">
+			<span *ngIf="loading['logsbutton']" class="spinner-border spinner-border-sm mr-1"></span>Cancel</button>
+	</div>
+</ng-template>

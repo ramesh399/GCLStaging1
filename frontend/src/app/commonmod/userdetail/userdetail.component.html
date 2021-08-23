@@ -1,0 +1,59 @@
+
+    <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+
+    <div class="row"  *ngIf="userdata" >
+        <div class="col-12">
+			
+			<h3>Customer Details</h3>
+			<table class="table-secondary m-b-15">
+				<tr>
+					<th width="20%">Company Name</th>
+					<td width="30%">{{ userdata.company_name }}</td>
+					<th width="20%">Contact Name</th>
+					<td width="30%">{{ userdata.contact_name }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Telephone</th>
+					<td width="30%">{{ userdata.company_telephone }}</td>
+					<th width="20%">E-Mail</th>
+					<td width="30%"><a href="mailto:{{ userdata.company_email }}">{{ userdata.company_email }}</a></td>
+				</tr>
+				<tr>
+					<th width="20%">Website</th>
+					<td width="30%"><a target="_blank" href="{{ userdata.company_website }}">{{ userdata.company_website }}</a></td>
+					<th width="20%">Country</th>
+					<td width="30%">{{ userdata.company_country }}</td>
+				</tr>
+				<tr>
+					<th width="20%">State</th>
+					<td width="30%">{{ userdata.company_state }}</td>
+					<th width="20%">Address Line1</th>
+					<td width="30%">{{ userdata.company_address1 }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Address Line2</th>
+					<td width="30%">{{ userdata.company_address2 }}</td>
+					<th width="20%">Town/City</th>
+					<td width="30%">{{ userdata.company_city }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Zipcode</th>
+					<td width="30%">{{ userdata.company_zipcode }}</td>
+					<th width="20%">Number of sites</th>
+					<td width="30%">{{ userdata.number_of_sites }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Customer Number</th>
+					<td width="30%">{{ userdata.customer_number }}</td>
+					<th width="20%">Description of company operations</th>
+					<td width="30%">{{ userdata.description }}</td>
+				</tr>
+				<tr>
+					<th width="20%">Created By</th>
+					<td width="30%">{{ userdata.created_by }}</td>
+					<th width="20%">Created Date</th>
+					<td width="30%">{{ userdata.created_at }}</td>
+				</tr>
+			</table>
+		</div>
+    </div> <!-- end row -->

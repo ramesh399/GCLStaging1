@@ -1,0 +1,213 @@
+<div class="row"  >
+    <div class="col-12">
+        <div class="card-box table-responsive">
+        	<div class="row col-12 m-b-5 pad-right">
+              	<div class="col-8 pad-left">
+                <h4 class="page-title"><i class="fa fa-list-ul"></i> Signature</h4>
+                <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+                
+              	</div>
+               
+            </div>
+        
+            <div class="row col-12 m-b-5 pad-right">
+                <div class="col-4 text-left pad-left">
+                    <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                        <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+                    </select>
+                </div>
+                <div class="col-4 text-left p-t-5"></div>
+                <div class="col-4 text-right pad-right">
+                    <input class="search-pad" type="text" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+                </div>
+            </div>
+
+
+
+            <div class="col-12 pad-left">
+                <table id="datatable" class="table table-bordered" >
+                    <thead>
+						<tr>
+							<th width="7%" scope="col" class="center">S No.</th>
+							<th scope="col">Title</th>
+							<th scope="col">Signature</th>	
+							<th width="12%" class="text-center" scope="col">Action</th>	
+						</tr>
+                    </thead>
+                    <tbody>
+						<tr *ngFor="let signatureEntry of signatures$ | async; let i=index; ">
+							<td scope="row" class="center">{{ 1+i }}</td>
+						   
+									
+							<td>{{ signatureEntry.title }}</td>
+							<td><a href="javascript:void(0);" *ngIf="signatureEntry.logo" (click)="downloadsignatureFile(signatureEntry.id,'signature',signatureEntry.logo);openmodal(downloading);" > <i class="fa fa-download" ></i>&nbsp;{{ signatureEntry.logo }}</a></td>
+							<td  class="center">
+								<a href="javascript:void(0);" (click)="viewSignature(signatureDetails,signatureEntry)" title="View" alt="View"> <i class="fa fa-eye"></i> </a>
+                                <a href="javascript:void(0);"  *ngIf="canEditData" (click)="editSignature(i,signatureEntry)" title="Edit" alt="Edit" class="pl-2"> <i class="fa fa-edit"></i> </a>
+								<a href="javascript:void(0);" *ngIf="canDeleteData" (click)="removeSignature(confirmcontent,i,signatureEntry)" title="Delete" alt="Delete" class="pl-2"> <i class="fa fa-trash text-danger"></i> </a>
+							</td>
+						</tr>
+						<tr  *ngIf="(signatures$ | async)?.length==0" >
+							<td colspan="4" class="center">{{ commontxt.norecords }}</td>
+						</tr>
+                    </tbody>
+                </table>
+            </div>
+			
+			<div class="row col-12 pad-left pad-right">
+				<div class="col-6">
+					<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+					<div *ngIf="!(service.loading$ | async)">
+					Displaying {{ (signatures$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (signatures$ | async).length }} of {{ (total$ | async) }} results.
+					</div>
+				</div>
+				<div class="col-6 pad-right text-right">						
+				<ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+					<ng-template ngbPaginationFirst>First</ng-template>
+					<ng-template ngbPaginationPrevious>Prev</ng-template>
+					<ng-template ngbPaginationNext>Next</ng-template>			  
+					<ng-template ngbPaginationLast>Last</ng-template>			  
+				</ngb-pagination>						
+				</div>
+			</div>		
+            
+   		</div>
+	</div>
+</div>
+<div class="row"  *ngIf="canAddData || (canEditData && signatureData)">
+    <div class="col-12">
+		<div class="col-12 pad-left">
+			<div class="add card-box table-responsive enq-view">                      
+				<h3>Signature</h3>                             
+				<form  [formGroup]="form" (ngSubmit)="onSubmit()">
+					<div class="form-group row">
+						 
+					   
+						<div class="col-12">
+							<label>Title <span class="text-danger">*</span></label>
+							<input type="text" formControlName="title"  class="form-control" placeholder="Title" [class.is-invalid]="f.title.invalid && f.title.touched">
+							
+							<div *ngIf="f.title.errors" class="invalid-feedback">
+								<div *ngIf="f.title.errors.required" >Title is required</div>
+								<div *ngIf="f.title.errors.maxlength">Title cannot exceed 255 characters</div>
+								<div *ngIf="f.title.errors.pattern || f.title.hasError('whitespace')">Invalid Title</div>                            
+							</div>
+						</div>
+						
+													
+						<div class="col-12 m-t-15">
+							<label>Description</label>
+							<textarea type="text" formControlName="description" [class.is-invalid]="f.description.invalid && f.description.touched " class="form-control" placeholder="Description" ></textarea>
+							<div *ngIf="f.description.errors" class="invalid-feedback">								
+								<div *ngIf="f.description.errors.pattern || f.description.hasError('whitespace')">Invalid Description</div>								
+							</div>
+						</div>
+						
+					   
+
+						<div class="col-12  m-t-15">
+							<label>Upload Signature <span class="text-danger">*</span></label><br>
+							<input type="file" formControlname="logo" (change)="signatureChange($event)" style="width:184px"  >
+							<br><div style="font-size:11px;" >supported file formats: <span *ngFor="let docs of this.errorSummary.imgvalidDocs; let last=last;">{{ docs }}<span *ngIf="!last">, </span> </span></div>
+							<div *ngIf="logo" style="padding:5px; border:1px solid #cecece; background-color: beige; height:32px;width: 100%;">
+								<span>{{ logo }}</span>
+								<a href="javascript:void(0);"  (click)="removesignature()" style="color:red; font-weight:bold;margin-right: 5px;float:right;" >X</a>
+								
+							</div>
+							<div *ngIf="logoFileErr" class="validationerror" >
+								{{logoFileErr}}
+							</div>
+						</div>
+						
+
+
+						
+							
+						
+					</div>								
+								
+					<div class="col-lg-12 text-center mt-4 mb-4">
+						<button [disabled]="loading['button'] || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" (click)="addsignature()">
+							<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+							{{editStatus == 1 ? 'Update' : 'Save'}}	
+						</button>
+						<button [disabled]="loading['button'] || buttonDisable" type="button" (click)="signatureFormreset()"  class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2"><span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>Reset</button>
+
+						<div class="clearfix"></div>
+							
+						
+					</div>
+				</form>				             
+			</div>
+		</div>	
+    </div>
+</div>
+<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+<ng-template #downloading let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">File Downloading</h4>
+    </div>
+    <div class="modal-body" style="font-size:16px;">
+        Please wait, your file is downloading ...
+    </div>
+</ng-template>
+<ng-template #signatureDetails let-modal>
+	<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')" style="top:-35px;right:-35px;">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+	</button>
+	<div class="modal-body" style="font-size:16px;">
+		<div class="add card-box table-responsive details-view p-t-10">
+			<h3>Signature Details</h3>
+			<table class="table-secondary m-b-15">
+				<tr>
+					<th width="20%">Title</th>
+					<td width="30%">{{ SignatureData.title }}</td>
+					<th width="20%">Logo</th>
+					<td width="30%"><a href="javascript:void(0);" *ngIf="SignatureData.logo" (click)="downloadsignatureFile(SignatureData.id,'signature',SignatureData.logo);openmodal(downloading);" > <i class="fa fa-download" ></i>&nbsp;{{ SignatureData.logo }}</a></td>
+				</tr>
+				<tr>
+					<th width="20%">Description</th>
+					<td width="30%">{{ SignatureData.description }}</td>
+					<th width="20%">Created at</th>
+					<td width="30%">{{ SignatureData.created_at }}</td>
+				</tr>
+			</table>
+			
+			<div style="text-align: center;">
+				<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="modal.dismiss('cancel click')" >Close</a>
+			</div>
+		</div>		
+    </div>
+</ng-template>
+<ng-template #confirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to delete the data?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>
+<ng-template #ToApprovecontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to send for Approval?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>

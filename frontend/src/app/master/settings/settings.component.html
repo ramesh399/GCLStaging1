@@ -1,0 +1,87 @@
+<div class="row">
+    <div class="col-12">
+        <div class="add card-box table-responsive">
+            <form  [formGroup]="form" (ngSubmit)="onSubmit()"  >
+            
+                <div class="col-12 row pad-right" >
+                    <div class="col-8">
+                    <h4 class="page-title">{{title}}</h4>
+                    </div>                   
+                </div>
+                                  
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view">
+					
+					<div class="form-group">
+					
+						<div class="col-6">
+							<label>From Email Address</label>
+							<input type="text" formControlName="from_email" [class.is-invalid]="f.from_email.invalid && f.from_email.touched " class="form-control" placeholder="From Email Address *" >
+							<div *ngIf="f.from_email.errors" class="invalid-feedback">
+								<div *ngIf="f.from_email.errors.required">From Email Address is required</div>
+								<div *ngIf="f.from_email.errors.pattern || f.from_email.hasError('whitespace')">Invalid From Email Address</div>
+								<div *ngIf="f.from_email.errors.email">From Email Address must be a valid email address</div>
+								<div *ngIf="f.from_email.errors.maxlength">From Email Address cannot exceed 255 characters</div>	
+								<div *ngIf="f.from_email.errors.incorrect">{{ from_emailErrors }}</div>
+							</div>													
+						</div>
+						
+					
+						<div class="col-6 m-t-15">
+							<label>To Email Address</label>
+							<input type="text" formControlName="to_email" [class.is-invalid]="f.to_email.invalid && f.to_email.touched " class="form-control" placeholder="To Email Address *" >
+							<div *ngIf="f.to_email.errors" class="invalid-feedback">
+								<div *ngIf="f.to_email.errors.required">To Email Address is required</div>
+								<div *ngIf="f.to_email.errors.pattern || f.to_email.hasError('whitespace')">Invalid To Email Address</div>
+								<div *ngIf="f.to_email.errors.email">To Email Address must be a valid email address</div>
+								<div *ngIf="f.to_email.errors.maxlength">To Email Address cannot exceed 255 characters</div>	
+								<div *ngIf="f.to_email.errors.incorrect">{{ to_emailErrors }}</div>
+							</div>													
+						</div>
+					
+						<div class="col-6 m-t-15">
+							<label>Reminder Days for User Qualification Checklist</label>
+							<select formControlName="reminder_days_user_qualification" class="form-control select2" [class.is-invalid]="f.reminder_days_user_qualification.invalid && f.reminder_days_user_qualification.touched">
+								<option value="" >-- Reminder Days * --</option>
+								<option *ngFor="let  userQualificationReminderDays of userQualificationReminderDaysList | keyvalue" value= {{userQualificationReminderDays.key}}>{{userQualificationReminderDays.value}}</option>
+							</select>
+							<div *ngIf="f.reminder_days_user_qualification.errors" class="invalid-feedback">
+								<div *ngIf="f.reminder_days_user_qualification.errors.required">Reminder Days for User Qualification Checklist cannot be blank.</div>										
+							</div>
+						</div>
+						
+						<!--
+						<div class="col-6 m-t-15">
+							<label>Head Quaters</label>
+							<select formControlName="headquarters" class="form-control select2" [class.is-invalid]="f.headquarters.invalid && f.headquarters.touched">
+								<option value="" >-- Head Quaters * --</option>
+								<option *ngFor="let  franchise of franchiseList" value= {{franchise.id}}>{{franchise.company_name}}</option>
+							</select>
+							<div *ngIf="f.headquarters.errors" class="invalid-feedback">
+								<div *ngIf="f.headquarters.errors.required"> Please Select the Head Quaters</div>
+							</div>
+						</div> 
+						-->
+					
+													
+						<div class="col-lg-12 text-center mt-4 mb-4">
+							<button [disabled]="loading || buttonDisable" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+								Submit
+							</button>
+							<!--<button [disabled]="loading || buttonDisable" type="button" [routerLink]="['/master/product/list']" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2">
+								<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+								Cancel
+							</button>							
+							-->
+							<div class="clearfix"></div>							
+							<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+						</div>
+						
+					</div>
+						
+				</div>
+                 
+            </form>
+        </div>
+    </div>
+</div>

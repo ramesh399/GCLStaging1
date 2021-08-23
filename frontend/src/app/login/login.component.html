@@ -1,0 +1,81 @@
+<div class="login-div">
+	<div class="wrapper-page">
+
+		<div class="text-center">
+			<a href="javascript:void(0);" class="logo-lg"><img src="assets/images/login-logo.png" alt=""></a>
+		</div>
+		<!--(ngSubmit)="onSubmit()"-->
+		<form class="form-horizontal login-form m-t-20" [formGroup]="loginForm" >
+			<h2>Login</h2>
+			<div class="form-group row">
+				<div class="col-12"> 
+					<div class="input-group">
+						<span class="input-group-addon"><img src="assets/images/user-ico.png"></span>
+						<input class="form-control" type="text" formControlName="username" required="" placeholder="Username" [ngClass]="{ 'is-invalid': submitted && f.username.errors }" autofocus />
+					</div>
+					
+					<div *ngIf="submitted && f.username.errors" class="invalid-feedback-login">
+						<div *ngIf="f.username.errors.required">Username is required</div>						
+					</div>
+					
+					<div *ngIf="f.username.hasError('whitespace')" class="invalid-feedback-login">
+						<div>Please enter valid Username</div>
+					</div>
+					
+				</div>
+			</div>
+
+			<div class="form-group row">
+				<div class="col-12">
+					<div class="input-group">
+						<span class="input-group-addon"><img src="assets/images/password-ico.png"></span>
+						<input class="form-control" type="password" required="" placeholder="Password" formControlName="password" [ngClass]="{ 'is-invalid': submitted && f.password.errors }" />
+					</div>
+					<div *ngIf="submitted && f.password.errors" class="invalid-feedback-login">
+						<div *ngIf="f.password.errors.required">Password is required</div>						
+					</div>
+					
+					<div *ngIf="f.password.hasError('whitespace')" class="invalid-feedback-login">
+						<div>Please enter valid Password</div>
+					</div>
+					
+				</div>
+			</div>
+
+			<!--
+			<img src="assets/images/robot.jpg" alt="" class="img-fluid">
+			-->
+			
+			<div class="form-group row">
+				<div class="col-12">
+					<!--<button (click)="executeImportantAction()">Important action</button>-->
+					 <!--
+					<re-captcha (resolved)="resolved($event)" siteKey="6LfWAssUAAAAAPcUBOgIQa1yd7CxTN3YeMFwWS_f"></re-captcha>
+					<div *ngIf="recaptchaErrors" class="validationerror">{{ recaptchaErrors }}</div>				 
+					<re-captcha (resolved)="resolved($event)" siteKey="6Ldd8b0ZAAAAAEnnPng4Wtu3FTOsoM7oRnNBHyKR"></re-captcha>
+					<div *ngIf="recaptchaErrors" class="validationerror">{{ recaptchaErrors }}</div>	-->	
+					
+				</div>
+			</div>		
+			
+			<div class="form-group row m-t-20">
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+					<button [disabled]="loading"  (click)="executeImportantAction()" class="btn btn-primary btn-custom w-md waves-effect waves-light">
+						<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>Login
+					</button>					
+				</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 text-right">
+					<a [routerLink]="['/forgot-password']" class="text-muted"> Forgot Password ? </a>
+				</div>
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-left">
+					<div *ngIf="error" class="alert alert-danger mt-3 mb-0">{{error}}</div>
+				</div>
+			</div>
+		   
+		</form>
+	</div>
+</div>
+
+<div class="col-lg-12 text-center log-in-footer">
+	Copyright &copy; {{ year$ | async }} GCL International Ltd | All Right Reserved 
+</div>

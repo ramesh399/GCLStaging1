@@ -1,0 +1,673 @@
+<div class="row">
+    <div class="col-12">
+		
+		<div>				
+			<button type="button" (click)="changeInspectionTimeTab('no_of_workers_and_process_based')" class="btn btn-sm {{no_of_workers_and_process_based_status ? 'btn-success' : 'btn-primary'}}">No. of Workers & Process based Audit Time</button>
+			<button type="button" (click)="changeInspectionTimeTab('process_based')" class="btn btn-sm {{process_based_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">Process based Audit Time</button>	
+			<button type="button" (click)="changeInspectionTimeTab('standard_based')" class="btn btn-sm {{standard_based_status ? 'btn-success' : 'btn-primary'}}" style="margin-left:3px;">No. of Standard Based Inspection Time for Trading Process</button>								
+		</div>
+		
+        <div class="add card-box table-responsive">
+			
+			<div *ngIf="no_of_workers_and_process_based_status">
+			
+				<form  [formGroup]="form" >           
+					<!-- (ngSubmit)="onSubmit()"-->
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view">
+						<div>
+						    <!--
+							<h3>Audit Time Details</h3>  
+							-->
+							
+								<form  [formGroup]="workersstdform">
+									<div class="form-group row">
+										<div class="col-4">
+											<label>Standard <span class="text-danger">*</span></label>
+											<mat-select placeholder="-- Standard --" formControlName="standard_id" multiple class="form-control select2" [class.is-invalid]="wf.standard_id.invalid && wf.standard_id.touched">
+												<mat-select-trigger>
+												<span *ngIf="wf.standard_id.value?.length == 1" >{{wf.standard_id.value ? getSelectedWorkersValue(wf.standard_id.value): ''}}</span>
+												<span *ngIf="wf.standard_id.value?.length > 1" class="example-additional-selection">
+													{{wf.standard_id.value.length}} {{ 'selected' }}
+												</span>
+												</mat-select-trigger>
+												<mat-option *ngFor="let item of workerStandardList" [value]="item.id">{{item.code}}</mat-option>
+											</mat-select>  
+											<div *ngIf="wf.standard_id.errors" class="invalid-feedback">
+												<div *ngIf="wf.standard_id.errors.required">Standard is required</div>
+												<div *ngIf="wf.standard_id.errors.incorrect">{{ standard_idErrors }}</div>
+											</div>
+										</div>
+										<div class="col-6">
+											<button [disabled]="loading['stdbutton']" (click)="addWorkersStd()" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" style="margin-top: 25px;">
+												<span *ngIf="loading['stdbutton']" class="spinner-border spinner-border-sm mr-1"></span>
+												{{wf.standard_id.value.length ? 'Update' : 'Save'}}
+											</button>
+										</div>
+									</div>
+								</form>
+								
+								<!--
+								<h3>Audit Time List</h3>
+								-->
+								<div class="form-group row">
+									
+									<div class="tbl-sec">
+										<table id="datatable" class="table table-bordered tab-bor col-12" >
+											<thead>
+											<tr>
+												<th width="5%" scope="col" class="center">S.No</th>
+												<th scope="col">No. of Workers From</th>
+												<th scope="col">No. of Workers To</th>	
+												<!--
+												<th width="13%" class="text-center" scope="col">Auditor Day(s)</th>	
+												
+												<th width="12%" class="text-center" scope="col" sortable="created_at" >Date</th>
+												-->									
+												<th width="8%" scope="col" class="text-center">Action</th>
+											</tr>
+											</thead>
+											<tbody>
+												<tr *ngIf="inspectiontimeEntries?.length==0">
+													<td colspan="4" class="center">No Audit Time Added</td>
+												</tr>
+												<tr *ngFor="let instimeEntry of inspectiontimeEntries; let i=index; ">
+													<td scope="row" class="center">{{  1+ i }}</td>
+													<td>{{ instimeEntry.no_of_workers_from }}</td>
+													<td>{{ instimeEntry.no_of_workers_to }}</td>
+													<!--													
+													<td class="text-center">{{ instimeEntry.inspector_days }}</td>
+													
+													<td class="text-center">{{ instimeEntry.created_at }}</td>
+													-->
+													<td  class="center">
+														<a href="javascript:void(0);" (click)="editInspectionTime(i,instimeEntry)" title="Edit" alt="Edit" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('edit_inspection_time')"> <i class="fa fa-edit"></i> </a>
+														&nbsp;&nbsp;
+														<!-- <a href="javascript:void(0);" (click)="removeInspectionTime(i)" title="Delete" alt="Delete" *ngIf="instimeEntry.status==1 || instimeEntry.status==0 && userdetails.resource_access==1 || userdetails.rules.includes('delete_inspection_time')"> <i class="fa fa-trash text-danger"></i> </a> -->
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+								
+								
+								<!-- <div class="row col-12 prd-lab" >
+									
+									<div class="col-3">
+										<label>Number of Workers From <span class="text-danger">*</span></label>
+										<input type="text" formControlName="no_of_workers_from"  class="form-control" placeholder="Number of Workers From" (change)="checkInspectionTime();">
+										<div *ngIf="no_of_workers_fromErrors" class="validationerror" >
+											{{ no_of_workers_fromErrors }} 
+										</div>
+									</div>
+																								
+									<div class="col-3">
+										<label>Number of Workers To <span class="text-danger">*</span></label>
+										<input type="text" formControlName="no_of_workers_to"  class="form-control" placeholder="Number of Workers To" (change)="checkInspectionTime();">
+										<div *ngIf="no_of_workers_toErrors" class="validationerror" >
+											{{ no_of_workers_toErrors }} 
+										</div>
+									</div>
+									
+									<div class="col-3">
+										<label>Auditor Day(s) <span class="text-danger">*</span></label>
+										<input type="text" formControlName="inspector_days"  class="form-control" placeholder="Auditor Day(s)" (change)="checkInspectionTime();">
+										<div *ngIf="inspector_daysErrors" class="validationerror" >
+											{{ inspector_daysErrors }} 
+										</div>
+									</div>
+									
+									<div class="col-3" style="padding-top:25px;">
+										<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="addInspectionTime()"  >+Add Inspection Time</a>
+										&nbsp;
+										<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="resetInspectionTime()"  >Reset</a>
+									</div>
+								</div> -->
+								
+								
+																			
+																				
+							<!-- <div class="col-lg-12 text-center mt-4 mb-4">
+								<button [disabled]="loading" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+									<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+									Submit
+								</button>
+														
+								<div class="clearfix"></div>
+									
+								<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+							</div>
+							
+							<div class="col-lg-12 error">
+							Note: After completing your actions, please click "Submit" button to store the data.
+							</div> -->
+						</div>
+							
+					</div>
+					 
+				</form>
+			</div>
+		
+		
+		
+		
+			<div class="row col-12"  *ngIf="no_of_workers_and_process_based_status && (userdetails.resource_access==1 || userdetails.rules.includes('add_inspection_time') || (userdetails.rules.includes('edit_inspection_time') && inspectiontimeEntries[inspectionTimeIndex]))">
+
+				 
+					
+						<div class="add table-responsive enq-view">         
+															  
+							<div class="col-12 row pad-right">
+								
+								<div class="tabDiv col-4">
+									<h3>No. of Workers From & To</h3>  
+
+									<form  [formGroup]="form">
+										<div class="form-group row">
+											<div class="col-6">
+												<label>No. of Workers From <span class="text-danger">*</span></label>
+												<input type="text" formControlName="no_of_workers_from"  class="form-control" [class.is-invalid]="f.no_of_workers_from.invalid && f.no_of_workers_from.touched" placeholder="No. of Workers From" (change)="checkInspectionTime();">
+												<div *ngIf="f.no_of_workers_from.errors" class="invalid-feedback">
+													<div *ngIf="f.no_of_workers_from.errors.required">This Field is required</div>
+													<div *ngIf="f.no_of_workers_from.errors.pattern || f.no_of_workers_from.hasError('whitespace')">Invalid No. of Workers</div>
+												</div>
+												<div *ngIf="no_of_workers_fromErrors" class="validationerror" >
+													{{ no_of_workers_fromErrors }} 
+												</div>
+												
+											</div>
+											<div class="col-6">
+												<label>No. of Workers To <span class="text-danger">*</span></label>
+												<input type="text" formControlName="no_of_workers_to"  class="form-control" [class.is-invalid]="f.no_of_workers_to.invalid && f.no_of_workers_to.touched" placeholder="No. of Workers To" (change)="checkInspectionTime();">
+												<div *ngIf="f.no_of_workers_to.errors" class="invalid-feedback">
+													<div *ngIf="f.no_of_workers_to.errors.required">This Field is required</div>
+													<div *ngIf="f.no_of_workers_to.errors.pattern || f.no_of_workers_to.hasError('whitespace')">Invalid No. of Workers</div>
+												</div>
+											</div>
+										</div>
+										
+
+										<!-- <div class="form-group row">
+											<div class="col-12">
+												<label>Auditor Day(s) <span class="text-danger">*</span></label>
+												<input type="text" formControlName="inspector_days"  class="form-control" placeholder="Auditor Day(s)" (change)="checkInspectionTime();">
+												<div *ngIf="inspector_daysErrors" class="validationerror" >
+													{{ inspector_daysErrors }} 
+												</div>
+											</div>
+										</div> -->
+										
+										<div class="col-lg-12 text-center mt-4 mb-4">
+											<button [disabled]="loading['button']" (click)="addInspectionTime()" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+												<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+												{{editStatus == 1 ? 'Update' : 'Save'}}
+											</button>
+											&nbsp;&nbsp;
+											<button [disabled]="loading['button']" (click)="resetInspectionTime()" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2">
+												<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+												Reset
+											</button>
+											<div class="clearfix"></div>		
+										</div>
+									</form>
+
+								</div>
+								<div class="tabDiv col-8 pad-right" *ngIf="this.inspectionData">
+									<div style="float:right;">
+										<a href="javascript:void(0);" (click)="addDays(dayEntry)" title="Audit Days" alt="Audit Days"> <i class="fa fa-plus"></i> </a>
+									</div>							
+									<h3>Audit Days</h3>
+
+									<div class="tbl-sec pl-0 pr-0">
+										<span *ngIf="loading['daysdata']" class="spinner-border spinner-border-sm mr-1"></span>
+										<table *ngIf="!loading['daysdata']" id="datatable" class="table table-bordered tab-bor col-12" >
+											<thead>
+											<tr>
+												<th width="5%" scope="col" class="center">S.No</th>
+												<th scope="col">Number of Process From</th>	
+												<th scope="col">Number of Process To</th>	
+												<th class="text-center" scope="col">Auditor Day(s)</th>	
+												<th width="10%" scope="col" class="text-center">Action</th>
+											</tr>
+											</thead>
+											<tbody>
+												<tr *ngIf="daysEntries?.length==0">
+													<td colspan="5" class="center">No logs Added</td>
+												</tr>
+												<tr *ngFor="let daysEntry of daysEntries; let i=index; ">
+													<td scope="row" class="center">{{  1+ i }}</td>
+													<td>{{ daysEntry.no_of_process_from }}</td>
+													<td>{{ daysEntry.no_of_process_to }}</td>
+													<td class="text-center">{{ daysEntry.inspector_days }}</td>
+													<!-- *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('edit_inspection_time')"-->
+													<td  class="center">
+														<a href="javascript:void(0);" (click)="editDays(dayEntry,i,daysEntry)" title="Edit" alt="Edit" > <i class="fa fa-edit"></i> </a>
+														&nbsp;
+														<a href="javascript:void(0);" (click)="removeDays(confirmcontent,daysEntry)" title="Delete" alt="Delete"  > <i class="fa fa-trash text-danger"></i> </a>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+
+							</div>
+							 
+						</div>
+
+					 	
+			</div>
+			
+			
+			
+			<div *ngIf="process_based_status">
+				<form  [formGroup]="form" >           
+										  <!--(ngSubmit)="onSubmit()"-->   
+					<!--<div class="col-12 row pad-right add table-responsive enq-view">-->       
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view">
+						<div>
+						    <!--
+							<h3>Standard wise Audit Time</h3>
+							-->
+							<form  [formGroup]="processstdform">
+								<div class="form-group row">
+									<div class="col-4">
+										<label>Standard <span class="text-danger">*</span></label>
+										<mat-select placeholder="-- Standard --" formControlName="standard_id" multiple class="form-control select2" [class.is-invalid]="pf.standard_id.invalid && pf.standard_id.touched">
+											<mat-select-trigger>
+											<span *ngIf="pf.standard_id.value?.length == 1" >{{pf.standard_id.value ? getSelectedProcessValue(pf.standard_id.value): ''}}</span>
+											<span *ngIf="pf.standard_id.value?.length > 1" class="example-additional-selection">
+												{{pf.standard_id.value.length}} {{ 'selected' }}
+											</span>
+											</mat-select-trigger>
+											<mat-option *ngFor="let item of processStandardList" [value]="item.id">{{item.code}}</mat-option>
+										</mat-select>  
+										<div *ngIf="pf.standard_id.errors" class="invalid-feedback">
+											<div *ngIf="pf.standard_id.errors.required">Standard is required</div>
+											<div *ngIf="pf.standard_id.errors.incorrect">{{ standard_idErrors }}</div>
+										</div>
+									</div>
+									<div class="col-6">
+										<button [disabled]="loading['stdbutton']" (click)="addProcessStd()" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5" style="margin-top: 25px;">
+											<span *ngIf="loading['stdbutton']" class="spinner-border spinner-border-sm mr-1"></span>
+											{{pf.standard_id.value.length ? 'Update' : 'Save'}}
+										</button>
+									</div>
+								</div>
+							</form>
+							
+							<!--
+							<h3>Standard wise Audit Time List</h3>
+							-->
+							<div class="form-group row">
+								 
+								<div class="tbl-sec">
+									<table id="datatable" class="table table-bordered tab-bor col-12" >
+										<thead>
+										<tr>
+											<th width="5%" scope="col" class="center">S.No</th>
+											<th scope="col">No. of Process From</th>
+											<th scope="col">No. of Process To</th>	
+											<th width="13%" class="text-center" scope="col">Auditor Day(s)</th>	
+											<!--
+											<th width="12%" class="text-center" scope="col" sortable="created_at" >Date</th>
+											-->									
+											<th width="10%" scope="col" class="text-center">Action</th>
+										</tr>
+										</thead>
+										<tbody>
+											<tr *ngIf="otherinspectiontimeEntries?.length==0">
+												<td colspan="5" class="center">No Audit Time Added</td>
+											</tr>
+											<tr *ngFor="let otherinstimeEntry of otherinspectiontimeEntries; let i=index; ">
+												<td scope="row" class="center">{{  1+ i }}</td>
+												<td>{{ otherinstimeEntry.no_of_process_from }}</td>
+												<td>{{ otherinstimeEntry.no_of_process_to }}</td>		
+												<td class="text-center">{{ otherinstimeEntry.inspector_days }}</td>
+												<!--
+												<td class="text-center">{{ otherinstimeEntry.created_at }}</td>
+												-->
+												<td  class="center">
+													<a href="javascript:void(0);" (click)="editOtherInspectionTime(i,otherinstimeEntry)" title="Edit" alt="Edit" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('edit_inspection_time')"> <i class="fa fa-edit"></i> </a>
+													&nbsp;&nbsp;
+													<a href="javascript:void(0);" (click)="removeOtherInspectionTime(confirmcontent,otherinstimeEntry)" title="Delete" alt="Delete"  > <i class="fa fa-trash text-danger"></i> </a>
+
+													<!-- <a href="javascript:void(0);" (click)="removeOtherInspectionTime(otherinstimeEntry)" title="Delete" alt="Delete" *ngIf="otherinstimeEntry.status==1 || otherinstimeEntry.status==0 && userdetails.resource_access==1 || userdetails.rules.includes('delete_inspection_time')"> <i class="fa fa-trash text-danger"></i> </a> -->
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+								
+								<!-- <div class="row col-12 prd-lab" >
+									
+									<div class="col-3">
+										<label>Number of Workers From <span class="text-danger">*</span></label>
+										<input type="text" formControlName="no_of_workers_from"  class="form-control" placeholder="Number of Workers From" (change)="checkInspectionTime();">
+										<div *ngIf="no_of_workers_fromErrors" class="validationerror" >
+											{{ no_of_workers_fromErrors }} 
+										</div>
+									</div>
+																								
+									<div class="col-3">
+										<label>Number of Workers To <span class="text-danger">*</span></label>
+										<input type="text" formControlName="no_of_workers_to"  class="form-control" placeholder="Number of Workers To" (change)="checkInspectionTime();">
+										<div *ngIf="no_of_workers_toErrors" class="validationerror" >
+											{{ no_of_workers_toErrors }} 
+										</div>
+									</div>
+									
+									<div class="col-3">
+										<label>Auditor Day(s) <span class="text-danger">*</span></label>
+										<input type="text" formControlName="inspector_days"  class="form-control" placeholder="Auditor Day(s)" (change)="checkInspectionTime();">
+										<div *ngIf="inspector_daysErrors" class="validationerror" >
+											{{ inspector_daysErrors }} 
+										</div>
+									</div>
+									
+									<div class="col-3" style="padding-top:25px;">
+										<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="addInspectionTime()"  >+Add Inspection Time</a>
+										&nbsp;
+										<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="resetInspectionTime()"  >Reset</a>
+									</div>
+								</div> -->
+								
+								
+							</div>
+																			
+																				
+							<!-- <div class="col-lg-12 text-center mt-4 mb-4">
+								<button [disabled]="loading" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+									<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+									Submit
+								</button>
+														
+								<div class="clearfix"></div>
+									
+								<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+							</div>
+							
+							<div class="col-lg-12 error">
+							Note: After completing your actions, please click "Submit" button to store the data.
+							</div> -->
+						</div>
+					</div>
+					 
+				</form>
+			</div>
+			
+			
+			
+			
+			<div class="col-12 row" style="float:left;" *ngIf="process_based_status && (userdetails.resource_access==1 || userdetails.rules.includes('add_inspection_time') || (userdetails.rules.includes('edit_inspection_time') && otherinspectiontimeEntries[otherinspectionTimeIndex]))">
+				<div class="col-12 row pad-right add table-responsive enq-view"> 
+					<div class="col-12">
+						<h3>No. of Process & Audit Days</h3>  
+
+						<form  [formGroup]="otherform">
+							<div class="form-group row col-8">
+								
+								<div class="col-4">
+									<label>Number of Process From <span class="text-danger">*</span></label>
+									<input type="text" formControlName="no_of_process_from"  class="form-control" [class.is-invalid]="of.no_of_process_from.invalid && of.no_of_process_from.touched" placeholder="Number of Process From" (change)="checkProcessCountStd();">
+									<div *ngIf="of.no_of_process_from.errors" class="invalid-feedback">
+										<div *ngIf="of.no_of_process_from.errors.required">This Field is required</div>
+										<div *ngIf="of.no_of_process_from.errors.pattern || of.no_of_process_from.hasError('whitespace')">Invalid Number of Process From</div>
+									</div>
+									<div *ngIf="no_of_process_fromErrors" class="validationerror" >
+										{{ no_of_process_fromErrors }} 
+									</div>											
+								</div>
+								
+								<div class="col-4">
+									<label>Number of Process To <span class="text-danger">*</span></label>
+									<input type="text" formControlName="no_of_process_to"  class="form-control" [class.is-invalid]="of.no_of_process_to.invalid && of.no_of_process_to.touched" placeholder="Number of Process To" (change)="checkProcessCountStd();">
+									<div *ngIf="of.no_of_process_to.errors" class="invalid-feedback">
+										<div *ngIf="of.no_of_process_to.errors.required">This Field is required</div>
+										<div *ngIf="of.no_of_process_to.errors.pattern || of.no_of_process_to.hasError('whitespace')">Invalid Number of process</div>
+									</div>
+								</div>
+							
+								<div class="col-4">
+									<label>Auditor Day(s) <span class="text-danger">*</span></label>
+									<input type="text" formControlName="inspector_days" class="form-control" [class.is-invalid]="of.inspector_days.invalid && of.inspector_days.touched" placeholder="Auditor Day(s)">
+									<div *ngIf="of.inspector_days.errors" class="invalid-feedback">
+										<div *ngIf="of.inspector_days.errors.required">Auditor Day(s) is required</div>
+										<div *ngIf="of.inspector_days.errors.pattern || of.inspector_days.hasError('whitespace')">Invalid Auditor Day(s)</div>
+									</div>
+									<div *ngIf="inspector_daysErrors" class="validationerror" >
+										{{ inspector_daysErrors }} 
+									</div>
+								</div>
+								
+							</div>
+							
+							<div class="col-lg-12 text-center mt-4 mb-4">
+								<button [disabled]="loading['button']" (click)="addOtherInspectionTime()" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+									<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+									{{editOtherStatus == 1 ? 'Update' : 'Save'}}
+								</button>
+								&nbsp;&nbsp;
+								<button [disabled]="loading['button']" (click)="resetOtherInspectionTime()" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2">
+									<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+									Reset
+								</button>
+								<div class="clearfix"></div>		
+							</div>
+						</form>
+
+					</div>
+
+				</div>
+			</div>
+
+
+			<div *ngIf="standard_based_status">
+				<form  [formGroup]="form" >           
+										  <!--(ngSubmit)="onSubmit()"-->          
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 enq-view">
+						 
+						    
+							<div class="form-group row">
+								 
+								<div class="tbl-sec">
+									<table id="datatable" class="table table-bordered tab-bor col-12" >
+										<thead>
+										<tr>
+											<th width="5%" scope="col" class="center">S.No</th>
+											<th scope="col">No. of Standard From</th>
+											<th scope="col">No. of Standard To</th>	
+											<th width="13%" class="text-center" scope="col">Auditor Day(s)</th>
+											<th width="10%" scope="col" class="text-center">Action</th>
+										</tr>
+										</thead>
+										<tbody>
+											<tr *ngIf="standardinspectiontimeEntries?.length==0">
+												<td colspan="5" class="center">No Audit Time Added</td>
+											</tr>
+											<tr *ngFor="let standardinstimeEntry of standardinspectiontimeEntries; let i=index; ">
+												<td scope="row" class="center">{{  1+ i }}</td>
+												<td>{{ standardinstimeEntry.no_of_standard_from }}</td>
+												<td>{{ standardinstimeEntry.no_of_standard_to }}</td>		
+												<td class="text-center">{{ standardinstimeEntry.inspector_days }}</td>
+												<td  class="center">
+													<a href="javascript:void(0);" (click)="editStandardInspectionTime(i,standardinstimeEntry)" title="Edit" alt="Edit" *ngIf="userdetails.resource_access==1 || userdetails.rules.includes('edit_inspection_time')"> <i class="fa fa-edit"></i> </a>
+													&nbsp;&nbsp;
+													<a href="javascript:void(0);" (click)="removeStandardInspectionTime(confirmcontent,standardinstimeEntry)" title="Delete" alt="Delete"  > <i class="fa fa-trash text-danger"></i> </a>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+								
+								
+							</div>
+																			
+																				
+						 
+					</div>
+					 
+				</form>
+			</div>
+			
+			
+			
+			
+			<div class="col-12 row" style="float:left;" *ngIf="standard_based_status && (userdetails.resource_access==1 || userdetails.rules.includes('add_inspection_time') || (userdetails.rules.includes('edit_inspection_time') && otherinspectiontimeEntries[otherinspectionTimeIndex]))">
+				<div class="col-12 row pad-right add table-responsive enq-view">
+					
+					<div class="col-12">
+						<h3>No. of Standard & Audit Days</h3>  
+
+						<form  [formGroup]="standardform">
+							<div class="form-group row col-8 pad-left">
+								
+								<div class="col-4">
+									<label>Number of Standard From <span class="text-danger">*</span></label>
+									<input type="text" formControlName="no_of_standard_from"  class="form-control" [class.is-invalid]="sf.no_of_standard_from.invalid && sf.no_of_standard_from.touched" placeholder="Number of Standard From" (change)="checkProcessCountStd();">
+									<div *ngIf="sf.no_of_standard_from.errors" class="invalid-feedback">
+										<div *ngIf="sf.no_of_standard_from.errors.required">This Field is required</div>
+										<div *ngIf="sf.no_of_standard_from.errors.pattern || sf.no_of_standard_from.hasError('whitespace')">Invalid Number of Standard From</div>
+									</div>
+									<div *ngIf="no_of_standard_fromErrors" class="validationerror" >
+										{{ no_of_standard_fromErrors }} 
+									</div>											
+								</div>
+								
+								<div class="col-4">
+									<label>Number of Standard To <span class="text-danger">*</span></label>
+									<input type="text" formControlName="no_of_standard_to"  class="form-control" [class.is-invalid]="sf.no_of_standard_to.invalid && sf.no_of_standard_to.touched" placeholder="Number of Standard To" (change)="checkProcessCountStd();">
+									<div *ngIf="sf.no_of_standard_to.errors" class="invalid-feedback">
+										<div *ngIf="sf.no_of_standard_to.errors.required">This Field is required</div>
+										<div *ngIf="sf.no_of_standard_to.errors.pattern || sf.no_of_standard_to.hasError('whitespace')">Invalid Number of process</div>
+									</div>
+								</div>
+							
+								<div class="col-4">
+									<label>Auditor Day(s) <span class="text-danger">*</span></label>
+									<input type="text" formControlName="inspector_days" class="form-control" [class.is-invalid]="sf.inspector_days.invalid && sf.inspector_days.touched" placeholder="Auditor Day(s)">
+									<div *ngIf="sf.inspector_days.errors" class="invalid-feedback">
+										<div *ngIf="sf.inspector_days.errors.required">Auditor Day(s) is required</div>
+										<div *ngIf="sf.inspector_days.errors.pattern || sf.inspector_days.hasError('whitespace')">Invalid Auditor Day(s)</div>
+									</div>
+									<div *ngIf="inspector_daysErrors" class="validationerror" >
+										{{ inspector_daysErrors }} 
+									</div>
+								</div>
+								
+							</div>
+							
+							<div class="col-6 text-center mt-4 mb-4">
+								<button [disabled]="loading['button']" (click)="addStandardInspectionTime()" class="btn btn-success btn-custom waves-effect w-md waves-light m-b-5">
+									<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+									{{editOtherStatus == 1 ? 'Update' : 'Save'}}
+								</button>
+								&nbsp;&nbsp;
+								<button [disabled]="loading['button']" (click)="resetStandardInspectionTime()" class="btn btn-secondary active grey btn-custom waves-effect w-md waves-light m-b-5 ml-2">
+									<span *ngIf="loading['button']" class="spinner-border spinner-border-sm mr-1"></span>
+									Reset
+								</button>
+								<div class="clearfix"></div>	
+									
+							</div>
+						</form>
+						
+					</div>
+
+				</div>
+			</div>
+			<div style="clear: both;"></div>
+			<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+			
+			
+			
+		</div>
+		
+
+		
+		
+		
+		
+		
+		
+		
+    </div>
+</div>
+
+<ng-template #dayEntry let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">{{editDaysStatus == 1 ? 'Update' : 'Add'}} Audit Days</h4>		
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<div class="alert alert-success" *ngIf="logsuccess">{{logsuccess}}</div>
+		<div *ngIf="!logsuccess" >
+			<form [formGroup]="daysform">
+				<div class="form-group row" >					
+					<div class="col-6">
+						<label>Number of Process From <span class="text-danger">*</span></label>
+						<input type="text" formControlName="no_of_process_from"  class="form-control" [class.is-invalid]="df.no_of_process_from.invalid && df.no_of_process_from.touched" placeholder="Number of Process From"  >
+						<div *ngIf="df.no_of_process_from.errors" class="invalid-feedback">
+							<div *ngIf="df.no_of_process_from.errors.required">This Field is required</div>
+							<div *ngIf="df.no_of_process_from.errors.pattern || df.no_of_process_from.hasError('whitespace')">Invalid Number of Process</div>
+						</div>
+						<div *ngIf="no_of_process_fromErrors" class="validationerror" >
+							{{ no_of_process_fromErrors }} 
+						</div>
+					</div>			
+								
+					<div class="col-6">
+						<label>Number of Process To <span class="text-danger">*</span></label>
+						<input type="text" formControlName="no_of_process_to"  class="form-control" [class.is-invalid]="df.no_of_process_to.invalid && df.no_of_process_to.touched" placeholder="Number of Process To"  >
+						<div *ngIf="df.no_of_process_to.errors" class="invalid-feedback">
+							<div *ngIf="df.no_of_process_to.errors.required">This Field is required</div>
+							<div *ngIf="df.no_of_process_to.errors.pattern || df.no_of_process_to.hasError('whitespace')">Invalid Number of Process</div>
+						</div>
+					</div>			
+				</div>
+			
+				<div class="form-group">
+					<div class="col-12">
+						<label>Auditor Day(s) <span class="text-danger">*</span></label>
+						<input type="text" formControlName="inspector_days" class="form-control" [class.is-invalid]="df.inspector_days.invalid && df.inspector_days.touched" placeholder="Auditor Day(s)">
+						<div *ngIf="df.inspector_days.errors" class="invalid-feedback">
+							<div *ngIf="df.inspector_days.errors.required">Auditor Day(s) is required</div>
+							<div *ngIf="df.inspector_days.errors.pattern || df.inspector_days.hasError('whitespace')">Invalid Auditor Day(s)</div>
+						</div>
+						<div *ngIf="inspector_daysErrors" class="validationerror" >
+							{{ inspector_daysErrors }} 
+						</div>
+					</div>
+					
+				</div>
+				
+			
+			</form>
+		</div>
+	</div>
+	<div class="modal-footer" *ngIf="!logsuccess">
+		<button type="button" class="btn btn-success " [disabled]="loading['logsbutton']" (click)="submitLogAction();">
+			<span *ngIf="loading['logsbutton']" class="spinner-border spinner-border-sm mr-1"></span>{{editDaysStatus == 1 ? 'Update' : 'Save'}}</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">
+			<span *ngIf="loading['logsbutton']" class="spinner-border spinner-border-sm mr-1"></span>Cancel</button>
+		
+	</div>
+</ng-template>
+
+<ng-template #confirmcontent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirm</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body" style="font-size:16px;">
+		Are you sure, do you want to delete the data?
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success " (click)="modal.close('selfapprover')">Ok</button>
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+	</div>
+</ng-template>

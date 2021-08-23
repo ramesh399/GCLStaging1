@@ -1,0 +1,215 @@
+<!-- Page-Title -->
+<!--
+	<div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box p-b-30">
+				<h4 class="page-title">View OSS Details</h4>
+				<div class="clearfix"></div>
+				<div class="text-right float-right">
+					<a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/master/franchise/list']" >Back</a>
+				</div>
+			</div>		
+        </div>
+    </div>
+	-->
+
+<div class="col-12 row pad-right">
+    <div class="col-8">
+        <h4 class="page-title">View OSS Details</h4>
+    </div>
+    <div class="col-4 text-right pad-right">
+        <a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/master/franchise/list']"><i
+                class="fa fa-arrow-left text-white"></i> Back</a>
+    </div>
+</div>
+
+<div class="row" *ngIf="userdata">
+    <div class="col-12">
+        <!--
+            <div class="card-box enq-view">
+                <h3>Franchise Details</h3>                     
+                <ul>
+                    <li><span class="label-pad">First Name</span> -  <span class="name-pad">{{ userdata.first_name }}</span></li>
+                    <li><span class="label-pad">Last Name</span>  -  <span class="name-pad">{{ userdata.last_name }}</span></li>
+                    <li><span class="label-pad">Telephone</span> -  <span class="name-pad">{{ userdata.telephone }}</span></li>
+                    <li><span class="label-pad">E-Mail</span> -  <span class="name-pad"><a href="mailto:{{ userdata.email }}">{{ userdata.email }}</a></span></li>
+                    <li><span class="label-pad">Country</span> -  <span class="name-pad">{{ userdata.country_name }}</span></li>
+                    <li><span class="label-pad">State</span> -  <span class="name-pad">{{ userdata.state_name }}</span></li>
+					<li><span class="label-pad">Created By</span> -  <span class="name-pad">{{ userdata.created_by }}</span></li>
+					<li><span class="label-pad">Created Date</span> -  <span class="name-pad">{{ userdata.created_at }}</span></li>
+                </ul>                
+            </div>
+			-->
+
+        <div class="add card-box table-responsive details-view p-t-10">
+            <h3>OSS Details</h3>
+            <table class="table-secondary m-b-15">
+                <tr>
+                    <th width="20%">Company Name</th>
+                    <td width="30%">{{ userdata.company_name }}</td>
+                    <th width="20%">Contact Name</th>
+                    <td width="30%">{{ userdata.contact_name }}</td>
+                </tr>
+                <tr>
+                    <th width="20%">Telephone</th>
+                    <td width="30%">{{ userdata.company_telephone }}</td>
+                    <th width="20%">E-Mail</th>
+                    <td width="30%"><a href="mailto:{{ userdata.company_email }}">{{ userdata.company_email }}</a></td>
+                </tr>
+                <tr>
+                    <th width="20%">Website</th>
+                    <td width="30%"><a target="_blank" href="{{ userdata.company_website }}">{{ userdata.company_website
+                            }}</a></td>
+                    <th width="20%">Country</th>
+                    <td width="30%">{{ userdata.company_country }}</td>
+                </tr>
+                <tr>
+                    <th width="20%">State</th>
+                    <td width="30%">{{ userdata.company_state }}</td>
+                    <th width="20%">Address Line1</th>
+                    <td width="30%">{{ userdata.company_country }}</td>
+                </tr>
+                <tr>
+                    <th width="20%">Address Line2</th>
+                    <td width="30%">{{ userdata.company_address2 }}</td>
+                    <th width="20%">Town/City</th>
+                    <td width="30%">{{ userdata.company_city }}</td>
+                </tr>
+                <tr>
+                    <th width="20%">Zipcode</th>
+                    <td width="30%">{{ userdata.company_zipcode }}</td>
+                    <th width="20%">OSS No.</th>
+                    <td width="30%">{{ userdata.osp_number }}</td>
+                </tr>
+                <tr>
+                    <th width="20%">OSS Details</th>
+                    <td width="30%">{{ userdata.osp_details }}</td>
+                    <th width="20%">Is it Headquarters</th>
+                    <td width="30%">{{ userdata.headquarters }}</td>
+                </tr>
+                <tr>
+                    <th width="20%">Created By</th>
+                    <td width="30%">{{ userdata.created_by }}</td>
+                    <th width="20%">Created Date</th>
+                    <td width="30%">{{ userdata.created_at }}</td>
+                </tr>
+            </table>
+
+            <h3>Payment Details</h3>
+            <table id="datatable" class="table table-bordered tab-bor col-12">
+                <thead>
+                    <tr>
+                        <th scope="col" width="5%" class="center">S.No</th>
+                        <th scope="col" class="left">Label</th>
+                        <th scope="col" class="left">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="userdata.payment_details?.length <= 0">
+                        <td colspan="4" class="center">No Payment details Added</td>
+                    </tr>
+                    <tr *ngFor="let paymentEntry of userdata.payment_details; let im=index; ">
+                        <td scope="row" class="center">{{ 1+ im }}</td>
+                        <td class="left">{{ paymentEntry.payment_label }}</td>
+                        <td class="left">{{ paymentEntry.payment_content }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+            <h3>Users </h3>
+            <table class="table table-bordered auditplanbgsector m-b-15" style="font-size:13px;">
+                <thead>
+                    <tr>
+                        <th class="center" width="5%">S.No</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Role(s)</th>
+                        <th width="15%">Created By</th>
+                        <th class="center" width="5%">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngFor="let user of userEntries; index as i;">
+                        <tr *ngIf="getUserRoleFiltered(user.roles, user.id) != ''">
+                            <td class="center">{{ 1+ i }} </td>
+                            <td>{{ user.first_name }}</td>
+                            <td>{{ user.last_name }}</td>
+                            <td>{{ getUserRoleFiltered(user.roles, user.id) }}</td>
+                            <td>{{ user.created_by_label }}</td>
+                            <td class="center">
+                                <a href="javascript:void(0);" [routerLink]="['/master/user/view']"
+                                    [queryParams]="{id:user.id}" title="View" alt="View"><i class="fa fa-eye"></i></a>
+                            </td>
+                        </tr>
+                    </ng-container>
+                    <ng-container *ngIf="userEntries?.length <= 0">
+                        <tr>
+                            <td colspan="6" class="center">No Users Found</td>
+                        </tr>
+                    </ng-container>
+                </tbody>
+            </table>
+        </div>
+
+        <!--
+            <div class="card-box enq-view">
+                <h3>OSS Details</h3>                     
+                <ul>
+                    <li><span class="label-pad">Company Name</span> -  <span class="name-pad">{{ userdata.company_name }}</span></li>
+                    <li><span class="label-pad">Contact Name</span>  -  <span class="name-pad">{{ userdata.contact_name }}</span></li>
+                    <li><span class="label-pad">Telephone</span> -  <span class="name-pad">{{ userdata.company_telephone }}</span></li>
+                    <li><span class="label-pad">E-Mail</span> -  <span class="name-pad"><a href="mailto:{{ userdata.company_email }}">{{ userdata.company_email }}</a></span></li>
+                    <li><span class="label-pad">Website</span> -  <span class="name-pad"><a target="_blank" href="{{ userdata.company_website }}">{{ userdata.company_website }}</a></span></li>
+                    <li><span class="label-pad">Country</span> -  <span class="name-pad">{{ userdata.company_country }}</span></li>
+					<li><span class="label-pad">State</span> -  <span class="name-pad">{{ userdata.company_state }}</span></li>
+                    <li><span class="label-pad">Address Line1</span> -  <span class="name-pad">{{ userdata.company_address1 }}</span></li>
+                    <li><span class="label-pad">Address Line2</span> -  <span class="name-pad">{{ userdata.company_address2 }}</span></li>
+                    <li><span class="label-pad">Town/City</span> -  <span class="name-pad">{{ userdata.company_city }}</span></li>
+                    <li><span class="label-pad">Zipcode</span> -  <span class="name-pad">{{ userdata.company_zipcode }}</span></li>					
+					<li><span class="label-pad">OSS No.</span> -  <span class="name-pad">OSS {{ userdata.osp_number }}</span></li>
+					<li><span class="label-pad">OSS Details</span> -  <span class="name-pad">{{ userdata.osp_details }}</span></li>
+					<li><span class="label-pad">Is it Headquarters</span> -  <span class="name-pad">{{ userdata.headquarters }}</span></li>
+					<li><span class="label-pad">Created By</span> -  <span class="name-pad">{{ userdata.created_by }}</span></li>
+					<li><span class="label-pad">Created Date</span> -  <span class="name-pad">{{ userdata.created_at }}</span></li>
+                </ul>                
+            </div> 
+            
+            <div class="card-box enq-view">
+                <h3>Users</h3>
+                <table class="table table-bordered auditplanbgsector" style="font-size:13px;">
+                    <thead>
+                    <tr>
+                        <th class="center" width="5%">S.No</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Role(s)</th>
+                        <th>Created By</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container>
+                            <tr *ngFor="let user of userEntries; index as i;" >
+                                <td class="center">{{ 1+ i }}</td>
+                                <td>{{ user.first_name }}</td>
+                                <td>{{ user.last_name }}</td>
+                                <td>{{ user.roles }}</td>
+                                <td>{{ user.created_by_label }}</td>	
+                                <td>
+                                    <a href="javascript:void(0);" [routerLink]="['/master/user/view']" [queryParams]="{id:user.id}" title="View" alt="View"><i class="fa fa-eye"></i></a>
+                                </td>													
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+			
+			<div class="text-right">                
+                <button type="button" class="btn but-cust green m-b-5 ml-2" [routerLink]="['/master/franchise/list']" >Back to List</button>                
+            </div>
+			-->
+
+
+    </div>
+</div> <!-- end row -->

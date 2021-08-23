@@ -1,0 +1,225 @@
+<form>
+  
+<div class="row" *ngIf="auditStatus">
+  <div class="col-12">
+      <div class="card-box table-responsive">
+     		
+		<div class="row col-12 m-b-5 pad-right">
+          <div class="col-8 pad-left">
+            <h4 class="page-title"><i class="fa fa-list-ul"></i> Audit Plan List</h4>
+            <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+          </div>
+        </div>
+		<div class="row col-12  m-b-5 pad-right">
+			<div class="col-6" style="margin-left: 400px;">
+				<ng-container  *ngIf="userType!=2">
+					<mat-select style="width: 23%;font-size:13px;" placeholder="-- OSS --" #franchiseFilter name="franchiseFilter" [(ngModel)]="service.franchiseFilter" multiple class="custom-select"  >
+						<mat-select-trigger>
+						<span *ngIf="franchiseFilter.value?.length == 1" >{{franchiseFilter.value ?  getSelectedFranchiseValue(franchiseFilter.value) : ''}}</span>
+						<span *ngIf="franchiseFilter.value?.length > 1" class="example-additional-selection">
+							{{franchiseFilter.value.length}} {{ 'selected' }}
+						</span>
+						</mat-select-trigger>
+						<mat-option *ngFor="let osp of franchiseList" [value]="osp.id">{{osp.osp_details}}</mat-option>					
+					</mat-select>
+				</ng-container>
+			</div>
+		</div>		
+		<div class="row col-12 m-b-5 pad-right">
+            <div class="col-2 text-left pad-left">
+              <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                <option  *ngFor="let item of paginationList" [ngValue]="item.id">{{ item.name }}</option>
+              </select>
+            </div>
+            <div class="col-6 text-left">
+				<select class="custom-select" style="width: 28%; font-size:13px;" name="statusFilter" [(ngModel)]="service.statusFilter">
+					<option value="">All</option>
+					<option  *ngFor="let item of statuslist | keyvalue" value="{{item.key}}">{{item.value}}</option>
+				</select> 
+				&nbsp;
+				<mat-select style="width: 23%;font-size:13px;" placeholder="-- Standard --" #standardFilter name="standardFilter" [(ngModel)]="service.standardFilter" multiple class="custom-select"  >
+					<mat-select-trigger>
+					<span *ngIf="standardFilter.value?.length == 1" >{{standardFilter.value ?  getSelectedValue(standardFilter.value) : ''}}</span>
+					<span *ngIf="standardFilter.value?.length > 1" class="example-additional-selection">
+						{{standardFilter.value.length}} {{ 'selected' }}
+					</span>
+					</mat-select-trigger>
+					<mat-option *ngFor="let std of standardList" [value]="std.id">{{std.code}}</mat-option>
+				</mat-select>
+				&nbsp;
+				<mat-select  style="width: 23%;font-size:13px;" placeholder="-- Brand --" #brandFilter name="brandFilter" [(ngModel)]="service.brandFilter" multiple class="custom-select"  >
+					<mat-select-trigger>
+					<span *ngIf="brandFilter.value?.length == 1" >{{brandFilter.value ?  getSelectedBrandValue(brandFilter.value) : ''}}</span>
+					<span *ngIf="brandFilter.value?.length > 1" class="example-additional-selection">
+						{{brandFilter.value.length}} {{ 'selected' }}
+					</span>
+					</mat-select-trigger>
+					<mat-option *ngFor="let br of brandList" [value]="br.id">{{br.brand_name}}</mat-option>
+				</mat-select>
+				&nbsp;
+				<ng-container *ngIf="userType!=2" >
+					<select class="custom-select" style="width: 20%; font-size:13px;" name="riskFilter" [(ngModel)]="service.riskFilter">
+						<option value="">All</option>
+						<option  *ngFor="let risk of riskList" value="{{risk.id}}">{{risk.name}}</option>
+					</select> 
+				</ng-container>
+            </div>
+			<div class="col-4 text-right pad-right">
+				<input class="search-pad" type="text" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>
+			</div>
+        </div>
+
+		<div class="col-12 pad-left">
+			<table id="datatable" class="table table-bordered" >
+			  <thead>
+			  <tr>
+				<th scope="col" class="center" width="5%">S.No</th>
+				<!--
+				<th scope="col" sortable="invoice_number" (sort)="onSort($event)" >Invoice Number</th>
+				<th scope="col" sortable="total_payable_amount" (sort)="onSort($event)" >Amount</th>
+				<th scope="col" sortable="tax_amount" (sort)="onSort($event)" >Tax</th>	
+				-->	
+				<th scope="col" width="10%">Customer Number</th>			
+				<th scope="col" sortable="company_name" (sort)="onSort($event)" width="20%">Company Name</th>
+				<th scope="col" *ngIf="userdetails.resource_access!=1" width="20%">Brand</th>
+				<th scope="col" *ngIf="userdetails.resource_access!=1" width="10%">Brand Group</th>
+				<th scope="col" class="text-center" *ngIf="userType!=2 && ( !userdetails.rules.includes('brand_management'))">OSS</th>
+				<th scope="col" width="8%" class="center">No.of Units</th>
+				<th scope="col" width="10%">Standards</th>
+				<!--<th scope="col" width="10%">Email Address</th>-->
+				<th scope="col" width="10%">Country</th>
+				<th scope="col" width="10%">City</th>
+				<th scope="col" sortable="status" (sort)="onSort($event)" width="8%">Status</th>
+				<th scope="col" width="10%">Type</th>
+				<!--<th scope="col" sortable="created_at" (sort)="onSort($event)">Created By</th>-->
+				<th scope="col" sortable="created_at" (sort)="onSort($event)" width="10%" class="center">Created Date</th>
+				<th scope="col" width="8%" class="text-center">Action</th>
+			  </tr>
+			  </thead>
+			  <tbody>
+			  <tr *ngFor="let offer of listauditplan$ | async; let i=index; ">
+				<th scope="row" class="center">{{ i+1+ service.pageNo }}</th>
+				
+				<!--
+				<td><ngb-highlight [result]="offer.invoice_number" [term]="service.searchTerm"></ngb-highlight></td>
+				<td><ngb-highlight [result]="offer.currency+' '+offer.total_payable_amount" [term]="service.searchTerm"></ngb-highlight></td>
+				<td><ngb-highlight [result]="offer.currency+' '+offer.tax_amount" [term]="service.searchTerm"></ngb-highlight></td>	
+				-->
+				<td><ngb-highlight [result]="offer.customer_number" [term]="service.searchTerm"></ngb-highlight></td>
+				<td><ngb-highlight [result]="offer.company_name" [term]="service.searchTerm"></ngb-highlight></td>
+				<td *ngIf="userdetails.resource_access!=1"><ngb-highlight  [result]="offer.brand_name" [term]="service.searchTerm"></ngb-highlight></td>
+				<td *ngIf="userdetails.resource_access!=1"><ngb-highlight  [result]="offer.brand_group" [term]="service.searchTerm"></ngb-highlight></td>
+				<td class="text-center" *ngIf="userType!=2  && ( !userdetails.rules.includes('brand_management'))">{{offer.oss_label}}</td>
+				<td class="center"><ngb-highlight [result]="offer.application_unit_count" [term]="service.searchTerm"></ngb-highlight></td>
+				<td><ngb-highlight [result]="offer.application_standard" [term]="service.searchTerm"></ngb-highlight></td>
+				<!--<td><ngb-highlight [result]="offer.email_address" [term]="service.searchTerm"></ngb-highlight></td>-->
+				<td><ngb-highlight [result]="offer.application_country" [term]="service.searchTerm"></ngb-highlight></td>
+				<td><ngb-highlight [result]="offer.application_city" [term]="service.searchTerm"></ngb-highlight></td>				
+				<td><ngb-highlight [result]="offer.audit_status_name" [term]="service.searchTerm"></ngb-highlight></td>
+				<td><ngb-highlight [result]="offer.audit_type_name" [term]="service.searchTerm"></ngb-highlight></td>
+				<td class="center"><ngb-highlight [result]="offer.created_at" [term]="service.searchTerm"></ngb-highlight></td>
+								
+				<td width="8%" class="text-center">
+					<a href="javascript:void(0);" *ngIf="(offer.id && (offer.audit_status > auditStatus['open'])) && (userdetails.resource_access==1 || userType!=1 || !userdetails.rules.includes('brand_management') || (userType==1 && userdetails.rules.includes('brand_management') && offer.audit_status== auditStatus['finalized'])) " [routerLink]="['/audit/view-audit-plan']" [queryParams]="{id:offer.id}" title="View Audit" alt="View Audit"><i class="fa fa-eye"></i> </a>
+					<!-- <a href="javascript:void(0);" *ngIf="offer.audit_status==auditStatus['finalized'] && (userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('generate_audit_plan')) )" class="pl-2" (click)="openmodal(viewunannouncedaudit,offer)" title="Plan Unannounced Audit" alt="Plan Unannounced Audit"><i class="fa fa-calendar-check-o"></i> </a>-->
+					&nbsp;
+					<a href="javascript:void(0);" *ngIf="((offer.audit_status==auditStatus['open'] || offer.audit_status==auditStatus['submitted'] || offer.audit_status==auditStatus['rejected']) && offer.audit_type == 1 && (userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('generate_audit_plan')) )) && (userdetails.resource_access==1 || userType!=1 || !userdetails.rules.includes('brand_management'))"  [routerLink]="['/audit/audit-plan']" [queryParams]="{app_id:offer.app_id,offer_id:offer.offer_id,id:offer.id}" title="Edit Audit" alt="Edit Audit"><i class="fa fa-edit"></i></a>
+
+					<a href="javascript:void(0);" *ngIf="((offer.audit_status==auditStatus['followup_open'] || offer.audit_status==auditStatus['followup_submitted'] || offer.audit_status==auditStatus['followup_rejected_by_customer']) && (userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('generate_audit_plan')) )) && (userdetails.resource_access==1 || userType!=1 || !userdetails.rules.includes('brand_management'))"  [routerLink]="['/audit/followup-audit-plan']" [queryParams]="{app_id:offer.app_id,offer_id:offer.offer_id,id:offer.id,audit_type:offer.audit_type}" title="Edit Audit" alt="Edit Audit"><i class="fa fa-edit"></i></a>
+
+					<a href="javascript:void(0);" *ngIf="((offer.audit_status==auditStatus['open'] || offer.audit_status==auditStatus['submitted'] || offer.audit_status==auditStatus['rejected']) && offer.audit_type == 2 && (userdetails.resource_access==1 || (userType==1 && userdetails.rules.includes('generate_audit_plan')) )) && (userdetails.resource_access==1 || userType!=1 || !userdetails.rules.includes('brand_management'))"  [routerLink]="['/audit/followup-audit-plan']" [queryParams]="{app_id:offer.app_id,id:offer.id,audit_type:2}" title="Edit Audit" alt="Edit Audit"><i class="fa fa-edit"></i></a>
+
+				</td>
+				</tr>
+				<tr  *ngIf="(listauditplan$ | async)?.length==0" >
+					<td colspan="11" class="center">{{ commontxt.norecords }}</td>
+				</tr>
+			  </tbody>
+			</table>
+        </div>
+		
+        <div class="row col-12 pad-left pad-right">
+			<div class="col-6">
+				<span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+				<div *ngIf="!(service.loading$ | async)">
+				Displaying {{ (listauditplan$ | async).length>0 ? service.pageNo + 1 : 0 }}-{{ service.pageNo + (listauditplan$ | async).length }} of {{ (total$ | async) }} results.
+				</div>
+			</div>
+			<div class="col-6 pad-right text-right">						
+			<ngb-pagination maxSize="10" rotate=true boundaryLinks=true class="d-flex justify-content-end" [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+				<ng-template ngbPaginationFirst>First</ng-template>
+				<ng-template ngbPaginationPrevious>Prev</ng-template>
+				<ng-template ngbPaginationNext>Next</ng-template>			  
+				<ng-template ngbPaginationLast>Last</ng-template>			  
+			</ngb-pagination>						
+			</div>
+		</div>
+      </div>
+    </div>
+  </div>
+
+</form>
+<app-usermessage [success]="success" [error]="error"  ></app-usermessage>
+
+<ng-template #viewunannouncedaudit let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Plan Unannounced Audit</h4>
+		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+		<span class="c-icon" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<div class="alert alert-success" *ngIf="msgsuccess">{{msgsuccess}}</div>
+		<div *ngIf="!msgsuccess" >
+			<form  [formGroup]="form">
+				<div class="form-group row">
+					<div class="col-12">
+						<label>Standard <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Standard" matTooltipClass="tooltip-text-size" aria-tooltip="Standard" matTooltipPosition="right"></i>
+						<mat-select placeholder="-- Standard --" formControlName="standard_id" multiple class="form-control select2" [class.is-invalid]="f.standard_id.invalid && f.standard_id.touched" (selectionChange)="getUnits($event.value)">
+							<mat-select-trigger>
+							<span *ngIf="f.standard_id.value?.length == 1" >{{f.standard_id.value ? getSelectedStdValue(f.standard_id.value): ''}}</span>
+							<span *ngIf="f.standard_id.value?.length > 1" class="example-additional-selection">
+								{{f.standard_id.value.length}} {{ 'selected' }}
+							</span>
+							</mat-select-trigger>
+							<mat-option *ngFor="let standard of auditstdlist" value= {{standard.id}}>{{ standard.name }}</mat-option>
+						</mat-select>  					
+						<div *ngIf="f.standard_id.errors" class="invalid-feedback">
+							<div *ngIf="f.standard_id.errors.required">Standard is required</div>
+						</div>	
+					</div>
+				</div>	
+				
+				<div class="clearfix"></div> 
+			
+				<div class="form-group row">
+					<div class="col-12">
+						<label>Unit <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Unit" matTooltipClass="tooltip-text-size" aria-tooltip="Unit" matTooltipPosition="right"></i>
+						<mat-select placeholder="-- Unit --" formControlName="unit_id" multiple class="form-control select2" [class.is-invalid]="f.unit_id.invalid && f.unit_id.touched">
+							<mat-select-trigger>
+							<span *ngIf="f.unit_id.value?.length == 1" >{{f.unit_id.value ? getSelectedUnitValue(f.unit_id.value): ''}}</span>
+							<span *ngIf="f.unit_id.value?.length > 1" class="example-additional-selection">
+								{{f.unit_id.value.length}} {{ 'selected' }}
+							</span>
+							</mat-select-trigger>
+							<mat-option *ngFor="let unit of unitList" [value]="unit.id">{{unit.name}}</mat-option>
+						</mat-select>  
+						<div *ngIf="f.unit_id.errors" class="invalid-feedback">
+							<div *ngIf="f.unit_id.errors.required" >Unit Name is required</div>
+						</div>	 
+					</div>
+				</div>	
+						
+			</form>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button type="button" [disabled]="loading" class="btn btn-success " (click)="SubmitForm()">
+			<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>Save</button>
+			
+		<button type="button" [disabled]="loading" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">
+		<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>Cancel</button>
+		
+		
+	</div>
+</ng-template>

@@ -1,0 +1,45 @@
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+        <div class="page-title-box p-b-30">
+            <h4 class="page-title">View Client Information Question Checklist Details</h4>
+            <div class="clearfix"></div>
+            <div class="text-right float-right">
+                <a class="btn btn-secondary btn-sm active" href="#" role="button" [routerLink]="['/master/client-information-question/list']" >Back</a>
+            </div>
+        </div>		
+    </div>
+</div>
+
+<div class="row" *ngIf="auditreviewerdata">
+    <div class="col-12">
+
+        <table class="table-secondary m-b-15">
+            <tr *ngIf="auditreviewerdata.name">
+                <th width="20%">Name</th>
+                <td colspan="80%">{{ auditreviewerdata.name }}</td>
+            </tr>
+            <tr *ngIf="auditreviewerdata.interpretation">
+                <th width="20%">Interpretation</th>
+                <td colspan="80%">{{ auditreviewerdata.interpretation }}</td>
+            </tr>
+            <tr *ngIf="auditreviewerdata.riskcategory">
+                <th width="20%">Risk Category</th>
+                <td colspan="80%">{{ auditreviewerdata.risk_category_label }}</td>
+            </tr>
+            <tr *ngIf="auditreviewerdata.standard">
+                <th width="20%">Standard</th>
+                <td colspan="80%">{{ auditreviewerdata.standard_label }}</td>
+            </tr>
+            <tr *ngIf="auditreviewerdata.process">
+                <th width="20%">Process</th>
+                <td colspan="80%">{{ auditreviewerdata.process_label }}</td>
+            </tr>
+        </table>
+        
+        <!-- <div class="text-right">                
+            <button type="button" class="btn but-cust green m-b-5 ml-2" [routerLink]="['/master/client-information-question/list']" >Back to List</button>                
+        </div> -->
+        
+    </div>
+</div> <!-- end row -->
