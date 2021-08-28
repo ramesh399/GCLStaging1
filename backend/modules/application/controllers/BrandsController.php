@@ -458,7 +458,7 @@ class BrandsController extends \yii\rest\Controller
 			// 		}
 			// 	}
 			// }
-			
+
 			if($data['actiontype']=='editbrand'){
 				// $chappbrmod = ApplicationBrands:: find()->where(['app_id'=>$data['id'],'brand_id'=>$data['chbrand_id']])->one();
 				// if($chappbrmod!='' && $chappbrmod!=null){
@@ -495,10 +495,9 @@ class BrandsController extends \yii\rest\Controller
 						}
 					}
 					$responsedata= array('status'=>1,'message'=>'Brand has been changed successfully');	
-				}
-				
-			}
+                }
 		}
+	}
     return $responsedata;
 
 	}

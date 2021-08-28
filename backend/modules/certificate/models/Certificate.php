@@ -13,6 +13,7 @@ use app\modules\master\models\ProductTypeMaterialComposition;
 
 use app\modules\application\models\ApplicationUnitCertifiedStandard;
 use app\modules\application\models\Application;
+use app\modules\application\models\ApplicationRenewal;
 use app\modules\application\models\ApplicationStandard;
 use app\modules\application\models\ApplicationUnit;
 use app\modules\application\models\ApplicationUnitStandard;
@@ -168,6 +169,11 @@ class Certificate extends \yii\db\ActiveRecord
         return $this->hasOne(AuditReviewerRiskCategory::className(), ['id' => 'risk_category']);
 	}
 
+	public function getRenewaldetails()
+    {
+        return $this->hasOne(ApplicationRenewal::className(), ['new_app_id' => 'parent_app_id']);
+	}
+
 	
 	
 	public function sortByOrder($a, $b) {
@@ -199,7 +205,19 @@ class Certificate extends \yii\db\ActiveRecord
 					$certificate_generate_date = date('d F Y',strtotime($certificate_generate_date));
 					$certificate_expiry_date = date('d F Y', strtotime($getCertifiedDateModel->certificate_valid_until));
 					$certificateDraftNo = $getCertifiedDateModel->version+1;
-				}else{
+				}else if(($model->product_addition_id=='' || $model->product_addition_id==null) && $audit_type==$applicationmodel->arrEnumAuditType['renewal']){
+					$renewal_parent_app_id = $model->renewaldetails->app_id;
+					$getReneCertifiedDateModel = Certificate::find()->where(['parent_app_id' => $renewal_parent_app_id,'standard_id'=>$model->standard_id])->orderBy(['id' => SORT_ASC])->one();
+					if($getReneCertifiedDateModel!==null){
+						$certificate_generate_date = date("d F Y",time());
+						$certificate_generate_date = date('d F Y',strtotime($certificate_generate_date));
+
+						$renewal_future_date = $getReneCertifiedDateModel->certificate_valid_until;
+						$certificate_valid_until = date('d F Y', strtotime('+1 year', strtotime($renewal_future_date)));
+						$certificate_expiry_date = $certificate_valid_until;
+					}
+				}
+				else{
 					$futureDate = date('Y-m-d', strtotime('+1 year', strtotime($certificate_generate_date)) );
 					$certificate_generate_date = date('d F Y',strtotime($certificate_generate_date));					
 					$certificate_expiry_date = date('d F Y', strtotime('-1 day', strtotime($futureDate)));						

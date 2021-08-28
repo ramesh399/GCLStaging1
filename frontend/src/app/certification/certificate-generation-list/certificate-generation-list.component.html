@@ -72,6 +72,7 @@
 				<th scope="col" width="10%">City</th>				
 				<th class="text-center" scope="col" width="10%">Version</th>
 				-->
+				<th class="text-center" scope="col" width="10%">Application Type</th>
 				<th class="text-center" scope="col" width="10%">Type</th>
 				<th class="text-center" scope="col" width="8%">Status</th>
 				<!--<th scope="col" sortable="created_at" (sort)="onSort($event)">Created By</th>-->
@@ -101,6 +102,7 @@
 				<td><ngb-highlight [result]="offer.application_city" [term]="service.searchTerm"></ngb-highlight></td>
 				<td class="text-center"><ngb-highlight [result]="offer.version" [term]="service.searchTerm"></ngb-highlight></td>
 				-->
+				<td class="text-center"><ngb-highlight [result]="offer.application_type_label" [term]="service.searchTerm"></ngb-highlight></td>
 				<td class="text-center"><ngb-highlight [result]="offer.type_label" [term]="service.searchTerm"></ngb-highlight></td>
 				<td class="text-center">
 					<ngb-highlight [result]="offer.certificate_status_name" [term]="service.searchTerm"></ngb-highlight> 

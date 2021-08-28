@@ -432,7 +432,6 @@ export class ViewComponent implements OnInit {
 
 brandchange(result){
   this.brand_ids = this.brandchangeForm.get('brand_ids').value;
-
   let formvalue = this.brandchangeForm.value;
   formvalue.id=this.id;
   formvalue.actiontype=result;
@@ -440,7 +439,7 @@ brandchange(result){
   formvalue.brand_id=this.brand_id;
   formvalue.app_approver_brand_id=this.app_approver_brand_id;
   formvalue.brand_ids=this.brand_ids;
-  
+
   this.formData.append('formvalues',JSON.stringify(formvalue));
   this.brandservice.brandapprove(this.formData)
      .pipe(first())

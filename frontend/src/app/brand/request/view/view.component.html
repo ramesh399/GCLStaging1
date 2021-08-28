@@ -362,7 +362,7 @@
 							Reject
 						</button> -->
 						
-						<button type="button"  *ngIf="userdetails.resource_access==1 || (userType!=1 && !userdetails.rules.includes('brand_management') && userdetails.is_headquarters!=1)" [disabled]="loading" class="btn but-cust blue m-b-5 ml-2" (click)="open(editbrandConfirmContent,'editbrand',appform)" >
+						<button type="button"  *ngIf="(userdetails.resource_access==1 || userType==2)" [disabled]="loading" class="btn but-cust blue m-b-5 ml-2" (click)="open(editbrandConfirmContent,'editbrand',appform)" >
 						<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
 							Edit</button>
 						<!-- *ngIf="(applicationdata?.app_status==arrEnumStatus['submitted'])  && (userdetails.resource_access==1 || userType==3 || ((userType==1) && userdetails.rules.includes('submit_for_review')) )"  -->
@@ -431,7 +431,7 @@
 	</div>
 </ng-template>
 
-<ng-template #editbrandConfirmContent  let-modal>
+<ng-template #editbrandConfirmContent let-modal>
 	<div class="modal-header">
 		<h4 class="modal-title" id="modal-basic-title">Edit Brand</h4>
 		<button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">

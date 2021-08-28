@@ -1139,7 +1139,7 @@ class GenerateOfferController extends \yii\rest\Controller
 				<tr>
 				  <td width="18%" align="left" style="text-align:left;font-weight:bold;" valign="middle" class="reportDetailLayoutInner">Company Address</td>
 				  <td width="1%" align="center" style="text-align:center;" valign="middle" class="reportDetailLayoutInner">:</td>
-				  <td width="81%" colspan="4" align="left" style="text-align:left" valign="middle" class="reportDetailLayoutInner">'.$appmodel->address.', '.$appmodel->city.' - '.$appmodel->zipcode.', '.$appmodel->countryname.'</td>
+				  <td width="81%" colspan="4" align="left" style="text-align:left" valign="middle" class="reportDetailLayoutInner">'.$appmodel->address.', '.$appmodel->city.' - '.$appmodel->zipcode.', '.$appmodel->statename.', '.$appmodel->countryname.'</td>
 				</tr>
 				
 				<tr>

@@ -51,11 +51,12 @@ $config = [
         ],
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',
+            'useFileTransport' => false,
             'transport' => [
                 'class' => 'Swift_SmtpTransport',
                 'host' => 'mail.gcl-intl.com',
                 'username' => 'noreply@gcl-intl.com',
-                'password' => '+eZ5$9=D#IF0',
+                'password' => '83jMSOq%.jAb',
                 'port' => '587',
                 //'encryption' => 'tls',
             ],			

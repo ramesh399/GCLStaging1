@@ -7135,6 +7135,7 @@ class AuditPlanController extends \yii\rest\Controller
 				$data['app_id']=$audit->app_id;
 				$data['offer_id']=$audit->offer_id;
 				$data['audit_type_name']=$audit->audittypeArr[$audit->audit_type];
+				$data['application_type_name']=$audit->application?$applicationmod->arrAuditType[$audit->application->audit_type]:'';
 				//$data['currency']=($offer)?$offer->offerlist->currency:'';
 				$data['company_name']=$audit->application?$audit->application->companyname:'';
 				

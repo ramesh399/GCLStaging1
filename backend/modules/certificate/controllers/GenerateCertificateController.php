@@ -378,6 +378,7 @@ class GenerateCertificateController extends \yii\rest\Controller
 
 				//$audit_type = $offer->audit->application->audit_type;
 				//$additiontype = $offer->product_addition_id!='' && $offer->product_addition_id>0?'Product Addition':$modelApplication->arrAuditType[$audit_type];
+				$data['application_type_label']=$offer->audit->application?$modelApplication->arrAuditType[$offer->audit->application->audit_type]:'';
 				$data['type_label'] = isset($offer->arrType[$offer->type])?$offer->arrType[$offer->type]:'NA';//$additiontype;
 				//$data['invoice_id']=$offer->id;
 				$data['app_id']=$offer->audit?$offer->audit->app_id:'';
@@ -1524,6 +1525,19 @@ class GenerateCertificateController extends \yii\rest\Controller
 					}
 				}				
 				
+				if(($model->product_addition_id=='' || $model->product_addition_id==null) && $audit_type==$applicationmodel->arrEnumAuditType['renewal']){
+					$renewal_parent_app_id = $model->renewaldetails->app_id;
+					$getReneCertifiedDateModel = Certificate::find()->where(['parent_app_id' => $renewal_parent_app_id,'standard_id'=>$model->standard_id])->orderBy(['id' => SORT_ASC])->one();
+					if($getReneCertifiedDateModel!==null){
+						$certificate_generate_date = date("Y-m-d",time());
+						$certificate_generate_date = date('Y-m-d',strtotime($certificate_generate_date));
+
+						$renewal_future_date = $getReneCertifiedDateModel->certificate_valid_until;
+						$certificate_valid_until = date('Y-m-d', strtotime('+1 year', strtotime($renewal_future_date)));
+						$actual_certificate_valid_until = $certificate_valid_until;
+					}
+				}
+
 				$version =1;
 				$applicationdetails = $model->audit->application;
 				if(($model->product_addition_id !='' && $model->product_addition_id>0) || ($applicationdetails !==null && $applicationdetails->audit_type !=$applicationdetails->arrEnumAuditType['renewal'] )){
@@ -1814,6 +1828,7 @@ class GenerateCertificateController extends \yii\rest\Controller
 				$data['status_label']=$offer->arrStatus[$offer->status];
 				//$audit_type = $offer->audit->application->audit_type;
 				//$additiontype = $offer->product_addition_id!='' && $offer->product_addition_id>0?'Product Addition':$modelApplication->arrAuditType[$audit_type];
+				$data['application_type_label']=$offer->audit->application?$modelApplication->arrAuditType[$offer->audit->application->audit_type]:'';
 				$data['type_label']=isset($offer->arrType[$offer->type])?$offer->arrType[$offer->type]:'NA'; //$additiontype;
 
 				$data['app_id']=$offer->audit->app_id;

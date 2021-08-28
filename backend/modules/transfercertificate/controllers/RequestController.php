@@ -3613,6 +3613,9 @@ class RequestController extends \yii\rest\Controller
 								$productname = $productstd->appproduct->product_name;
 								$producttypename = $productstd->appproduct->product_type_name;
 
+								$productcode = $productstd->appproduct->product->code;
+								$producttypecode = $productstd->appproduct->producttype->code;
+
 								$wastage = $productstd->appproduct->wastage;
 								$materialcompositionname = '';
 								if(count($productstd->productmaterial) >0)
@@ -3627,14 +3630,14 @@ class RequestController extends \yii\rest\Controller
 											'material_type_name'=> $productmaterial->material_type_name,//material->material_type[$productmaterial->material_type_id],
 											'material_percentage'=>$productmaterial->percentage
 										];
-										$materialcompositionname = $materialcompositionname.$productmaterial->percentage.'% '.$productmaterial->material_name.' + ';
+										$materialcompositionname = $materialcompositionname.$productmaterial->percentage.'% '.$productmaterial->material_name.' ('.$productmaterial->material->code.') + ';
 
 									}
 									$materialcompositionname = rtrim($materialcompositionname," + ");
 								}
 								//$completepdtname = $productname.' | '.$producttypename.' | '.$wastage.'% wastage | '.$materialcompositionname.' | '.$standard_name.' | '.$labelgradename;												
 								//$completepdtname = $productname.' - '.$materialcompositionname.' <br>(Label Grade: '.$labelgradename.')';
-								$completepdtname = $productname.' / '.$producttypename.' - '.$materialcompositionname.' <br>(Label Grade: '.$labelgradename.')';
+								$completepdtname = $productname.' ('.$productcode.') / '.$producttypename.' ('.$producttypecode.') - '.$materialcompositionname.' <br>(Label Grade: '.$labelgradename.')';
 								
 								// ------------- Code for Identify Standard Blended Logo Code Start Here -----------------
 								$standard_code_lower = strtolower($standard_code);

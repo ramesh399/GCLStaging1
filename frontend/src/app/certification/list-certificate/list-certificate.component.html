@@ -86,7 +86,7 @@
 				<th class="center" scope="col" (sort)="onSort($event)" width="7%">Version</th>
 				<th class="center" scope="col" (sort)="onSort($event)" width="11%">Certified Date</th>
 				<th class="center" scope="col" (sort)="onSort($event)" width="11%">Valid Until</th>
-				
+				<th class="center" scope="col" (sort)="onSort($event)" width="10%">Application Type</th>
 				<th class="center" scope="col" (sort)="onSort($event)" width="10%">Type</th>
 				<th class="center" scope="col" (sort)="onSort($event)" width="8%">Status</th>
 				<th class="center" scope="col" (sort)="onSort($event)" width="8%">Is Valid?</th>				
@@ -124,7 +124,8 @@
 				<td><ngb-highlight [result]="offer.application_city" [term]="service.searchTerm"></ngb-highlight></td>
 				-->
 				<td class="center">{{offer.certificate_generated_date}}</td>
-				<td class="center">{{offer.certificate_valid_until}}</td>						
+				<td class="center">{{offer.certificate_valid_until}}</td>
+				<td class="center">{{offer.application_type_label}}</td>
 				<td class="center">{{offer.type_label}}</td>				
 				<td class="center">{{offer.status_label}}</td>				
 				<td class="center"><ngb-highlight [result]="offer.certificate_status_name" [term]="service.searchTerm"></ngb-highlight></td>
