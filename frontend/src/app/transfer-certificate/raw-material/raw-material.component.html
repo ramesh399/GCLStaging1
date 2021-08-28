@@ -406,10 +406,10 @@
 							
 								<div [ngClass]="certified_yes ? 'col-2': 'col-3'">
 									<label>Gross Weight (kg) <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Gross Weight" matTooltipClass="tooltip-text-size" aria-tooltip="Gross Weight" matTooltipPosition="right"></i>
-									<input type="text" formControlName="gross_weight"  class="form-control" placeholder="Gross Weight (kg)" [class.is-invalid]="f.gross_weight.invalid && f.gross_weight.touched" (change)="validateWeight()">
+									<input type="text" formControlName="gross_weight"  class="form-control" pattern="^[0-9]\d*(\.\d+)?$" min="0.1" placeholder="Gross Weight (kg)" [class.is-invalid]="f.gross_weight.invalid && f.gross_weight.touched" (change)="validateWeight()">
 									<div *ngIf="f.gross_weight.errors" class="invalid-feedback">
 										<div *ngIf="f.gross_weight.errors.required">Gross Weight is required</div>
-										<div *ngIf="f.gross_weight.errors.min">Gross Weight should be greater than or equal to 1</div>
+										<div *ngIf="f.gross_weight.errors.min">Gross Weight should be greater than or equal to 0.1</div>
 										<div *ngIf="f.gross_weight.errors.pattern">Invalid Gross Weight</div>								
 									</div>
 									<div *ngIf="gross_weightErr" class="validationerror" >
@@ -419,10 +419,10 @@
 								
 								<div [ngClass]="certified_yes ? 'col-2': 'col-3'">
 									<label>Net Weight (kg) <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Net Weight" matTooltipClass="tooltip-text-size" aria-tooltip="Net Weight" matTooltipPosition="right"></i>
-									<input type="text" formControlName="net_weight"  class="form-control" placeholder="Net Weight (kg)" [class.is-invalid]="f.net_weight.invalid && f.net_weight.touched" (change)="validateWeight();changeBalanceWeight($event.target.value)">
+									<input type="text" formControlName="net_weight"  class="form-control" placeholder="Net Weight (kg)" [class.is-invalid]="f.net_weight.invalid && f.net_weight.touched"  pattern="^[0-9]\d*(\.\d+)?$" min="0.1" (change)="validateWeight();changeBalanceWeight($event.target.value)">
 									<div *ngIf="f.net_weight.errors" class="invalid-feedback">
 										<div *ngIf="f.net_weight.errors.required">Net Weight is required</div>
-										<div *ngIf="f.net_weight.errors.min">Net Weight should be greater than or equal to 1</div>
+										<div *ngIf="f.net_weight.errors.min">Net Weight should be greater than or equal to 0.1</div>
 										<div *ngIf="f.net_weight.errors.pattern">Invalid Net Weight</div>								
 									</div>
 									<div *ngIf="net_weightErr" class="validationerror" >
@@ -432,10 +432,10 @@
 
 								<div class="col-2" *ngIf="certified_yes">
 									<label>Certified Weight (kg) <span class="text-danger">*</span></label> <i class="fa fa-info-circle text-info ml-1 info-icon-size" matTooltip="Certified Weight" matTooltipClass="tooltip-text-size" aria-tooltip="Certified Weight" matTooltipPosition="right"></i>
-									<input type="text" formControlName="certified_weight"  class="form-control" placeholder="Certified Weight (kg)" [class.is-invalid]="f.certified_weight.invalid && f.certified_weight.touched" (change)="validateWeight()">
+									<input type="text" formControlName="certified_weight"  class="form-control" placeholder="Certified Weight (kg)" [class.is-invalid]="f.certified_weight.invalid && f.certified_weight.touched" pattern="^[0-9]\d*(\.\d+)?$" min="0.1" (change)="validateWeight()">
 									<div *ngIf="f.certified_weight.errors" class="invalid-feedback">
 										<div *ngIf="f.certified_weight.errors.required">Certified Weight is required</div>
-										<div *ngIf="f.certified_weight.errors.min">Certified Weight should be greater than or equal to 1</div>
+										<div *ngIf="f.certified_weight.errors.min">Certified Weight should be greater than or equal to 0.1</div>
 										<div *ngIf="f.certified_weight.errors.pattern">Invalid Certified Weight</div>								
 									</div>
 									<div *ngIf="certified_weightErr" class="validationerror" >

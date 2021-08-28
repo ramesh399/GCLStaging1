@@ -14,21 +14,7 @@
             <!-- <a class="btn btn-primary" href="#" *ngIf="userdetails.resource_access==1" role="button" [routerLink]="['/application/add-request']" >Add Application</a>-->
           </div>
         </div>
-		<div class="row col-12  m-b-5 pad-right">
-			<div class="col-6" style="margin-left: 400px;">
-			<ng-container  *ngIf="userType!=2">
-				<mat-select style="width: 23%;font-size:13px;" placeholder="-- OSS --" #franchiseFilter name="franchiseFilter" [(ngModel)]="service.franchiseFilter" multiple class="custom-select"  >
-					<mat-select-trigger>
-					<span *ngIf="franchiseFilter.value?.length == 1" >{{franchiseFilter.value ?  getSelectedFranchiseValue(franchiseFilter.value) : ''}}</span>
-					<span *ngIf="franchiseFilter.value?.length > 1" class="example-additional-selection">
-						{{franchiseFilter.value.length}} {{ 'selected' }}
-					</span>
-					</mat-select-trigger>
-					<mat-option *ngFor="let osp of franchiseList" [value]="osp.id">{{osp.osp_details}}</mat-option>					
-				</mat-select>
-			</ng-container>
-		</div>
-		</div>
+		
 		<div class="row col-12 m-b-5 pad-right">
             <div class="col-2 text-left pad-left">
             <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
@@ -37,12 +23,12 @@
               </div>
 
               <div class="col-7 text-rigth">
-				<select class="custom-select" style="width: 23%; font-size:13px;" name="statusFilter" [(ngModel)]="service.statusFilter">
+				<select class="custom-select" style="width: 13%; font-size:13px;" name="statusFilter" [(ngModel)]="service.statusFilter">
 					<option value="">All</option>
 					<option  *ngFor="let item of statuslist | keyvalue" value="{{item.key}}">{{item.value}}</option>
 				</select>
 				&nbsp;
-				<mat-select style="width: 23%;font-size:13px;" placeholder="-- Standard --" #standardFilter name="standardFilter" [(ngModel)]="service.standardFilter" multiple class="custom-select"  >
+				<mat-select style="width: 22%;font-size:13px;" placeholder="-- Standard --" #standardFilter name="standardFilter" [(ngModel)]="service.standardFilter" multiple class="custom-select"  >
 					<mat-select-trigger>
 					<span *ngIf="standardFilter.value?.length == 1" >{{standardFilter.value ?  getSelectedValue(standardFilter.value) : ''}}</span>
 					<span *ngIf="standardFilter.value?.length > 1" class="example-additional-selection">
@@ -62,7 +48,17 @@
 					<mat-option *ngFor="let item of typelist | keyvalue" [value]="item.key">{{item.value}}</mat-option>
 				</mat-select>
 				&nbsp;
-				<mat-select style="width: 23%;font-size:13px;" placeholder="-- Brand --" #brandFilter name="brandFilter" [(ngModel)]="service.brandFilter" multiple class="custom-select"  >
+				<mat-select *ngIf="userType!=2"style="width: 18%;font-size:13px;" placeholder="-- OSS --" #franchiseFilter name="franchiseFilter" [(ngModel)]="service.franchiseFilter" multiple class="custom-select"  >
+					<mat-select-trigger>
+					<span *ngIf="franchiseFilter.value?.length == 1" >{{franchiseFilter.value ?  getSelectedFranchiseValue(franchiseFilter.value) : ''}}</span>
+					<span *ngIf="franchiseFilter.value?.length > 1" class="example-additional-selection">
+						{{franchiseFilter.value.length}} {{ 'selected' }}
+					</span>
+					</mat-select-trigger>
+					<mat-option *ngFor="let osp of franchiseList" [value]="osp.id">{{osp.osp_details}}</mat-option>					
+				</mat-select>
+				&nbsp;
+				<mat-select style="width: 20%;font-size:13px;" placeholder="-- Brand --" #brandFilter name="brandFilter" [(ngModel)]="service.brandFilter" multiple class="custom-select"  >
 					<mat-select-trigger>
 					<span *ngIf="brandFilter.value?.length == 1" >{{brandFilter.value ?  getSelectedBrandValue(brandFilter.value) : ''}}</span>
 					<span *ngIf="brandFilter.value?.length > 1" class="example-additional-selection">
@@ -70,9 +66,7 @@
 					</span>
 					</mat-select-trigger>
 					<mat-option *ngFor="let br of brandList" [value]="br.id">{{br.brand_name}}</mat-option>
-				</mat-select>
-				&nbsp;
-				
+				</mat-select>		
               </div>
           <div class="col-3 text-right pad-right">
             <input class="search-pad" type="text" name="searchTerm" placeholder="Type here to search" [(ngModel)]="service.searchTerm"/>

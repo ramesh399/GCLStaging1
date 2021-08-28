@@ -55,7 +55,7 @@
 						<li *ngIf="checkRole('material_master')"><a [routerLink]="['/master/materialcomposition/list']"><i class="fa fa-circle-o"></i> Material</a></li>
 																	
 						<li *ngIf="checkRole('process_master')" ><a [routerLink]="['/master/process/list']"><i class="fa fa-circle-o"></i> Process</a></li>
-						<li *ngIf="checkRole('process_master')" ><a [routerLink]="['/master/list-audit-standard']"><i class="fa fa-circle-o"></i> Audit Standard</a></li>
+						<!-- <li *ngIf="checkRole('process_master')" ><a [routerLink]="['/master/list-audit-standard']"><i class="fa fa-circle-o"></i> Audit Standard</a></li> -->
 						<li *ngIf="checkRole('standard_master')"><a [routerLink]="['/master/standard/list']"><i class="fa fa-circle-o"></i> Standard</a></li>
 						<li *ngIf="checkRole('reduction_standard_master')"><a [routerLink]="['/master/reductionstandard/list']"><i class="fa fa-circle-o"></i> Reduction Standard</a></li>
 						<li *ngIf="checkRole('standard_reduction_master')"><a [routerLink]="['/master/standardreduction/list']"><i class="fa fa-circle-o"></i> Standard Reduction</a></li>

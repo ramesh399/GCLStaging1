@@ -19,6 +19,7 @@ import { AuthenticationService } from '@app/services';
 export class AuditReportReviewComponent implements OnInit {
 
   userType:number;
+  reviewer_note :any;
   constructor(private activatedRoute:ActivatedRoute,private router: Router, private SubTopicService: SubTopicService,
     public auditExecution:AuditExecutionService,public errorSummary: ErrorSummaryService,   
     private FindingsCorrectiveActionService:FindingsCorrectiveActionService,private modalService: NgbModal,
@@ -27,7 +28,6 @@ export class AuditReportReviewComponent implements OnInit {
   audit_id:any;
   audit_plan_unit_id:any;
   finding_id:any;
-  reviewer_note: any;
 
   checklistForm : any = {};
   guidanceIncludeList:Array<any> = [];
@@ -49,6 +49,7 @@ editQuestion: any = {};
   enableReportCorrection:any=0;
   questionValueList = []
 subTopicList: any;
+
 
 get appid () {
   return  localStorage.getItem("appid")
@@ -394,8 +395,10 @@ get unitid () {
         formerror=true
     }
 
+    // && (actiontype=="submit" || (actiontype=="reportcorrection" && f.value.reviewer_note!='' && f.value.reviewer_note!==undefined))
    
-    if (!formerror && (actiontype=="submit" || (actiontype=="reportcorrection" && f.value.reviewer_note!='' && f.value.reviewer_note!==undefined))) {
+    if (!formerror && (actiontype=="submit" || (actiontype=="reportcorrection" && f.value.reviewer_note!='' && f.value.reviewer_note!==undefined))
+    ) {
       let questions = [];
       let allquestions = [];
       let unitList = [];

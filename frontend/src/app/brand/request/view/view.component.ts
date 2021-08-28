@@ -44,7 +44,7 @@ export class ViewComponent implements OnInit {
 	
 	constructor(private userservice: UserService,private activatedRoute:ActivatedRoute,public fb:FormBuilder, public  brandservice:BrandService,
 		private applicationDetail:ApplicationDetailService, private modalService: NgbModal,
-		private enquiryDetail:EnquiryDetailService,private router:Router,private authservice:AuthenticationService,private errorSummary: ErrorSummaryService) { 
+		private enquiryDetail:EnquiryDetailService,private router:Router,private authservice:AuthenticationService,public errorSummary: ErrorSummaryService) { 
     }
 	
   userdecoded:any;

@@ -82,7 +82,8 @@ export class ApplicationProductListComponent implements OnInit {
 		this.enquiryForm = this.fb.group({	
 			material:['',[Validators.required]],
 			material_type:['',[Validators.required]],
-			material_percentage:['',[Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.max(100)]]	
+			material_percentage:['',[Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.max(100)]]	,
+      wastage_percentage:['']
 		});
   }
   
@@ -173,7 +174,7 @@ export class ApplicationProductListComponent implements OnInit {
   }
 
   getProductMaterial(product_typeid,makeempty=1){
-    this.enquiryForm.patchValue({material:'',material_type:''});
+    this.enquiryForm.patchValue({material:'',material_type:'',wastage_percentage:''});
     
       if(product_typeid>0)
       {
@@ -252,7 +253,8 @@ export class ApplicationProductListComponent implements OnInit {
     this.enquiryForm.patchValue({
       material: '',
       material_type:'',
-      material_percentage:''
+      material_percentage:'',
+      wastage_percentage:''
     });
     this.f.material.setValidators([]);
     this.f.material_type.setValidators([]);
@@ -276,7 +278,8 @@ export class ApplicationProductListComponent implements OnInit {
     this.enquiryForm.patchValue({
       material: mat.material_id,
       material_type: mat.material_type_id,
-      material_percentage:mat.material_percentage
+      material_percentage:mat.material_percentage,
+      wastage_percentage:''
     });
   }
   
@@ -352,7 +355,8 @@ export class ApplicationProductListComponent implements OnInit {
     this.enquiryForm.patchValue({
       material: '',
       material_type: '',
-      material_percentage:''
+      material_percentage:'',
+      wastage_percentage:''
     });
   }
 

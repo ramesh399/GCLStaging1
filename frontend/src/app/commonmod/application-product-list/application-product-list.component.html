@@ -164,7 +164,13 @@
 										</div>
 									</div>
 
-									<div class="col-3" style="padding-top:29px;">										
+									<div class="col-2">
+										<label>Wastage (%) <span class="text-danger">*</span></label>
+										<input type="text" formControlName="wastage_percentage"  class="form-control" placeholder="Wastage (%)" >
+									
+									</div>
+
+									<div class="col-3" style="padding-top:29px; margin-left: 780px;">										
 										<a class="btn btn-secondary btn-sm active" href="javascript:void(0);" role="button" (click)="addProductMaterial()">{{ editStatus ? 'Update':'Add'}} Material</a>
 										<a class="btn btn-secondary btn-sm active ml-2" href="javascript:void(0);" role="button" (click)="resetProductMaterial()">Reset</a>
 									</div>

@@ -37,9 +37,6 @@
     created_by?:any;
     created_at?:any;
     headquarters?:any;
-    brand_name?:any;
-    brand_group?:any;
-    version?:any;
     
     payment_details?:any;
     

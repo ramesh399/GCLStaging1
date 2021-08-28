@@ -126,9 +126,9 @@ export class RawMaterialComponent implements OnInit {
 	    product_name:['',[Validators.required,this.errorSummary.noWhitespaceValidator,Validators.maxLength(255)]],	  
       lot_number:['',[Validators.required,this.errorSummary.noWhitespaceValidator,Validators.maxLength(255)]],	
       is_certified:['',[Validators.required]],      
-      net_weight:['',[Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(1)]],
-      gross_weight:['',[Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(1)]],
-      certified_weight:['',[Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(1)]],
+      net_weight:['',[Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(0.1)]],
+      gross_weight:['',[Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(0.1)]],
+      certified_weight:['',[Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(0.1)]],
       raw_material_product_id:[''],
       // used_weight:['',[Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(1)]],
       // balance_weight:['',[Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(1)]],
@@ -273,9 +273,9 @@ export class RawMaterialComponent implements OnInit {
       this.f.label_grade_id.setValidators([Validators.required]);
       
       if(this.editStatus == 1){
-        this.f.certified_weight.setValidators([Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(0)]);
+        this.f.certified_weight.setValidators([Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(0.1)]);
       }else{
-        this.f.certified_weight.setValidators([Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(1)]);
+        this.f.certified_weight.setValidators([Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(0.1)]);
       }
       
       
@@ -803,13 +803,13 @@ export class RawMaterialComponent implements OnInit {
     this.success = {summary:''};
 
     if(this.editStatus == 1){
-      this.f.gross_weight.setValidators([Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(0)]);
-      this.f.net_weight.setValidators([Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(0)]);
-      this.f.certified_weight.setValidators([Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(0)]);
+      this.f.gross_weight.setValidators([Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(0.1)]);
+      this.f.net_weight.setValidators([Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(0.1)]);
+      this.f.certified_weight.setValidators([Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(0.1)]);
     }else{
-      this.f.gross_weight.setValidators([Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(1)]);
-      this.f.net_weight.setValidators([Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(1)]);
-      this.f.certified_weight.setValidators([Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(1)]);
+      this.f.gross_weight.setValidators([Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(0.1)]);
+      this.f.net_weight.setValidators([Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(0.1)]);
+      this.f.certified_weight.setValidators([Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(0.1)]);
     }
     
     this.f.gross_weight.updateValueAndValidity();
@@ -1027,8 +1027,8 @@ export class RawMaterialComponent implements OnInit {
       this.f.gross_weight.setValidators([Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(0)]);
       this.f.net_weight.setValidators([Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(0)]);
     }else{
-      this.f.gross_weight.setValidators([Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(1)]);
-      this.f.net_weight.setValidators([Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(1)]);
+      this.f.gross_weight.setValidators([Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(0.11)]);
+      this.f.net_weight.setValidators([Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(0.1)]);
     }
     
     
@@ -1045,7 +1045,7 @@ export class RawMaterialComponent implements OnInit {
       if(this.editStatus == 1){
         this.f.certified_weight.setValidators([Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(0)]);
       }else{
-        this.f.certified_weight.setValidators([Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(1)]);
+        this.f.certified_weight.setValidators([Validators.required,Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$'),Validators.min(0.1)]);
       }
       
       
